@@ -1,7 +1,8 @@
 cppitertools
 ============
 
-range-based for loop add-ons inspired by the python itertools library.
+range-based for loop add-ons inspired by the python builtins and itertools
+library.
 
 
 range
