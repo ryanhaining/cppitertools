@@ -15,7 +15,7 @@
 
 namespace iter {
 
-    //Forward declaration of Enumerable and enumerate
+    //Forward declarations of Enumerable and enumerate
     template <typename Container>
     class Enumerable;
 
@@ -27,8 +27,7 @@ namespace iter {
     class Enumerable {
         // The only thing allowed to directly instantiate an Enumerable is
         // the enumerate function
-        template <typename T>
-        friend Enumerable<T> enumerate(T &);
+        friend Enumerable enumerate<Container>(Container &);
 
         // Type of the Container::Iterator, but since the name of that 
         // iterator can be anything, we have to grab it with this
