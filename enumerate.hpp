@@ -3,19 +3,51 @@
 
 #include <utility>
 
+
+// enumerate functionality for python-style for-each enumerate loops
+// for (auto e : enumerate(vec)) {
+//     std::cout << e.index
+//               << ": "
+//               << e.element
+//               << '\n';
+// }
+
+
 namespace iter {
+
+    //Forward declaration of Enumerable and enumerate
+    template <typename Container>
+    class Enumerable;
+
+    template <typename Container>
+    Enumerable<Container> enumerate(Container &);
+
 
     template <typename Container>
     class Enumerable {
         // The only thing allowed to directly instantiate an Enumerable is
         // the enumerate function
+        template <typename T>
+        friend Enumerable<T> enumerate(T &);
+
+        // Type of the Container::Iterator, but since the name of that 
+        // iterator can be anything, we have to grab it with this
+        using contained_iter_type =
+            decltype(((Container*)nullptr)->begin());
+
+        // The type returned when dereferencing the Container::Iterator
+        using contained_iter_ret =
+            decltype(((contained_iter_type*)nullptr)->operator*());
+
         private:
             Container & container;
             
-            using contained_iter_type =
-                decltype(((Container*)nullptr)->begin());
-            using contained_iter_ret =
-                decltype(((contained_iter_type*)nullptr)->operator*());
+            // Value constructor for use only in the enumerate function
+            Enumerable(Container & container) : container(container) { }
+            Enumerable () = delete;
+            Enumerable & operator=(const Enumerable &) = delete;
+            // Default copy constructor used
+
         public:
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
             // .element referencing the value yielded by the subiterator
@@ -55,26 +87,23 @@ namespace iter {
                     }
             };
 
-            Enumerable(Container & container) : container(container) { }
-            Enumerable () = delete;
-            Enumerable & operator=(const Enumerable &) = delete;
-
             Iterator begin() const {
-                return Iterator(std::move(this->container.begin()));
+                return Iterator(this->container.begin());
             }
 
             Iterator end() const {
-                return Iterator(std::move(this->container.end()));
+                return Iterator(this->container.end());
             }
 
     };
 
-    // Helper function to instantiate an enumerable
+    // Helper function to instantiate an Enumerable
     template <typename Container>
     Enumerable<Container> enumerate(Container & container) {
         return Enumerable<Container>(container);
     }
-}
 
+
+}
 
 #endif //ifndef ENUMERABLE__H__
