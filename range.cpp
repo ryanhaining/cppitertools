@@ -3,11 +3,13 @@
 namespace iter {
 
     // Iterator subclass
-    range::Iterator::Iterator (unsigned int val, unsigned int step) :
+    range::Iterator::Iterator (int val, int step, bool invalid_range) :
         value(val),
-        step(step) { }
+        step(step),
+        invalid_range(invalid_range)
+    { }
 
-    unsigned int range::Iterator::operator*() const {
+    int range::Iterator::operator*() const {
         return this->value;
     }
 
@@ -17,32 +19,56 @@ namespace iter {
     }
 
     bool range::Iterator::operator!=(const range::Iterator & other) const {
-        return this->value != other.value;
+        // okay, this is a bit of a hack, but since the for loop will
+        // repeatedly check to see if the iterator has reached the end, in
+        // order to give a false positive on an invalid range (such as
+        // range(-1, 0, -1)) an invalid_range must be checked for first
+        return !this->invalid_range && this->value != other.value;
     }
 
 
     //Range 
-    range::range(unsigned int stop) :
+    range::range(int stop) :
         start(0),
         stop(stop),
-        step(1) { }
+        step(1)
+    {
+        this->step_check();
+    }
 
-    range::range(unsigned int start, unsigned int stop) :
+    range::range(int start, int stop) :
         start(start),
         stop(stop),
-        step(1) { }
+        step(1)
+    {
+        this->step_check();
+    }
 
-    range::range(unsigned int start, unsigned int stop, unsigned int step) :
+    range::range(int start, int stop, int step) :
         start(start),
         stop(stop),
-        step(step) { }
+        step(step)
+    {
+        this->step_check();
+    }
+
+    bool range::invalid_range() const {
+       return ((this->start > this->stop && this->step > 0) ||
+               (this->start < this->stop && this->step < 0));
+    }
+
+    void range::step_check() const throw(RangeError) {
+        if (step == 0) {
+            throw RangeError();
+        }
+    }
 
     range::Iterator range::begin() const {
-        return Iterator(start, step);
+        return Iterator(start, step, this->invalid_range());
     }
 
     range::Iterator range::end() const { 
-        return Iterator(stop, step);
+        return Iterator(stop, step, this->invalid_range());
     }
 
 }
