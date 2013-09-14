@@ -37,17 +37,13 @@ namespace iter {
         start(0),
         stop(stop),
         step(1)
-    {
-        this->step_check();
-    }
+    { }
 
     range::range(int start, int stop) :
         start(start),
         stop(stop),
         step(1)
-    {
-        this->step_check();
-    }
+    { }
 
     range::range(int start, int stop, int step) :
         start(start),
