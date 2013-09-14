@@ -32,6 +32,13 @@ for (auto i : range(20, 30, 2)) {
 }
 ```
 
+Negative values are allowed as well.  Prints 2 1 0 -1 -2
+```c++
+for (auto i : range(2, -3, -1)) {
+    cout << i << '\n';
+}
+```
+
 
 enumerate
 ---------
