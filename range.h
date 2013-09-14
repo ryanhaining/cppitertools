@@ -13,7 +13,7 @@
 namespace iter {
 
     // Thrown when step 0 occurs
-    class RangeError : public std::exception {
+    class RangeException : public std::exception {
         virtual const char *what() const throw() { 
             return "range() step argument must not be zero";
         }
@@ -25,7 +25,7 @@ namespace iter {
             const int stop;
             const int step;
             bool invalid_range() const;
-            void step_check() const throw(RangeError);
+            void step_check() const throw(RangeException);
         public:
             class Iterator {
                 private:

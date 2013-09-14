@@ -57,9 +57,9 @@ namespace iter {
                (this->start < this->stop && this->step < 0));
     }
 
-    void range::step_check() const throw(RangeError) {
+    void range::step_check() const throw(RangeException) {
         if (step == 0) {
-            throw RangeError();
+            throw RangeException();
         }
     }
 
