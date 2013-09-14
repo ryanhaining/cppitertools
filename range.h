@@ -7,6 +7,13 @@
 // for (auto i : range(stop)) { ... } // start = 0, step = 1
 // for (auto i : range(start, stop)) { ... } // step = 1
 // for (auto i : range(start, stop, step)) { ... }
+//
+// The start may be greater than the stop if the range is negative
+// The range will effectively be empty if:
+//   1) step is positive and start > stop
+//   2) step is negative and start < stop
+//
+// If a step of 0 is provided, a RangeException will be thrown
 
 #include <exception>
 
@@ -24,16 +31,14 @@ namespace iter {
             const int start; 
             const int stop;
             const int step;
-            bool invalid_range() const;
             void step_check() const throw(RangeException);
         public:
             class Iterator {
                 private:
                     int value;
                     const int step;
-                    const bool invalid_range;
                 public:
-                    Iterator (int val, int step, bool invalid_range);
+                    Iterator (int val, int step);
 
                     int operator*() const;
                     Iterator & operator++();
