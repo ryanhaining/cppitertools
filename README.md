@@ -55,6 +55,7 @@ for (auto e : enumerate(vec)) {
          << e.element
          << '\n';
 }
+```
 
 
 cycle
@@ -72,3 +73,4 @@ for (auto i : cycle(vec)) {
         break;
     }
 }
+```
