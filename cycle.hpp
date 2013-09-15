@@ -1,5 +1,6 @@
 #ifndef CYCLE__H__
 #define CYCLE__H__
+
 namespace iter {
 
     //Forward declarations of Cycle and cycle
@@ -63,7 +64,7 @@ namespace iter {
                         return *this;
                     }
 
-                    bool operator!=(const Iterator &) const {
+                    constexpr bool operator!=(const Iterator &) const {
                         return true;
                     }
             };
