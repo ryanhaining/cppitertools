@@ -48,11 +48,27 @@ similar to pairs.  They are basic structs with a .index and a .element.  Usage
 appears as:
 
 ```c++
-vector<int> vec;
-// push values into vec
+vector<int> vec{2, 4, 6, 8};
 for (auto e : enumerate(vec)) { 
     cout << e.index
          << ": "
          << e.element
          << '\n';
+}
+
+
+cycle
+-----
+
+Repeatedly produce all values of an iterable.  The loop will be infinite, so a
+`break` is necessary to exit.
+
+Prints 1 2 3 repeatedly until `some_condition` is true
+```c++
+vector<int> vec{1, 2, 3};
+for (auto i : cycle(vec)) {
+    cout << i << '\n';
+    if (some_condition) {
+        break;
+    }
 }
