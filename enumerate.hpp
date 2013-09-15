@@ -53,10 +53,11 @@ namespace iter {
             class IterYield {
                 public:
                     std::size_t index;
-                    contained_iter_ret & element;
-                    IterYield(std::size_t i, contained_iter_ret & elem) : 
+                    contained_iter_ret element;
+                    IterYield(std::size_t i, contained_iter_ret elem) : 
                         index(i),
-                        element(elem) { }
+                        element(elem)
+                    { }
             };
 
             //  Holds an iterator of the contained type and a size_t for the
