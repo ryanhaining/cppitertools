@@ -99,6 +99,6 @@ namespace iter {
            return 
                iterator_range<chain_iter<Containers...>>(begin,end);
        }
-};
+}
 
 #endif //CHAIN_HPP
