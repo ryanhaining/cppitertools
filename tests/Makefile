@@ -14,7 +14,8 @@ TESTS = \
 		testcycle \
 		testenumerate \
 		testrange \
-		testzip
+		testzip \
+		testslice
 
 all: $(TESTS)
 
