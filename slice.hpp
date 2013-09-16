@@ -16,6 +16,6 @@ namespace iter {
                     container.begin()+begin,
                     container.begin()+end);
         }
-};
+}
 
 #endif //SLICE_HPP

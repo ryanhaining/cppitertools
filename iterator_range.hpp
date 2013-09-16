@@ -17,6 +17,6 @@ namespace iter {
                 return end_;
             }
         };
-};
+}
 
 #endif //ITERATOR_RANGE_HPP

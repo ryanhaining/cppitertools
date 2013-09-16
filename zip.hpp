@@ -84,6 +84,6 @@ namespace iter {
                 return (this->iter != rhs.iter) && (this->inner_iter != rhs.inner_iter);
             }
         };
-};
+}
 
 #endif //ZIP_HPP
