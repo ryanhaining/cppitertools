@@ -15,7 +15,8 @@ TESTS = \
 		testenumerate \
 		testrange \
 		testzip \
-		testslice
+		testslice \
+		testreverse
 
 all: $(TESTS)
 
