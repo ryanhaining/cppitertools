@@ -1,4 +1,9 @@
+#ifndef ZIP_HPP
+#define ZIP_HPP
+
 #include <tuple>
+#include "iterator_range.hpp"
+
 namespace iter {
     template <typename ... Rest>
         struct zip_iter;
@@ -80,3 +85,5 @@ namespace iter {
             }
         };
 };
+
+#endif //ZIP_HPP

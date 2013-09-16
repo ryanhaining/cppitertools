@@ -1,3 +1,8 @@
+#ifndef CHAIN_HPP
+#define CHAIN_HPP
+
+#include "iterator_range.hpp"
+
 namespace iter {
    //chain operates only as a range, it has no iterator
    //this is because each iterator would have to be aware of
@@ -95,3 +100,5 @@ namespace iter {
                iterator_range<chain_iter<Containers...>>(begin,end);
        }
 };
+
+#endif //CHAIN_HPP

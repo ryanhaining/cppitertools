@@ -1,4 +1,9 @@
+#ifndef SLICE_HPP
+#define SLICE_HPP
+
 #include <iterator>
+#include "iterator_range.hpp"
+
 namespace iter {
     template <typename Container>
         auto slice(
@@ -12,3 +17,5 @@ namespace iter {
                     container.begin()+end);
         }
 };
+
+#endif //SLICE_HPP
