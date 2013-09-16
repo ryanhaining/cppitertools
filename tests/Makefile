@@ -1,5 +1,9 @@
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -pedantic -std=c++11
+
+ifeq ($(CXX),clang++)
+	CXXFLAGS += -stdlib=libc++
+endif
 
 LINK.o = $(LINK.cc)
 
