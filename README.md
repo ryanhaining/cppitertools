@@ -79,23 +79,23 @@ for (auto i : cycle(vec)) {
 zip
 ---
 
-Zips and aribitrary amount of ranges together into a new range. Iterating over this 
-range yields an iterators that dereferences to a tuple of iterators. Terminates on 
-the shortest range.
+Zips an aribitrary amount of ranges together into a new range. Iterating over
+this range yields an iterators that dereferences to a tuple of iterators.
+Terminates on the shortest range.
 
 Example usage:
 ```c++
-std::array<int,4> i{{1,2,3,4}};                                            
-std::vector<float> f{1.2,1.4,12.3,4.5,9.9};                                
-std::vector<std::string> s{"i","like","apples","alot","dude"};             
-std::array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
-std::cout << std::endl << "Variadic template zip iterator" << std::endl;
-for (auto e : iter::zip(i,f,s,d)) {                                        
-    std::cout << iter::zip_get<0>(e) << " "                                
-        << iter::zip_get<1>(e) << " "                                      
-        << iter::zip_get<2>(e) << " "                                      
-        << iter::zip_get<3>(e) << std::endl;                               
-    iter::zip_get<1>(e)=2.2f; //modify the float array                     
+array<int,4> i{{1,2,3,4}};                                            
+vector<float> f{1.2,1.4,12.3,4.5,9.9};                                
+vector<string> s{"i","like","apples","alot","dude"};             
+array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
+
+for (auto e : zip(i,f,s,d)) {                                        
+    cout << zip_get<0>(e) << " "                                
+         << zip_get<1>(e) << " "                                      
+         << zip_get<2>(e) << " "                                      
+         << zip_get<3>(e) << endl;                               
+    zip_get<1>(e)=2.2f; // modify the float array                     
 }
 ```
 
@@ -105,30 +105,26 @@ for (auto e : iter::zip(i,f,s,d)) {
 chain
 -----
 
-This can chain any set of ranges together as long as they're iterators dereference to
-the same type.
+This can chain any set of ranges together as long as their iterators
+dereference to the same type.
 
-Example usage:
 ```c++
- std::vector<int> empty{};                                                 
- std::vector<int> vec1{1,2,3,4,5,6};                                       
- std::array<int,4> arr1{{7,8,9,10}};                                       
- std::cout << std::endl << "Chain iter test" << std::endl;                 
- for (auto i : iter::chain(empty,vec1,arr1)) {                             
-     std::cout << i << std::endl;                                          
- }
- ```
- 
- reverse
- -------
- 
- Pretty much just uses the already existing reverse iterators of a container, good for
- use in range based for loops.
- 
- Example usage:
- ```c++
-std::cout << std::endl << "Reverse range test" << std::endl << std::endl;  
-for (auto i : iter::reverse(a)) {                                          
-    std::cout << i << std::endl;                                           
+vector<int> empty{};                                                 
+vector<int> vec1{1,2,3,4,5,6};                                       
+array<int,4> arr1{{7,8,9,10}};                                       
+
+for (auto i : chain(empty,vec1,arr1)) {                             
+    cout << i << endl;                                          
+}
+```
+
+reverse
+-------
+
+Iterates over elements of a sequence in reverse order.
+
+```c++
+for (auto i : reverse(a)) {                                          
+    cout << i << endl;                                           
 }
 ```
