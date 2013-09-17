@@ -16,7 +16,8 @@ TESTS = \
 		testrange \
 		testzip \
 		testslice \
-		testreverse
+		testreverse \
+		testfilter
 
 all: $(TESTS)
 
