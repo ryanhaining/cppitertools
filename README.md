@@ -79,9 +79,10 @@ for (auto i : cycle(vec)) {
 zip
 ---
 
-Zips an aribitrary amount of ranges together into a new range. Iterating over
-this range yields an iterators that dereferences to a tuple of iterators.
-Terminates on the shortest range.
+Takes an arbitrary number of ranges of different types and efficiently iterates over 
+them in parallel (so an iterator to each container is incremented simultaneously). 
+When you dereference an iterator to "zipped" range you get a tuple of iterators to 
+those containers.
 
 Example usage:
 ```c++
