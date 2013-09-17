@@ -1,4 +1,4 @@
-#include "cycle.hpp"
+#include <cycle.hpp>
 
 #include <vector>
 #include <iostream>

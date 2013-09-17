@@ -1,4 +1,4 @@
-#include "slice.hpp"
+#include <slice.hpp>
 
 #include <iostream>
 #include <vector>
