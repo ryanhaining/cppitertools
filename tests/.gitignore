@@ -5,3 +5,5 @@ testrange
 testslice
 testzip
 testreverse
+testrepeat
+testfilter

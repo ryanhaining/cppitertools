@@ -17,7 +17,8 @@ TESTS = \
 		testzip \
 		testslice \
 		testreverse \
-		testfilter
+		testfilter \
+		testrepeat
 
 all: $(TESTS)
 
