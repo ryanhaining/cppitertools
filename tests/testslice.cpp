@@ -25,7 +25,7 @@ int main() {
         std::cout << i << std::endl;
     }
     std::cout<<std::endl;
-    for (auto i : iter::slice(a,14,0,-2)) {
+    for (auto i : iter::slice(a,13,-1,-1)) {
         std::cout << i << std::endl;
     }
 }

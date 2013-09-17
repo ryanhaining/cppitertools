@@ -21,15 +21,19 @@ namespace iter {
             //no real error checking is done either, like for invalid ranges
             //no backwards range yet
 
-            if (begin > end || step < 1) {
-                assert(false);
-            }
-            else {
+            if (begin > end && step < 0) {
                 typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
                 return iterator_range<wrap_iter<decltype(container.begin())>>(
                         make_wrap_iter(container.begin()+begin,step),
                         make_wrap_iter(container.begin()+new_end,step));
             }
+            else if (begin <= end && step > 0) {
+                typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
+                return iterator_range<wrap_iter<decltype(container.begin())>>(
+                        make_wrap_iter(container.begin()+begin,step),
+                        make_wrap_iter(container.begin()+new_end,step));
+            }
+            else assert(false); //not a valid range
         }
 }
 
