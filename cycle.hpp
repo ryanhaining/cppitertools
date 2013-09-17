@@ -80,7 +80,7 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate an Enumerable
+    // Helper function to instantiate an Filter
     template <typename Container>
     Cycle<Container> cycle(Container & container) {
         return Cycle<Container>(container);
