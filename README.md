@@ -129,3 +129,16 @@ for (auto i : reverse(a)) {
     cout << i << endl;                                           
 }
 ```
+
+filter
+------
+Called as `filter(predicate, iterable)`.  The predicate can be any callable.
+`filter` will only yield values that are true under the predicate.
+
+```c++
+Prints values greater than 4:  5 6 7 8
+vector<int> vec{1, 5, 6, 7, 3, 2, 8, 3, 2, 1};
+for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+    cout << i <<'\n';
+}
+```
