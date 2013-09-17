@@ -120,7 +120,7 @@ Example usage:
  ```
  
  reverse
- -------
+ --
  
  Pretty much just uses the already existing reverse iterators of a container, good for
  use in range based for loops.
