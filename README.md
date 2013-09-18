@@ -5,13 +5,13 @@ range-based for loop add-ons inspired by the python builtins and itertools
 library.
 
 ##### Table of Contents
-[range](#range)
-[filter](#filter)
-[enumerate](#enumerate)
-[cycle](#cycle)
-[zip](#zip)
-[chain](#chain)
-[reverse](#reverse)
+[range](#range)<br />
+[filter](#filter)<br />
+[enumerate](#enumerate)<br />
+[cycle](#cycle)<br />
+[zip](#zip)<br />
+[chain](#chain)<br />
+[reverse](#reverse)<br />
 
 range
 -----
