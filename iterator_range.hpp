@@ -5,11 +5,12 @@ namespace iter {
 
     template <typename Iterator>
     class iterator_range {
-        public:
-            // TODO decide what contstructors should be enabled and disabled
+        private:
             const Iterator begin_;
             const Iterator end_;
 
+        public:
+            // TODO decide what contstructors should be enabled and disabled
             iterator_range(const Iterator & begin, const Iterator & end) :
                 begin_(begin),
                 end_(end)
