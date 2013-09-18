@@ -1,9 +1,17 @@
-cppitertools
+CPPItertools
 ============
 
 range-based for loop add-ons inspired by the python builtins and itertools
 library.
 
+##### Table of Contents
+[range](#range)
+[filter](#filter)
+[enumerate](#enumerate)
+[cycle](#cycle)
+[zip](#zip)
+[chain](#chain)
+[reverse](#reverse)
 
 range
 -----
@@ -39,7 +47,19 @@ for (auto i : range(2, -3, -1)) {
 }
 ```
 
+filter
+------
+Called as `filter(predicate, iterable)`.  The predicate can be any callable.
+`filter` will only yield values that are true under the predicate.
 
+Prints values greater than 4:  5 6 7 8
+```c++
+vector<int> vec{1, 5, 6, 7, 3, 2, 8, 3, 2, 1};
+for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+    cout << i <<'\n';
+}
+
+```
 enumerate
 ---------
 
@@ -127,18 +147,5 @@ Iterates over elements of a sequence in reverse order.
 ```c++
 for (auto i : reverse(a)) {                                          
     cout << i << endl;                                           
-}
-```
-
-filter
-------
-Called as `filter(predicate, iterable)`.  The predicate can be any callable.
-`filter` will only yield values that are true under the predicate.
-
-Prints values greater than 4:  5 6 7 8
-```c++
-vector<int> vec{1, 5, 6, 7, 3, 2, 8, 3, 2, 1};
-for (auto i : filter([] (int i) { return i > 4; }, vec)) {
-    cout << i <<'\n';
 }
 ```
