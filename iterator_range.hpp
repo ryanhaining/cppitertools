@@ -7,19 +7,19 @@ namespace iter {
     class iterator_range {
         public:
             // TODO decide what contstructors should be enabled and disabled
-            Iterator begin_;
-            Iterator end_;
+            const Iterator begin_;
+            const Iterator end_;
 
-            iterator_range(Iterator begin, Iterator end) :
+            iterator_range(const Iterator & begin, const Iterator & end) :
                 begin_(begin),
                 end_(end)
             { }
 
-            Iterator begin() {
+            Iterator begin() const {
                 return this->begin_;
             }
 
-            Iterator end() {
+            Iterator end() const {
                 return this->end_;
             }
     };
