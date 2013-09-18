@@ -1,22 +1,29 @@
-#ifndef ITERATOR_RANGE_HPP
-#define ITERATOR_RANGE_HPP
+#ifndef ITERATOR_RANGE_HPP__
+#define ITERATOR_RANGE_HPP__
 
 namespace iter {
+
     template <typename Iterator>
-        struct iterator_range {
-            //should decide at some point what contstructors should be 
-            //enabled and disabled
+    class iterator_range {
+        public:
+            // TODO decide what contstructors should be enabled and disabled
             Iterator begin_;
             Iterator end_;
+
             iterator_range(Iterator begin, Iterator end) :
-                begin_(begin),end_(end) {}
+                begin_(begin),
+                end_(end)
+            { }
+
             Iterator begin() {
-                return begin_;
+                return this->begin_;
             }
+
             Iterator end() {
-                return end_;
+                return this->end_;
             }
-        };
+    };
+
 }
 
-#endif //ITERATOR_RANGE_HPP
+#endif //ITERATOR_RANGE_HPP__
