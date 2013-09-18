@@ -18,7 +18,8 @@ TESTS = \
 		testslice \
 		testreverse \
 		testfilter \
-		testrepeat
+		testrepeat \
+		testtakewhile
 
 all: $(TESTS)
 

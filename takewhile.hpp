@@ -40,9 +40,6 @@ namespace iter {
             // Default copy constructor used
 
         public:
-            //  Holds an iterator of the contained type and a size_t for the
-            //  index.  Each call to ++ increments both of these data members.
-            //  Each dereference returns an IterYield.
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
