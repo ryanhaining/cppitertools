@@ -1,8 +1,10 @@
 CXX = clang++
 CXXFLAGS = -Wall -Wextra -pedantic -std=c++11
 
+ifeq ($(uname -s),Darwin)
 ifeq ($(CXX),clang++)
 	CXXFLAGS += -stdlib=libc++
+endif
 endif
 
 LINK.o = $(LINK.cc)
