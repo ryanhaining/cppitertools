@@ -20,7 +20,7 @@ namespace iter {
                 //so use that to repeat infinitely
                 return *this;
             }
-            bool operator!=(const repeat_iter & rhs) {
+            bool operator!=(const repeat_iter &) {
                 if (until == 0) return true;
                 else if (start != until) return true;
                 else return false;
