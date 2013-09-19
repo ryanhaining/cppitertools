@@ -18,9 +18,7 @@ namespace iter {
                 typename std::iterator_traits<decltype(container.begin())>::difference_type step = 1
                 ) -> iterator_range<wrap_iter<decltype(container.begin())>>
         {
-            //no real error checking is done either, like for invalid ranges
-            //no backwards range yet
-
+            //it seems like you can handle negative and positive ranges the same
             if (begin > end && step < 0) {
                 typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
                 return iterator_range<wrap_iter<decltype(container.begin())>>(
