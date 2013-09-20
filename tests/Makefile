@@ -1,7 +1,8 @@
-CXX = clang++
-CXXFLAGS = -Wall -Wextra -pedantic -std=c++11
+CXX := clang++
+CXXFLAGS := -Wall -Wextra -pedantic -std=c++11
 
-ifeq ($(uname -s),Darwin)
+KERNEL := $(shell uname -s)
+ifeq ($(KERNEL),Darwin)
 ifeq ($(CXX),clang++)
 	CXXFLAGS += -stdlib=libc++
 endif
@@ -9,7 +10,7 @@ endif
 
 LINK.o = $(LINK.cc)
 
-CPPFLAGS = -I".."
+CPPFLAGS := -I".."
 
 TESTS = \
 		testchain \
