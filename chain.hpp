@@ -4,9 +4,6 @@
 #include "iterator_range.hpp"
 
 namespace iter {
-   //chain operates only as a range, it has no iterator
-   //this is because each iterator would have to be aware of
-   //it's end for this to work
    template <typename ... Containers>
        struct chain_iter;
    template <typename Container>
@@ -20,7 +17,6 @@ namespace iter {
         public:
            chain_iter(Container & container, bool is_end=false) :
                begin(container.begin()),end(container.end()) {
-                   //std::cout << *begin<<"hi" << std::endl;
                    if(is_end) begin = container.end();
            }
            chain_iter & operator++()
@@ -52,7 +48,6 @@ namespace iter {
                begin(container.begin()),
                end(container.end()),
                next_iter(rest...,is_end) {
-                   //std::cout << *begin << std::endl;
                    if(is_end)
                        begin = container.end();
                }
@@ -68,9 +63,7 @@ namespace iter {
            }
            auto operator*()->decltype(*begin)
            {
-               //std::cout << *begin << std::endl;
                if (begin == end) {
-                   //std::cout << "*" << std::endl;
                    return *next_iter;
                }
                else {
@@ -79,7 +72,6 @@ namespace iter {
            }   
            bool operator !=(const chain_iter & rhs) const {
                if (begin == end) {
-                   //std::cout << "!=" << std::endl;
                    return this->next_iter != rhs.next_iter;
                }
                else

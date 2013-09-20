@@ -19,7 +19,7 @@ namespace iter {
     {
         return *std::get<N>(t);
     }
-        template <typename First, typename Second>
+    template <typename First, typename Second>
         struct zip_iter<First,Second> {
 
         private:
@@ -36,13 +36,6 @@ namespace iter {
             {
                 return std::make_tuple(iter1,iter2);
             }
-
-            /*
-               auto  operator*() -> decltype(std::make_tuple(*iter1,*iter2))
-               {
-               return std::make_tuple(*iter1,*iter2);
-               }
-               */
             zip_iter & operator++() {
                 ++iter1;
                 ++iter2;
@@ -57,7 +50,6 @@ namespace iter {
 
         private:
             First iter;
-            //Elem_t elem;
             zip_iter<Rest...> inner_iter;
             
         public:
@@ -75,16 +67,6 @@ namespace iter {
             {
                 return std::tuple_cat(std::make_tuple(iter),*inner_iter);
             }
-
-            /*
-               using tuple_t = 
-               decltype(std::tuple_cat(std::make_tuple(*iter),*inner_iter));
-            //data will not be changed because these are not references
-
-            tuple_t operator*() {
-            return std::tuple_cat(std::make_tuple(*iter),*inner_iter);
-            };
-            */
             zip_iter & operator++() {
                 ++iter;
                 ++inner_iter;
