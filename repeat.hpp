@@ -10,7 +10,7 @@ namespace iter {
     class repeat_iter {
         private:
             const Elem elem;
-            size_t until;
+            const size_t until;
             size_t start=0;
         public:
             repeat_iter(const Elem & elem, size_t until) : 

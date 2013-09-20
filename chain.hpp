@@ -11,9 +11,13 @@ namespace iter {
        struct chain_iter;
    template <typename Container>
        struct chain_iter<Container> {
+
+        private:
            using Iterator = decltype(((Container*)nullptr)->begin());
            Iterator begin;
-           Iterator end;//never really used but kept it for consistency
+           const Iterator end;//never really used but kept it for consistency
+
+        public:
            chain_iter(Container & container, bool is_end=false) :
                begin(container.begin()),end(container.end()) {
                    //std::cout << *begin<<"hi" << std::endl;
@@ -28,18 +32,22 @@ namespace iter {
            {
                return *begin;
            }
-           bool operator!=(const chain_iter & rhs) {
+           bool operator!=(const chain_iter & rhs) const{
                return this->begin != rhs.begin;
            }
        };
    template <typename Container, typename ... Containers>
        struct chain_iter<Container,Containers...>
        {
+
+        private:
            using Iterator = decltype(((Container*)nullptr)->begin());
            Iterator begin;
-           Iterator end;
+           const Iterator end;
            bool end_reached = false;
            chain_iter<Containers...> next_iter;
+
+        public:
            chain_iter(Container & container, Containers& ... rest, bool is_end=false) :
                begin(container.begin()),
                end(container.end()),
@@ -51,17 +59,6 @@ namespace iter {
            chain_iter & operator++()
            {
                if (begin == end) {
-                   /*
-                   //std::cout << "fuck" << std::endl;
-                   if(end_reached) {
-                       //std::cout << "++next_iter" << std::endl;
-                       ++next_iter;
-                   }
-                   else {
-                       //std::cout << "++" << std::endl;
-                       end_reached = true;
-                   }
-                   */
                    ++next_iter;
                }
                else {
@@ -80,7 +77,7 @@ namespace iter {
                    return *begin;
                }
            }   
-           bool operator !=(const chain_iter & rhs) {
+           bool operator !=(const chain_iter & rhs) const {
                if (begin == end) {
                    //std::cout << "!=" << std::endl;
                    return this->next_iter != rhs.next_iter;

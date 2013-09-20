@@ -21,8 +21,12 @@ namespace iter {
     }
         template <typename First, typename Second>
         struct zip_iter<First,Second> {
+
+        private:
             First iter1;
             Second iter2;
+
+        public:
             using Elem1_t = decltype(*iter1);
             using Elem2_t = decltype(*iter2);
             zip_iter(const First & f, const Second & s) :
@@ -44,25 +48,31 @@ namespace iter {
                 ++iter2;
                 return *this;
             }
-            bool operator!=(const zip_iter & rhs) {
+            bool operator!=(const zip_iter & rhs) const {
                 return (this->iter1 != rhs.iter1) && (this->iter2 != rhs.iter2);
             }
         };
     template <typename First, typename ... Rest>
         struct zip_iter<First,Rest...> {
+
+        private:
             First iter;
-            using Elem_t = decltype(*iter);
             //Elem_t elem;
             zip_iter<Rest...> inner_iter;
+            
+        public:
+            using Elem_t = decltype(*iter);
+            using tuple_t = 
+                decltype(std::tuple_cat(std::make_tuple(iter),*inner_iter));
+
             zip_iter(const First & f, const Rest & ... rest) :
                 iter(f),
                 inner_iter(rest...) {}
 
             //this is for returning a tuple of iterators
-            using tuple_t = 
-                decltype(std::tuple_cat(std::make_tuple(iter),*inner_iter));
 
-            tuple_t operator*() {
+            tuple_t operator*()
+            {
                 return std::tuple_cat(std::make_tuple(iter),*inner_iter);
             }
 
@@ -80,7 +90,7 @@ namespace iter {
                 ++inner_iter;
                 return *this;
             }
-            bool operator!=(const zip_iter & rhs) {
+            bool operator!=(const zip_iter & rhs) const {
                 return (this->iter != rhs.iter) && (this->inner_iter != rhs.inner_iter);
             }
         };
