@@ -5,10 +5,7 @@
 #include <iterator_range.hpp>
 #include <wrap_iter.hpp>
 #include <assert.h>
-/* I plan to have slice support steps like slice(vec,0,10,2)
- * and negative ranges like slice(vec,10,4)
- * could also write an overload so you can default to start=0
- */
+
 namespace iter {
     template <typename Container>
         auto slice(
@@ -31,8 +28,23 @@ namespace iter {
                         make_wrap_iter(container.begin()+begin,step),
                         make_wrap_iter(container.begin()+new_end,step));
             }
-            else assert(false); //not a valid range
+            else {//return an empty range for invalid slice
+                return iterator_range<wrap_iter<decltype(container.begin())>>(
+                        make_wrap_iter(container.begin()+begin,step),
+                        make_wrap_iter(container.begin()+begin,step));
+            }
+
         }
+    //only give the end as an arg and assume step  is 1 and begin is 0
+    template <typename Container>
+        auto slice(
+                Container & container,
+                typename std::iterator_traits<decltype(container.begin())>::difference_type end
+                ) -> iterator_range<wrap_iter<decltype(container.begin())>>
+        {
+            return slice(container,0,end);
+        }
+
 }
 
 #endif //SLICE_HPP

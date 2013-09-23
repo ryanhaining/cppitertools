@@ -1,0 +1,19 @@
+x at a time iterator. Lets say you have a list
+    [1,2,3,4,5,6,7,8]
+and you want to iterate over 3 elements at a time. You could create three 
+iterators and incrment them simulatneously, or do something like this.
+    for (auto tuple : group_x(list,4))
+In this you get the first 4 then all iters are incremeted by 1 each time so 
+the iterations would be  
+
+1 2 3
+2 3 4
+3 4 5
+4 5 6
+5 6 7
+6 7 8
+
+
+zip_longest using boost::optional or std::optional when support exists.
+useful if a lot of the containers are of different sizes. may want to write
+a different zip_get that works better with optional
