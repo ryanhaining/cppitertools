@@ -1,20 +1,18 @@
-#ifndef TAKEWHILE__H__
-#define TAKEWHILE__H__
-
-#include "filter.hpp"
+#ifndef DROPWHILE__H__
+#define DROPWHILE__H__
 
 namespace iter {
 
-    //Forward declarations of TakeWhile and takewhile
+    //Forward declarations of DropWhile and dropwhile
     template <typename FilterFunc, typename Container>
-    class TakeWhile;
+    class DropWhile;
 
     template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &);
+    DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container &);
 
     template <typename FilterFunc, typename Container>
-    class TakeWhile {
-        friend TakeWhile takewhile<FilterFunc, Container>(
+    class DropWhile {
+        friend DropWhile dropwhile<FilterFunc, Container>(
                 FilterFunc, Container &);
 
         // Type of the Container::Iterator, but since the name of that 
@@ -30,13 +28,13 @@ namespace iter {
             Container & container;
             FilterFunc filter_func;
             
-            // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container & container) :
+            // Value constructor for use only in the dropwhile function
+            DropWhile(FilterFunc filter_func, Container & container) :
                 container(container),
                 filter_func(filter_func)
             { }
-            TakeWhile () = delete;
-            TakeWhile & operator=(const TakeWhile &) = delete;
+            DropWhile () = delete;
+            DropWhile & operator=(const DropWhile &) = delete;
             // Default copy constructor used
 
         public:
@@ -48,9 +46,10 @@ namespace iter {
 
                     // increment until the iterator points to is true on the 
                     // predicate.  Called by constructor and operator++
-                    void check_current() {
-                        if (!this->filter_func(*this->sub_iter)) {
-                            this->sub_iter = this->sub_end;
+                    void skip_failures() { 
+                        while (this->sub_iter != this->sub_end
+                                && this->filter_func(*this->sub_iter)) {
+                            ++this->sub_iter;
                         }
                     }
 
@@ -62,7 +61,7 @@ namespace iter {
                         sub_end(end),
                         filter_func(filter_func)
                     { 
-                        this->check_current();
+                        this->skip_failures();
                     } 
 
                     contained_iter_ret operator*() const {
@@ -71,7 +70,6 @@ namespace iter {
 
                     Iterator & operator++() { 
                         ++this->sub_iter;
-                        this->check_current();
                         return *this;
                     }
 
@@ -96,13 +94,13 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a TakeWhile
+    // Helper function to instantiate a DropWhile
     template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(
+    DropWhile<FilterFunc, Container> dropwhile(
             FilterFunc filter_func, Container & container) {
-        return TakeWhile<FilterFunc, Container>(filter_func, container);
+        return DropWhile<FilterFunc, Container>(filter_func, container);
     }
 
 }
 
-#endif //ifndef TAKEWHILE__H__
+#endif //ifndef DROPWHILE__H__

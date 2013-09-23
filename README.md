@@ -47,19 +47,6 @@ for (auto i : range(2, -3, -1)) {
 }
 ```
 
-filter
-------
-Called as `filter(predicate, iterable)`.  The predicate can be any callable.
-`filter` will only yield values that are true under the predicate.
-
-Prints values greater than 4:  5 6 7 8
-```c++
-vector<int> vec{1, 5, 6, 7, 3, 2, 8, 3, 2, 1};
-for (auto i : filter([] (int i) { return i > 4; }, vec)) {
-    cout << i <<'\n';
-}
-
-```
 enumerate
 ---------
 
@@ -77,6 +64,45 @@ for (auto e : enumerate(vec)) {
 }
 ```
 
+filter
+------
+Called as `filter(predicate, iterable)`.  The predicate can be any callable.
+`filter` will only yield values that are true under the predicate.
+
+Prints values greater than 4:  5 6 7 8
+```c++
+vector<int> vec{1, 5, 6, 7, 3, 2, 8, 3, 2, 1};
+for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+    cout << i <<'\n';
+}
+
+```
+
+takewhile
+---------
+Yields elements from an iterable until the first element that is false under
+the predicate is encountered.
+
+Prints 1 2 3 4.  (5 is false under the predicate)
+```c++
+vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1};
+for (auto i : takewhile([] (int i) {return i < 5;}, ivec)) {
+    cout << i << '\n';
+}
+```
+
+dropwhile
+---------
+Yields all elements after and including the first element that is false under
+the predicate.
+
+Prints 5 6 7 1 2
+```c++
+vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 1, 2};
+for (auto i : dropwhile([] (int i) {return i < 5;}, ivec)) {
+    cout << i << '\n';
+}
+```
 
 cycle
 -----
