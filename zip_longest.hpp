@@ -9,13 +9,13 @@ namespace iter {
     template <typename ... Rest>
         struct zip_longest_iter;
     template <typename ... Containers>
-        auto zip_longest(Containers & ... containers) ->
-        iterator_range<zip_longest_iter<decltype(containers.begin())...>>
+        iterator_range<zip_longest_iter<Containers...>>
+        zip_longest(Containers & ... containers)
         {
             auto begin = 
-                zip_longest_iter<decltype(containers.begin())...>(containers.begin()...);
+                zip_longest_iter<Containers...>(containers...);
             auto end = 
-                zip_longest_iter<decltype(containers.end())...>(containers.end()...);
+                zip_longest_iter<Containers...>(containers...);
             return iterator_range<decltype(begin)>(begin,end);
         }   
     /*
@@ -25,69 +25,64 @@ namespace iter {
         return *std::get<N>(t);
     }
     */
-    template <typename First, typename Second>
-        struct zip_longest_iter<First,Second> {
-
+    template <typename Container>
+        struct zip_longest_iter<Container> {
+        public:
+            using Iterator = decltype(((Container*)nullptr)->begin());
         private:
-            First iter1;
-            mutable bool end_iter1_reached = false;
-            Second iter2;
-            mutable bool end_iter2_reached = false;
+            Iterator begin;
+            const Iterator end;
 
         public:
-            using Elem1_t = decltype(*iter1);
-            using Elem2_t = decltype(*iter2);
-            zip_longest_iter(const First & f, const Second & s) :
-                iter1(f),iter2(s) { }
+            zip_longest_iter(Container & c) :
+                begin(c.begin()),end(c.end()) {}
 
-            std::tuple<boost::optional<First>,boost::optional<Second>> operator*()     
+            std::tuple<boost::optional<Iterator>> operator*()     
             {
-                auto first = end_iter1_reached ? boost::optional<First>() : boost::optional<First>(iter1);
-                auto second = end_iter2_reached ? boost::optional<Second>() : boost::optional<Second>(iter2);
-                return std::make_tuple(first,second);
+                return std::make_tuple(begin != end ? 
+                        boost::optional<Iterator>(begin)
+                        : boost::optional<Iterator>());
             }
             zip_longest_iter & operator++() {
-                if(!end_iter1_reached)++iter1;
-                if(!end_iter2_reached)++iter2;
+                if(begin!=end)++begin;
                 return *this;
             }
-            bool operator!=(const zip_longest_iter & rhs) const {
-                if (!(this->iter1 != rhs.iter1)) end_iter1_reached = true;
-                if (!(this->iter2 != rhs.iter2)) end_iter2_reached = true;
-                return (this->iter1 != rhs.iter1) || (this->iter2 != rhs.iter2);
+            bool operator!=(const zip_longest_iter &) const {
+                return begin != end;
             }
         };
-    template <typename First, typename ... Rest>
-        struct zip_longest_iter<First,Rest...> {
-
+    template <typename Container, typename ... Containers>
+        struct zip_longest_iter<Container,Containers...> {
+        public:
+            using Iterator = decltype(((Container*)nullptr)->begin());
         private:
-            First iter;
-            mutable bool end_reached = false;
-            zip_longest_iter<Rest...> inner_iter;
+            Iterator begin;
+            const Iterator end;
+            zip_longest_iter<Containers...> inner_iter;
             
         public:
-            using Elem_t = decltype(*iter);
+            using Elem_t = decltype(*begin);
             using tuple_t = 
-                decltype(std::tuple_cat(std::tuple<boost::optional<First>>(),*inner_iter));
+                decltype(std::tuple_cat(std::tuple<boost::optional<Iterator>>(),*inner_iter));
 
-            zip_longest_iter(const First & f, const Rest & ... rest) :
-                iter(f),
-                inner_iter(rest...) {}
+            zip_longest_iter(Container & c, Containers & ... containers) :
+                begin(c.begin()),
+                end(c.end()),
+                inner_iter(containers...) {}
 
             //this is for returning a tuple of optional<iterator>
 
             tuple_t operator*()
             {
-                return std::tuple_cat(std::make_tuple(end_reached?boost::optional<First>():boost::optional<First>(iter)),*inner_iter);
+                return std::tuple_cat(std::make_tuple(begin != end ?boost::optional<Iterator>(begin):boost::optional<Iterator>()),*inner_iter);
             }
             zip_longest_iter & operator++() {
-                if (!end_reached) ++iter;
+                if (begin != end) ++begin;
                 ++inner_iter;
                 return *this;
             }
             bool operator!=(const zip_longest_iter & rhs) const {
-                if (!(this->iter != rhs.iter)) end_reached = true;
-                return (this->iter != rhs.iter) || (this->inner_iter != rhs.inner_iter);
+                return begin != end || (this->inner_iter != rhs.inner_iter);
             }
         };
 }
