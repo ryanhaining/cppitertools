@@ -22,7 +22,8 @@ TESTS = \
 		testreverse \
 		testfilter \
 		testrepeat \
-		testtakewhile
+		testtakewhile \
+		testdropwhile
 
 all: $(TESTS)
 
