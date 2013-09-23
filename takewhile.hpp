@@ -1,5 +1,5 @@
-#ifndef takewhile__H__
-#define takewhile__H__
+#ifndef TAKEWHILE__H__
+#define TAKEWHILE__H__
 
 #include "filter.hpp"
 
@@ -105,4 +105,4 @@ namespace iter {
 
 }
 
-#endif //ifndef takewhile__H__
+#endif //ifndef TAKEWHILE__H__
