@@ -43,21 +43,18 @@ namespace iter {
             std::tuple<boost::optional<First>,boost::optional<Second>> operator*()     
             {
                 auto first = end_iter1_reached ? boost::optional<First>() : boost::optional<First>(iter1);
-                auto second= end_iter2_reached ? boost::optional<Second>() : boost::optional<Second>(iter2);
+                auto second = end_iter2_reached ? boost::optional<Second>() : boost::optional<Second>(iter2);
                 return std::make_tuple(first,second);
             }
             zip_longest_iter & operator++() {
-                //could stop incrementing after the end is reached
-                //doesn't really matter since you shouldn't dereference it 
-                //either way and -- isn't supported
-                ++iter1;
-                ++iter2;
+                if(!end_iter1_reached)++iter1;
+                if(!end_iter2_reached)++iter2;
                 return *this;
             }
             bool operator!=(const zip_longest_iter & rhs) const {
                 if (!(this->iter1 != rhs.iter1)) end_iter1_reached = true;
                 if (!(this->iter2 != rhs.iter2)) end_iter2_reached = true;
-                return (this->iter1 != rhs.iter1 && !end_iter1_reached) || (this->iter2 != rhs.iter2 && !end_iter2_reached);
+                return (this->iter1 != rhs.iter1) || (this->iter2 != rhs.iter2);
             }
         };
     template <typename First, typename ... Rest>
@@ -77,23 +74,24 @@ namespace iter {
                 iter(f),
                 inner_iter(rest...) {}
 
-            //this is for returning a tuple of iterators
+            //this is for returning a tuple of optional<iterator>
 
             tuple_t operator*()
             {
                 return std::tuple_cat(std::make_tuple(end_reached?boost::optional<First>():boost::optional<First>(iter)),*inner_iter);
             }
             zip_longest_iter & operator++() {
-                ++iter;
+                if (!end_reached) ++iter;
                 ++inner_iter;
                 return *this;
             }
             bool operator!=(const zip_longest_iter & rhs) const {
                 if (!(this->iter != rhs.iter)) end_reached = true;
-                return (this->iter != rhs.iter && !end_reached) || (this->inner_iter != rhs.inner_iter);
+                return (this->iter != rhs.iter) || (this->inner_iter != rhs.inner_iter);
             }
         };
 }
 //should add reset after the end of a range is reached, just in case someone 
 //tries to use it again
+//this means it's only safe to use the range ONCE
 #endif //ZIP_LONGEST_HPP
