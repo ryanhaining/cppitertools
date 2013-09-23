@@ -22,7 +22,8 @@ TESTS = \
 		testreverse \
 		testfilter \
 		testrepeat \
-		testtakewhile
+		testzip_longest \
+		testtakewhile 
 
 all: $(TESTS)
 
