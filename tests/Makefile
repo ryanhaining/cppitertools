@@ -23,7 +23,8 @@ TESTS = \
 		testfilter \
 		testrepeat \
 		testtakewhile \
-		testdropwhile
+		testdropwhile \
+		testzip_longest
 
 all: $(TESTS)
 

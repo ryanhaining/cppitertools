@@ -7,3 +7,5 @@ testzip
 testreverse
 testrepeat
 testfilter
+testzip_longest
+testdropwhile
