@@ -44,9 +44,8 @@ namespace iter {
                     const contained_iter_type sub_end;
                     FilterFunc filter_func;
 
-                    // increment until the iterator points to is true on the 
-                    // predicate.  Called by constructor and operator++
-                    void skip_failures() { 
+                    // skip all values for which the predicate is true
+                    void skip_passes() { 
                         while (this->sub_iter != this->sub_end
                                 && this->filter_func(*this->sub_iter)) {
                             ++this->sub_iter;
@@ -61,7 +60,7 @@ namespace iter {
                         sub_end(end),
                         filter_func(filter_func)
                     { 
-                        this->skip_failures();
+                        this->skip_passes();
                     } 
 
                     contained_iter_ret operator*() const {
