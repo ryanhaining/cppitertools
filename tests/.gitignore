@@ -9,3 +9,4 @@ testrepeat
 testfilter
 testzip_longest
 testdropwhile
+testproduct

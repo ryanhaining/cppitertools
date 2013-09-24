@@ -24,7 +24,8 @@ TESTS = \
 		testrepeat \
 		testtakewhile \
 		testdropwhile \
-		testzip_longest
+		testzip_longest \
+		testproduct
 
 all: $(TESTS)
 

@@ -6,7 +6,7 @@
 #include "iterator_range.hpp"
 
 namespace iter {
-    template <typename ... Rest>
+    template <typename ... Containers>
         struct zip_longest_iter;
     template <typename ... Containers>
         iterator_range<zip_longest_iter<Containers...>>
