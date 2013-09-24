@@ -14,11 +14,12 @@ namespace iter {
             auto begin = zip_iter<decltype(containers.begin())...>(containers.begin()...);
             auto end = zip_iter<decltype(containers.end())...>(containers.end()...);
             return iterator_range<decltype(begin)>(begin,end);
-        }   template <int N,typename Tuple>
-    auto zip_get(Tuple & t)->decltype(*std::get<N>(t))&
-    {
-        return *std::get<N>(t);
-    }
+        }   
+    template <int N,typename Tuple>
+        auto zip_get(Tuple & t) ->decltype(*std::get<N>(t))&
+        {
+            return *std::get<N>(t);
+        }
     template <typename First, typename Second>
         struct zip_iter<First,Second> {
 
