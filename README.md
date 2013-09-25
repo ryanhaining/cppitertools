@@ -7,6 +7,8 @@ library.
 ##### Table of Contents
 [range](#range)<br />
 [filter](#filter)<br />
+[takewhile](#takewhile)<br />
+[dropwhile](#dropwhile)<br />
 [enumerate](#enumerate)<br />
 [cycle](#cycle)<br />
 [zip](#zip)<br />
@@ -139,19 +141,20 @@ vector<string> s{"i","like","apples","alot","dude"};
 array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
 
 for (auto e : zip(i,f,s,d)) {                                        
-    cout << zip_get<0>(e) << " "                                
-         << zip_get<1>(e) << " "                                      
-         << zip_get<2>(e) << " "                                      
-         << zip_get<3>(e) << endl;                               
+    cout << zip_get<0>(e) << ' '                                
+         << zip_get<1>(e) << ' '                                      
+         << zip_get<2>(e) << ' '                                      
+         << zip_get<3>(e) << '\n';                               
     zip_get<1>(e)=2.2f; // modify the float array                     
 }
 ```
 
 `iter::zip_get` is used to readably dereference the iterators yielded
 
-a 'zip_longest` also exists where the range terminates on the longest
+a `zip_longest` also exists where the range terminates on the longest
 range instead of the shortest. because of that you have to return a
-boost::optional (std::optional when it is released) and cannor use `zip_get`
+`boost::optional` (`std::optional` when it is released) and cannot use
+`zip_get`
 
 
 chain
@@ -166,7 +169,7 @@ vector<int> vec1{1,2,3,4,5,6};
 array<int,4> arr1{{7,8,9,10}};                                       
 
 for (auto i : chain(empty,vec1,arr1)) {                             
-    cout << i << endl;                                          
+    cout << i << '\n';                                          
 }
 ```
 
@@ -177,7 +180,7 @@ Iterates over elements of a sequence in reverse order.
 
 ```c++
 for (auto i : reverse(a)) {                                          
-    cout << i << endl;                                           
+    cout << i << '\n';                                           
 }
 ```
 
@@ -187,12 +190,11 @@ slice
 returns selected elements from a range, parameters are start, stop and step.
 the range returned is [start,stop) where you only take every step element
 
+This outputs `0 3 6 9 12`
 ```c++
-std::vector<int> a{0,1,2,3,4,5,6,7,8,9,10,11,12,13};
-std::cout<<std::endl;
-for (auto i : iter::slice(a,0,15,3)) {
-    std::cout << i " ";
+vector<int> a{0,1,2,3,4,5,6,7,8,9,10,11,12,13};
+for (auto i : slice(a,0,15,3)) {
+    cout << i << '\n';
 }
 ```
 
-This outputs `0 3 6 9 12`
