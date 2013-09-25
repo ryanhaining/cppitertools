@@ -1,6 +1,5 @@
 #ifndef PRODUCT_HPP
 #include <tuple>
-//#include <type_traits>
 #include "iterator_range.hpp"
 
 namespace iter {
@@ -37,15 +36,16 @@ namespace iter {
                     ++mover;
                     return *this;
                 }
+                bool is_not_empty_range() {
+                    return begin != end;
+                }
                 bool operator!=(const product_iter&) const 
                 {
                     return mover != end;
                 }
-                //bool is_begin() const {return mover == end;}
                 bool is_next_iteration()
                 {
                     if (!(mover != end)) {
-                        //++begin;
                         mover = begin;
                         return true;
                     }
@@ -63,13 +63,19 @@ namespace iter {
                 Iterator mover;
                 const Iterator end;
                 product_iter<Containers...> inner_iter;
+                bool no_empty_ranges;
             public:
                 using Tuple_type = decltype(std::tuple_cat(std::make_tuple(*mover),*inner_iter));
+                bool is_not_empty_range() {
+                    return begin != end && inner_iter.is_not_empty_range();
+                }
                 product_iter(const Container & c, const Containers & ... containers):
                     begin(c.cbegin()),
                     mover(c.cbegin()),
                     end(c.cend()),
-                    inner_iter(containers...){}
+                    inner_iter(containers...){
+                        no_empty_ranges = is_not_empty_range();
+                    }
                 Tuple_type operator*()
                 {
                     return std::tuple_cat(std::make_tuple(*mover),*inner_iter);
@@ -86,22 +92,18 @@ namespace iter {
                 bool is_next_iteration()
                 {
                     if(!(mover != end)) {
-                        //++begin;
                         mover = begin;
                         return true;
                     }
                     else return false;
                 }
-                /*
-                bool is_begin() const{
-                    return mover == end && inner_iter.is_begin();
-                }
-                */
-                bool operator!=(const product_iter)const
+                
+                bool operator!=(const product_iter&)const
                 {
-                    //return begin != end || (this->inner_iter != rhs.inner_iter);
-                    return mover != end;
+                    return mover != end && no_empty_ranges;
                 }
+                //will seg fault if anything but the first is an empty range 
+                //since != only checks the first one
         };
 }
 

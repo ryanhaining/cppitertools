@@ -37,5 +37,10 @@ int main() {
     for (auto t : product(v1)) {
         std::cout << std::get<0>(t)  << std::endl;
     }
+    std::cout<<std::endl;
+    for (auto t : product(v1,v4)) {
+        std::cout << std::get<0>(t) << ", "
+          << std::get<1>(t)  << std::endl;
+    }
     return 0;
 }
