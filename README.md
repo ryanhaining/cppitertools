@@ -153,7 +153,8 @@ for (auto e : zip(i,f,s,d)) {
 
 a `zip_longest` also exists where the range terminates on the longest
 range instead of the shortest. because of that you have to return a
-boost::optional (std::optional when it is released) and cannor use `zip_get`
+`boost::optional` (`std::optional` when it is released) and cannot use
+`zip_get`
 
 
 chain
