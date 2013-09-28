@@ -9,7 +9,9 @@
 namespace iter {
     //if size isn't passed as template argument would have to switch to vectors
     //for everything, generally I would say you don't need to decide the amount
-    //of items in your combination at runtime
+    //of items in your combination at runtime, but rather it is a way to view 
+    //a list based on the problem your solving, that being said it would be easy
+    //to make it decided at runtime
     template <typename Container, size_t N>
         struct combinations_with_replacement_iter;
 
@@ -27,39 +29,29 @@ namespace iter {
         private:
             const Container & items;
             std::array<decltype(items.cbegin()),N> indicies;
-            //std::vector<decltype(items.cbegin())> indicies;
             bool not_done = true;
 
         public:
-            using item_t = typename std::remove_const<decltype(*(items.cbegin()))>::type;
-            //combinations_with_replacement_iter() {} 
-            //default constructor to avoid constructor for dummy iter
+            //Holy shit look at this typedef
+            using item_t = typename 
+                std::remove_const<
+                typename std::remove_reference<decltype(items.front())>::type>::type;
             combinations_with_replacement_iter(const Container & i) : 
                 items(i) 
             {
                     for (auto & iter : indicies) iter = items.cbegin();
             }
 
-            //make this an std::array, to lazy right now
-            //using iter_t = decltype(indicies.begin());
-            /*
-            std::array<item_t,N> operator* () const
+            std::array<item_t,N> operator*()const
             {
                 std::array<item_t,N> values;
                 auto iter = values.begin();
                 for (auto i : indicies) {
-                    iter= *i;
+                    *iter = *i;
                     ++iter;
                 }
                 return values;
             }
-            */
-            std::array<decltype(items.cbegin()),N>
-            operator*()const
-            {
-                return indicies;
-            }
-            //int operator* () const {return 0;}
 
 
             combinations_with_replacement_iter &
@@ -69,13 +61,9 @@ namespace iter {
                     ++(*iter);
                     if (*iter == items.cend()) {
                         if ( (iter + 1) != indicies.rend()) {
-                            //(*iter) = (*(iter + 1)) + 1; 
-                            //this was wrong actually have to go down the whole 
-                            //list setting stuff
                             for (auto down = iter; down != indicies.rbegin()-1;--down) {
                                 (*down) = (*(iter + 1)) + 1; 
                             }
-                            //*(iter+1) could be derefing a past the end iter
                         }
                         else {
                             not_done = false;
@@ -91,6 +79,10 @@ namespace iter {
 
             bool operator !=(const combinations_with_replacement_iter &)
             {
+                //because of the way this is done you have to start from the 
+                //begining of the range and end at the end, you could break in 
+                //the middle of the loop though, it's not different from the way
+                //that python's works
                 return not_done;
             }
         };
