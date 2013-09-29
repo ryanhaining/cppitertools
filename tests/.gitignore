@@ -11,5 +11,6 @@ testzip_longest
 testdropwhile
 testproduct
 testpermutations
+testcompress
 testcombinations_with_replacement
 testtakewhile
