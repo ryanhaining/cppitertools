@@ -16,6 +16,11 @@ library.
 [reverse](#reverse)<br />
 [slice](#slice)<br />
 
+##### Combinatoric fuctions
+[product](#product)<br />
+[combinations](#combinations)<br />
+[permutations](#permutations)<br />
+
 range
 -----
 
@@ -187,7 +192,7 @@ for (auto i : reverse(a)) {
 slice
 -----
 
-returns selected elements from a range, parameters are start, stop and step.
+Returns selected elements from a range, parameters are start, stop and step.
 the range returned is [start,stop) where you only take every step element
 
 This outputs `0 3 6 9 12`
@@ -198,3 +203,54 @@ for (auto i : slice(a,0,15,3)) {
 }
 ```
 
+product
+------
+
+Generates the cartesian project of the given ranges put together  
+
+Example usage: 
+```c++
+std::vector<int> v1{1,2,3};                                                    
+std::vector<int> v2{7,8};                                                      
+std::vector<std::string> v3{"the","cat"};                                      
+std::vector<std::string> v4{"hi","what","up","dude"}; 
+for (auto t : product(v1,v2,v3,v4)) {                                          
+    std::cout << std::get<0>(t) << ", "                                        
+        << std::get<1>(t) << ", "                                              
+        << std::get<2>(t) << ", "                                              
+        << std::get<3>(t) << std::endl;                                        
+} 
+```
+
+combinations
+-----------
+
+Generates n length unique sequences of the input range, there is also a
+combinations_with_replacement
+
+Example usage:
+```c++
+std::vector<int> v = {1,2,3,4,5};                                              
+for (auto i : combinations(v,3)) {                                             
+    //std::cout << i << std::endl;                                             
+    for (auto j : i ) std::cout << j << " ";                                   
+    std::cout<<std::endl;                                                      
+}
+```
+
+
+permutations
+-----------
+
+Generates all the permutations of a range using `std::next_permutation`  
+
+Example usage:
+```c++
+std::vector<int> v = {1,2,3,4,5};                                              
+for (auto vec : permutations(v)) {                                             
+    for (auto i : vec) {                                                       
+        std::cout << i << " ";                                                 
+    }                                                                       
+    std::cout << std::endl;                                                 
+} 
+```
