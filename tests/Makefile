@@ -26,7 +26,8 @@ TESTS = \
 		testdropwhile \
 		testzip_longest \
 		testproduct \
-		testpermutations
+		testpermutations \
+		testcompress
 
 all: $(TESTS)
 
