@@ -14,3 +14,4 @@ testpermutations
 testcompress
 testcombinations_with_replacement
 testtakewhile
+testcombinations

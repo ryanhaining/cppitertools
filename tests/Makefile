@@ -28,7 +28,8 @@ TESTS = \
 		testproduct \
 		testpermutations \
 		testcompress \
-		testcombinations_with_replacement
+		testcombinations_with_replacement \
+		testcombinations
 
 all: $(TESTS)
 
