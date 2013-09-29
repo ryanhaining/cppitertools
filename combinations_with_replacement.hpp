@@ -1,9 +1,10 @@
 #ifndef COMBINATIONS_WITH_REPLACEMENT_HPP
 #define COMBINATIONS_WITH_REPLACEMENT_HPP
 
+#include "iterator_range.hpp"
+
 #include <array>
 #include <vector>
-#include <iterator_range.hpp>
 #include <type_traits>
 
 namespace iter {

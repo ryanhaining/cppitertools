@@ -1,6 +1,8 @@
 #ifndef WRAP_ITER_HPP__
 #define WRAP_ITER_HPP__
 
+#include <iterator>
+
 namespace iter {
     template <typename Iterator>
     class wrap_iter {

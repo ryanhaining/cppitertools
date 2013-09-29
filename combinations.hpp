@@ -1,19 +1,17 @@
 #ifndef COMBINATIONS_HPP
 #define COMBINATIONS_HPP
 
+#include "iterator_range.hpp"
+
 #include <array>
 #include <vector>
-#include <iterator_range.hpp>
 #include <type_traits>
 #include <iterator>
 #include <iostream>
 
 namespace iter {
-    //if size isn't passed as template argument would have to switch to vectors
-    //for everything, generally I would say you don't need to decide the amount
-    //of items in your combination at runtime, but rather it is a way to view 
-    //a list based on the problem your solving, that being said it would be easy
-    //to make it decided at runtime
+    //Could try having antoher template for container to return (right now it's
+    //just an std::vector)
     template <typename Container>
         struct combinations_iter;
 

@@ -1,9 +1,10 @@
 #ifndef SLICE_HPP
 #define SLICE_HPP
 
+#include "iterator_range.hpp"
+#include "wrap_iter.hpp"
+
 #include <iterator>
-#include <iterator_range.hpp>
-#include <wrap_iter.hpp>
 #include <assert.h>
 
 namespace iter {
