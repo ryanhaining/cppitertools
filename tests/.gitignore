@@ -12,3 +12,4 @@ testdropwhile
 testproduct
 testpermutations
 testcombinations_with_replacement
+testtakewhile
