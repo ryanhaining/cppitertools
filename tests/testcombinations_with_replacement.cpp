@@ -9,7 +9,7 @@ using iter::combinations_with_replacement;
 
 int main() {
     std::vector<int> v = {1,2,3,4,5};
-    for (auto i : combinations_with_replacement<40>(v)) {
+    for (auto i : combinations_with_replacement(v,40)) {
         //std::cout << i << std::endl;
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;

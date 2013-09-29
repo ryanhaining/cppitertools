@@ -12,23 +12,23 @@ namespace iter {
     //of items in your combination at runtime, but rather it is a way to view 
     //a list based on the problem your solving, that being said it would be easy
     //to make it decided at runtime
-    template <typename Container, size_t N>
+    template <typename Container>
         struct combinations_with_replacement_iter;
 
-    template <size_t N, typename Container>
-        iterator_range<combinations_with_replacement_iter<Container,N>>
-        combinations_with_replacement(const Container & container) {
-            auto begin = combinations_with_replacement_iter<Container,N>(container);
-            auto end = combinations_with_replacement_iter<Container,N>(container);
+    template <typename Container>
+        iterator_range<combinations_with_replacement_iter<Container>>
+        combinations_with_replacement(const Container & container, size_t N) {
+            auto begin = combinations_with_replacement_iter<Container>(container, N);
+            auto end = combinations_with_replacement_iter<Container>(container, N);
             return 
-                iterator_range<combinations_with_replacement_iter<Container,N>>(begin,end);
+                iterator_range<combinations_with_replacement_iter<Container>>(begin,end);
         }
-    template <typename Container, size_t N>
+    template <typename Container>
         struct combinations_with_replacement_iter
         {
         private:
             const Container & items;
-            std::array<decltype(items.cbegin()),N> indicies;
+            std::vector<decltype(items.cbegin())> indicies;
             bool not_done = true;
 
         public:
@@ -36,19 +36,17 @@ namespace iter {
             using item_t = typename 
                 std::remove_const<
                 typename std::remove_reference<decltype(items.front())>::type>::type;
-            combinations_with_replacement_iter(const Container & i) : 
-                items(i) 
+            combinations_with_replacement_iter(const Container & i, size_t N) : 
+                items(i), indicies(N)
             {
                     for (auto & iter : indicies) iter = items.cbegin();
             }
-
-            std::array<item_t,N> operator*()const
+            //technically should be a dynarray
+            std::vector<item_t> operator*()const
             {
-                std::array<item_t,N> values;
-                auto iter = values.begin();
+                std::vector<item_t> values;
                 for (auto i : indicies) {
-                    *iter = *i;
-                    ++iter;
+                    values.push_back(*i);
                 }
                 return values;
             }
