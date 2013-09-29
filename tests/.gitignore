@@ -11,3 +11,4 @@ testzip_longest
 testdropwhile
 testproduct
 testpermutations
+testcompress
