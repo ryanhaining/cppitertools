@@ -27,7 +27,8 @@ TESTS = \
 		testzip_longest \
 		testproduct \
 		testpermutations \
-		testcompress
+		testcompress \
+		testcombinations_with_replacement
 
 all: $(TESTS)
 
