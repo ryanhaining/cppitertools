@@ -40,7 +40,11 @@ namespace iter {
             combinations_with_replacement_iter(const Container & i, size_t N) : 
                 items(i), indicies(N)
             {
-                    for (auto & iter : indicies) iter = items.cbegin();
+                if (N == 0) {
+                    not_done = false;
+                    return;
+                }
+                for (auto & iter : indicies) iter = items.cbegin();
             }
             //technically should be a dynarray
             std::vector<item_t> operator*()const

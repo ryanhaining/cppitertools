@@ -7,6 +7,7 @@
 #include "chain.hpp"
 #include "chain.hpp"
 #include "combinations_with_replacement.hpp"
+#include "combinations.hpp"
 #include "cycle.hpp"
 #include "dropwhile.hpp"
 #include "enumerate.hpp"

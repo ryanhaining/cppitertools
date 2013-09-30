@@ -39,6 +39,10 @@ namespace iter {
             combinations_iter(const Container & i, size_t N) : 
                 items(i),indicies(N)
             {
+                if (N == 0) {
+                    not_done = false;
+                    return;
+                }
                 size_t inc = 0;
                 for (auto & iter : indicies) {
                     if (items.cbegin() + inc != items.cend()) {

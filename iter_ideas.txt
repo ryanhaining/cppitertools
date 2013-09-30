@@ -17,3 +17,5 @@ the iterations would be
 zip_longest using boost::optional or std::optional when support exists.
 useful if a lot of the containers are of different sizes. may want to write
 a different zip_get that works better with optional
+
+Might be a good idea to do a powerset function
