@@ -28,7 +28,7 @@ range
 Uses an underlying iterator to acheive the same effect of the python range
 function.  `range` can be used in three different ways:
 
-Only the stopping point is provided.  Prints 1 2 3 4 5 6 7 8 9
+Only the stopping point is provided.  Prints 0 1 2 3 4 5 6 7 8 9
 ```c++
 for (auto i : range(10)) {
     cout << i << '\n';
