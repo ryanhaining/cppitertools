@@ -1,5 +1,7 @@
 #ifndef PRODUCT_HPP
+#define PRODUCT_HPP
 #include <tuple>
+#include <utility>
 #include "iterator_range.hpp"
 
 namespace iter {
@@ -15,7 +17,7 @@ namespace iter {
     template <typename Container>
         struct product_iter<Container> {
             public:
-                using Iterator = decltype(((Container*)nullptr)->cbegin());
+                using Iterator = decltype(std::declval<Container>().cbegin());
             private:
                 Iterator begin;
                 Iterator mover;
@@ -57,7 +59,7 @@ namespace iter {
         struct product_iter<Container,Containers...>
         {
             public:
-                using Iterator = decltype(((Container*)nullptr)->cbegin());
+                using Iterator = decltype(std::declval<Container>().cbegin());
             private:
                 Iterator begin;
                 Iterator mover;
