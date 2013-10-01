@@ -20,6 +20,7 @@ library.
 [product](#product)<br />
 [combinations](#combinations)<br />
 [permutations](#permutations)<br />
+[powerset](#powerset)<br />
 
 range
 -----
@@ -253,4 +254,18 @@ for (auto vec : permutations(v)) {
     }                                                                       
     std::cout << std::endl;                                                 
 } 
+```
+
+powerset
+-------
+
+Generates every possible subset of a set, never run it since it runs in 𝚯(2^n).
+
+Example usage:
+```c++
+std::vector<int> vec {1,2,3,4,5,6,7,8,9};                                      
+for (auto v : powerset(vec)) {                                                 
+    for (auto i : v) std::cout << i << " ";                                    
+    std::cout << std::endl;                                                    
+}
 ```
