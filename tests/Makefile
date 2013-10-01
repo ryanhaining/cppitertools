@@ -29,7 +29,8 @@ TESTS = \
 		testpermutations \
 		testcompress \
 		testcombinations_with_replacement \
-		testcombinations
+		testcombinations \
+		testpowerset
 
 all: $(TESTS)
 

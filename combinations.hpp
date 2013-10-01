@@ -55,7 +55,6 @@ namespace iter {
                     }
                 }
             }
-
             std::vector<item_t> operator*() const
             {
                 std::vector<item_t> values;
