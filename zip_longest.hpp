@@ -3,6 +3,7 @@
 
 #include <boost/optional.hpp>
 #include <tuple>
+#include <utility>
 #include "iterator_range.hpp"
 
 namespace iter {
@@ -28,7 +29,7 @@ namespace iter {
     template <typename Container>
         struct zip_longest_iter<Container> {
         public:
-            using Iterator = decltype(((Container*)nullptr)->begin());
+            using Iterator = decltype(std::declval<Container>().begin());
         private:
             Iterator begin;
             const Iterator end;
@@ -54,7 +55,7 @@ namespace iter {
     template <typename Container, typename ... Containers>
         struct zip_longest_iter<Container,Containers...> {
         public:
-            using Iterator = decltype(((Container*)nullptr)->begin());
+            using Iterator = decltype(std::declval<Container>().begin());
         private:
             Iterator begin;
             const Iterator end;
