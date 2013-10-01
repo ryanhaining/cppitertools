@@ -1,6 +1,8 @@
 #ifndef CYCLE__H__
 #define CYCLE__H__
 
+#include <utility>
+
 namespace iter {
 
     //Forward declarations of Cycle and cycle
@@ -16,14 +18,15 @@ namespace iter {
         // The cycle function is the only thing allowed to create a Cycle
         friend Cycle cycle<Container>(Container &);
 
+
         // Type of the Container::Iterator, but since the name of that 
         // iterator can be anything, we have to grab it with this
         using contained_iter_type =
-            decltype(((Container *)nullptr)->begin());
+            decltype(std::declval<Container>().begin());
 
         // The type returned when dereferencing the Container::Iterator
         using contained_iter_ret =
-            decltype(((contained_iter_type *)nullptr)->operator*());
+            decltype(std::declval<contained_iter_type>().operator*());
 
         private:
             Container & container;

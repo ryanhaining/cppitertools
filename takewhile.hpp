@@ -1,7 +1,7 @@
 #ifndef TAKEWHILE__H__
 #define TAKEWHILE__H__
 
-#include "filter.hpp"
+#include <utility>
 
 namespace iter {
 
@@ -20,11 +20,11 @@ namespace iter {
         // Type of the Container::Iterator, but since the name of that 
         // iterator can be anything, we have to grab it with this
         using contained_iter_type =
-            decltype(((Container *)nullptr)->begin());
+            decltype(std::declval<Container>().begin());
 
         // The type returned when dereferencing the Container::Iterator
         using contained_iter_ret =
-            decltype(((contained_iter_type *)nullptr)->operator*());
+            decltype(std::declval<contained_iter_type>().operator*());
 
         private:
             Container & container;
