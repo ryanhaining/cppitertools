@@ -11,6 +11,7 @@ library.
 [dropwhile](#dropwhile)<br />
 [enumerate](#enumerate)<br />
 [cycle](#cycle)<br />
+[compress](#compress)<br />
 [zip](#zip)<br />
 [chain](#chain)<br />
 [reverse](#reverse)<br />
@@ -162,6 +163,21 @@ range instead of the shortest. because of that you have to return a
 `boost::optional` (`std::optional` when it is released) and cannot use
 `zip_get`
 
+
+compress
+--------
+
+Yields only the values corresponding to true in the selectors iterable.
+Terminates on the shortest sequence.
+
+Prints 2 6
+```c++
+vector<int> ivec{1, 2, 3, 4, 5, 6};
+vector<bool> bvec{false, true, false, false, false, true};
+for (auto i : compress(ivec, bvec) {
+    cout << i << '\n';
+}
+```
 
 chain
 -----
