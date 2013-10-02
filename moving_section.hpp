@@ -4,6 +4,8 @@
 #include "iterator_range.hpp"
 #include <vector>
 #include <algorithm>
+#include <functional>
+#include <type_traits>
 
 namespace iter {
     template <typename Container>
@@ -43,12 +45,13 @@ namespace iter {
             bool operator!=(const moving_section_iter & rhs) {
                return this->section.back() != rhs.section.back();
             }
-            auto operator*() -> std::vector<decltype(*(section.front()))>
+            using Deref_type = std::vector<std::reference_wrapper<typename std::remove_reference<decltype(*std::declval<Iterator>())>::type>>;
+            Deref_type operator*()
             {
-                std::vector<decltype(*(section.front()))&> vec(section.front(),section.back()+1);
-                //for (auto iter : section) {
-                  //  vec.push_back(*iter);
-                //}
+                Deref_type vec;
+                for (auto i : section) {
+                    vec.push_back(*i);
+                }
                 return vec;
             }
         };
