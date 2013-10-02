@@ -30,7 +30,8 @@ TESTS = \
 		testcompress \
 		testcombinations_with_replacement \
 		testcombinations \
-		testpowerset
+		testpowerset \
+		testmoving_section
 
 all: $(TESTS)
 
