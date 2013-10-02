@@ -137,8 +137,8 @@ zip
 
 Takes an arbitrary number of ranges of different types and efficiently iterates over 
 them in parallel (so an iterator to each container is incremented simultaneously). 
-When you dereference an iterator to "zipped" range you get a tuple of iterators to 
-those containers.
+When you dereference an iterator to "zipped" range you get a tuple of whatever elements 
+the iterators were holding.
 
 Example usage:
 ```c++
@@ -148,20 +148,20 @@ vector<string> s{"i","like","apples","alot","dude"};
 array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
 
 for (auto e : zip(i,f,s,d)) {                                        
-    cout << zip_get<0>(e) << ' '                                
-         << zip_get<1>(e) << ' '                                      
-         << zip_get<2>(e) << ' '                                      
-         << zip_get<3>(e) << '\n';                               
-    zip_get<1>(e)=2.2f; // modify the float array                     
+    cout << std::get<0>(e) << ' '                                
+         << std::get<1>(e) << ' '                                      
+         << std::get<2>(e) << ' '                                      
+         << std::get<3>(e) << '\n';                               
+    std::get<1>(e)=2.2f; // modify the float array                     
 }
 ```
 
-`iter::zip_get` is used to readably dereference the iterators yielded
+~~`iter::zip_get` is used to readably dereference the iterators yielded~~
 
 a `zip_longest` also exists where the range terminates on the longest
 range instead of the shortest. because of that you have to return a
-`boost::optional` (`std::optional` when it is released) and cannot use
-`zip_get`
+`boost::optional<T>` where `T` is whatever type the iterator dereferenced
+to (`std::optional` when it is released, if ever)
 
 
 compress
