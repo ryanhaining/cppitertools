@@ -11,7 +11,7 @@ using iter::zip_longest;
 template <typename T>
 std::ostream & operator<<(std::ostream & o, const boost::optional<T> & opt) {
     if (opt) {
-        std::cout << **opt << std::endl;
+        std::cout << *opt << std::endl;
     }
     else {
         std::cout << "Object disengaged of type " << typeid(T).name() << std::endl;
@@ -43,9 +43,9 @@ int main() {
                 << std::get<1>(e) 
                 << std::get<2>(e) 
                 << std::get<3>(e) << std::endl;
-            **std::get<1>(e)=2.2f; //modify the float array
+            *std::get<1>(e)=2.2f; //modify the float array
         }
-        std::cout<<std::endl;
+        std::cout<<"modified array" <<std::endl;
         for (auto e : iter::zip_longest(i,s,f,d)) {
             std::cout << std::get<0>(e) 
                 << std::get<1>(e) 
