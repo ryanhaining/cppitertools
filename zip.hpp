@@ -15,11 +15,12 @@ namespace iter {
             auto end = zip_iter<decltype(containers.end())...>(containers.end()...);
             return iterator_range<decltype(begin)>(begin,end);
         }   
-    template <int N,typename Tuple>
+    /*template <int N,typename Tuple>
         auto zip_get(Tuple & t) ->decltype(*std::get<N>(t))&
         {
             return *std::get<N>(t);
         }
+        */
     template <typename First, typename Second>
         struct zip_iter<First,Second> {
 
@@ -33,9 +34,9 @@ namespace iter {
             zip_iter(const First & f, const Second & s) :
                 iter1(f),iter2(s) { }
 
-            auto operator*() -> decltype(std::make_tuple(iter1,iter2))
+            auto operator*() -> decltype(std::tie(*iter1,*iter2))
             {
-                return std::make_tuple(iter1,iter2);
+                return std::tie(*iter1,*iter2);
             }
             zip_iter & operator++() {
                 ++iter1;
@@ -56,7 +57,7 @@ namespace iter {
         public:
             using Elem_t = decltype(*iter);
             using tuple_t = 
-                decltype(std::tuple_cat(std::make_tuple(iter),*inner_iter));
+                decltype(std::tuple_cat(std::tie(*iter),*inner_iter));
 
             zip_iter(const First & f, const Rest & ... rest) :
                 iter(f),
@@ -66,7 +67,7 @@ namespace iter {
 
             tuple_t operator*()
             {
-                return std::tuple_cat(std::make_tuple(iter),*inner_iter);
+                return std::tuple_cat(std::tie(*iter),*inner_iter);
             }
             zip_iter & operator++() {
                 ++iter;
