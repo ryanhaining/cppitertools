@@ -38,11 +38,12 @@ namespace iter {
             zip_longest_iter(Container & c) :
                 begin(c.begin()),end(c.end()) {}
 
-            std::tuple<boost::optional<Iterator>> operator*()     
+            std::tuple<boost::optional<decltype(*std::declval<Iterator>())>> 
+            operator*()     
             {
                 return std::make_tuple(begin != end ? 
-                        boost::optional<Iterator>(begin)
-                        : boost::optional<Iterator>());
+                        boost::optional<decltype(*std::declval<Iterator>())>(*begin)
+                        : boost::optional<decltype(*std::declval<Iterator>())>());
             }
             zip_longest_iter & operator++() {
                 if(begin!=end)++begin;
@@ -64,7 +65,9 @@ namespace iter {
         public:
             using Elem_t = decltype(*begin);
             using tuple_t = 
-                decltype(std::tuple_cat(std::tuple<boost::optional<Iterator>>(),*inner_iter));
+                decltype(std::tuple_cat(
+                            std::tuple<boost::optional<Elem_t>>(),
+                            *inner_iter));
 
             zip_longest_iter(Container & c, Containers & ... containers) :
                 begin(c.begin()),
@@ -75,7 +78,9 @@ namespace iter {
 
             tuple_t operator*()
             {
-                return std::tuple_cat(std::make_tuple(begin != end ?boost::optional<Iterator>(begin):boost::optional<Iterator>()),*inner_iter);
+                return std::tuple_cat(std::make_tuple(begin != end 
+                            ?boost::optional<Elem_t>(*begin)
+                            :boost::optional<Elem_t>()),*inner_iter);
             }
             zip_longest_iter & operator++() {
                 if (begin != end) ++begin;
