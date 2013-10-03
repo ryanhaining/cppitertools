@@ -16,6 +16,7 @@ library.
 [chain](#chain)<br />
 [reverse](#reverse)<br />
 [slice](#slice)<br />
+[moving_section](#moving_section)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
@@ -285,3 +286,36 @@ for (auto v : powerset(vec)) {
     std::cout << std::endl;                                                    
 }
 ```
+
+moving_section
+-------------
+
+Takes a section from a range and increments the whole section.  
+
+Example:
+`[1, 2, 3, 4, 5, 6, 7, 8, 9]`  
+
+take a section of size 4, output is:
+```
+1 2 3 4 
+2 3 4 5 
+3 4 5 6 
+4 5 6 7 
+5 6 7 8 
+6 7 8 9 
+```
+
+Example Usage:
+```c++
+std::vector<int> v = {1,2,3,4,5,6,7,8,9};                                      
+for (auto sec : moving_section(v,4)) {                                         
+    for (auto i : sec) {                                                       
+        std::cout << i << " ";                                                 
+        i.get() = 90; 
+        //has to be accessed with get if you want to store references
+        //because it is stored in a reference_wrapper (std::vector 
+        //cannot hold references)
+    }                                                                          
+    std::cout << std::endl;                                                    
+}
+```    
