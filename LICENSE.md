@@ -1,4 +1,4 @@
-Copyright (c) {{year}}, {{fullname}}
+Copyright (c) 2013, Ryan Haining, Aaron Josephs
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
