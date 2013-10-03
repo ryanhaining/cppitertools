@@ -5,7 +5,6 @@
 #include "reverse.hpp"
 #include "slice.hpp"
 #include "chain.hpp"
-#include "chain.hpp"
 #include "combinations_with_replacement.hpp"
 #include "combinations.hpp"
 #include "compress.hpp"
