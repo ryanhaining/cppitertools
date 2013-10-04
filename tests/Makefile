@@ -1,16 +1,8 @@
-CXX := clang++
-CXXFLAGS := -Wall -Wextra -pedantic -std=c++11
+CXXFLAGS= -Wall -Wextra -pedantic -std=c++11 -I.. -I/usr/local/include
+CXXFLAGS+= $$(sh ./is_mac.sh)
+CPPFLAGS= -I.. -I/usr/local/include
 
-KERNEL := $(shell uname -s)
-ifeq ($(KERNEL),Darwin)
-ifeq ($(CXX),clang++)
-	CXXFLAGS += -stdlib=libc++
-endif
-endif
-
-LINK.o = $(LINK.cc)
-
-CPPFLAGS := -I".."
+include .depend
 
 TESTS = \
 		testchain \
@@ -33,7 +25,13 @@ TESTS = \
 		testpowerset \
 		testmoving_section
 
-all: $(TESTS)
+
+all: .depend $(TESTS)
+
+.depend: /dev/null
+	for a in *.cpp; do ($(CC) $(CPPFLAGS) -MM $$a >> .depend); done
 
 clean:
-	rm -f *.o $(TESTS)
+	rm -f *.o $(TESTS) .depend
+	touch .depend
+# DO NOT DELETE
