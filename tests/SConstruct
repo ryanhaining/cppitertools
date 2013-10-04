@@ -16,6 +16,8 @@ progs = Split( '''
 		combinations_with_replacement 
 		combinations 
 		powerset
+        moving_section
+        imap
         ''')
 
 cxx_flags = '-Wall -Wextra -pedantic -std=c++11'
