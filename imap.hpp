@@ -8,6 +8,7 @@
 
 namespace iter {
 
+    // modified from http://stackoverflow.com/questions/10766112/
     // implementation details, users never invoke these directly
     namespace detail
     {
