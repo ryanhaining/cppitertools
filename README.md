@@ -7,6 +7,7 @@ library.
 ##### Table of Contents
 [range](#range)<br />
 [filter](#filter)<br />
+[filterfalse](#filterfalse)<br />
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [enumerate](#enumerate)<br />
