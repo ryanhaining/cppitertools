@@ -22,104 +22,123 @@ namespace iter {
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
         virtual const char *what() const throw() { 
-            return "range() step argument must not be zero";
+            return "Range() step argument must not be zero";
         }
     };
 
-    class range {
+    //Forward declarations of Enumerable and enumerate
+    template <typename T>
+    class Range;
+
+    template <typename T>
+    Range<T> range(T);
+    template <typename T>
+    Range<T> range(T, T);
+    template <typename T>
+    Range<T> range(T, T, T);
+
+    template <typename T>
+    class Range {
+        friend Range range<T>(T);
+        friend Range range<T>(T, T);
+        friend Range range<T>(T, T, T);
         private:
-            const int start; 
-            const int stop;
-            const int step;
-            void step_check() const throw(RangeException);
+            const T start; 
+            const T stop;
+            const T step;
+            void step_check() const throw(RangeException) {
+                if (step == 0) {
+                    throw RangeException();
+                }
+            }
+
+            Range(T stop) :
+                start(0),
+                stop(stop),
+                step(1)
+            { }
+
+            Range(T start, T stop) :
+                start(start),
+                stop(stop),
+                step(1)
+            { }
+
+            Range(T start, T stop, T step) :
+                start(start),
+                stop(stop),
+                step(step)
+            {
+                this->step_check();
+            }
+
         public:
+            Range() = delete;
+            Range(const Range &) = default;
             class Iterator {
                 private:
-                    int value;
-                    const int step;
+                    T value;
+                    const T step;
                 public:
-                    Iterator (int val, int step);
+                    Iterator(T val, T step) :
+                        value(val),
+                        step(step)
+                    { }
 
-                    int operator*() const;
-                    Iterator & operator++();
-                    bool operator!=(const Iterator & other) const;
+                    T operator*() const {
+                        return this->value;
+                    }
+
+                    Iterator & operator++() {
+                        this->value += this->step;
+                        return *this;
+                    }
+
+                    // This operator would more accurately read as "in bounds"
+                    // or "incomplete" because exact comparison with the end
+                    // isn't good enough for the purposes of this Iterator.
+                    // There are two odd cases that need to be handled
+                    //
+                    // 1) The Range is infinite, such as
+                    // Range (-1, 0, -1) which would go    forever down toward
+                    // infinitely (theoretically).  If this occurs, the Range
+                    // will instead effectively be empty
+                    //
+                    // 2) (stop - start) % step != 0.  For
+                    // example Range(1, 10, 2).  The     iterator will never be
+                    // exactly equal to the stop value.
+                    bool operator!=(const Range::Iterator & other) const {
+                        return !(this->step > 0 && this->value >= other.value) 
+                            && !(this->step < 0 && this->value <= other.value);
+                    }
             };
 
-            range(int stop);
-            range(int start, int stop);
-            range(int start, int stop, int step);
 
-            Iterator begin() const;
-            Iterator end() const;
+            Iterator begin() const {
+                return Iterator(start, step);
+            }
+
+            Iterator end() const { 
+                return Iterator(stop, step);
+            }
     };
 
-    // definitions
 
-    // Iterator subclass
-    range::Iterator::Iterator (int val, int step) :
-        value(val),
-        step(step)
-    { }
 
-    int range::Iterator::operator*() const {
-        return this->value;
+    template <typename T>
+    Range<T> range(T stop) {
+        return Range<T>(stop);
     }
 
-    range::Iterator & range::Iterator::operator++() {
-        this->value += this->step;
-        return *this;
+    template <typename T>
+    Range<T> range(T start, T stop) {
+        return Range<T>(start, stop);
     }
 
-    // This operator would more accurately read as "in bounds" or "incomplete"
-    // because exact comparison with the end isn't good enough for the purposes
-    // of this Iterator.  
-    // There are two odd cases that need to be handled
-    // 1) The range is infinite, such as range (-1, 0, -1) which would go
-    //    forever down toward infinitely (theoretically).  If this occurs,
-    //    the range will instead effectively be empty
-    // 2) (stop - start) % step != 0.  For example range(1, 10, 2).  The
-    //    iterator will never be exactly equal to the stop value.
-    bool range::Iterator::operator!=(const range::Iterator & other) const {
-        return !(this->step > 0 && this->value >= other.value) 
-            && !(this->step < 0 && this->value <= other.value);
+    template <typename T>
+    Range<T> range(T start, T stop, T step) {
+        return Range<T>(start, stop, step);
     }
-
-
-    //Range 
-    range::range(int stop) :
-        start(0),
-        stop(stop),
-        step(1)
-    { }
-
-    range::range(int start, int stop) :
-        start(start),
-        stop(stop),
-        step(1)
-    { }
-
-    range::range(int start, int stop, int step) :
-        start(start),
-        stop(stop),
-        step(step)
-    {
-        this->step_check();
-    }
-
-    void range::step_check() const throw(RangeException) {
-        if (step == 0) {
-            throw RangeException();
-        }
-    }
-
-    range::Iterator range::begin() const {
-        return Iterator(start, step);
-    }
-
-    range::Iterator range::end() const { 
-        return Iterator(stop, step);
-    }
-
 }
 
 #endif //ifndef __RANGE__H__

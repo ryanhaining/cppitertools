@@ -8,10 +8,13 @@
 
 namespace iter {
 
+    // Everything in detail namespace 
     // modified from http://stackoverflow.com/questions/10766112/
-    // implementation details, users never invoke these directly
+    // Question by Thomas http://stackoverflow.com/users/115355/thomas
+    // Answer by Kerrek SB http://stackoverflow.com/users/596781/kerrek-sb
     namespace detail
     {
+        // implementation details, users never invoke these directly
         template <typename F, typename Tuple, bool Done, int Total, int... N>
         struct call_impl
         {
