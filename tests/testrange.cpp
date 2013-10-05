@@ -34,6 +34,11 @@ int main()
         std::cout << i << std::endl;
     }
     
+    std::cout << "Tests with different types" << std::endl;
+    for(auto i : range(0.0, 10.0, 0.5)) {
+        std::cout << i << std::endl;
+    }
+
     // invalid ranges:
     std::cout << "Should not print anything after this line until exception\n";
     for (auto i : range(-10, 0, -1)) {
