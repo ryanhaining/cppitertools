@@ -26,8 +26,22 @@ namespace iter {
         }
     };
 
+    //Forward declarations of Enumerable and enumerate
+    template <typename T>
+    class Range;
+
+    template <typename T>
+    Range<T> range(T);
+    template <typename T>
+    Range<T> range(T, T);
+    template <typename T>
+    Range<T> range(T, T, T);
+
     template <typename T>
     class Range {
+        friend Range range<T>(T);
+        friend Range range<T>(T, T);
+        friend Range range<T>(T, T, T);
         private:
             const T start; 
             const T stop;
@@ -38,8 +52,29 @@ namespace iter {
                 }
             }
 
+            Range(T stop) :
+                start(0),
+                stop(stop),
+                step(1)
+            { }
+
+            Range(T start, T stop) :
+                start(start),
+                stop(stop),
+                step(1)
+            { }
+
+            Range(T start, T stop, T step) :
+                start(start),
+                stop(stop),
+                step(step)
+            {
+                this->step_check();
+            }
 
         public:
+            Range() = delete;
+            Range(const Range &) = default;
             class Iterator {
                 private:
                     T value;
@@ -78,27 +113,6 @@ namespace iter {
                     }
             };
 
-            Range() = delete;
-            Range(const Range &) = default;
-            Range(T stop) :
-                start(0),
-                stop(stop),
-                step(1)
-            { }
-
-            Range(T start, T stop) :
-                start(start),
-                stop(stop),
-                step(1)
-            { }
-
-            Range(T start, T stop, T step) :
-                start(start),
-                stop(stop),
-                step(step)
-            {
-                this->step_check();
-            }
 
             Iterator begin() const {
                 return Iterator(start, step);
