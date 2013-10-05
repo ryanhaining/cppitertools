@@ -32,7 +32,8 @@ TESTS = \
 		testcombinations \
 		testpowerset \
 		testmoving_section \
-		testimap 
+		testimap \
+		testcount
 
 all: $(TESTS)
 
