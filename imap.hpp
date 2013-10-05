@@ -60,7 +60,9 @@ namespace iter {
         friend IMap imap<MapFunc, Containers...>(MapFunc, Containers & ...);
 
         // The type returned when dereferencing the Containers...::Iterator
-        using Zipped = iterator_range<zip_iter<Containers...>>;
+        // XXX depends on zip using iterator_range.  would be nice if it didn't
+        using Zipped = 
+            iterator_range<zip_iter<decltype(std::declval<Containers>().begin())...>>;
 
         using ZippedIterType = decltype(std::declval<Zipped>().begin());
 
@@ -86,13 +88,14 @@ namespace iter {
 
                 public:
                     Iterator (MapFunc map_func, ZippedIterType zipiter) :
-                        zipiter(zipiter),
-                        map_func(map_func)
+                        map_func(map_func),
+                        zipiter(zipiter)
                     { } 
 
                     auto operator*() const ->
-                            decltype(detail::call(map_func, *this->zipter)) {
-                        return detail::call(map_func, *zipiter);
+                            decltype(map_func(*this->zipiter))
+                    {
+                        return detail::call(this->map_func, *this->zipiter);
                     }
 
                     Iterator & operator++() { 
