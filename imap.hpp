@@ -14,9 +14,9 @@ namespace iter {
         template <typename F, typename Tuple, bool Done, int Total, int... N>
         struct call_impl
         {
-            static void call(F f, Tuple && t)
+            static auto call(F f, Tuple && t) -> decltype(f(t))
             {
-                call_impl<F,
+                return call_impl<F,
                     Tuple,
                     Total == 1 + sizeof...(N),
                     Total,
@@ -28,22 +28,21 @@ namespace iter {
         template <typename F, typename Tuple, int Total, int... N>
         struct call_impl<F, Tuple, true, Total, N...>
         {
-            static void call(F f, Tuple && t)
+            static auto call(F f, Tuple && t) -> decltype(f(t))
             {
-                f(std::get<N>(std::forward<Tuple>(t))...);
+                return f(std::get<N>(std::forward<Tuple>(t))...);
             }
         };
 
         // user invokes this
         template <typename F, typename Tuple>
-        void call(F f, Tuple && t)
+        auto call(F f, Tuple && t) -> decltype(f(t))
         {
             typedef typename std::decay<Tuple>::type ttype;
-            call_impl<F,
+            return call_impl<F,
                 Tuple,
                 0 == std::tuple_size<ttype>::value,
-                std::tuple_size<ttype>::value>::call(f,
-                        std::forward<Tuple>(t));
+                std::tuple_size<ttype>::value>::call(f,std::forward<Tuple>(t));
         }
     }
 
