@@ -65,6 +65,7 @@ namespace iter {
             iterator_range<zip_iter<decltype(std::declval<Containers>().begin())...>>;
 
         using ZippedIterType = decltype(std::declval<Zipped>().begin());
+            //typename std::remove_const<decltype(std::declval<Zipped>().begin())>::type;
 
         private:
             MapFunc map_func;
@@ -84,7 +85,7 @@ namespace iter {
             class Iterator {
                 private:
                     MapFunc map_func;
-                    ZippedIterType zipiter;
+                    mutable ZippedIterType zipiter;
 
                 public:
                     Iterator (MapFunc map_func, ZippedIterType zipiter) :
@@ -92,10 +93,10 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
-                    auto operator*() const ->
-                            decltype(map_func(*this->zipiter))
+                    auto operator*() const -> 
+                        decltype(detail::call(this->map_func, *(this->zipiter)))
                     {
-                        return detail::call(this->map_func, *this->zipiter);
+                        return detail::call(this->map_func, *(this->zipiter));
                     }
 
                     Iterator & operator++() { 

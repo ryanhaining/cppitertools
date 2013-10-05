@@ -63,7 +63,6 @@ namespace iter {
                 iter(f),
                 inner_iter(rest...) {}
 
-            //this is for returning a tuple of iterators
 
             tuple_t operator*()
             {
