@@ -22,16 +22,19 @@ namespace iter {
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
         virtual const char *what() const throw() { 
-            return "range() step argument must not be zero";
+            return "Range() step argument must not be zero";
         }
     };
 
-    class range {
+    template <typename T>
+    class Range {
         private:
             const int start; 
             const int stop;
             const int step;
             void step_check() const throw(RangeException);
+
+
         public:
             class Iterator {
                 private:
@@ -45,9 +48,17 @@ namespace iter {
                     bool operator!=(const Iterator & other) const;
             };
 
-            range(int stop);
-            range(int start, int stop);
-            range(int start, int stop, int step);
+            //Range 
+            Range::Range(int stop) :
+                start(0),
+                stop(stop),
+                step(1)
+            { }
+            Range(int start, int stop);
+            Range(int start, int stop, int step);
+
+            Range() = delete;
+            Range(const Range &) = default;
 
             Iterator begin() const;
             Iterator end() const;
@@ -56,16 +67,16 @@ namespace iter {
     // definitions
 
     // Iterator subclass
-    range::Iterator::Iterator (int val, int step) :
+    Range::Iterator::Iterator (int val, int step) :
         value(val),
         step(step)
     { }
 
-    int range::Iterator::operator*() const {
+    int Range::Iterator::operator*() const {
         return this->value;
     }
 
-    range::Iterator & range::Iterator::operator++() {
+    Range::Iterator & Range::Iterator::operator++() {
         this->value += this->step;
         return *this;
     }
@@ -74,31 +85,25 @@ namespace iter {
     // because exact comparison with the end isn't good enough for the purposes
     // of this Iterator.  
     // There are two odd cases that need to be handled
-    // 1) The range is infinite, such as range (-1, 0, -1) which would go
+    // 1) The Range is infinite, such as Range (-1, 0, -1) which would go
     //    forever down toward infinitely (theoretically).  If this occurs,
-    //    the range will instead effectively be empty
-    // 2) (stop - start) % step != 0.  For example range(1, 10, 2).  The
+    //    the Range will instead effectively be empty
+    // 2) (stop - start) % step != 0.  For example Range(1, 10, 2).  The
     //    iterator will never be exactly equal to the stop value.
-    bool range::Iterator::operator!=(const range::Iterator & other) const {
+    bool Range::Iterator::operator!=(const Range::Iterator & other) const {
         return !(this->step > 0 && this->value >= other.value) 
             && !(this->step < 0 && this->value <= other.value);
     }
 
 
-    //Range 
-    range::range(int stop) :
-        start(0),
-        stop(stop),
-        step(1)
-    { }
 
-    range::range(int start, int stop) :
+    Range::Range(int start, int stop) :
         start(start),
         stop(stop),
         step(1)
     { }
 
-    range::range(int start, int stop, int step) :
+    Range::Range(int start, int stop, int step) :
         start(start),
         stop(stop),
         step(step)
@@ -106,20 +111,23 @@ namespace iter {
         this->step_check();
     }
 
-    void range::step_check() const throw(RangeException) {
+    void Range::step_check() const throw(RangeException) {
         if (step == 0) {
             throw RangeException();
         }
     }
 
-    range::Iterator range::begin() const {
+    Range::Iterator Range::begin() const {
         return Iterator(start, step);
     }
 
-    range::Iterator range::end() const { 
+    Range::Iterator Range::end() const { 
         return Iterator(stop, step);
     }
 
 }
+
+template <typename T>
+Range<t> range
 
 #endif //ifndef __RANGE__H__
