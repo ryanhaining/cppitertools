@@ -18,6 +18,7 @@ progs = Split( '''
 		powerset
         moving_section
         imap
+        count
         ''')
 
 cxx_flags = '-Wall -Wextra -pedantic -std=c++11'
