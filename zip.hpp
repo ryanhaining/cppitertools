@@ -14,13 +14,30 @@ namespace iter {
             auto begin = zip_iter<decltype(containers.begin())...>(containers.begin()...);
             auto end = zip_iter<decltype(containers.end())...>(containers.end()...);
             return iterator_range<decltype(begin)>(begin,end);
-        }   
-    /*template <int N,typename Tuple>
-        auto zip_get(Tuple & t) ->decltype(*std::get<N>(t))&
-        {
-            return *std::get<N>(t);
         }
-        */
+    template <typename Iterator>
+        struct zip_iter<Iterator> {
+
+        private:
+            Iterator iter;
+
+        public:
+            using Elem_t = decltype(*iter);
+            zip_iter(const Iterator & i) :
+                iter(i){ }
+
+            auto operator*() -> decltype(std::tie(*iter))
+            {
+                return std::tie(*iter);
+            }
+            zip_iter & operator++() {
+                ++iter;
+                return *this;
+            }
+            bool operator!=(const zip_iter & rhs) const {
+                return (this->iter != rhs.iter);
+            }
+        };  /* 
     template <typename First, typename Second>
         struct zip_iter<First,Second> {
 
@@ -46,7 +63,7 @@ namespace iter {
             bool operator!=(const zip_iter & rhs) const {
                 return (this->iter1 != rhs.iter1) && (this->iter2 != rhs.iter2);
             }
-        };
+        };*/
     template <typename First, typename ... Rest>
         struct zip_iter<First,Rest...> {
 
