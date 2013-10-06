@@ -60,6 +60,16 @@ for (auto i : range(2, -3, -1)) {
 }
 ```
 
+In addition to normal integer range operations, doubles and
+other numeric types are supported through the template
+
+Prints: `5.0 5.5 6.0` ... `9.5`
+```c++
+for(auto i : range(5.0, 10.0, 0.5)) {
+    cout << i << '\n';
+}
+```
+
 enumerate
 ---------
 
