@@ -226,7 +226,7 @@ compress
 Yields only the values corresponding to true in the selectors iterable.
 Terminates on the shortest sequence.
 
-Prints 2 6
+Prints `2 6`
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6};
 vector<bool> bvec{false, true, false, false, false, true};
