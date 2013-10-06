@@ -18,16 +18,16 @@ namespace iter {
         friend Filter filter<FilterFunc, Container>(FilterFunc, Container &);
 
         
-        // Type of the Container::Iterator, but since the name of that 
-        // iterator can be anything, we have to grab it with this
-        using contained_iter_type =
-            decltype(std::declval<Container>().begin());
+        protected:
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type =
+                decltype(std::declval<Container>().begin());
 
-        // The type returned when dereferencing the Container::Iterator
-        using contained_iter_ret =
-            decltype(std::declval<contained_iter_type>().operator*());
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret =
+                decltype(std::declval<contained_iter_type>().operator*());
 
-        private:
             Container & container;
             FilterFunc filter_func;
             
@@ -42,7 +42,7 @@ namespace iter {
 
         public:
             class Iterator {
-                private:
+                protected:
                     contained_iter_type sub_iter;
                     const contained_iter_type sub_end;
                     FilterFunc filter_func;
