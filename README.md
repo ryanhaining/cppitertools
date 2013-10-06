@@ -14,6 +14,7 @@ library.
 [cycle](#cycle)<br />
 [compress](#compress)<br />
 [zip](#zip)<br />
+[imap](#imap)<br />
 [chain](#chain)<br />
 [reverse](#reverse)<br />
 [slice](#slice)<br />
@@ -176,6 +177,37 @@ a `zip_longest` also exists where the range terminates on the longest
 range instead of the shortest. because of that you have to return a
 `boost::optional<T>` where `T` is whatever type the iterator dereferenced
 to (`std::optional` when it is released, if ever)
+
+
+imap
+----
+
+Takes a function and one or more iterables.  The number of iterables must
+match the number of arguments to the function.  Applies the function to
+each element (or elements) in the iterable(s).  Terminates on the shortest
+sequence.
+
+Prints the squares of the numbers in vec: `1 4 9 16 25`
+```c++
+vector<int> vec{1, 2, 3, 4, 5};
+for (auto i : imap([] (int x) {return x * x;}, vec)) {
+    cout << i << '\n';
+}
+```
+
+With more than one sequence, the below adds corresponding elements from
+each vector together, printing `11 23 35 47 59 71`
+```c++
+vector<int> vec1{1, 3, 5, 7, 9, 11};
+vector<int> vec2{10, 20, 30, 40, 50, 60};
+for (auto i : imap([] (int x, int y) { return x + y; }, vec1, vec2)) {
+    cout << i << '\n';
+}
+```
+
+*Note*: The name `imap` is chosen to prevent confusion/collision with 
+`std::map`, and because it is more related to `itertools.imap` than
+the python builtin `map`.
 
 
 compress
