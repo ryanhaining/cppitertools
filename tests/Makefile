@@ -34,7 +34,8 @@ TESTS = \
 		testmoving_section \
 		testimap \
 		testcount \
-		testfilterfalse
+		testfilterfalse \
+		testgrouper
 
 all: $(TESTS)
 
