@@ -32,28 +32,28 @@ range
 Uses an underlying iterator to acheive the same effect of the python range
 function.  `range` can be used in three different ways:
 
-Only the stopping point is provided.  Prints 0 1 2 3 4 5 6 7 8 9
+Only the stopping point is provided.  Prints `0 1 2 3 4 5 6 7 8 9`
 ```c++
 for (auto i : range(10)) {
     cout << i << '\n';
 }
 ```
 
-The start and stop are both provided.  Prints 10 11 12 13 14
+The start and stop are both provided.  Prints `10 11 12 13 14`
 ```c++
 for (auto i : range(10, 15)) {
     cout << i << '\n';
 }
 ```
 
-The start, stop, and step are all provided.  Prints 20 22 24 26 28
+The start, stop, and step are all provided.  Prints `20 22 24 26 28`
 ```c++
 for (auto i : range(20, 30, 2)) {
     cout << i << '\n';
 }
 ```
 
-Negative values are allowed as well.  Prints 2 1 0 -1 -2
+Negative values are allowed as well.  Prints `2 1 0 -1 -2`
 ```c++
 for (auto i : range(2, -3, -1)) {
     cout << i << '\n';
@@ -92,7 +92,7 @@ filter
 Called as `filter(predicate, iterable)`.  The predicate can be any callable.
 `filter` will only yield values that are true under the predicate.
 
-Prints values greater than 4:  5 6 7 8
+Prints values greater than 4:  `5 6 7 8`
 ```c++
 vector<int> vec{1, 5, 4, 6, 7, 3, 2, 8, 3, 2, 1};
 for (auto i : filter([] (int i) { return i > 4; }, vec)) {
@@ -105,7 +105,7 @@ filterfalse
 -----------
 Similar to filter, but only prints values that are false under the predicate.
 
-Prints values not greater than 4: 1 4 3 2 3 2 1 
+Prints values not greater than 4: `1 4 3 2 3 2 1 `
 ```c++
 vector<int> vec{1, 5, 4, 6, 7, 3, 2, 8, 3, 2, 1};
 for (auto i : filter([] (int i) { return i > 4; }, vec)) {
@@ -119,7 +119,7 @@ takewhile
 Yields elements from an iterable until the first element that is false under
 the predicate is encountered.
 
-Prints 1 2 3 4.  (5 is false under the predicate)
+Prints `1 2 3 4`.  (5 is false under the predicate)
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1};
 for (auto i : takewhile([] (int i) {return i < 5;}, ivec)) {
@@ -132,7 +132,7 @@ dropwhile
 Yields all elements after and including the first element that is false under
 the predicate.
 
-Prints 5 6 7 1 2
+Prints `5 6 7 1 2`
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 1, 2};
 for (auto i : dropwhile([] (int i) {return i < 5;}, ivec)) {
@@ -146,7 +146,7 @@ cycle
 Repeatedly produce all values of an iterable.  The loop will be infinite, so a
 `break` is necessary to exit.
 
-Prints 1 2 3 repeatedly until `some_condition` is true
+Prints `1 2 3` repeatedly until `some_condition` is true
 ```c++
 vector<int> vec{1, 2, 3};
 for (auto i : cycle(vec)) {
