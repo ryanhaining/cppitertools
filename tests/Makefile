@@ -33,7 +33,8 @@ TESTS = \
 		testpowerset \
 		testmoving_section \
 		testimap \
-		testcount
+		testcount \
+		testfilterfalse
 
 all: $(TESTS)
 
