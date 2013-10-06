@@ -22,5 +22,10 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::vector<int> vec{1, 2, 3, 4, 5};
+    for (auto i : imap([] (int x) {return x * x;}, vec)) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }

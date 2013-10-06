@@ -35,7 +35,7 @@ int main()
     }
     
     std::cout << "Tests with different types" << std::endl;
-    for(auto i : range(0.0, 10.0, 0.5)) {
+    for(auto i : range(5.0, 10.0, 0.5)) {
         std::cout << i << std::endl;
     }
 
