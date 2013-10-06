@@ -1,3 +1,5 @@
+import platform
+
 progs = Split( '''
 		cycle 
 		enumerate 
@@ -22,10 +24,11 @@ progs = Split( '''
         filterfalse
         ''')
 
-cxx_flags = '-Wall -Wextra -pedantic -std=c++11'
+cxx_flags = ' -Wall -Wextra -pedantic -std=c++11 '
+
+if platform.system() == 'Darwin':
+    cxx_flags += ' -stdlib=libc++ '
 
 for p in progs:
-    Program(target='test{0}'.format(p), source='test{0}.cpp'.format(p),
+    Program(source='test{0}.cpp'.format(p),
             CXXFLAGS=cxx_flags, CPPPATH='..', CXX='clang++')
-
-
