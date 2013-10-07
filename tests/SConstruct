@@ -22,6 +22,7 @@ progs = Split( '''
         imap
         count
         filterfalse
+        grouper
         ''')
 
 cxx = 'c++'
