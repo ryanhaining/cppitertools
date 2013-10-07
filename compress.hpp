@@ -17,27 +17,24 @@ namespace iter {
 
     template <typename Container, typename Selector>
     class Compressed {
-        // The only thing allowed to directly instantiate an Compressed is
-        // the compress function
-        friend Compressed compress<Container, Selector>(
-                Container &, Selector &);
-
-        // Type of the Container::Iterator, but since the name of that 
-        // iterator can be anything, we have to grab it with this
-        using contained_iter_type =
-            decltype(std::declval<Container>().begin());
-
-        // The type returned when dereferencing the Container::Iterator
-        using contained_iter_ret =
-            decltype(std::declval<contained_iter_type>().operator*());
-
-        // Selector::Iterator type
-        using selector_iter_type =
-            decltype(std::declval<Selector>().begin());
-
         private:
             Container & container;
             Selector & selectors;
+
+            // The only thing allowed to directly instantiate an Compressed is
+            // the compress function
+            friend Compressed compress<Container, Selector>(
+                    Container &, Selector &);
+
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type = decltype(container.begin());
+
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret = decltype(container.begin().operator*());
+
+            // Selector::Iterator type
+            using selector_iter_type = decltype(selectors.begin());
             
             // Value constructor for use only in the compress function
             Compressed(Container & container, Selector & selectors) :
