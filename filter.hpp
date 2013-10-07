@@ -144,8 +144,6 @@ namespace iter {
                     contained_iter_type sub_iter;
                     const contained_iter_type sub_end;
 
-                    // increment until the iterator points to is true on the 
-                    // predicate.  Called by constructor and operator++
                     void skip_failures() { 
                         while (this->sub_iter != this->sub_end
                                 && !(*this->sub_iter)) {
