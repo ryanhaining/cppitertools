@@ -27,5 +27,10 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::vector<int> vec4{1, 2, 3};
+    for (auto i : imap([] (int a, int b) { return a + b; }, vec, vec4)) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
