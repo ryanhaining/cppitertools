@@ -14,22 +14,19 @@ namespace iter {
 
     template <typename FilterFunc, typename Container>
     class Filter {
-        // The filter function is the only thing allowed to create a Filter
-        friend Filter filter<FilterFunc, Container>(FilterFunc, Container &);
-
-        
         protected:
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type =
-                decltype(std::declval<Container>().begin());
-
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret =
-                decltype(std::declval<contained_iter_type>().operator*());
-
             Container & container;
             FilterFunc filter_func;
+
+            // The filter function is the only thing allowed to create a Filter
+            friend Filter filter<FilterFunc, Container>(FilterFunc,
+                    Container &);
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type = decltype(container.begin());
+
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret = decltype(container.begin().operator*());
             
             // Value constructor for use only in the filter function
             Filter(FilterFunc filter_func, Container & container) :
@@ -114,22 +111,19 @@ namespace iter {
 
     template <typename Container>
     class FilterDefault {
-        // The filter function is the only thing allowed to create a FilterDefault
-        friend FilterDefault filter<Container>(Container &);
-
-        
         protected:
+            Container & container;
+
+            // The filter function is the only thing allowed to create a
+            // FilterDefault
+            friend FilterDefault filter<Container>(Container &);
             // Type of the Container::Iterator, but since the name of that 
             // iterator can be anything, we have to grab it with this
-            using contained_iter_type =
-                decltype(std::declval<Container>().begin());
+            using contained_iter_type = decltype(container.begin());
 
             // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret =
-                decltype(std::declval<contained_iter_type>().operator*());
+            using contained_iter_ret = decltype(container.begin().operator*());
 
-            Container & container;
-            
             // Value constructor for use only in the filter function
             FilterDefault(Container & container) :
                 container(container)
