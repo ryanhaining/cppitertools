@@ -22,11 +22,12 @@ progs = Split( '''
         imap
         count
         filterfalse
+        grouper
         ''')
 
-cxx = 'clang++'
-cxx_flags = ' -Wall -Wextra -pedantic -std=c++11 '
-ldflags = ''
+cxx = 'c++'
+cxx_flags = ' -Wall -Wextra -pedantic -std=c++11 -I/usr/local/include'
+ldflags = ' -L/usr/local/lib'
 
 # if on MAC, needs the linker flag for -stdlib=libc++
 if platform.system() == 'Darwin':

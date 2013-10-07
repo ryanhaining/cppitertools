@@ -28,6 +28,11 @@ namespace iter {
             grouper_iter(Container & c, size_t s) :
                 container(c),group_size(s) 
             {
+                //if the group size is 0 or the container is empty produce nothing
+                if (group_size == 0 || !(container.begin() != container.end())) {
+                    not_done = false;
+                    return;
+                }
                 for (size_t i = 0; i < group_size; ++i) 
                     group.push_back(container.begin()+i);
             }
