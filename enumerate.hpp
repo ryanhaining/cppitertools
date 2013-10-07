@@ -25,21 +25,21 @@ namespace iter {
 
     template <typename Container>
     class Enumerable {
-        // The only thing allowed to directly instantiate an Enumerable is
-        // the enumerate function
-        friend Enumerable enumerate<Container>(Container &);
-
-        // Type of the Container::Iterator, but since the name of that 
-        // iterator can be anything, we have to grab it with this
-        using contained_iter_type =
-            decltype(std::declval<Container>().begin());
-
-        // The type returned when dereferencing the Container::Iterator
-        using contained_iter_ret =
-            decltype(std::declval<contained_iter_type>().operator*());
-
         private:
             Container & container;
+            // The only thing allowed to directly instantiate an Enumerable is
+            // the enumerate function
+            friend Enumerable enumerate<Container>(Container &);
+
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type =
+                decltype(container.begin());
+
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret =
+                decltype(container.begin().operator*());
+
             
             // Value constructor for use only in the enumerate function
             Enumerable(Container & container) : container(container) { }

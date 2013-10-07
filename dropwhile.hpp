@@ -14,21 +14,20 @@ namespace iter {
 
     template <typename FilterFunc, typename Container>
     class DropWhile {
-        friend DropWhile dropwhile<FilterFunc, Container>(
-                FilterFunc, Container &);
-
-        // Type of the Container::Iterator, but since the name of that 
-        // iterator can be anything, we have to grab it with this
-        using contained_iter_type =
-            decltype(std::declval<Container>().begin());
-
-        // The type returned when dereferencing the Container::Iterator
-        using contained_iter_ret =
-            decltype(std::declval<contained_iter_type>().operator*());
-
         private:
             Container & container;
             FilterFunc filter_func;
+
+            friend DropWhile dropwhile<FilterFunc, Container>(
+                    FilterFunc, Container &);
+
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type = decltype(container.begin());
+
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret = decltype(container.begin().operator*());
+
             
             // Value constructor for use only in the dropwhile function
             DropWhile(FilterFunc filter_func, Container & container) :
