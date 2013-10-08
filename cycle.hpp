@@ -35,9 +35,9 @@ namespace iter {
             Cycle(Container & container) : container(container) { }
             Cycle () = delete;
             Cycle & operator=(const Cycle &) = delete;
-            // Default copy constructor used
 
         public:
+            Cycle(const Cycle &) = default;
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
