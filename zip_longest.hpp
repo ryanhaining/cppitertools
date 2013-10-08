@@ -11,12 +11,12 @@ namespace iter {
         struct zip_longest_iter;
     template <typename ... Containers>
         iterator_range<zip_longest_iter<Containers...>>
-        zip_longest(Containers & ... containers)
+        zip_longest(Containers && ... containers)
         {
             auto begin = 
-                zip_longest_iter<Containers...>(containers...);
+                zip_longest_iter<Containers...>(std::forward<Containers>(containers)...);
             auto end = 
-                zip_longest_iter<Containers...>(containers...);
+                zip_longest_iter<Containers...>(std::forward<Containers>(containers)...);
             return iterator_range<decltype(begin)>(begin,end);
         }   
     /*
@@ -35,7 +35,7 @@ namespace iter {
             const Iterator end;
 
         public:
-            zip_longest_iter(Container & c) :
+            zip_longest_iter(Container && c) :
                 begin(c.begin()),end(c.end()) {}
 
             std::tuple<boost::optional<decltype(*std::declval<Iterator>())>> 
@@ -69,10 +69,10 @@ namespace iter {
                             std::tuple<boost::optional<Elem_t>>(),
                             *inner_iter));
 
-            zip_longest_iter(Container & c, Containers & ... containers) :
+            zip_longest_iter(Container && c, Containers && ... containers) :
                 begin(c.begin()),
                 end(c.end()),
-                inner_iter(containers...) {}
+                inner_iter(std::forward<Containers>(containers)...) {}
 
             //this is for returning a tuple of optional<iterator>
 

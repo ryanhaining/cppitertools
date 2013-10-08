@@ -69,6 +69,15 @@ int main() {
                 << std::get<3>(e) << std::endl;
         }
         std::cout<<std::endl;
+        const std::vector<double> constvector{1.1,2.2,3.3,4.4};
+        for (auto e : zip(std::vector<int>{1,2,3,4,5},
+                    std::initializer_list<std::string>{"asdfas","aaron","ryan"},
+                    constvector)) { 
+
+            std::cout << std::get<0>(e) << " " 
+                << std::get<1>(e) << " " 
+                << std::get<2>(e) << std::endl;
+        }
     }
     return 0;
 }

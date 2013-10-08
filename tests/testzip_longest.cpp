@@ -75,6 +75,17 @@ int main() {
                 << std::get<3>(e) << std::endl;
         }
         std::cout<<std::endl;
+        for (auto e : iter::zip_longest(std::initializer_list<int>{1,2,3,4,5,6},
+                    std::initializer_list<double>{1.1,2.2,3.3,4.4},
+                    std::initializer_list<double>{1.1,2.2,3.3,4.4},
+                    std::array<int,3>{{1,2,3}})) { 
+            std::cout << std::get<0>(e) 
+                << std::get<1>(e) 
+                << std::get<2>(e) 
+                << std::get<3>(e) << std::endl;
+        }
+        std::cout<<std::endl;
+
     }
     return 0;
 }

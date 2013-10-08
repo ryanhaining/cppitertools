@@ -8,7 +8,7 @@ namespace iter {
     template <typename ... Rest>
         struct zip_iter;
     template <typename ... Containers>
-        auto zip(Containers & ... containers) ->
+        auto zip(Containers && ... containers) ->
         iterator_range<zip_iter<decltype(containers.begin())...>>
         {
             auto begin = zip_iter<decltype(containers.begin())...>(containers.begin()...);
@@ -64,6 +64,7 @@ namespace iter {
                 return (this->iter1 != rhs.iter1) && (this->iter2 != rhs.iter2);
             }
         };*/
+    //this specialization commented out 
     template <typename First, typename ... Rest>
         struct zip_iter<First,Rest...> {
 
