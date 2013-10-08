@@ -84,6 +84,94 @@ namespace iter {
             Container & container) {
         return FilterFalse<FilterFunc, Container>(filter_func, container);
     }
+
+
+    //Forward declarations of filterfalseFalseDefault and filterfalse
+    template <typename Container>
+    class filterfalseFalseDefault;
+
+    template <typename Container>
+    filterfalseFalseDefault<Container> filterfalse(Container &);
+
+    template <typename Container>
+    class filterfalseFalseDefault {
+        protected:
+            Container & container;
+
+            // The filterfalse function is the only thing allowed to create a
+            // filterfalseFalseDefault
+            friend filterfalseFalseDefault filterfalse<Container>(Container &);
+            // Type of the Container::Iterator, but since the name of that 
+            // iterator can be anything, we have to grab it with this
+            using contained_iter_type = decltype(container.begin());
+
+            // The type returned when dereferencing the Container::Iterator
+            using contained_iter_ret = decltype(container.begin().operator*());
+
+            // Value constructor for use only in the filterfalse function
+            filterfalseFalseDefault(Container & container) :
+                container(container)
+            { }
+            filterfalseFalseDefault () = delete;
+            filterfalseFalseDefault & operator=(const filterfalseFalseDefault &) = delete;
+
+        public:
+            filterfalseFalseDefault(const filterfalseFalseDefault &) = default;
+            class Iterator {
+                protected:
+                    contained_iter_type sub_iter;
+                    const contained_iter_type sub_end;
+
+                    void skip_passes() { 
+                        while (this->sub_iter != this->sub_end
+                                && *this->sub_iter) {
+                            ++this->sub_iter;
+                        }
+                    }
+
+                public:
+                    Iterator (contained_iter_type iter,
+                            contained_iter_type end) :
+                        sub_iter(iter),
+                        sub_end(end)
+                    { 
+                        this->skip_passes();
+                    } 
+
+                    contained_iter_ret operator*() const {
+                        return *this->sub_iter;
+                    }
+
+                    Iterator & operator++() { 
+                        ++this->sub_iter;
+                        this->skip_passes();
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator & other) const {
+                        return this->sub_iter != other.sub_iter;
+                    }
+            };
+
+            Iterator begin() const {
+                return Iterator(
+                        this->container.begin(),
+                        this->container.end());
+            }
+
+            Iterator end() const {
+                return Iterator(
+                        this->container.end(),
+                        this->container.end());
+            }
+
+    };
+
+    // Helper function to instantiate a filterfalseFalseDefault
+    template <typename Container>
+    filterfalseFalseDefault<Container> filterfalse(Container & container) {
+        return filterfalseFalseDefault<Container>(container);
+    }
 }
 
 
