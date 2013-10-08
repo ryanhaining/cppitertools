@@ -17,6 +17,13 @@ int main() {
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
     }
-
+    for (auto i : combinations(v,3)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
+    for (auto i : combinations(std::vector<int>{1,2,3,4},3)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
     return 0;
 }
