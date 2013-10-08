@@ -36,9 +36,10 @@ namespace iter {
 
             TakeWhile () = delete;
             TakeWhile & operator=(const TakeWhile &) = delete;
-            // Default copy constructor used
 
         public:
+            TakeWhile(const TakeWhile &) = default;
+
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
