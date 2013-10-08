@@ -4,8 +4,10 @@
 #include <string>
 #include <iostream>
 #include <array>
+#include <initializer_list>
 
 using iter::chain;
+using il = std::initializer_list<int>; 
 
 int main() {
     {
@@ -39,6 +41,11 @@ int main() {
          }
          std::cout<<std::endl;
          for (auto i : iter::chain(vec1,arr1,arr2)) {
+             std::cout << i << std::endl;
+         }
+         //test only works with perfect forwarding
+         std::cout<<std::endl;
+         for (auto i : chain(il{1,2,3,4,5},il{6,7,8,9},il{10,11,12})) {
              std::cout << i << std::endl;
          }
     }

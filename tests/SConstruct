@@ -23,6 +23,7 @@ progs = Split( '''
         count
         filterfalse
         grouper
+        chain
         ''')
 
 cxx = 'c++'

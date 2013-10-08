@@ -16,7 +16,7 @@ namespace iter {
                 const Iterator end;//never really used but kept it for consistency
 
             public:
-                chain_iter(Container & container, bool is_end=false) :
+                chain_iter(Container && container, bool is_end=false) :
                     begin(container.begin()),end(container.end()) {
                         if(is_end) begin = container.end();
                     }
@@ -44,10 +44,10 @@ namespace iter {
                 chain_iter<Containers...> next_iter;
 
             public:
-                chain_iter(Container & container, Containers& ... rest, bool is_end=false) :
+                chain_iter(Container && container, Containers&& ... containers, bool is_end=false) :
                     begin(container.begin()),
                     end(container.end()),
-                    next_iter(rest...,is_end) {
+                    next_iter(std::forward<Containers>(containers)...,is_end) {
                         if(is_end)
                             begin = container.end();
                     }
@@ -79,12 +79,12 @@ namespace iter {
                 }
         };
     template <typename ... Containers>
-        iterator_range<chain_iter<Containers...>> chain(Containers& ... containers)
+        iterator_range<chain_iter<Containers...>> chain(Containers&& ... containers)
         {
             auto begin = 
-                chain_iter<Containers...>(containers...);
+                chain_iter<Containers...>(std::forward<Containers>(containers)...);
             auto end =
-                chain_iter<Containers...>(containers...,true);
+                chain_iter<Containers...>(std::forward<Containers>(containers)...,true);
             return 
                 iterator_range<chain_iter<Containers...>>(begin,end);
         }
