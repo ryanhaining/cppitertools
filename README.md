@@ -4,6 +4,8 @@ CPPItertools
 range-based for loop add-ons inspired by the python builtins and itertools
 library.
 
+*Note*: Everthing is inside the `iter` namespace.
+
 ##### Table of Contents
 [range](#range)<br />
 [enumerate](#enumerate)<br />
