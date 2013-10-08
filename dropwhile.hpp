@@ -36,9 +36,9 @@ namespace iter {
             { }
             DropWhile () = delete;
             DropWhile & operator=(const DropWhile &) = delete;
-            // Default copy constructor used
 
         public:
+            DropWhile(const Dropwhile &) = default;
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
