@@ -35,9 +35,10 @@ namespace iter {
             { }
             Filter () = delete;
             Filter & operator=(const Filter &) = delete;
-            // Default copy constructor used
 
         public:
+            Filter(const Filter &) = default;
+
             class Iterator {
                 protected:
                     contained_iter_type sub_iter;
@@ -130,9 +131,9 @@ namespace iter {
             { }
             FilterDefault () = delete;
             FilterDefault & operator=(const FilterDefault &) = delete;
-            // Default copy constructor used
 
         public:
+            FilterDefault(const FilterDefault &) = default;
             class Iterator {
                 protected:
                     contained_iter_type sub_iter;
