@@ -41,6 +41,11 @@ int main() {
          for (auto i : iter::chain(vec1,arr1,arr2)) {
              std::cout << i << std::endl;
          }
+         //test only works with perfect forwarding
+         std::cout<<std::endl;
+         for (auto i : chain(std::vector<int>{1,2,3,4,5},std::array<int,4>{{6,7,8,9}},std::vector<int>(20))) {
+             std::cout << i << std::endl;
+         }
     }
     return 0;
 }

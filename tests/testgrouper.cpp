@@ -25,5 +25,14 @@ int main() {
             std::cout << i << " Shouldn't print\n";
         }
     }
+    //works when perfect forwarding implemented
+    /*
+    for (auto sec : grouper({1,2,3,4,5,6,7,8},3)) {
+        for (auto i : sec) {
+            std::cout << i << " ";
+        }
+        std::cout << std::endl;
+    }
+    */
     return 0;
 }
