@@ -1,4 +1,21 @@
 import platform
+import os
+
+env = Environment(
+    CXX='g++',
+    CXXFLAGS=' -Wall -Wextra -pedantic -std=c++11 -I/usr/local/include',
+    CPPPATH='..',
+    LINKFLAGS='-L/usr/local/lib')
+
+# allows highighting to print to terminal from compiler output
+env['ENV']['TERM'] = os.environ['TERM']
+
+# if on MAC, needs the linker flag for -stdlib=libc++
+if platform.system() == 'Darwin':
+    env['CXX'] += ' -stdlib=libc++ '
+    env['CXXFLAGS'] += ' -stdlib=libc++ '
+
+
 
 progs = Split( '''
 		cycle 
@@ -25,16 +42,6 @@ progs = Split( '''
         grouper
         ''')
 
-cxx = 'c++'
-cxx_flags = ' -Wall -Wextra -pedantic -std=c++11 -I/usr/local/include'
-ldflags = ' -L/usr/local/lib'
-
-# if on MAC, needs the linker flag for -stdlib=libc++
-if platform.system() == 'Darwin':
-    ldflags += ' -stdlib=libc++ '
-    cxx_flags += ' -stdlib=libc++ '
 
 for p in progs:
-    Program(source='test{0}.cpp'.format(p),
-            CXXFLAGS=cxx_flags, CPPPATH='..', CXX=cxx,
-            LINKFLAGS=ldflags)
+    env.Program('test{0}.cpp'.format(p))
