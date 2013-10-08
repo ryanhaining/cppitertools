@@ -45,9 +45,10 @@ namespace iter {
             Enumerable(Container & container) : container(container) { }
             Enumerable () = delete;
             Enumerable & operator=(const Enumerable &) = delete;
-            // Default copy constructor used
 
         public:
+            Enumerable(const Enumerable &) = default;
+
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
             // .element referencing the value yielded by the subiterator
             class IterYield {
