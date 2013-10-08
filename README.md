@@ -6,15 +6,15 @@ library.
 
 ##### Table of Contents
 [range](#range)<br />
+[enumerate](#enumerate)<br />
+[zip](#zip)<br />
+[imap](#imap)<br />
 [filter](#filter)<br />
 [filterfalse](#filterfalse)<br />
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
-[enumerate](#enumerate)<br />
 [cycle](#cycle)<br />
 [compress](#compress)<br />
-[zip](#zip)<br />
-[imap](#imap)<br />
 [chain](#chain)<br />
 [reverse](#reverse)<br />
 [slice](#slice)<br />
@@ -94,11 +94,20 @@ Called as `filter(predicate, iterable)`.  The predicate can be any callable.
 
 Prints values greater than 4:  `5 6 7 8`
 ```c++
-vector<int> vec{1, 5, 4, 6, 7, 3, 2, 8, 3, 2, 1};
+vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
 for (auto i : filter([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
+```
+
+If no predicate is passed, the elements themselves are tested for truth
+
+Prints only non-zero values.
+```c++
+for(auto i : filter(vec)) {
+    cout << i << '\n';
+}
 ```
 
 filterfalse
@@ -107,11 +116,20 @@ Similar to filter, but only prints values that are false under the predicate.
 
 Prints values not greater than 4: `1 4 3 2 3 2 1 `
 ```c++
-vector<int> vec{1, 5, 4, 6, 7, 3, 2, 8, 3, 2, 1};
+vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
 for (auto i : filter([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
+```
+
+If no predicate is passed, the elements themselves are tested for truth.
+
+Prints only zero values.
+```c++
+for(auto i : filterfalse(vec)) {
+    cout << i << '\n';
+}
 ```
 
 takewhile
