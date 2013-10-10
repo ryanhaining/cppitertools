@@ -1,4 +1,5 @@
 #include <zip.hpp>
+#include <chain.hpp>
 
 #include <vector>
 #include <string>
@@ -70,11 +71,12 @@ int main() {
         }
         std::cout<<std::endl;
         const std::vector<double> constvector{1.1,2.2,3.3,4.4};
-        for (auto e : zip(std::vector<int>{1,2,3,4,5},
-                    std::initializer_list<std::string>{"asdfas","aaron","ryan"},
-                    constvector)) { 
+        for (auto e : zip(iter::chain(std::vector<int>{1,5},std::array<int,2>{{1,2}}),
+                    std::initializer_list<std::string>{"asdfas","aaron","ryan","apple","juice"},
+                    constvector)) 
+        { 
 
-            std::cout << std::get<0>(e) << " " 
+            std::cout << (std::get<0>(e)=5) << " " 
                 << std::get<1>(e) << " " 
                 << std::get<2>(e) << std::endl;
         }

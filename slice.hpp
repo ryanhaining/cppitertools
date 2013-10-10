@@ -10,7 +10,7 @@
 namespace iter {
     template <typename Container>
         auto slice(
-                Container & container,
+                Container && container,
                 typename std::iterator_traits<decltype(container.begin())>::difference_type begin,
                 typename std::iterator_traits<decltype(container.begin())>::difference_type end,
                 typename std::iterator_traits<decltype(container.begin())>::difference_type step = 1
@@ -39,7 +39,7 @@ namespace iter {
     //only give the end as an arg and assume step  is 1 and begin is 0
     template <typename Container>
         auto slice(
-                Container & container,
+                Container && container,
                 typename std::iterator_traits<decltype(container.begin())>::difference_type end
                 ) -> iterator_range<wrap_iter<decltype(container.begin())>>
         {
