@@ -53,7 +53,7 @@ namespace iter {
                     }
                 chain_iter & operator++()
                 {
-                    if (begin == end) {
+                    if (!(begin != end)) {
                         ++next_iter;
                     }
                     else {
@@ -63,7 +63,7 @@ namespace iter {
                 }
                 auto operator*()->decltype(*begin)
                 {
-                    if (begin == end) {
+                    if (!(begin != end)) {
                         return *next_iter;
                     }
                     else {
@@ -71,7 +71,7 @@ namespace iter {
                     }
                 }   
                 bool operator !=(const chain_iter & rhs) const {
-                    if (begin == end) {
+                    if (!(begin != end)) {
                         return this->next_iter != rhs.next_iter;
                     }
                     else

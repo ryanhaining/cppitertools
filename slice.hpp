@@ -43,7 +43,7 @@ namespace iter {
                 typename std::iterator_traits<decltype(container.begin())>::difference_type end
                 ) -> iterator_range<wrap_iter<decltype(container.begin())>>
         {
-            return slice(container,0,end);
+            return slice(std::forward<Container>(container),0,end);
         }
 
 }

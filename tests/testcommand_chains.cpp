@@ -30,5 +30,16 @@ int main() {
                 << std::get<1>(t) << std::endl;
         }
     }
+    std::cout << std::endl;
+    {
+        std::vector<int> vec1{1,2,3,4,5,6};
+        std::vector<int> vec2{7,8,9,10};
+        std::vector<std::string> strvec
+        {"We're","done","when","I","say","we're","done"};
+        for (auto t : zip(strvec,chain(slice(vec1,2,6),slice(vec2,1,4)))) {
+            std::cout << std::get<0>(t) << " "
+                << std::get<1>(t) << std::endl;
+        }
+    }
     return 0;
 }

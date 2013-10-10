@@ -11,6 +11,7 @@ namespace iter {
             typename std::iterator_traits<Iterator>::difference_type step;
 
         public:
+            //using difference_type = typename std::iterator_traits<Iterator>::difference_type;
             wrap_iter(const Iterator & iter,
                     typename std::iterator_traits<Iterator>::difference_type step) : 
                 iter(iter),
@@ -37,6 +38,11 @@ namespace iter {
             typename std::iterator_traits<Iterator>::difference_type step) {
         return wrap_iter<Iterator>(iter,step);
     }
+    
 }
-
+template <typename Iterator>
+    struct std::iterator_traits<iter::wrap_iter<Iterator>> {
+        using difference_type = typename std::iterator_traits<Iterator>::difference_type;
+        //should add the rest later for a more usable class
+    };
 #endif //WRAP_ITER_HPP__
