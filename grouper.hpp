@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <functional>
 #include <type_traits>
+#include <utility>
 
 namespace iter {
     template <typename Container>
@@ -13,16 +14,16 @@ namespace iter {
 
     template <typename Container>
     iterator_range<grouper_iter<Container>> grouper(
-            Container & container, size_t s) {
-        auto begin = grouper_iter<Container>(container, s);
-        auto end = grouper_iter<Container>(container);
+            Container && container, size_t s) {
+        auto begin = grouper_iter<Container>(std::forward<Container>(container), s);
+        auto end = grouper_iter<Container>(std::forward<Container>(container));
         return iterator_range<grouper_iter<Container>>(begin, end);
     }
 
     template <typename Container>
     class grouper_iter {
         private:
-            Container & container;
+            Container && container;
             using Iterator = decltype(container.begin());
             using Deref_type =
                 std::vector<
@@ -37,8 +38,8 @@ namespace iter {
             bool not_done = true;
 
         public: 
-            grouper_iter(Container & c, size_t s) :
-                container(c),group_size(s) 
+            grouper_iter(Container && c, size_t s) :
+                container(std::forward<Container>(c)),group_size(s) 
             {
                 // if the group size is 0 or the container is empty produce
                 // nothing
@@ -52,8 +53,8 @@ namespace iter {
             }
 
             //seems like conclassor is same as moving_section_iter
-            grouper_iter(Container & c) :
-                container(c)
+            grouper_iter(Container && c) :
+                container(std::forward<Container>(c))
             {
                 //creates the end iterator
                 group.push_back(container.end());

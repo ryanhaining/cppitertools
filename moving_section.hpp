@@ -26,11 +26,11 @@ namespace iter {
             std::vector<Iterator> section;
             size_t section_size = 0;
             moving_section_iter(Container && c, size_t s) :
-                container(c),section_size(s) {
+                container(std::forward<Container>(c)),section_size(s) {
                     for (size_t i = 0; i < section_size; ++i) 
                         section.push_back(container.begin()+i);
                 }
-            moving_section_iter(Container && c) : container(c)
+            moving_section_iter(Container && c) : container(std::forward<Container>(c))
             //creates the end iterator
             {
                 section.push_back(container.end());
