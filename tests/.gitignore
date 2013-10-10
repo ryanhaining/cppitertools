@@ -22,4 +22,5 @@ testimap
 testfilterfalse
 testcount
 testgrouper
+testcommand_chains
 .sconsign.dblite

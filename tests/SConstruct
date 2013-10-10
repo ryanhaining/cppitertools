@@ -41,6 +41,7 @@ progs = Split( '''
         filterfalse
         grouper
         chain
+        command_chains
         ''')
 
 
