@@ -23,7 +23,11 @@ namespace iter {
     template <typename Container>
     class grouper_iter {
         private:
-            Container && container;
+            typename 
+                std::conditional<std::is_lvalue_reference<Container>::value,
+                Container&,
+                const Container &>::type container;
+            //Container && container;
             using Iterator = decltype(container.begin());
             using Deref_type =
                 std::vector<
@@ -48,8 +52,12 @@ namespace iter {
                     this->not_done = false;
                     return;
                 }
-                for (size_t i = 0; i < this->group_size; ++i) 
-                    this->group.push_back(this->container.begin() + i);
+                size_t i = 0;
+                for (auto iter = container.begin(); i < group_size;++i,++iter) {
+                    group.push_back(iter);
+                }
+                //for (size_t i = 0; i < this->group_size; ++i) 
+                  //  this->group.push_back(this->container.begin() + i);
             }
 
             //seems like conclassor is same as moving_section_iter
@@ -60,13 +68,22 @@ namespace iter {
                 group.push_back(container.end());
             }
 
+            //plan to conditionally check for existence of +=
+            /*
+            template<typename> struct int_{typedef int type;};dd
+            template <typename int_<decltype(Iterator::operator+=)>::type = 0>
             grouper_iter & operator++() {
                 for (auto & iter : this->group) {
                     iter += this->group_size;
                 }
                 return *this;
+            }*/
+            grouper_iter & operator++() {
+                for (auto & iter : this->group) {
+                    for(size_t i = 0; i < group_size;++i,++iter);
+                }
+                return *this;
             }
-
             bool operator!=(const grouper_iter &) const {
                 return this->not_done;
             }
@@ -74,7 +91,7 @@ namespace iter {
             Deref_type operator*() {
                 Deref_type vec;
                 for (auto i : this->group) {
-                    if(i == this->container.end()) {
+                    if(!(i != this->container.end())) {
                         this->not_done = false;
                         break;
                     } 

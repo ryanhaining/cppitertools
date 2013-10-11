@@ -25,6 +25,7 @@
 #include "zip_longest.hpp"
 #include "powerset.hpp"
 #include "moving_section.hpp"
+#include "grouper.hpp"
 
 //not sure if should include "iterator_range.hpp"
 //since it's already in everything
