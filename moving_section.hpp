@@ -21,14 +21,22 @@ namespace iter {
 
     template <typename Container>
         struct moving_section_iter {
-            Container && container;
+            typename 
+                std::conditional<std::is_lvalue_reference<Container>::value,
+                Container&,
+                const Container &>::type container;
+            //Container && container;
             using Iterator = decltype(container.begin());
             std::vector<Iterator> section;
             size_t section_size = 0;
             moving_section_iter(Container && c, size_t s) :
                 container(std::forward<Container>(c)),section_size(s) {
-                    for (size_t i = 0; i < section_size; ++i) 
-                        section.push_back(container.begin()+i);
+                    size_t i = 0;
+                    for (auto iter = container.begin(); i < section_size;++iter,++i) {
+                        section.push_back(iter);
+                    }
+                    //for (size_t i = 0; i < section_size; ++i) 
+                      //  section.push_back(container.begin()+i);
                 }
             moving_section_iter(Container && c) : container(std::forward<Container>(c))
             //creates the end iterator
