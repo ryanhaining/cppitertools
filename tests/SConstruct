@@ -3,7 +3,7 @@ import os
 
 env = Environment(
     CXX='g++',
-    CXXFLAGS=' -Wall -Wextra -pedantic -std=c++11 -I/usr/local/include',
+    CXXFLAGS=' -g -Wall -Wextra -pedantic -std=c++11 -I/usr/local/include',
     CPPPATH='..',
     LINKFLAGS='-L/usr/local/lib')
 
@@ -42,6 +42,7 @@ progs = Split( '''
         grouper
         chain
         command_chains
+        groupby
         ''')
 
 

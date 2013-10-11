@@ -23,4 +23,5 @@ testfilterfalse
 testcount
 testgrouper
 testcommand_chains
+testgroupby
 .sconsign.dblite
