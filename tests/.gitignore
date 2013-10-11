@@ -22,4 +22,5 @@ testimap
 testfilterfalse
 testcount
 testgrouper
+testgroupby
 .sconsign.dblite
