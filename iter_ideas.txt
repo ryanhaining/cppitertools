@@ -20,3 +20,37 @@ useful if a lot of the containers are of different sizes. may want to write
 a different zip_get that works better with optional
 
 Might be a good idea to do a powerset function
+
+Recipes: 
+Not all of the recipes are useful, IMO here are the ones I think we should do
+
+------------------------------------------------------------------------------
+take(n, range)
+
+takes first n items from range and turns it into its own list
+
+------------------------------------------------------------------------------
+quantify(range,predicate)
+
+return amount of times predicate is true
+
+------------------------------------------------------------------------------
+def flatten(listoflists)
+
+flattens one level of nesting
+would be tricky in c++ but kinda useful
+
+------------------------------------------------------------------------------
+roundrobin(Containers ... containers)
+    
+takes the first element off in sequence
+
+------------------------------------------------------------------------------
+unique_everseen(range)
+
+only shows unique elements
+
+------------------------------------------------------------------------------
+unique_justseen(range)
+
+if multiple are the same in a row only display the first one
