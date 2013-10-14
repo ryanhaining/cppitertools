@@ -17,7 +17,7 @@ class LessThanValue {
         LessThanValue() = delete;
         LessThanValue(int v) : compare_val(v) { }
         
-        bool operator() (int i) {
+        bool operator() (int i) const {
             return i < this->compare_val;
         }
 };
@@ -42,9 +42,19 @@ int main() {
         std::cout << i << '\n';
     }
 
-    std::cout << "Nonzero ints filter(vec2)\n";
+    std::cout << "zero ints filter(vec2)\n";
     std::vector<int> vec2 {0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
     for (auto i : filterfalse(vec2)) {
+        std::cout << i << '\n';
+    }
+
+    std::cout << "Constness tests\n";
+    const std::vector<int> cvec(vec);
+    for (auto i : filterfalse(greater_than_four, cvec)) {
+        std::cout << i << '\n';
+    }
+
+    for (auto i : filterfalse([] (const int & i) { return i < 4; }, cvec)) {
         std::cout << i << '\n';
     }
 
