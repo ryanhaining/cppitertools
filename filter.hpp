@@ -96,99 +96,40 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a FilterDefault
+    // Helper function to instantiate a Filter
     template <typename FilterFunc, typename Container>
     Filter<FilterFunc, Container> filter(
             FilterFunc filter_func, Container & container) {
         return Filter<FilterFunc, Container>(filter_func, container);
     }
 
-    //Forward declarations of FilterDefault and filter
-    template <typename Container>
-    class FilterDefault;
+    namespace detail {
 
-    template <typename Container>
-    FilterDefault<Container> filter(Container &);
+        template <typename T>
+        bool boolean_cast(const T & t) {
+            return bool(t);
+        }
 
-    template <typename Container>
-    class FilterDefault {
-        protected:
-            Container & container;
+        template <typename Container>
+        class BoolTester {
+            private:
+                using contained_iter_ret =
+                    decltype(std::declval<Container>().begin().operator*());
 
-            // The filter function is the only thing allowed to create a
-            // FilterDefault
-            friend FilterDefault filter<Container>(Container &);
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
-
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
-
-            // Value constructor for use only in the filter function
-            FilterDefault(Container & container) :
-                container(container)
-            { }
-            FilterDefault () = delete;
-            FilterDefault & operator=(const FilterDefault &) = delete;
-
-        public:
-            FilterDefault(const FilterDefault &) = default;
-            class Iterator {
-                protected:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
-
-                    void skip_failures() { 
-                        while (this->sub_iter != this->sub_end
-                                && !(*this->sub_iter)) {
-                            ++this->sub_iter;
-                        }
-                    }
-
-                public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end) :
-                        sub_iter(iter),
-                        sub_end(end)
-                    { 
-                        this->skip_failures();
-                    } 
-
-                    contained_iter_ret operator*() const {
-                        return *this->sub_iter;
-                    }
-
-                    Iterator & operator++() { 
-                        ++this->sub_iter;
-                        this->skip_failures();
-                        return *this;
-                    }
-
-                    bool operator!=(const Iterator & other) const {
-                        return this->sub_iter != other.sub_iter;
-                    }
-            };
-
-            Iterator begin() const {
-                return Iterator(
-                        this->container.begin(),
-                        this->container.end());
-            }
-
-            Iterator end() const {
-                return Iterator(
-                        this->container.end(),
-                        this->container.end());
-            }
-
-    };
-
-    // Helper function to instantiate a FilterDefault
-    template <typename Container>
-    FilterDefault<Container> filter(Container & container) {
-        return FilterDefault<Container>(container);
+            public:
+                bool operator() (const contained_iter_ret item) const {
+                    return bool(item);
+                }
+        };
     }
+
+
+    template <typename Container>
+    auto filter(Container & container) ->
+            decltype(filter(detail::BoolTester<Container>(), container)) {
+        return filter(detail::BoolTester<Container>(), container);
+    }
+
 }
 
 #endif //ifndef FILTER__H__
