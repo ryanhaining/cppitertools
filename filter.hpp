@@ -14,7 +14,7 @@ namespace iter {
 
     template <typename FilterFunc, typename Container>
     class Filter {
-        protected:
+        private:
             Container & container;
             FilterFunc filter_func;
 
