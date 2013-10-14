@@ -112,7 +112,7 @@ namespace iter {
 
         template <typename Container>
         class BoolTester {
-            private:
+            protected:
                 using contained_iter_ret =
                     decltype(std::declval<Container>().begin().operator*());
 

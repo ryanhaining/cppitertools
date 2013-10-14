@@ -37,17 +37,12 @@ namespace iter {
         // Reverses the bool() conversion result of anything that supports a
         // bool conversion
         template <typename Container>
-        class BoolFlipper {
+        class BoolFlipper : public BoolTester<Container> {
             private:
-                using contained_iter_type =
-                    decltype(std::declval<Container>().begin());
-
-                using contained_iter_ret =
-                    decltype(std::declval<contained_iter_type>().operator*());
+                using contained_iter_ret = 
+                    typename BoolTester<Container>::contained_iter_ret;
 
             public:
-                BoolFlipper() = default;
-                BoolFlipper(const BoolFlipper &) = default;
                 bool operator() (const contained_iter_ret item) const {
                     return !bool(item);
                 }
