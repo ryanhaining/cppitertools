@@ -1,179 +1,81 @@
-#ifndef FILTERFALSE__H__
-#define FILTERFALSE__H__
+#ifndef FILTER_FALSE__HPP__
+#define FILTER_FALSE__HPP__
 
 #include "filter.hpp"
 
 namespace iter {
 
-    //Forward declarations of FilterFalse and filterfalse
-    template <typename FilterFunc, typename Container>
-    class FilterFalse;
+    namespace detail {
 
-    template <typename FilterFunc, typename Container>
-    FilterFalse<FilterFunc, Container> filterfalse(FilterFunc, Container &);
+        // Callable object that reverses the boolean result of another
+        // callable, taking the object in a Container's iterator
+        template <typename FilterFunc, typename Container>
+        class PredicateFlipper {
+            private:
+                FilterFunc filter_func;
 
-    template <typename FilterFunc, typename Container>
-    class FilterFalse : public Filter<FilterFunc, Container> {
-        // The filterfalse function is the only thing allowed to
-        // create a FilterFalse
-        friend FilterFalse filterfalse<FilterFunc, Container>(
-                FilterFunc, Container &);
-        using Base = Filter<FilterFunc, Container>;
+                using contained_iter_type =
+                    decltype(std::declval<Container>().begin());
 
-        public:
-            using Filter<FilterFunc, Container>::Filter;
+                using contained_iter_ret =
+                    decltype(std::declval<contained_iter_type>().operator*());
 
-            class Iterator {
-                protected:
-                    typename Base::contained_iter_type sub_iter;
-                    const typename Base::contained_iter_type sub_end;
-                    FilterFunc filter_func;
+            public:
+                PredicateFlipper(FilterFunc filter_func) :
+                    filter_func(filter_func)
+                { }
 
-                    // skip every element that is true ender the predicate
-                    void skip_passes() { 
-                        while (this->sub_iter != this->sub_end
-                                && this->filter_func(*this->sub_iter)) {
-                            ++this->sub_iter;
-                        }
-                    }
+                PredicateFlipper() = delete;
+                PredicateFlipper(const PredicateFlipper &) = default;
 
-                public:
-                    Iterator (typename Base::contained_iter_type iter,
-                            typename Base::contained_iter_type end,
-                            FilterFunc filter_func) :
-                        sub_iter(iter),
-                        sub_end(end),
-                        filter_func(filter_func)
-                    { 
-                        this->skip_passes();
-                    } 
+                // Calls the filter_func 
+                bool operator() (const contained_iter_ret item) const {
+                    return !bool(filter_func(item));
+                }
+        };
 
-                    typename Base::contained_iter_ret operator*() const {
-                        return *this->sub_iter;
-                    }
+        // Reverses the bool() conversion result of anything that supports a
+        // bool conversion
+        template <typename Container>
+        class BoolFlipper {
+            private:
+                using contained_iter_type =
+                    decltype(std::declval<Container>().begin());
 
-                    Iterator & operator++() { 
-                        ++this->sub_iter;
-                        this->skip_passes();
-                        return *this;
-                    }
+                using contained_iter_ret =
+                    decltype(std::declval<contained_iter_type>().operator*());
 
-                    bool operator!=(const Iterator & other) const {
-                        return this->sub_iter != other.sub_iter;
-                    }
-            };
-
-            Iterator begin() const {
-                return Iterator(
-                        this->container.begin(),
-                        this->container.end(),
-                        this->filter_func);
-            }
-
-            Iterator end() const {
-                return Iterator(
-                        this->container.end(),
-                        this->container.end(),
-                        this->filter_func);
-            }
-    };
+            public:
+                BoolFlipper() = default;
+                BoolFlipper(const BoolFlipper &) = default;
+                bool operator() (const contained_iter_ret item) const {
+                    return !bool(item);
+                }
+        };
 
 
-    template <typename FilterFunc, typename Container>
-    FilterFalse<FilterFunc, Container> filterfalse(FilterFunc filter_func,
-            Container & container) {
-        return FilterFalse<FilterFunc, Container>(filter_func, container);
     }
 
-
-    //Forward declarations of filterfalseFalseDefault and filterfalse
-    template <typename Container>
-    class filterfalseFalseDefault;
-
-    template <typename Container>
-    filterfalseFalseDefault<Container> filterfalse(Container &);
-
-    template <typename Container>
-    class filterfalseFalseDefault {
-        protected:
-            Container & container;
-
-            // The filterfalse function is the only thing allowed to create a
-            // filterfalseFalseDefault
-            friend filterfalseFalseDefault filterfalse<Container>(Container &);
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
-
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
-
-            // Value constructor for use only in the filterfalse function
-            filterfalseFalseDefault(Container & container) :
-                container(container)
-            { }
-            filterfalseFalseDefault () = delete;
-            filterfalseFalseDefault & operator=(const filterfalseFalseDefault &) = delete;
-
-        public:
-            filterfalseFalseDefault(const filterfalseFalseDefault &) = default;
-            class Iterator {
-                protected:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
-
-                    void skip_passes() { 
-                        while (this->sub_iter != this->sub_end
-                                && *this->sub_iter) {
-                            ++this->sub_iter;
-                        }
-                    }
-
-                public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end) :
-                        sub_iter(iter),
-                        sub_end(end)
-                    { 
-                        this->skip_passes();
-                    } 
-
-                    contained_iter_ret operator*() const {
-                        return *this->sub_iter;
-                    }
-
-                    Iterator & operator++() { 
-                        ++this->sub_iter;
-                        this->skip_passes();
-                        return *this;
-                    }
-
-                    bool operator!=(const Iterator & other) const {
-                        return this->sub_iter != other.sub_iter;
-                    }
-            };
-
-            Iterator begin() const {
-                return Iterator(
-                        this->container.begin(),
-                        this->container.end());
-            }
-
-            Iterator end() const {
-                return Iterator(
-                        this->container.end(),
-                        this->container.end());
-            }
-
-    };
-
-    // Helper function to instantiate a filterfalseFalseDefault
-    template <typename Container>
-    filterfalseFalseDefault<Container> filterfalse(Container & container) {
-        return filterfalseFalseDefault<Container>(container);
+    // Creates a PredicateFlipper for the predicate function, which reverses
+    // the bool result of the function.  The PredicateFlipper is then passed
+    // to the normal filter() function
+    template <typename FilterFunc, typename Container>
+    auto filterfalse(FilterFunc filter_func, Container & container) ->
+            decltype(filter(detail::PredicateFlipper<FilterFunc, Container>(
+                            filter_func), container)) {
+        return filter(
+                detail::PredicateFlipper<FilterFunc, Container>(filter_func),
+                container);
     }
+
+    // Single argument version, uses a BoolFlipper to reverse the truthiness
+    // of an object
+    template <typename Container>
+    auto filterfalse(Container & container) ->
+            decltype(filter(detail::BoolFlipper<Container>(), container)) {
+        return filter(detail::BoolFlipper<Container>(), container);
+    }
+
 }
 
-
-
-#endif //ifndef FILTERFALSE__H__
+#endif //#ifndef FILTER_FALSE__HPP__
