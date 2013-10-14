@@ -14,11 +14,8 @@ namespace iter {
             private:
                 FilterFunc filter_func;
 
-                using contained_iter_type =
-                    decltype(std::declval<Container>().begin());
-
                 using contained_iter_ret =
-                    decltype(std::declval<contained_iter_type>().operator*());
+                    decltype(std::declval<Container>().begin().operator*());
 
             public:
                 PredicateFlipper(FilterFunc filter_func) :
