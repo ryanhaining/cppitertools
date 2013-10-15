@@ -43,6 +43,7 @@ progs = Split( '''
         chain
         command_chains
         groupby
+        sorted
         ''')
 
 
