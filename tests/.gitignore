@@ -25,5 +25,6 @@ testgrouper
 testcommand_chains
 testgroupby
 testsorted
+testunique_justseen
 .sconsign.dblite
 
