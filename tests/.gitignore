@@ -1,4 +1,5 @@
 *.o
+.*.swp
 testchain
 testcycle
 testenumerate
