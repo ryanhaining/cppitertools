@@ -1,5 +1,5 @@
 *.o
-.*.swp
+*.swp
 testchain
 testcycle
 testenumerate

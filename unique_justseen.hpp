@@ -4,6 +4,7 @@
 #include "filter.hpp"
 #include <type_traits>
 #include <functional>
+#include <utility>
 
 namespace iter 
 {
@@ -11,16 +12,21 @@ namespace iter
     //on the elements in the container have the != operator overloaded
     template <typename Container>
     auto unique_justseen(Container && container) 
-    -> decltype(filter(std::function<bool(decltype(container.front))>(),container))
+    -> Filter<std::function<bool(decltype(container.front()))>,Container>
     {
         using elem_t = decltype(container.front());
         auto last = container.begin();
-        std::function<bool(elem_t)> func = [&last,container](elem_t e) 
+        std::function<bool(elem_t)> func = [last,container] (elem_t e) mutable 
                 {
-                    if (last == container.begin())return true;
-                    else return *(++last) != e;
+                    if (last == container.begin()) {
+                        return true;
+                    }
+                    else { 
+                        return *(++last) != e;
+                    }
                 };
-        return filter(func, container);
+        //return filter(func,std::forward<Container>(container));
+        return filter<decltype(func),Container>(func,std::forward<Container>(container));
     }
 }
 
