@@ -45,6 +45,7 @@ progs = Split( '''
         groupby
         sorted
         unique_justseen
+        unique_everseen
         ''')
 
 
