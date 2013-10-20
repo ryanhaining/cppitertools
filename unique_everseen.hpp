@@ -18,7 +18,8 @@ namespace iter
         using elem_t = decltype(container.front());
         std::unordered_map<typename std::remove_reference<elem_t>::type,bool> elem_seen;
         std::function<bool(elem_t)> func = [elem_seen](elem_t e) mutable
-        //not sure why but elem seen has to be captured by value
+        //has to be captured by value because it goes out of scope when the 
+        //function returns
                 {
                     if(!elem_seen[e]) {
                         elem_seen[e] = true;

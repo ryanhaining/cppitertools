@@ -19,11 +19,6 @@ int main() {
         for (auto i : unique_everseen(v)) {
             std::cout << i << " ";
         }std::cout << std::endl;
-        std::unordered_map<int,bool> map;
-        [&map]() {
-            map[70]=true;
-            std::cout << map[60];
-        }();
     }
     return 0;
 }

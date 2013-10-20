@@ -27,5 +27,6 @@ testcommand_chains
 testgroupby
 testsorted
 testunique_justseen
+testunique_everseen
 .sconsign.dblite
 
