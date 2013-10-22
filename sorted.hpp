@@ -5,16 +5,17 @@
 #include <vector>
 
 namespace iter {
-    template <typename Container>
+    template <typename Container, typename CompareFunc>
     class Sorted;
 
-    template <typename Container>
-    Sorted<Container> sorted(Container &);
+    template <typename Container, typename CompareFunc>
+    Sorted<Container, CompareFunc> sorted(Container &, CompareFunc);
 
-    template <typename Container>
+    template <typename Container, typename CompareFunc>
     class Sorted {
         private:
-            friend Sorted sorted<Container>(Container &);
+            friend Sorted
+                sorted<Container, CompareFunc>(Container &, CompareFunc);
 
             using contained_iter_type =
                 decltype(std::declval<Container>().begin());
@@ -28,7 +29,7 @@ namespace iter {
             Sorted() = delete;
             Sorted & operator=(const Sorted &) = delete;
 
-            Sorted(Container & container) {
+            Sorted(Container & container, CompareFunc compare_func) {
                 // Fill the sorted_iters vector with an iterator to each
                 // element in the container
                 for (auto iter = container.begin();
@@ -39,12 +40,14 @@ namespace iter {
 
                 // sort by comparing the elements that the iterators point to
                 std::sort(sorted_iters.begin(), sorted_iters.end(),
-                        [] (const contained_iter_type & it1,
+                        [&] (const contained_iter_type & it1,
                             const contained_iter_type & it2)
-                        { return *it1 < *it2; });
+                        { return compare_func(*it1, *it2); });
             }
 
         public:
+
+            Sorted(const Sorted &) = default;
 
             // Iterates over a series of Iterators, automatically dereferencing
             // them when accessed with operator *
@@ -61,8 +64,6 @@ namespace iter {
                     }
             };
 
-            Sorted(const Sorted &) = default;
-
             IteratorIterator begin() {
                 IteratorIterator iteriter(sorted_iters.begin());
                 return iteriter;
@@ -74,9 +75,25 @@ namespace iter {
             }
     };
 
+    template <typename Container, typename CompareFunc>
+    Sorted<Container, CompareFunc> sorted(
+            Container & container, CompareFunc compare_func) {
+        return Sorted<Container, CompareFunc>(container, compare_func);
+    }
+
     template <typename Container>
-    Sorted<Container> sorted(Container & container) { 
-        return Sorted<Container>(container);
+    auto sorted(Container & container) ->
+             decltype(sorted(
+                         container,
+                         std::less<decltype(
+                             std::declval<Container>().begin().operator*())>()
+                         ))
+     {
+         return sorted(
+                 container,
+                 std::less<decltype(
+                     std::declval<Container>().begin().operator*())>()
+                 );
     }
 
 }
