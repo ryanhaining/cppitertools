@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 using iter::sorted;
 
@@ -16,6 +17,15 @@ int main()
     for (auto i : sorted(cvec)) {
         std::cout << i << '\n';
     }
+
+    std::vector<std::string> svec = {"hello", "everyone", "thanks", "for",
+                                     "having", "me", "here", "today"};
+    for (auto s : sorted(svec,
+                [] (const std::string & s1, const std::string & s2) {
+                    return s1[1] < s2[1]; })) {
+        std::cout << s << '\n';
+    }
+        
 
     return 0;
 }
