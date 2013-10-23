@@ -177,6 +177,25 @@ namespace iter {
             Container & container, KeyFunc key_func) {
         return GroupBy<Container, KeyFunc>(container, key_func);
     }
+
+    template <typename Container>
+    class ItemReturner {
+        private:
+            using contained_iter_ret =
+                decltype(std::declval<Container>().begin().operator*());
+        public:
+            ItemReturner() = default;
+            contained_iter_ret operator() (contained_iter_ret item) const {
+                return item;
+            }
+    };
+
+    template <typename Container>
+    auto groupby(Container & container) ->
+            decltype(groupby(container, ItemReturner<Container>())) {
+        return groupby(container, ItemReturner<Container>());
+    }
+
 }
 
 
