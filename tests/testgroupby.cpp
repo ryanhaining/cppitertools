@@ -29,6 +29,16 @@ int main()
         std::cout << '\n';
     }
 
+    std::vector<int> ivec = {5, 5, 6, 6, 19, 19, 19, 19, 69, 0, 10, 10};
+    for (auto gb : groupby(ivec)) {
+        std::cout << "key: " << gb.first << '\n';
+        std::cout << "content: ";
+        for (auto s : gb.second) {
+            std::cout << s << "  ";
+        }
+        std::cout << '\n';
+    }
+
 
     return 0;
 }
