@@ -15,7 +15,7 @@ namespace iter {
 
             // The type returned when dereferencing the Container::Iterator
             using contained_iter_ret =
-                decltype(std::declval<contained_iter_type&>().operator*());
+                decltype(*std::declval<contained_iter_type&>());
             
             IterBase() = default;
             IterBase(const IterBase &) = default;
