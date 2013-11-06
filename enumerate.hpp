@@ -38,16 +38,6 @@ namespace iter {
 
             using contained_iter_ret =
                 typename IterBase<Container>::contained_iter_ret;
-#if 0
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            //using contained_iter_type =
-                decltype(container.begin());
-
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret =
-                decltype(container.begin().operator*());
-#endif
 
             
             // Value constructor for use only in the enumerate function
