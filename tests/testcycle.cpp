@@ -17,5 +17,15 @@ int main() {
         ++count;
     }
 
+    count = 0;
+    int array[] = {68, 69, 70};
+    for (auto i : cycle(array)) {
+        std::cout << i << '\n';
+        if (count == 100) {
+            break;
+        }
+        ++count;
+    }
+
     return 0;
 }
