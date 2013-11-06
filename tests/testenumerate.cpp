@@ -26,5 +26,10 @@ int main() {
         std::cout << e.index << ": " << e.element << std::endl;
     }
 
+    int array[] = {1, 9, 8, 11};
+    for (auto e : enumerate(array)) {
+        std::cout << e.index << ": " << e.element << '\n';
+    }
+
     return 0;
 }
