@@ -76,7 +76,7 @@ int main() {
                     constvector)) 
         { 
 
-            std::cout << (std::get<0>(e)=5) << " " 
+            std::cout << std::get<0>(e) << " " 
                 << std::get<1>(e) << " " 
                 << std::get<2>(e) << std::endl;
         }
