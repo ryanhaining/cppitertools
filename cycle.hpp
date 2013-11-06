@@ -1,6 +1,8 @@
 #ifndef CYCLE__H__
 #define CYCLE__H__
 
+#include "iterbase.hpp"
+
 #include <utility>
 
 namespace iter {
@@ -14,21 +16,17 @@ namespace iter {
 
 
     template <typename Container>
-    class Cycle {
-        // The cycle function is the only thing allowed to create a Cycle
-        friend Cycle cycle<Container>(Container &);
-
-
-        // Type of the Container::Iterator, but since the name of that 
-        // iterator can be anything, we have to grab it with this
-        using contained_iter_type =
-            decltype(std::declval<Container>().begin());
-
-        // The type returned when dereferencing the Container::Iterator
-        using contained_iter_ret =
-            decltype(std::declval<contained_iter_type>().operator*());
-
+    class Cycle : public IterBase<Container>{
         private:
+            // The cycle function is the only thing allowed to create a Cycle
+            friend Cycle cycle<Container>(Container &);
+
+            using contained_iter_type =
+                typename IterBase<Container>::contained_iter_type;
+
+            using contained_iter_ret =
+                typename IterBase<Container>::contained_iter_ret;
+
             Container & container;
             
             // Value constructor for use only in the cycle function
@@ -70,12 +68,13 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(this->container.begin(),
-                        this->container.end());
+                return Iterator(std::begin(this->container),
+                        std::end(this->container));
             }
 
             Iterator end() const {
-                return Iterator(this->container.end(), this->container.end());
+                return Iterator(std::end(this->container),
+                    std::end(this->container));
             }
 
     };
