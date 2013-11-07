@@ -5,7 +5,7 @@
 #include "wrap_iter.hpp"
 
 #include <iterator>
-#include <assert.h>
+#include <cassert>
 
 namespace iter {
     template <typename Container>
