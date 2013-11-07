@@ -11,28 +11,39 @@ namespace iter {
     template <typename Container>
         auto slice(
                 Container && container,
-                typename std::iterator_traits<decltype(container.begin())>::difference_type begin,
-                typename std::iterator_traits<decltype(container.begin())>::difference_type end,
-                typename std::iterator_traits<decltype(container.begin())>::difference_type step = 1
-                ) -> iterator_range<wrap_iter<decltype(container.begin())>>
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type begin,
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type end,
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type step = 1
+                ) -> iterator_range<wrap_iter<decltype(std::begin(container))>>
         {
             //it seems like you can handle negative and positive ranges the same
+            //kept both checks to make checking for invalid slice more readable
             if (begin > end && step < 0) {
-                typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
-                return iterator_range<wrap_iter<decltype(container.begin())>>(
-                        make_wrap_iter(container.begin()+begin,step),
-                        make_wrap_iter(container.begin()+new_end,step));
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type new_end = end - ((end - begin) % step);
+                auto begin_iter = std::begin(container);
+                std::advance(begin_iter,begin);
+                auto end_iter = std::begin(container);
+                std::advance(end_iter,new_end);
+                return iterator_range<wrap_iter<decltype(std::begin(container))>>(
+                        make_wrap_iter(begin_iter,step),
+                        make_wrap_iter(end_iter,step));
             }
             else if (begin <= end && step > 0) {
                 typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
+                auto begin_iter = std::begin(container);
+                std::advance(begin_iter,begin);
+                auto end_iter = std::begin(container);
+                std::advance(end_iter,new_end);
                 return iterator_range<wrap_iter<decltype(container.begin())>>(
-                        make_wrap_iter(container.begin()+begin,step),
-                        make_wrap_iter(container.begin()+new_end,step));
+                        make_wrap_iter(begin_iter,step),
+                        make_wrap_iter(end_iter,step));
             }
             else {//return an empty range for invalid slice
+                auto empty = std::begin(container);
+                std::advance(empty,begin);
                 return iterator_range<wrap_iter<decltype(container.begin())>>(
-                        make_wrap_iter(container.begin()+begin,step),
-                        make_wrap_iter(container.begin()+begin,step));
+                        make_wrap_iter(empty,step),
+                        make_wrap_iter(empty,step));
             }
 
         }
@@ -40,8 +51,8 @@ namespace iter {
     template <typename Container>
         auto slice(
                 Container && container,
-                typename std::iterator_traits<decltype(container.begin())>::difference_type end
-                ) -> iterator_range<wrap_iter<decltype(container.begin())>>
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type end
+                ) -> iterator_range<wrap_iter<decltype(std::begin(container))>>
         {
             return slice(std::forward<Container>(container),0,end);
         }
