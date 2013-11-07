@@ -1,8 +1,10 @@
 #ifndef GROUP__BY__HPP
 #define GROUP__BY__HPP
 
+#include <iterbase.hpp>
 
 #include <utility>
+#include <iterator>
 
 
 namespace iter {
@@ -14,7 +16,7 @@ namespace iter {
     GroupBy<Container, KeyFunc> groupby(Container &, KeyFunc);
 
     template <typename Container, typename KeyFunc>
-    class GroupBy {
+    class GroupBy : IterBase<Container> {
         private:
             Container & container;
             KeyFunc key_func;
@@ -22,12 +24,9 @@ namespace iter {
             // The filter function is the only thing allowed to create a Filter
             friend GroupBy groupby<Container, KeyFunc>(Container &, KeyFunc);
 
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
+            using typename IterBase<Container>::contained_iter_type;
 
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
+            using typename IterBase<Container>::contained_iter_ret;
 
             using key_func_ret =
                 decltype(std::declval<KeyFunc>()(
@@ -158,15 +157,15 @@ namespace iter {
 
             Iterator begin() const {
                 return Iterator(
-                        this->container.begin(),
-                        this->container.end(),
+                        std::begin(this->container),
+                        std::end(this->container),
                         this->key_func);
             }
 
             Iterator end() const {
                 return Iterator(
-                        this->container.end(),
-                        this->container.end(),
+                        std::end(this->container),
+                        std::end(this->container),
                         this->key_func);
             }
 
@@ -182,7 +181,7 @@ namespace iter {
     class ItemReturner {
         private:
             using contained_iter_ret =
-                decltype(std::declval<Container>().begin().operator*());
+                typename IterBase<Container>::contained_iter_ret;
         public:
             ItemReturner() = default;
             contained_iter_ret operator() (contained_iter_ret item) const {
