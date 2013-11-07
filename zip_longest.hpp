@@ -4,6 +4,7 @@
 #include <boost/optional.hpp>
 #include <tuple>
 #include <utility>
+#include <iterator>
 #include "iterator_range.hpp"
 
 namespace iter {
@@ -29,14 +30,14 @@ namespace iter {
     template <typename Container>
         struct zip_longest_iter<Container> {
         public:
-            using Iterator = decltype(std::declval<Container>().begin());
+            using Iterator = decltype(std::begin(std::declval<Container>()));
         private:
             Iterator begin;
             const Iterator end;
 
         public:
             zip_longest_iter(Container && c) :
-                begin(c.begin()),end(c.end()) {}
+                begin(std::begin(c)),end(std::end(c)) {}
 
             std::tuple<boost::optional<decltype(*std::declval<Iterator>())>> 
             operator*()     
@@ -56,7 +57,7 @@ namespace iter {
     template <typename Container, typename ... Containers>
         struct zip_longest_iter<Container,Containers...> {
         public:
-            using Iterator = decltype(std::declval<Container>().begin());
+            using Iterator = decltype(std::begin(std::declval<Container>()));
         private:
             Iterator begin;
             const Iterator end;
@@ -70,8 +71,8 @@ namespace iter {
                             *inner_iter));
 
             zip_longest_iter(Container && c, Containers && ... containers) :
-                begin(c.begin()),
-                end(c.end()),
+                begin(std::begin(c)),
+                end(std::end(c)),
                 inner_iter(std::forward<Containers>(containers)...) {}
 
             //this is for returning a tuple of optional<iterator>

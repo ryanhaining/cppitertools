@@ -3,6 +3,7 @@
 
 #include "iterator_range.hpp"
 #include <utility>
+#include <iterator>
 
 namespace iter {
     template <typename ... Containers>
@@ -11,14 +12,15 @@ namespace iter {
         struct chain_iter<Container> {
 
             private:
-                using Iterator = decltype(std::declval<Container>().begin());
+                //using Iterator = decltype(std::declval<Container>().begin());
+                using Iterator = decltype(std::begin(std::declval<Container>()));
                 Iterator begin;
                 const Iterator end;//never really used but kept it for consistency
 
             public:
                 chain_iter(Container && container, bool is_end=false) :
-                    begin(container.begin()),end(container.end()) {
-                        if(is_end) begin = container.end();
+                    begin(std::begin(container)),end(std::end(container)) {
+                        if(is_end) begin = std::end(container);
                     }
                 chain_iter & operator++()
                 {
@@ -37,7 +39,8 @@ namespace iter {
         struct chain_iter<Container,Containers...>
         {
             private:
-                using Iterator = decltype(std::declval<Container>().begin());
+                //using Iterator = decltype(std::declval<Container>().begin());
+                using Iterator = decltype(std::begin(std::declval<Container>()));
                 Iterator begin;
                 const Iterator end;
                 bool end_reached = false;
@@ -45,11 +48,11 @@ namespace iter {
 
             public:
                 chain_iter(Container && container, Containers&& ... containers, bool is_end=false) :
-                    begin(container.begin()),
-                    end(container.end()),
+                    begin(std::begin(container)),
+                    end(std::end(container)),
                     next_iter(std::forward<Containers>(containers)...,is_end) {
                         if(is_end)
-                            begin = container.end();
+                            begin = std::end(container);
                     }
                 chain_iter & operator++()
                 {

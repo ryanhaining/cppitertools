@@ -4,6 +4,7 @@
 #include "iterator_range.hpp"
 
 #include <tuple>
+#include <iterator>
 
 namespace iter {
     template <typename ... Rest>
@@ -11,13 +12,13 @@ namespace iter {
 
     template <typename ... Containers>
     auto zip(Containers && ... containers) ->
-            iterator_range<zip_iter<decltype(containers.begin())...>>
+            iterator_range<zip_iter<decltype(std::begin(containers))...>>
     {
         auto begin =
-            zip_iter<decltype(containers.begin())...>(containers.begin()...);
+            zip_iter<decltype(containers.begin())...>(std::begin(containers)...);
 
         auto end =
-            zip_iter<decltype(containers.end())...>(containers.end()...);
+            zip_iter<decltype(containers.end())...>(std::end(containers)...);
 
         return iterator_range<decltype(begin)>(begin,end);
     }

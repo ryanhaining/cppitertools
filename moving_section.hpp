@@ -7,6 +7,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <iterator>
 
 namespace iter {
     template <typename Container>
@@ -26,13 +27,14 @@ namespace iter {
                 Container&,
                 const Container &>::type container;
             //Container && container;
-            using Iterator = decltype(container.begin());
+            //using Iterator = decltype(container.begin());
+            using Iterator = decltype(std::begin(container));
             std::vector<Iterator> section;
             size_t section_size = 0;
             moving_section_iter(Container && c, size_t s) :
                 container(std::forward<Container>(c)),section_size(s) {
                     size_t i = 0;
-                    for (auto iter = container.begin(); i < section_size;++iter,++i) {
+                    for (auto iter = std::begin(container); i < section_size;++iter,++i) {
                         section.push_back(iter);
                     }
                     //for (size_t i = 0; i < section_size; ++i) 
@@ -41,7 +43,7 @@ namespace iter {
             moving_section_iter(Container && c) : container(std::forward<Container>(c))
             //creates the end iterator
             {
-                section.push_back(container.end());
+                section.push_back(std::end(container));
             }
 
             moving_section_iter & operator++() {

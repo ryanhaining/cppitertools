@@ -7,6 +7,7 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <iterator>
 
 namespace iter {
     template <typename Container>
@@ -28,7 +29,8 @@ namespace iter {
                 Container&,
                 const Container &>::type container;
             //Container && container;
-            using Iterator = decltype(container.begin());
+            //using Iterator = decltype(container.begin());
+            using Iterator = decltype(std::begin(container));
             using Deref_type =
                 std::vector<
                     std::reference_wrapper<
@@ -48,12 +50,12 @@ namespace iter {
                 // if the group size is 0 or the container is empty produce
                 // nothing
                 if (this->group_size == 0 ||
-                        !(this->container.begin() != this->container.end())) {
+                        !(std::begin(this->container) != std::end(this->container))) {
                     this->not_done = false;
                     return;
                 }
                 size_t i = 0;
-                for (auto iter = container.begin(); i < group_size;++i,++iter) {
+                for (auto iter = std::begin(container); i < group_size;++i,++iter) {
                     group.push_back(iter);
                 }
                 //for (size_t i = 0; i < this->group_size; ++i) 
@@ -65,7 +67,7 @@ namespace iter {
                 container(std::forward<Container>(c))
             {
                 //creates the end iterator
-                group.push_back(container.end());
+                group.push_back(std::end(container));
             }
 
             //plan to conditionally check for existence of +=
@@ -91,7 +93,7 @@ namespace iter {
             Deref_type operator*() {
                 Deref_type vec;
                 for (auto i : this->group) {
-                    if(!(i != this->container.end())) {
+                    if(!(i != std::end(this->container))) {
                         this->not_done = false;
                         break;
                     } 
