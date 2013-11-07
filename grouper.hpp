@@ -71,21 +71,20 @@ namespace iter {
             }
 
             //plan to conditionally check for existence of +=
-            /*
-            template<typename> struct int_{typedef int type;};dd
-            template <typename int_<decltype(Iterator::operator+=)>::type = 0>
             grouper_iter & operator++() {
                 for (auto & iter : this->group) {
-                    iter += this->group_size;
+                    std::advance(iter,this->group_size);
                 }
                 return *this;
-            }*/
+            }
+            /*
             grouper_iter & operator++() {
                 for (auto & iter : this->group) {
                     for(size_t i = 0; i < group_size;++i,++iter);
                 }
                 return *this;
             }
+            */
             bool operator!=(const grouper_iter &) const {
                 return this->not_done;
             }

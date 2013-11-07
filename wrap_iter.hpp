@@ -19,7 +19,7 @@ namespace iter {
             { }
 
             wrap_iter & operator++() {
-                iter += step;
+                std::advance(iter,step);
                 return *this;
             }
 
