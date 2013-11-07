@@ -41,7 +41,7 @@ namespace iter {
             else {//return an empty range for invalid slice
                 auto empty = std::begin(container);
                 std::advance(empty,begin);
-                return iterator_range<wrap_iter<decltype(std::begin(container)>>(
+                return iterator_range<wrap_iter<decltype(std::begin(container))>>(
                         make_wrap_iter(empty,step),
                         make_wrap_iter(empty,step));
             }
