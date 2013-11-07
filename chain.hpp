@@ -81,6 +81,7 @@ namespace iter {
                         return this->begin != rhs.begin;
                 }
         };
+    
     template <typename ... Containers>
         iterator_range<chain_iter<Containers...>> chain(Containers&& ... containers)
         {
@@ -92,5 +93,9 @@ namespace iter {
                 iterator_range<chain_iter<Containers...>>(begin,end);
         }
 }
-
+template <typename ... Containers>
+struct std::iterator_traits<iter::chain_iter<Containers...>> {
+    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::input_iterator_tag;
+};
 #endif //CHAIN_HPP
