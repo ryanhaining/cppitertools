@@ -1,9 +1,10 @@
 #ifndef CYCLE__H__
 #define CYCLE__H__
 
-#include "iterbase.hpp"
+#include <iterbase.hpp>
 
 #include <utility>
+#include <iterator>
 
 namespace iter {
 
