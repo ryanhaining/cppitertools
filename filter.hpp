@@ -1,6 +1,8 @@
 #ifndef FILTER__H__
 #define FILTER__H__
 
+#include <iterbase.hpp>
+
 #include <utility>
 
 namespace iter {
@@ -13,7 +15,7 @@ namespace iter {
     Filter<FilterFunc, Container> filter(FilterFunc, Container &);
 
     template <typename FilterFunc, typename Container>
-    class Filter {
+    class Filter : IterBase<Container>{
         private:
             Container & container;
             FilterFunc filter_func;
@@ -21,12 +23,10 @@ namespace iter {
             // The filter function is the only thing allowed to create a Filter
             friend Filter filter<FilterFunc, Container>(FilterFunc,
                     Container &);
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
 
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
+            using typename IterBase<Container>::contained_iter_type;
+
+            using typename IterBase<Container>::contained_iter_ret;
             
             // Value constructor for use only in the filter function
             Filter(FilterFunc filter_func, Container & container) :
@@ -82,15 +82,15 @@ namespace iter {
 
             Iterator begin() const {
                 return Iterator(
-                        this->container.begin(),
-                        this->container.end(),
+                        std::begin(this->container),
+                        std::end(this->container),
                         this->filter_func);
             }
 
             Iterator end() const {
                 return Iterator(
-                        this->container.end(),
-                        this->container.end(),
+                        std::end(this->container),
+                        std::end(this->container),
                         this->filter_func);
             }
 
@@ -114,7 +114,7 @@ namespace iter {
         class BoolTester {
             protected:
                 using contained_iter_ret =
-                    decltype(std::declval<Container>().begin().operator*());
+                    typename IterBase<Container>::contained_iter_ret;
 
             public:
                 bool operator() (const contained_iter_ret item) const {
