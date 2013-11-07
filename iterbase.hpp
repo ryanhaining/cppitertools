@@ -7,7 +7,7 @@
 namespace iter {
     template <typename Iterable>
     class IterBase{
-        protected:
+        public:
             // Type of the Container::Iterator, but since the name of that 
             // iterator can be anything, we have to grab it with this
             using contained_iter_type =
