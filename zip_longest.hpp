@@ -95,5 +95,13 @@ namespace iter {
 }
 //should add reset after the end of a range is reached, just in case someone 
 //tries to use it again
-//this means it's only safe to use the range ONCE
+//this means it's only safe to use the range ONCE, which is fine because of
+//the input_iterator_tag
+namespace std {
+    template <typename ... Containers>
+        struct iterator_traits<iter::zip_longest_iter<Containers...>> {
+            using difference_type = ptrdiff_t;
+            using iterator_category = input_iterator_tag;
+        };
+}
 #endif //ZIP_LONGEST_HPP
