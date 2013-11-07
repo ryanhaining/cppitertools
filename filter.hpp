@@ -4,6 +4,7 @@
 #include <iterbase.hpp>
 
 #include <utility>
+#include <iterator>
 
 namespace iter {
 
