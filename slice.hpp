@@ -41,6 +41,8 @@ namespace iter {
         else {//return an empty range for invalid slice
             auto empty = std::begin(container);
             std::advance(empty,begin);
+            //just in case it gets dereferenced it will be the first element had 
+            //the range been valid
             return iterator_range<wrap_iter<decltype(std::begin(container))>>(
                     make_wrap_iter(empty,step),
                     make_wrap_iter(empty,step));
