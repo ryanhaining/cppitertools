@@ -93,9 +93,11 @@ namespace iter {
                 iterator_range<chain_iter<Containers...>>(begin,end);
         }
 }
+namespace std {
 template <typename ... Containers>
-struct std::iterator_traits<iter::chain_iter<Containers...>> {
-    using difference_type = std::ptrdiff_t;
-    using iterator_category = std::input_iterator_tag;
+struct iterator_traits<iter::chain_iter<Containers...>> {
+    using difference_type = ptrdiff_t;
+    using iterator_category = input_iterator_tag;
 };
+}
 #endif //CHAIN_HPP
