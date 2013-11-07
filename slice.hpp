@@ -8,18 +8,17 @@
 #include <cassert>
 
 namespace iter {
-    template <typename Container>
-    auto slice(
-            Container && container,
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type begin,
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type end,
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type step = 1
+    template <typename Container, typename DifferenceType>
+    auto slice( Container && container,
+            DifferenceType begin,
+            DifferenceType end,
+            DifferenceType step = 1
             ) -> iterator_range<wrap_iter<decltype(std::begin(container))>>
     {
         //it seems like you can handle negative and positive ranges the same
         //kept both checks to make checking for invalid slice more readable
         if (begin > end && step < 0) {
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type new_end = end - ((end - begin) % step);
+            DifferenceType new_end = end - ((end - begin) % step);
             auto begin_iter = std::begin(container);
             std::advance(begin_iter,begin);
             auto end_iter = std::begin(container);
@@ -29,7 +28,7 @@ namespace iter {
                     make_wrap_iter(end_iter,step));
         }
         else if (begin <= end && step > 0) {
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type new_end = end - ((end - begin) % step);
+            DifferenceType new_end = end - ((end - begin) % step);
             auto begin_iter = std::begin(container);
             std::advance(begin_iter,begin);
             auto end_iter = std::begin(container);
@@ -48,10 +47,10 @@ namespace iter {
 
     }
     //only give the end as an arg and assume step  is 1 and begin is 0
-    template <typename Container>
+    template <typename Container, typename DifferenceType>
     auto slice(
             Container && container,
-            typename std::iterator_traits<decltype(std::begin(container))>::difference_type end
+            DifferenceType end
             ) -> iterator_range<wrap_iter<decltype(std::begin(container))>>
     {
         return slice(std::forward<Container>(container),0,end);
