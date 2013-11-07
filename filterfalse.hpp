@@ -1,7 +1,8 @@
 #ifndef FILTER_FALSE__HPP__
 #define FILTER_FALSE__HPP__
 
-#include "filter.hpp"
+#include <iterbase.hpp>
+#include <filter.hpp>
 
 namespace iter {
 
@@ -15,7 +16,7 @@ namespace iter {
                 FilterFunc filter_func;
 
                 using contained_iter_ret =
-                    decltype(std::declval<Container>().begin().operator*());
+                    typename IterBase<Container>::contained_iter_ret;
 
             public:
                 PredicateFlipper(FilterFunc filter_func) :
