@@ -1,9 +1,10 @@
 #ifndef COMPRESS__H__
 #define COMPRESS__H__
 
-#include <utility>
+#include <iterbase.hpp>
 
-// TODO everything in here
+
+#include <utility>
 
 namespace iter {
 
@@ -16,7 +17,7 @@ namespace iter {
 
 
     template <typename Container, typename Selector>
-    class Compressed {
+    class Compressed : public IterBase<Container> {
         private:
             Container & container;
             Selector & selectors;
@@ -26,15 +27,12 @@ namespace iter {
             friend Compressed compress<Container, Selector>(
                     Container &, Selector &);
 
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
+            using typename IterBase<Container>::contained_iter_type;
 
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
+            using typename IterBase<Container>::contained_iter_ret;
 
             // Selector::Iterator type
-            using selector_iter_type = decltype(selectors.begin());
+            using selector_iter_type = decltype(std::begin(selectors));
             
             // Value constructor for use only in the compress function
             Compressed(Container & container, Selector & selectors) :
