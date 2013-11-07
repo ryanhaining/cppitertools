@@ -21,11 +21,9 @@ namespace iter {
             // The cycle function is the only thing allowed to create a Cycle
             friend Cycle cycle<Container>(Container &);
 
-            using contained_iter_type =
-                typename IterBase<Container>::contained_iter_type;
+            using typename IterBase<Container>::contained_iter_type;
 
-            using contained_iter_ret =
-                typename IterBase<Container>::contained_iter_ret;
+            using typename IterBase<Container>::contained_iter_ret;
 
             Container & container;
             
