@@ -96,14 +96,14 @@ namespace iter {
 
             Iterator begin() const {
                 return Iterator(
-                        this->container.begin(), this->container.end(),
-                        this->selectors.begin(), this->selectors.end());
+                        std::begin(this->container), std::end(this->container),
+                        std::begin(this->selectors), std::end(this->selectors));
             }
 
             Iterator end() const {
                 return Iterator(
-                        this->container.end(), this->container.end(),
-                        this->selectors.end(), this->selectors.end());
+                        std::end(this->container), std::end(this->container),
+                        std::end(this->selectors), std::end(this->selectors));
             }
 
     };
