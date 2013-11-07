@@ -29,19 +29,19 @@ namespace iter {
                         make_wrap_iter(end_iter,step));
             }
             else if (begin <= end && step > 0) {
-                typename std::iterator_traits<decltype(container.begin())>::difference_type new_end = end - ((end - begin) % step);
+                typename std::iterator_traits<decltype(std::begin(container))>::difference_type new_end = end - ((end - begin) % step);
                 auto begin_iter = std::begin(container);
                 std::advance(begin_iter,begin);
                 auto end_iter = std::begin(container);
                 std::advance(end_iter,new_end);
-                return iterator_range<wrap_iter<decltype(container.begin())>>(
+                return iterator_range<wrap_iter<decltype(std::begin(container))>>(
                         make_wrap_iter(begin_iter,step),
                         make_wrap_iter(end_iter,step));
             }
             else {//return an empty range for invalid slice
                 auto empty = std::begin(container);
                 std::advance(empty,begin);
-                return iterator_range<wrap_iter<decltype(container.begin())>>(
+                return iterator_range<wrap_iter<decltype(std::begin(container)>>(
                         make_wrap_iter(empty,step),
                         make_wrap_iter(empty,step));
             }
