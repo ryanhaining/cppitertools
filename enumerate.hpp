@@ -33,11 +33,9 @@ namespace iter {
             // the enumerate function
             friend Enumerable enumerate<Container>(Container &);
 
-            using contained_iter_type =
-                typename IterBase<Container>::contained_iter_type;
+            using typename IterBase<Container>::contained_iter_type;
 
-            using contained_iter_ret =
-                typename IterBase<Container>::contained_iter_ret;
+            using typename IterBase<Container>::contained_iter_ret;
 
             
             // Value constructor for use only in the enumerate function
