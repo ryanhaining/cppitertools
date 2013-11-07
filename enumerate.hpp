@@ -1,9 +1,10 @@
 #ifndef ENUMERABLE__H__
 #define ENUMERABLE__H__
 
-#include "iterbase.hpp"
+#include <iterbase.hpp>
 
 #include <utility>
+#include <iterator>
 
 
 // enumerate functionality for python-style for-each enumerate loops
