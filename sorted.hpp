@@ -34,14 +34,14 @@ namespace iter {
             Sorted(Container & container, CompareFunc compare_func) {
                 // Fill the sorted_iters vector with an iterator to each
                 // element in the container
-                for (auto iter = container.begin();
-                        iter != container.end();
+                for (auto iter = std::begin(container);
+                        iter != std::end(container);
                         ++iter) {
                     sorted_iters.push_back(iter);
                 }
 
                 // sort by comparing the elements that the iterators point to
-                std::sort(sorted_iters.begin(), sorted_iters.end(),
+                std::sort(std::begin(sorted_iters), std::end(sorted_iters),
                         [&] (const contained_iter_type & it1,
                             const contained_iter_type & it2)
                         { return compare_func(*it1, *it2); });
@@ -67,12 +67,12 @@ namespace iter {
             };
 
             IteratorIterator begin() {
-                IteratorIterator iteriter(sorted_iters.begin());
+                IteratorIterator iteriter(std::begin(sorted_iters));
                 return iteriter;
             }
 
             IteratorIterator end() {
-                IteratorIterator iteriter(sorted_iters.end());
+                IteratorIterator iteriter(std::end(sorted_iters));
                 return iteriter;
             }
     };
@@ -88,13 +88,13 @@ namespace iter {
              decltype(sorted(
                          container,
                          std::less<decltype(
-                             std::declval<Container>().begin().operator*())>()
+                             *std::begin(std::declval<Container>()))>()
                          ))
      {
          return sorted(
                  container,
                  std::less<decltype(
-                     std::declval<Container>().begin().operator*())>()
+                     *std::begin(std::declval<Container>()))>()
                  );
     }
 
