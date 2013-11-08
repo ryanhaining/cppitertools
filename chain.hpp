@@ -94,10 +94,10 @@ namespace iter {
         }
 }
 namespace std {
-template <typename ... Containers>
-struct iterator_traits<iter::chain_iter<Containers...>> {
-    using difference_type = ptrdiff_t;
-    using iterator_category = input_iterator_tag;
-};
+    template <typename ... Containers>
+        struct iterator_traits<iter::chain_iter<Containers...>> {
+            using difference_type = ptrdiff_t;
+            using iterator_category = input_iterator_tag;
+        };
 }
 #endif //CHAIN_HPP

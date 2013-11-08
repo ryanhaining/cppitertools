@@ -2,6 +2,7 @@
 #define PRODUCT_HPP
 #include <tuple>
 #include <utility>
+#include <iterator>
 #include "iterator_range.hpp"
 
 namespace iter {
@@ -108,7 +109,13 @@ namespace iter {
                 //since != only checks the first one
         };
 }
-
+namespace std {
+    template <typename ... Containers>
+        struct iterator_traits<iter::product_iter<Containers...>> {
+            using difference_type = ptrdiff_t;
+            using iterator_category = input_iterator_tag;
+        };
+}
 #endif //PRODUCT_HPP
                     
                     

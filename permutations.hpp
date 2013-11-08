@@ -40,6 +40,12 @@ namespace iter {
             }
         };
 }
-
+namespace std {
+    template <typename Container>
+        struct iterator_traits<iter::permutation_iter<Container>> {
+            using difference_type = ptrdiff_t;
+            using iterator_category = input_iterator_tag;
+        };
+}
 #endif //PERMUTATIONS_HPP
 
