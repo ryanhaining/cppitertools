@@ -1,7 +1,10 @@
 #ifndef TAKEWHILE__H__
 #define TAKEWHILE__H__
 
+#include <iterbase.hpp>
+
 #include <utility>
+#include <iterator>
 
 namespace iter {
 
@@ -13,7 +16,7 @@ namespace iter {
     TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &);
 
     template <typename FilterFunc, typename Container>
-    class TakeWhile {
+    class TakeWhile : IterBase<Container>{
         private:
             Container & container;
             FilterFunc filter_func;
@@ -21,12 +24,9 @@ namespace iter {
             friend TakeWhile takewhile<FilterFunc, Container>(
                     FilterFunc, Container &);
 
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type = decltype(container.begin());
+            using typename IterBase<Container>::contained_iter_type;
 
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret = decltype(container.begin().operator*());
+            using typename IterBase<Container>::contained_iter_ret;
 
             // Value constructor for use only in the takewhile function
             TakeWhile(FilterFunc filter_func, Container & container) :
@@ -82,15 +82,15 @@ namespace iter {
 
             Iterator begin() const {
                 return Iterator(
-                        this->container.begin(),
-                        this->container.end(),
+                        std::begin(this->container),
+                        std::end(this->container),
                         this->filter_func);
             }
 
             Iterator end() const {
                 return Iterator(
-                        this->container.end(),
-                        this->container.end(),
+                        std::end(this->container),
+                        std::end(this->container),
                         this->filter_func);
             }
 
