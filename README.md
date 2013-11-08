@@ -21,6 +21,7 @@ library.
 [reverse](#reverse)<br />
 [slice](#slice)<br />
 [moving_section](#moving_section)<br />
+[grouper](#grouper)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
@@ -328,6 +329,26 @@ for (auto sec : moving_section(v,4)) {
     std::cout << std::endl;                                                    
 }
 ```  
+grouper
+------
+
+grouper is very similar to moving section, exception instead of the 
+section sliding by only 1 it goes the length of the full section.
+
+Example usage:
+```c++
+std::vector<int> v {1,2,3,4,5,6,7,8,9};                                        
+for (auto sec : grouper(v,4)) 
+//each section will have 4 elements
+//except the last one may be cut short
+{
+    for (auto i : sec) {                                                       
+        std::cout << i << " ";                                                 
+        i.get() *= 2;                                                          
+    }                                                                          
+    std::cout << std::endl;                                                    
+}  
+```
 
 product
 ------
