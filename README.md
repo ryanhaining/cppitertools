@@ -13,6 +13,8 @@ library.
 [imap](#imap)<br />
 [filter](#filter)<br />
 [filterfalse](#filterfalse)<br />
+[unique_everseen](#unique_everseen)<br />
+[unique_justseen](#unique_justseen)<br />
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
@@ -133,6 +135,33 @@ Prints only zero values.
 for(auto i : filterfalse(vec)) {
     cout << i << '\n';
 }
+```
+unique_everseen
+---------------
+This is a filter adaptor that only generates values that have never been seen 
+before. For this algo to work your object must be specialized for `std::hash`
+otherwise it will not be very efficient
+
+Example Usage:
+```c++
+std::vector<int> v {1,2,3,4,3,2,1,5,6,7,7,8,9,8,9,6};                      
+for (auto i : unique_everseen(v)) {                                        
+    std::cout << i << " ";                                                 
+}std::cout << std::endl; 
+```
+
+unique_justseen
+--------------
+Another filter adaptor that only prevents duplicates that are in a row, if the 
+sequence is sorted it will work exactly the same as `unique_justseen`, in that 
+case it will be better and more efficient to use.
+
+Example Usage:
+```c++
+std::vector<int> v {1,1,1,2,2,4,4,5,6,7,8,8,8,8,9,9};                          
+for (auto i : unique_justseen(v)) {                                            
+    std::cout << i << " ";                                                     
+}std::cout << std::endl; 
 ```
 
 takewhile
