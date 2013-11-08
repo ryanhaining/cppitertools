@@ -18,11 +18,12 @@ int main()
         std::cout << i << '\n';
     }
 
+    std::cout << "Sort by first character only\n";
     std::vector<std::string> svec = {"hello", "everyone", "thanks", "for",
                                      "having", "me", "here", "today"};
     for (auto s : sorted(svec,
                 [] (const std::string & s1, const std::string & s2) {
-                    return s1[1] < s2[1]; })) {
+                    return s1[0] < s2[0]; })) {
         std::cout << s << '\n';
     }
         
