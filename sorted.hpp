@@ -1,6 +1,9 @@
 #ifndef SORTED__HPP__
 #define SORTED__HPP__
 
+#include <iterbase.hpp>
+
+#include <iterator>
 #include <algorithm>
 #include <vector>
 
@@ -12,19 +15,18 @@ namespace iter {
     Sorted<Container, CompareFunc> sorted(Container &, CompareFunc);
 
     template <typename Container, typename CompareFunc>
-    class Sorted {
+    class Sorted : IterBase<Container> {
         private:
             friend Sorted
                 sorted<Container, CompareFunc>(Container &, CompareFunc);
 
-            using contained_iter_type =
-                decltype(std::declval<Container>().begin());
+            using typename IterBase<Container>::contained_iter_type;
+
+            using typename IterBase<Container>::contained_iter_ret;
 
             std::vector<contained_iter_type> sorted_iters;
 
-            using sorted_iter_type = decltype(sorted_iters.begin());
-            using contained_iter_ret = 
-                decltype(sorted_iters.begin().operator*().operator*());
+            using sorted_iter_type = decltype(std::begin(sorted_iters));
 
             Sorted() = delete;
             Sorted & operator=(const Sorted &) = delete;
