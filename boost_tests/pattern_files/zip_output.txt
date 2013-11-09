@@ -1,0 +1,36 @@
+1
+hello
+4
+good day
+9
+goodbye
+69
+hello
+69
+good day
+69
+goodbye
+
+Variadic template zip iterator
+1 1.2 i 1.2
+2 1.4 like 1.2
+3 12.3 apples 1.2
+4 4.5 alot 1.2
+
+1 i 2.2 1.2
+2 like 2.2 1.2
+3 apples 2.2 1.2
+4 alot 2.2 1.2
+
+Try some weird range differences
+
+
+2.2 i 1 1.2
+2.2 like 2 1.2
+2.2 apples 3 1.2
+2.2 alot 4 1.2
+
+1 asdfas 1.1
+5 aaron 2.2
+1 ryan 3.3
+2 apple 4.4

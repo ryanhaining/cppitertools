@@ -1,0 +1,31 @@
+import platform
+import os
+
+env = Environment(
+    CXX='c++',
+    CXXFLAGS= ['-g',  '-Wall', '-Wextra',  '-Weffc++', '-Wno-unused-parameter' ,
+               '-pedantic', '-std=c++11',
+               '-I/usr/local/include', '-I/opt/local/include'],
+    CPPPATH='..',
+    LINKFLAGS=['-L/usr/local/lib', '-L/opt/local/lib']
+    )
+
+# allows highighting to print to terminal from compiler output
+env['ENV']['TERM'] = os.environ['TERM']
+
+# if on MAC, needs the linker flag for -stdlib=libc++
+# obselete with mavericks
+""" if platform.system() == 'Darwin':
+    env['CXX'] += '-stdlib=libc++'
+    env['CXXFLAGS'].append('-stdlib=libc++')
+"""
+
+
+
+progs = Split( '''
+		zip 
+        ''')
+
+
+for p in progs:
+    env.Program('test{0}.cpp'.format(p))
