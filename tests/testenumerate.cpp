@@ -31,5 +31,10 @@ int main() {
         std::cout << e.index << ": " << e.element << '\n';
     }
 
+
+    for (auto e : enumerate({0, 1, 4, 9, 16, 25})) {
+        std::cout << e.index << "^2 = " << e.element << '\n';
+    }
+
     return 0;
 }

@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <iterator>
+#include <functional>
 
 
 // enumerate functionality for python-style for-each enumerate loops
@@ -22,9 +23,11 @@ namespace iter {
     template <typename Container>
     class Enumerable;
 
-    template <typename Container>
-    Enumerable<Container> enumerate(Container &);
+    template <typename T>
+    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il);
 
+    template <typename Container>
+    Enumerable<Container> enumerate(Container &&);
 
     template <typename Container>
     class Enumerable : public IterBase<Container>{
@@ -32,19 +35,19 @@ namespace iter {
             Container & container;
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
-            friend Enumerable enumerate<Container>(Container &);
+            //friend Enumerable enumerate<Container>(Container &);
 
             using typename IterBase<Container>::contained_iter_type;
 
             using typename IterBase<Container>::contained_iter_ret;
 
             
+        public:
             // Value constructor for use only in the enumerate function
             Enumerable(Container & container) : container(container) { }
             Enumerable () = delete;
             Enumerable & operator=(const Enumerable &) = delete;
 
-        public:
             Enumerable(const Enumerable &) = default;
 
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
@@ -98,10 +101,15 @@ namespace iter {
 
     // Helper function to instantiate an Enumerable
     template <typename Container>
-    Enumerable<Container> enumerate(Container & container) {
-        return Enumerable<Container>(container);
+    Enumerable<Container> enumerate(Container && container) {
+        return Enumerable<Container>(std::forward<Container>(container));
     }
 
+    template <typename T>
+    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il)
+    {
+        return Enumerable<std::initializer_list<T>>(il);
+    }
 
 }
 
