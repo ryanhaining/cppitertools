@@ -24,7 +24,8 @@ namespace iter {
     class Enumerable;
 
     template <typename T>
-    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il);
+    Enumerable<std::initializer_list<T>> enumerate(
+            std::initializer_list<T> &&);
 
     template <typename Container>
     Enumerable<Container> enumerate(Container &&);
@@ -33,18 +34,21 @@ namespace iter {
     class Enumerable : public IterBase<Container>{
         private:
             Container & container;
+
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
-            //friend Enumerable enumerate<Container>(Container &);
+            friend Enumerable enumerate<Container>(Container &&);
+            template <typename T>
+            friend Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
             using typename IterBase<Container>::contained_iter_ret;
 
+            Enumerable(Container & container) : container(container) { }
             
         public:
             // Value constructor for use only in the enumerate function
-            Enumerable(Container & container) : container(container) { }
             Enumerable () = delete;
             Enumerable & operator=(const Enumerable &) = delete;
 
