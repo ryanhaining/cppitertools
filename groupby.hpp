@@ -6,7 +6,6 @@
 #include <utility>
 #include <iterator>
 
-
 namespace iter {
 
     template <typename Container, typename KeyFunc>
@@ -103,35 +102,63 @@ namespace iter {
             class Group {
                 private:
                     friend Iterator;
+                    friend class GroupIterator;
                     Iterator *owner;
                     key_func_ret key;
+                    mutable bool completed = false;
 
                     Group(Iterator *owner, key_func_ret key) :
                         owner(owner),
                         key(key)
                     { }
 
+                public:
+                    ~Group() {
+                        if (!this->completed) {
+                            for (auto iter = this->begin(), end = this->end();
+                                    iter != end;
+                                    ++iter) { }
+                        }
+                    }
+                           
+
 
                     Group () = delete;
-                public:
-                    Group (const Group &) = default;
+                    Group (const Group &other) :
+                            owner(other.owner),
+                            key(other.key),
+                            completed(other.completed) {
+                        other.completed = true;
+                    }
 
                     class GroupIterator {
                         private:
                             Iterator * owner;
                             const key_func_ret key;
+                            const Group * group;
+
+                            bool not_at_end() const {
+                                return !this->owner->exhausted() &&
+                                    this->owner->next_key() == this->key;
+                            }
 
                         public:
-                            GroupIterator(Iterator * owner, key_func_ret key) :
+                            GroupIterator(Iterator * owner, const Group *group,
+                                          key_func_ret key) :
                                 owner(owner),
-                                key(key)
+                                key(key),
+                                group(group)
                             { }
 
                             GroupIterator(const GroupIterator &) = default;
 
                             bool operator!=(const GroupIterator &) const {
-                                return !this->owner->exhausted() &&
-                                    this->owner->next_key() == this->key;
+                                if (this->not_at_end()) {
+                                    return true;
+                                } else {
+                                    this->group->completed = true;
+                                    return false;
+                                }
                             }
 
                             GroupIterator & operator++() {
@@ -145,11 +172,11 @@ namespace iter {
                     };
 
                     GroupIterator begin() const {
-                        return GroupIterator(this->owner, key);
+                        return GroupIterator(this->owner, this, key);
                     }
 
                     GroupIterator end() const {
-                        return GroupIterator(this->owner, key);
+                        return GroupIterator(this->owner, this, key);
                     }
 
             };
