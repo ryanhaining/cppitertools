@@ -30,6 +30,11 @@ int main() {
         std::cout << i << std::endl;
     }
 
+    std::cout<< "\nunevent step [0:5:3]\n";
+    for (auto i : iter::slice(a, 0, 5, 3)) {
+        std::cout << i << '\n';
+    }
+
     std::cout<< "\nInvalid range [1:10:-1]\n";
     for (auto i : iter::slice(a,1,10,-1)) {
         //invalid range returns two begin iters
