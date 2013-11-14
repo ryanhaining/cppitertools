@@ -6,6 +6,7 @@
 #include <utility>
 #include <iterator>
 #include <functional>
+#include <initializer_list>
 
 
 // enumerate functionality for python-style for-each enumerate loops
