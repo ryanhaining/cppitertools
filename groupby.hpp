@@ -105,6 +105,16 @@ namespace iter {
                     friend class GroupIterator;
                     Iterator & owner;
                     key_func_ret key;
+
+                    // completed is set if a Group is iterated through
+                    // completely.  It is checked in the destructor, and
+                    // if the Group has not been completed, the destructor
+                    // exhausts it.  This ensures that the next Group starts
+                    // at the correct position when the user short-circuits
+                    // iteration over a Group.
+                    // The move constructor sets the rvalue's completed
+                    // attribute to true, so its destructor doesn't do anything
+                    // when called.
                     mutable bool completed = false;
 
                     Group(Iterator & owner, key_func_ret key) :
