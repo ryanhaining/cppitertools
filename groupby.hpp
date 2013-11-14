@@ -133,20 +133,17 @@ namespace iter {
 
                     class GroupIterator {
                         private:
-                            Iterator & owner;
                             const key_func_ret key;
                             const Group & group;
 
                             bool not_at_end() const {
-                                return !this->owner.exhausted() &&
-                                    this->owner.next_key() == this->key;
+                                return !this->group.owner.exhausted() &&
+                                    this->group.owner.next_key() == this->key;
                             }
 
                         public:
-                            GroupIterator(Iterator & owner,
-                                          const Group & group,
+                            GroupIterator(const Group & group,
                                           key_func_ret key) :
-                                owner(owner),
                                 key(key),
                                 group(group)
                             { }
@@ -163,21 +160,21 @@ namespace iter {
                             }
 
                             GroupIterator & operator++() {
-                                this->owner.increment_iterator();
+                                this->group.owner.increment_iterator();
                                 return *this;
                             }
 
                             contained_iter_ret operator*() const {
-                                return this->owner.current();
+                                return this->group.owner.current();
                             }
                     };
 
                     GroupIterator begin() const {
-                        return GroupIterator(this->owner, *this, key);
+                        return GroupIterator(*this, key);
                     }
 
                     GroupIterator end() const {
-                        return GroupIterator(this->owner, *this, key);
+                        return GroupIterator(*this, key);
                     }
 
             };
