@@ -47,4 +47,15 @@ int main() {
         //invalid range returns two begin iters
         std::cout << i << std::endl;
     }
+    std::cout<< "\nOversize range [1:100:1]\n";
+    for (auto i : iter::slice(a,1,100,1)) {
+        //invalid range returns two begin iters
+        std::cout << i << std::endl;
+    }
+    std::cout<< "\nOversize range and undersize[1:100:1]\n";
+    for (auto i : iter::slice(a,-100,100,1)) {
+        //invalid range returns two begin iters
+        std::cout << i << std::endl;
+    }
+
 }

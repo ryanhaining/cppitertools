@@ -49,6 +49,12 @@ namespace iter {
                         (start > stop && step >=0)){
                     this->stop = start;
                 } 
+                if (this->stop > static_cast<DifferenceType>(container.size())) {
+                    this->stop = static_cast<DifferenceType>(container.size());
+                }
+                if (this->start < static_cast<DifferenceType>(container.size())) {
+                    this->start = 0; 
+                }
             }
 
             Slice () = delete;
