@@ -52,7 +52,7 @@ namespace iter {
                 if (this->stop > static_cast<DifferenceType>(container.size())) {
                     this->stop = static_cast<DifferenceType>(container.size());
                 }
-                if (this->start < static_cast<DifferenceType>(container.size())) {
+                if (this->start < 0) {
                     this->start = 0; 
                 }
             }
