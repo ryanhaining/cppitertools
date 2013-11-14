@@ -4,7 +4,6 @@
 #include <iterbase.hpp>
 
 #include <iterator>
-#include <cassert>
 
 namespace iter {
 
@@ -45,7 +44,7 @@ namespace iter {
                 stop(stop),
                 step(step)
             { 
-                if ((start < stop && step) <=0 ||
+                if ((start < stop && step <=0) ||
                         (start > stop && step >=0)){
                     this->stop = start;
                 } 
@@ -64,9 +63,11 @@ namespace iter {
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
+                    DifferenceType step;
                 public:
-                    Iterator (contained_iter_type si) :
-                        sub_iter(si)
+                    Iterator (contained_iter_type si, DifferenceType step) :
+                        sub_iter(si),
+                        step(step)
                     { }
 
                     contained_iter_ret operator*() const {
@@ -74,7 +75,7 @@ namespace iter {
                     }
 
                     Iterator & operator++() { 
-                        ++this->sub_iter;
+                        std::advance(this->sub_iter, this->step);
                         return *this;
                     }
 
@@ -84,13 +85,15 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(std::next(
-                            std::begin(this->container), this->start));
+                return Iterator(
+                        std::next(std::begin(this->container), this->start),
+                        this->step);
             }
 
             Iterator end() const {
-                return Iterator(std::next(
-                            std::begin(this->container), this->stop));
+                return Iterator(
+                        std::next(std::begin(this->container), this->stop),
+                        this->step);
             }
 
     };
