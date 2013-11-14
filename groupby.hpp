@@ -123,8 +123,13 @@ namespace iter {
                            
 
 
+                    // can be move constructed, but not copied or move assigned
                     Group () = delete;
-                    Group (const Group &other) :
+                    Group (const Group &) = delete;
+                    Group & operator=(const Group &) = delete;
+                    Group & operator=(Group &&) = delete;
+
+                    Group (Group && other) :
                             owner(other.owner),
                             key(other.key),
                             completed(other.completed) {
