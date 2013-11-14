@@ -8,6 +8,13 @@ int main() {
     std::cout << std::endl << "Slice range test" << std::endl << std::endl;
     std::vector<int> a{0,1,2,3,4,5,6,7,8,9,10,11,12,13};
     std::vector<std::string> b{"hey","how","are","you","doing"};
+
+    std::cout << "step out of slice\n";
+    for (auto i : iter::slice(a, 1, 4, 5)) {
+        std::cout << i << '\n';
+    }
+    std::cout << "end step out\n";
+
     for (auto i : iter::slice(a,2)) {
         std::cout << i << std::endl;
     }
