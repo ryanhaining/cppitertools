@@ -1,8 +1,7 @@
 #ifndef SLICE_HPP
 #define SLICE_HPP
 
-#include "iterator_range.hpp"
-#include "wrap_iter.hpp"
+#include <iterbase.hpp>
 
 #include <iterator>
 #include <cassert>
@@ -19,10 +18,13 @@ namespace iter {
     //template <typename Container, typename DifferenceType>
     //Slice<Container> slice(Container &&);
 
-    template <typename Container, typename DifferencType>
+    template <typename Container, typename DifferenceType>
     class Slice : public IterBase<Container>{
         private:
             Container & container;
+            DifferenceType start;
+            DifferenceType stop;
+            DifferenceType step;
 
             // The only thing allowed to directly instantiate an Slice is
             // the slice function
@@ -37,12 +39,17 @@ namespace iter {
             
         public:
             Slice(Container & container, DifferenceType start,
-                  DifferenceType stop, DifferenceType step=1) :
+                  DifferenceType stop, DifferenceType step) :
                 container(container),
                 start(start),
                 stop(stop),
                 step(step)
-            { }
+            { 
+                if ((start < stop && step) <=0 ||
+                        (start > stop && step >=0)){
+                    this->stop = start;
+                } 
+            }
 
             // Value constructor for use only in the slice function
             Slice () = delete;
@@ -62,8 +69,8 @@ namespace iter {
                         sub_iter(si)
                     { }
 
-                    IterYield operator*() const {
-                        return IterYield(this->index, *this->sub_iter);
+                    contained_iter_ret operator*() const {
+                        return *this->sub_iter;
                     }
 
                     Iterator & operator++() { 
@@ -77,56 +84,31 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(std::begin(this->container));
+                return Iterator(std::next(
+                            std::begin(this->container), this->start));
             }
 
             Iterator end() const {
-                return Iterator(std::end(this->container));
+                return Iterator(std::next(
+                            std::begin(this->container), this->stop));
             }
 
     };
     // Helper function to instantiate an Slice
-    template <typename Container, typename DifferencType>
-    Slice<Container, DifferenceType> slice(Container && container) {
-        return Slice<Container>(std::forward<Container>(container));
+    template <typename Container, typename DifferenceType>
+    Slice<Container, DifferenceType> slice(
+            Container && container, DifferenceType start,
+            DifferenceType stop, DifferenceType step=1) {
+        return Slice<Container, DifferenceType>(
+                std::forward<Container>(container), start, stop, step);
     }
 
-#if 0
-    template <typename T>
-    Slice<std::initializer_list<T>> slice(std::initializer_list<T> && il)
-    {
-        return Slice<std::initializer_list<T>>(il);
-    }
-#endif
-
-        // Check for an invalid slice. The sign of step must be equal to the
-        // sign of (end - begin). Since we don't force DifferenceType to be a
-        // primitive, just compare.
-        if (!(begin > end && step < 0) && !(begin <= end && step > 0)) {
-            // Just in case it gets dereferenced it will be the first element
-            // had the range been valid. This handles zero-length slices.
-            auto empty = std::next(std::begin(container), begin);
-            return iterator_range<wrap_iter<decltype(std::begin(container))>>(
-                    make_wrap_iter(empty, step),
-                    make_wrap_iter(empty, step));
-        }
-        // Return the iterator range
-        DifferenceType new_end = end - ((end - begin) % step);
-        auto begin_iter = std::next(std::begin(container), begin);
-        auto end_iter = std::next(std::begin(container), new_end);
-        return iterator_range<wrap_iter<decltype(std::begin(container))>>(
-                make_wrap_iter(begin_iter,step),
-                make_wrap_iter(end_iter,step));
-
-    }
     //only give the end as an arg and assume step  is 1 and begin is 0
     template <typename Container, typename DifferenceType>
-    auto slice(
-            Container && container,
-            DifferenceType end
-            ) -> iterator_range<wrap_iter<decltype(std::begin(container))>>
-    {
-        return slice(std::forward<Container>(container),0,end);
+    Slice<Container, DifferenceType> slice(
+            Container && container, DifferenceType stop) {
+        return Slice<Container, DifferenceType>(
+                std::forward<Container>(container), 0, stop, 1);
     }
 }
 
