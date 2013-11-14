@@ -2,8 +2,8 @@ import platform
 import os
 
 env = Environment(
-    CXX='c++',
-    CXXFLAGS= ['-g',  '-Wall', '-Wextra',  '-Weffc++',
+    CXX='clang++',
+    CXXFLAGS= ['-g',  '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include'],
     CPPPATH='..',
