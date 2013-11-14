@@ -44,22 +44,19 @@ namespace iter {
                 stop(stop),
                 step(step)
             { 
+                // sets stop = start if the range is empty
                 if ((start < stop && step <=0) ||
                         (start > stop && step >=0)){
                     this->stop = start;
                 } 
             }
 
-            // Value constructor for use only in the slice function
             Slice () = delete;
             Slice & operator=(const Slice &) = delete;
 
             Slice(const Slice &) = default;
 
 
-            //  Holds an iterator of the contained type and a size_t for the
-            //  index.  Each call to ++ increments both of these data members.
-            //  Each dereference returns an IterYield.
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
@@ -97,7 +94,8 @@ namespace iter {
             }
 
     };
-    // Helper function to instantiate an Slice
+
+    // Helper function to instantiate a Slice
     template <typename Container, typename DifferenceType>
     Slice<Container, DifferenceType> slice(
             Container && container, DifferenceType start,
