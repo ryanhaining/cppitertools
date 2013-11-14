@@ -60,10 +60,16 @@ namespace iter {
             class Iterator {
                 private:
                     contained_iter_type sub_iter;
-                    DifferenceType step;
+                    DifferenceType current;
+                    const DifferenceType stop;
+                    const DifferenceType step;
+
                 public:
-                    Iterator (contained_iter_type si, DifferenceType step) :
+                    Iterator (contained_iter_type si, DifferenceType start,
+                            DifferenceType stop, DifferenceType step) :
                         sub_iter(si),
+                        current(start),
+                        stop(stop),
                         step(step)
                     { }
 
@@ -73,24 +79,26 @@ namespace iter {
 
                     Iterator & operator++() { 
                         std::advance(this->sub_iter, this->step);
+                        this->current += this->step;
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
-                        return this->sub_iter != other.sub_iter;
+                    bool operator!=(const Iterator &) const {
+                        return (this->step > 0 && this->current < this->stop)||
+                            (this->step < 0 && this->current > this->stop);
                     }
             };
 
             Iterator begin() const {
                 return Iterator(
                         std::next(std::begin(this->container), this->start),
-                        this->step);
+                        this->start, this->stop, this->step);
             }
 
             Iterator end() const {
                 return Iterator(
                         std::next(std::begin(this->container), this->stop),
-                        this->step);
+                        this->stop, this->stop, this->step);
             }
 
     };
