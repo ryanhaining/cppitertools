@@ -67,7 +67,7 @@ namespace iter {
                         return KeyGroupPair(
                                 this->key_func(*this->sub_iter),
                                 Group(
-                                    this, 
+                                    *this, 
                                     this->key_func(*this->sub_iter)));
                     }
 
@@ -103,11 +103,11 @@ namespace iter {
                 private:
                     friend Iterator;
                     friend class GroupIterator;
-                    Iterator *owner;
+                    Iterator & owner;
                     key_func_ret key;
                     mutable bool completed = false;
 
-                    Group(Iterator *owner, key_func_ret key) :
+                    Group(Iterator & owner, key_func_ret key) :
                         owner(owner),
                         key(key)
                     { }
@@ -133,17 +133,18 @@ namespace iter {
 
                     class GroupIterator {
                         private:
-                            Iterator * owner;
+                            Iterator & owner;
                             const key_func_ret key;
-                            const Group * group;
+                            const Group & group;
 
                             bool not_at_end() const {
-                                return !this->owner->exhausted() &&
-                                    this->owner->next_key() == this->key;
+                                return !this->owner.exhausted() &&
+                                    this->owner.next_key() == this->key;
                             }
 
                         public:
-                            GroupIterator(Iterator * owner, const Group *group,
+                            GroupIterator(Iterator & owner,
+                                          const Group & group,
                                           key_func_ret key) :
                                 owner(owner),
                                 key(key),
@@ -156,27 +157,27 @@ namespace iter {
                                 if (this->not_at_end()) {
                                     return true;
                                 } else {
-                                    this->group->completed = true;
+                                    this->group.completed = true;
                                     return false;
                                 }
                             }
 
                             GroupIterator & operator++() {
-                                this->owner->increment_iterator();
+                                this->owner.increment_iterator();
                                 return *this;
                             }
 
                             contained_iter_ret operator*() const {
-                                return this->owner->current();
+                                return this->owner.current();
                             }
                     };
 
                     GroupIterator begin() const {
-                        return GroupIterator(this->owner, this, key);
+                        return GroupIterator(this->owner, *this, key);
                     }
 
                     GroupIterator end() const {
-                        return GroupIterator(this->owner, this, key);
+                        return GroupIterator(this->owner, *this, key);
                     }
 
             };
