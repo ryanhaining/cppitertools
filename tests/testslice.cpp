@@ -24,11 +24,13 @@ int main() {
     for (auto i : iter::slice(a,0,15,3)) {
         std::cout << i << std::endl;
     }
-    std::cout<<std::endl;
+
+    std::cout<< "\n13 down to 0\n";
     for (auto i : iter::slice(a,13,-1,-1)) {
         std::cout << i << std::endl;
     }
-    std::cout<<std::endl;
+
+    std::cout<< "\nInvalid range [1:10:-1]\n";
     for (auto i : iter::slice(a,1,10,-1)) {
         //invalid range returns two begin iters
         std::cout << i << std::endl;
