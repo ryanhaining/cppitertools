@@ -6,7 +6,13 @@
 #include <array>
 
 #define BOOST_TEST_MODULE ZipTest test
-#include <boost/test/included/unit_test.hpp>
+
+#ifdef COMPILED_BINARY
+    #include <boost/test/unit_test.hpp>
+#else
+    #include <boost/test/included/unit_test.hpp>
+#endif
+
 #include <boost/test/output_test_stream.hpp>
 using boost::test_tools::output_test_stream;
 

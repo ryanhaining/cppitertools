@@ -71,7 +71,7 @@ int main() {
         }
         std::cout<<std::endl;
         const std::vector<double> constvector{1.1,2.2,3.3,4.4};
-        for (auto e : zip(iter::chain(std::vector<int>{1,5},std::array<int,2>{{1,2}}),
+        for (auto e : zip(iter::chain(std::vector<int>(5,5),std::array<int,2>{{1,2}}),
                     std::initializer_list<std::string>{"asdfas","aaron","ryan","apple","juice"},
                     constvector)) 
         { 
