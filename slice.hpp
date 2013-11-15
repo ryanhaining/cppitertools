@@ -6,6 +6,7 @@
 #include <iterator>
 #include <type_traits>
 
+
 namespace iter {
 
     //Forward declarations of Slice and slice
@@ -35,15 +36,19 @@ namespace iter {
     size(Container & container) {
         return container.size();
     }
+
     template <typename Container>
     typename std::enable_if<!has_size<Container>::value,size_t>::type 
     size(Container & container) {
-        return std::distance(container.end(),container.begin());
+        return std::distance(std::begin(container), std::end(container));
     }
+
     template <typename T, size_t N>
     size_t size(T (&)[N]) {
         return N;
     }
+
+
 
     template <typename Container, typename DifferenceType>
     class Slice : public IterBase<Container>{
@@ -152,6 +157,20 @@ namespace iter {
             Container && container, DifferenceType stop) {
         return Slice<Container, DifferenceType>(
                 std::forward<Container>(container), 0, stop, 1);
+    }
+
+    template <typename T, typename DifferenceType>
+    Slice<std::initializer_list<T>, DifferenceType> slice(
+            std::initializer_list<T> && il, DifferenceType start,
+            DifferenceType stop, DifferenceType step=1) {
+        return Slice<std::initializer_list<T>, DifferenceType>(
+                il, start, stop, step);
+    }
+
+    template <typename T, typename DifferenceType>
+    Slice<std::initializer_list<T>, DifferenceType> slice(
+            std::initializer_list<T> && il, DifferenceType stop) {
+        return Slice<std::initializer_list<T>, DifferenceType>(il, 0, stop, 1);
     }
 }
 
