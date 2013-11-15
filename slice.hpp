@@ -17,6 +17,15 @@ namespace iter {
     //template <typename Container, typename DifferenceType>
     //Slice<Container> slice(Container &&);
 
+    template <typename Container>
+    size_t size(Container & container) {
+        return container.size();
+    }
+    template <typename T, size_t N>
+    size_t size(T (&)[N]) {
+        return N;
+    }
+
     template <typename Container, typename DifferenceType>
     class Slice : public IterBase<Container>{
         private:
@@ -49,8 +58,8 @@ namespace iter {
                         (start > stop && step >=0)){
                     this->stop = start;
                 } 
-                if (this->stop > static_cast<DifferenceType>(container.size())) {
-                    this->stop = static_cast<DifferenceType>(container.size());
+                if (this->stop > static_cast<DifferenceType>(size(container))) {
+                    this->stop = static_cast<DifferenceType>(size(container));
                 }
                 if (this->start < 0) {
                     this->start = 0; 

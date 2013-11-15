@@ -57,5 +57,10 @@ int main() {
         //invalid range returns two begin iters
         std::cout << i << std::endl;
     }
-
+    std::cout<< "\nstatic array[1:8:2]\n";
+    int arr[10] = {0,1,2,3,4,5,6,7,8,9};
+    for (auto i : iter::slice(arr,1,8,2)) {
+        //invalid range returns two begin iters
+        std::cout << i << std::endl;
+    }
 }
