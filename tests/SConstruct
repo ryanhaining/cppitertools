@@ -2,7 +2,7 @@ import platform
 import os
 
 env = Environment(
-    CXX='clang++',
+    CXX='c++',
     CXXFLAGS= ['-g',  '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include'],
@@ -11,15 +11,6 @@ env = Environment(
 
 # allows highighting to print to terminal from compiler output
 env['ENV']['TERM'] = os.environ['TERM']
-
-# if on MAC, needs the linker flag for -stdlib=libc++
-# obselete with mavericks
-""" if platform.system() == 'Darwin':
-    env['CXX'] += '-stdlib=libc++'
-    env['CXXFLAGS'].append('-stdlib=libc++')
-"""
-
-
 
 progs = Split( '''
 		cycle 
