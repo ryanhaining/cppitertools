@@ -4,6 +4,7 @@
 #include <iterbase.hpp>
 
 #include <iterator>
+#include <type_traits>
 
 namespace iter {
 
@@ -16,10 +17,28 @@ namespace iter {
 
     //template <typename Container, typename DifferenceType>
     //Slice<Container> slice(Container &&);
+    template <typename T>
+    class has_size
+    {
+        typedef char one;
+        typedef long two;
 
+        template <typename C> static one test( decltype(&C::size) ) ;
+        template <typename C> static two test(...);
+
+
+        public:
+        enum { value = sizeof(test<T>(0)) == sizeof(char) };
+    };
     template <typename Container>
-    size_t size(Container & container) {
+    typename std::enable_if<has_size<Container>::value,size_t>::type 
+    size(Container & container) {
         return container.size();
+    }
+    template <typename Container>
+    typename std::enable_if<!has_size<Container>::value,size_t>::type 
+    size(Container & container) {
+        return std::distance(container.end(),container.begin());
     }
     template <typename T, size_t N>
     size_t size(T (&)[N]) {
