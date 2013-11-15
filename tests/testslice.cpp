@@ -1,4 +1,5 @@
 #include <slice.hpp>
+#include <range.hpp>
 
 #include <iostream>
 #include <vector>
@@ -57,10 +58,17 @@ int main() {
         //invalid range returns two begin iters
         std::cout << i << std::endl;
     }
+
     std::cout<< "\nstatic array[1:8:2]\n";
     int arr[10] = {0,1,2,3,4,5,6,7,8,9};
     for (auto i : iter::slice(arr,1,8,2)) {
         //invalid range returns two begin iters
         std::cout << i << std::endl;
     }
+
+    std::cout << "\ninitializer list\n";
+    for (auto i : iter::slice({1, 2, 4, 8, 16, 32, 64, 128}, 2, 6)) {
+        std::cout << i << '\n';
+    }
+
 }
