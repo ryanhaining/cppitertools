@@ -15,19 +15,20 @@ namespace iter {
             auto end = product_iter<Containers...>(containers...);
             return iterator_range<decltype(begin)>(begin,end);
         }
+    //template <typenam
     template <typename Container>
         struct product_iter<Container> {
             public:
-                using Iterator = decltype(std::declval<Container>().cbegin());
+                using Iterator = decltype(std::begin(std::declval<Container>()));
             private:
                 Iterator begin;
                 Iterator mover;
                 const Iterator end;
             public:
                 product_iter(const Container & c) :
-                    begin(c.cbegin()),
-                    mover(c.cbegin()),
-                    end(c.cend()){}
+                    begin(std::begin(c)),
+                    mover(std::begin(c)),
+                    end(std::end(c)){}
                 decltype(std::make_tuple(*mover)) operator*()
                 //since you can't modify anything anyway it's ok to return a
                 //tuple of whatever the iterator derefs to
@@ -60,7 +61,7 @@ namespace iter {
         struct product_iter<Container,Containers...>
         {
             public:
-                using Iterator = decltype(std::declval<Container>().cbegin());
+                using Iterator = decltype(std::begin(std::declval<Container>()));
             private:
                 Iterator begin;
                 Iterator mover;
@@ -73,9 +74,9 @@ namespace iter {
                     return begin != end && inner_iter.is_not_empty_range();
                 }
                 product_iter(const Container & c, const Containers & ... containers):
-                    begin(c.cbegin()),
-                    mover(c.cbegin()),
-                    end(c.cend()),
+                    begin(std::begin(c)),
+                    mover(std::begin(c)),
+                    end(std::end(c)),
                     inner_iter(containers...){
                         no_empty_ranges = is_not_empty_range();
                     }
