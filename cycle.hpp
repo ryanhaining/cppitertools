@@ -94,8 +94,7 @@ namespace iter {
     template <typename T>
     Cycle<std::initializer_list<T>> cycle(std::initializer_list<T> && il)
     {
-        return Cycle<std::initializer_list<T>>(
-                std::forward<std::initializer_list<T>>(il));
+        return Cycle<std::initializer_list<T>>(std::move(il));
     }
 }
 
