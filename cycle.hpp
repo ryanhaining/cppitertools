@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <iterator>
+#include <initializer_list>
 
 namespace iter {
 
@@ -21,7 +22,7 @@ namespace iter {
 
     template <typename Container>
     class Cycle : public IterBase<Container>{
-        public:
+        private:
             // The cycle function is the only thing allowed to create a Cycle
             friend Cycle cycle<Container>(Container &&);
             template <typename T>
@@ -61,7 +62,7 @@ namespace iter {
                     Iterator & operator++() { 
                         ++this->sub_iter;
                         // reset to beginning upon reaching the end
-                        if (this->sub_iter == this->end) {
+                        if (!(this->sub_iter != this->end)) {
                             this->sub_iter = this->begin;
                         }
                         return *this;
