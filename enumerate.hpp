@@ -33,7 +33,7 @@ namespace iter {
 
     template <typename Container>
     class Enumerable : public IterBase<Container>{
-        public:
+        private:
             Container & container;
 
             // The only thing allowed to directly instantiate an Enumerable is
