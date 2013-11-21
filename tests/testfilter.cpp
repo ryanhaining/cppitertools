@@ -1,4 +1,5 @@
 #include <filter.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <iostream>
@@ -45,6 +46,11 @@ int main() {
     std::cout << "Nonzero ints filter(vec2)\n";
     std::vector<int> vec2 {0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
     for (auto i : filter(vec2)) {
+        std::cout << i << '\n';
+    }
+
+    std::cout << "odd numbers in range(10) temp\n";
+    for (auto i : filter([] (const int i) {return i % 2;}, iter::range(10))) {
         std::cout << i << '\n';
     }
 
