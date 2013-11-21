@@ -21,11 +21,21 @@ int main() {
     int array[] = {68, 69, 70};
     for (auto i : cycle(array)) {
         std::cout << i << '\n';
-        if (count == 100) {
+        if (count == 20) {
             break;
         }
         ++count;
     }
+
+    count = 0;
+    for (auto i : cycle({7, 8, 9})) {
+        std::cout << i << '\n';
+        if (count == 20) {
+            break;
+        }
+        ++count;
+    }
+
 
     return 0;
 }
