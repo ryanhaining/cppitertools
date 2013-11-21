@@ -49,5 +49,12 @@ int main() {
     }
 
 
+    std::cout << "ever numbers in initializer_list\n";
+    for (auto i : filter([] (const int i) {return i % 2 == 0;},
+                         {1, 2, 3, 4, 5, 6, 7}))
+    {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
