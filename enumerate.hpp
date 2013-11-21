@@ -114,8 +114,7 @@ namespace iter {
     template <typename T>
     Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il)
     {
-        return Enumerable<std::initializer_list<T>>(
-                std::forward<std::initializer_list<T>>(il));
+        return Enumerable<std::initializer_list<T>>(std::move(il));
     }
 
 }
