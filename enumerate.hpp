@@ -33,7 +33,7 @@ namespace iter {
 
     template <typename Container>
     class Enumerable : public IterBase<Container>{
-        private:
+        public:
             Container & container;
 
             // The only thing allowed to directly instantiate an Enumerable is
@@ -46,7 +46,7 @@ namespace iter {
 
             using typename IterBase<Container>::contained_iter_ret;
 
-            Enumerable(Container & container) : container(container) { }
+            Enumerable(Container && container) : container(container) { }
             
         public:
             // Value constructor for use only in the enumerate function
@@ -113,7 +113,8 @@ namespace iter {
     template <typename T>
     Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il)
     {
-        return Enumerable<std::initializer_list<T>>(il);
+        return Enumerable<std::initializer_list<T>>(
+                std::forward<std::initializer_list<T>>(il));
     }
 
 }
