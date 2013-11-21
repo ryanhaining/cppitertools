@@ -149,9 +149,7 @@ namespace iter {
             std::initializer_list<T> && il)
     {
         return Filter<FilterFunc, std::initializer_list<T>>(
-                filter_func,
-                std::move(il));
-                //std::forward<std::initializer_list<T>>(il));
+                filter_func, std::move(il));
     }
 
 }
