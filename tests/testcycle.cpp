@@ -1,9 +1,11 @@
 #include <cycle.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <iostream>
 
 using iter::cycle;
+using iter::range;
 
 int main() {
     std::vector<int> vec = {2, 4, 6};
@@ -29,6 +31,15 @@ int main() {
 
     count = 0;
     for (auto i : cycle({7, 8, 9})) {
+        std::cout << i << '\n';
+        if (count == 20) {
+            break;
+        }
+        ++count;
+    }
+
+    count = 0;
+    for (auto i : cycle(range(3))) {
         std::cout << i << '\n';
         if (count == 20) {
             break;
