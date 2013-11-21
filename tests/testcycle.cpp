@@ -47,6 +47,15 @@ int main() {
         ++count;
     }
 
+    count = 0;
+    const std::string s("hello");
+    for (auto c : cycle(s)) {
+        std::cout << c << '\n';
+        if (count == 20) {
+            break;
+        }
+        ++count;
+    }
 
     return 0;
 }
