@@ -40,7 +40,8 @@ namespace iter {
             // the enumerate function
             friend Enumerable enumerate<Container>(Container &&);
             template <typename T>
-            friend Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> &&);
+            friend Enumerable<std::initializer_list<T>> enumerate(
+                    std::initializer_list<T> &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
