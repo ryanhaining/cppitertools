@@ -3,6 +3,7 @@
 
 #include "iterator_range.hpp"
 #include "combinations.hpp"
+#include <initializer_list>
 
 namespace iter {
     template <typename Container>
@@ -16,6 +17,16 @@ namespace iter {
             auto end = powerset_iter<Container>(container);
             return iterator_range<powerset_iter<Container>>(begin,end);
         }
+
+    template <typename T>
+        iterator_range<powerset_iter<std::initializer_list<T>>>
+        powerset(std::initializer_list<T> && container)
+        {
+            auto begin = powerset_iter<std::initializer_list<T>>(container);
+            auto end = powerset_iter<std::initializer_list<T>>(container);
+            return {begin,end};
+        }
+
 
     template <typename Container>
         struct powerset_iter {
