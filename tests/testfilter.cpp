@@ -62,5 +62,10 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "default in initialization_list\n";
+    for (auto i : filter({-2, -1, 0, 0, 0, 1, 2})) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
