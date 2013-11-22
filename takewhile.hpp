@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <iterator>
+#include <initializer_list>
 
 namespace iter {
 
@@ -13,7 +14,11 @@ namespace iter {
     class TakeWhile;
 
     template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &);
+    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &&);
+
+    template <typename FilterFunc, typename T>
+    TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
+            FilterFunc, std::initializer_list<T> &&);
 
     template <typename FilterFunc, typename Container>
     class TakeWhile : IterBase<Container>{
@@ -22,14 +27,18 @@ namespace iter {
             FilterFunc filter_func;
 
             friend TakeWhile takewhile<FilterFunc, Container>(
-                    FilterFunc, Container &);
+                    FilterFunc, Container &&);
+
+            template <typename FF, typename T>
+            friend TakeWhile<FF, std::initializer_list<T>> takewhile(
+                    FF, std::initializer_list<T> &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
             using typename IterBase<Container>::contained_iter_ret;
 
             // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container & container) :
+            TakeWhile(FilterFunc filter_func, Container && container) :
                 container(container),
                 filter_func(filter_func)
             { }
@@ -99,8 +108,19 @@ namespace iter {
     // Helper function to instantiate a TakeWhile
     template <typename FilterFunc, typename Container>
     TakeWhile<FilterFunc, Container> takewhile(
-            FilterFunc filter_func, Container & container) {
-        return TakeWhile<FilterFunc, Container>(filter_func, container);
+            FilterFunc filter_func, Container && container) {
+        return TakeWhile<FilterFunc, Container>(
+                filter_func,
+                std::forward<Container>(container));
+    }
+
+    template <typename FilterFunc, typename T>
+    TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
+            FilterFunc filter_func, std::initializer_list<T> && il)
+    {
+        return TakeWhile<FilterFunc, std::initializer_list<T>>(
+                filter_func,
+                std::move(il));
     }
 
 }

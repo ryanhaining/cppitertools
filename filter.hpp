@@ -22,7 +22,7 @@ namespace iter {
 
     template <typename FilterFunc, typename Container>
     class Filter : IterBase<Container>{
-        public:
+        private:
             Container & container;
             FilterFunc filter_func;
 
@@ -30,9 +30,9 @@ namespace iter {
             friend Filter filter<FilterFunc, Container>(
                     FilterFunc, Container &&);
 
-            template <typename T>
-            friend Filter<FilterFunc, std::initializer_list<T>> filter(
-                    FilterFunc, std::initializer_list<T> &&);
+            template <typename FF, typename T>
+            friend Filter<FF, std::initializer_list<T>> filter(
+                    FF, std::initializer_list<T> &&);
             using typename IterBase<Container>::contained_iter_type;
 
             using typename IterBase<Container>::contained_iter_ret;
