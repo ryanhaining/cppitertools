@@ -54,6 +54,11 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "range(-1, 2)\n";
+    for (auto i : filter(iter::range(-1, 2))) {
+        std::cout << i << '\n';
+    }
+
 
     std::cout << "ever numbers in initializer_list\n";
     for (auto i : filter([] (const int i) {return i % 2 == 0;},
