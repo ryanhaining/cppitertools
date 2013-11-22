@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <iterator>
 #include <iostream>
+#include <initializer_list>
 
 namespace iter {
     //Could try having antoher template for container to return (right now it's
@@ -23,19 +24,26 @@ namespace iter {
             return 
                 iterator_range<combinations_iter<Container>>(begin,end);
         }
+    template <typename T>
+        iterator_range<combinations_iter<std::initializer_list<T>>>
+        combinations(std::initializer_list<T> && container, size_t N) {
+            auto begin = combinations_iter<std::initializer_list<T>>(container,N);
+            auto end = combinations_iter<std::initializer_list<T>>(container,N);
+            return {begin,end};
+        }
     template <typename Container>
         struct combinations_iter
         {
         private:
             const Container & items;
-            std::vector<decltype(items.cbegin())> indicies;
+            std::vector<decltype(std::begin(items))> indicies;
             bool not_done = true;
 
         public:
             //Holy shit look at this typedef
             using item_t = typename 
                 std::remove_const<
-                typename std::remove_reference<decltype(items.front())>::type>::type;
+                typename std::remove_reference<decltype(*(std::begin(items)))>::type>::type;
             combinations_iter(const Container & i, size_t N) : 
                 items(i),indicies(N)
             {
@@ -45,8 +53,8 @@ namespace iter {
                 }
                 size_t inc = 0;
                 for (auto & iter : indicies) {
-                    if (items.cbegin() + inc != items.cend()) {
-                        iter = items.cbegin()+inc;
+                    if (std::begin(items) + inc != std::end(items)) {
+                        iter = std::begin(items)+inc;
                         ++inc;
                     }
                     else {
@@ -74,7 +82,7 @@ namespace iter {
                     //index and the end of indicies is >= the distance between
                     //the item and end of item
                     if ((*iter + std::distance(indicies.rbegin(),iter)) ==
-                            items.cend()) {
+                            std::end(items)) {
                         if ( (iter + 1) != indicies.rend()) {
                             size_t inc = 1;
                             for (auto down = iter; down != indicies.rbegin()-1;--down) {
