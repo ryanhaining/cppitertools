@@ -78,5 +78,10 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "initializer_list with default\n";
+    for (auto i : filterfalse({-1, -2, 0, 0, 0, 0, 1, 2, 3})) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
