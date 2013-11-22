@@ -1,9 +1,11 @@
 #include <filterfalse.hpp>
+#include <range.hpp>    
 
 #include <vector>
 #include <iostream>
 
 using iter::filterfalse;
+using iter::range;
 
 bool greater_than_four(int i) {
     return i > 4;
@@ -57,6 +59,13 @@ int main() {
     for (auto i : filterfalse([] (const int & i) { return i < 4; }, cvec)) {
         std::cout << i << '\n';
     }
+
+
+    std::cout << "i%2 with range(10), should print even numbers\n";
+    for (auto i : filterfalse([] (const int i) { return i % 2; }, range(10))) {
+        std::cout << i << '\n';
+    }
+
 
     return 0;
 }
