@@ -13,7 +13,7 @@ namespace iter {
     class TakeWhile;
 
     template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &);
+    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &&);
 
     template <typename FilterFunc, typename Container>
     class TakeWhile : IterBase<Container>{
@@ -22,14 +22,14 @@ namespace iter {
             FilterFunc filter_func;
 
             friend TakeWhile takewhile<FilterFunc, Container>(
-                    FilterFunc, Container &);
+                    FilterFunc, Container &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
             using typename IterBase<Container>::contained_iter_ret;
 
             // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container & container) :
+            TakeWhile(FilterFunc filter_func, Container && container) :
                 container(container),
                 filter_func(filter_func)
             { }
@@ -99,8 +99,10 @@ namespace iter {
     // Helper function to instantiate a TakeWhile
     template <typename FilterFunc, typename Container>
     TakeWhile<FilterFunc, Container> takewhile(
-            FilterFunc filter_func, Container & container) {
-        return TakeWhile<FilterFunc, Container>(filter_func, container);
+            FilterFunc filter_func, Container && container) {
+        return TakeWhile<FilterFunc, Container>(
+                filter_func,
+                std::forward<Container>(container));
     }
 
 }
