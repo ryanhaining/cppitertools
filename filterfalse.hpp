@@ -4,6 +4,8 @@
 #include <iterbase.hpp>
 #include <filter.hpp>
 
+#include <utility>
+
 namespace iter {
 
     namespace detail {
@@ -53,20 +55,26 @@ namespace iter {
     // the bool result of the function.  The PredicateFlipper is then passed
     // to the normal filter() function
     template <typename FilterFunc, typename Container>
-    auto filterfalse(FilterFunc filter_func, Container & container) ->
-            decltype(filter(detail::PredicateFlipper<FilterFunc, Container>(
-                            filter_func), container)) {
+    auto filterfalse(FilterFunc filter_func, Container && container) ->
+            decltype(filter(
+                        detail::PredicateFlipper<FilterFunc, Container>(
+                            filter_func),
+                        std::forward<Container>(container))) {
         return filter(
                 detail::PredicateFlipper<FilterFunc, Container>(filter_func),
-                container);
+                std::forward<Container>(container));
     }
 
     // Single argument version, uses a BoolFlipper to reverse the truthiness
     // of an object
     template <typename Container>
-    auto filterfalse(Container & container) ->
-            decltype(filter(detail::BoolFlipper<Container>(), container)) {
-        return filter(detail::BoolFlipper<Container>(), container);
+    auto filterfalse(Container && container) ->
+            decltype(filter(
+                        detail::BoolFlipper<Container>(),
+                        std::forward<Container>(container))) {
+        return filter(
+                detail::BoolFlipper<Container>(),
+                std::forward<Container>(container));
     }
 
 }
