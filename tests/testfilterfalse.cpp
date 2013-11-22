@@ -71,5 +71,12 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "initializer_list\n";
+    for (auto i : filterfalse([] (const int i) { return  i % 2; },
+                {10, 11, 12, 13, 14, 15, 16}))
+    {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
