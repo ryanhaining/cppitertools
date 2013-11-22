@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <iterator>
+#include <initializer_list>
 
 namespace iter {
 
@@ -15,6 +16,10 @@ namespace iter {
     template <typename FilterFunc, typename Container>
     DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container &&);
 
+    template <typename FilterFunc, typename T>
+    DropWhile<FilterFunc, std::initializer_list<T>> dropwhile(
+            FilterFunc, std::initializer_list<T> &&);
+
     template <typename FilterFunc, typename Container>
     class DropWhile : IterBase<Container> {
         private:
@@ -23,6 +28,10 @@ namespace iter {
 
             friend DropWhile dropwhile<FilterFunc, Container>(
                     FilterFunc, Container &&);
+
+            template <typename FF, typename T>
+            friend DropWhile<FF, std::initializer_list<T>> dropwhile(
+                    FF, std::initializer_list<T> &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -103,6 +112,14 @@ namespace iter {
                 std::forward<Container>(container));
     }
 
+    template <typename FilterFunc, typename T>
+    DropWhile<FilterFunc, std::initializer_list<T>> dropwhile(
+            FilterFunc filter_func, std::initializer_list<T> && il)
+    {
+        return DropWhile<FilterFunc, std::initializer_list<T>>(
+                filter_func,
+                std::move(il));
+    }
 }
 
 #endif //ifndef DROPWHILE__H__
