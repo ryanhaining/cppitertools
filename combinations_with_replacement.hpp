@@ -24,19 +24,26 @@ namespace iter {
             return 
                 iterator_range<combinations_with_replacement_iter<Container>>(begin,end);
         }
-    template <typename Container>
+     template <typename T>
+        iterator_range<combinations_with_replacement_iter<std::initializer_list<T>>>
+        combinations_with_replacement(std::initializer_list<T> && container, size_t N) {
+            auto begin = combinations_with_replacement_iter<std::initializer_list<T>>(container, N);
+            auto end = combinations_with_replacement_iter<std::initializer_list<T>>(container, N);
+            return {begin,end};
+        }
+   template <typename Container>
         struct combinations_with_replacement_iter
         {
         private:
             const Container & items;
-            std::vector<decltype(items.cbegin())> indicies;
+            std::vector<decltype(std::begin(items))> indicies;
             bool not_done = true;
 
         public:
             //Holy shit look at this typedef
             using item_t = typename 
                 std::remove_const<
-                typename std::remove_reference<decltype(items.front())>::type>::type;
+                typename std::remove_reference<decltype(*(std::begin(items)))>::type>::type;
             combinations_with_replacement_iter(const Container & i, size_t N) : 
                 items(i), indicies(N)
             {
@@ -44,7 +51,7 @@ namespace iter {
                     not_done = false;
                     return;
                 }
-                for (auto & iter : indicies) iter = items.cbegin();
+                for (auto & iter : indicies) iter = std::begin(items);
             }
             //technically should be a dynarray
             std::vector<item_t> operator*()const
@@ -62,7 +69,7 @@ namespace iter {
             {
                 for (auto iter = indicies.rbegin(); iter != indicies.rend(); ++iter) {
                     ++(*iter);
-                    if (*iter == items.cend()) {
+                    if (*iter == std::end(items)) {
                         if ( (iter + 1) != indicies.rend()) {
                             for (auto down = iter; down != indicies.rbegin()-1;--down) {
                                 (*down) = (*(iter + 1)) + 1; 
