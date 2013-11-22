@@ -113,6 +113,15 @@ namespace iter {
                 filter_func, std::forward<Container>(container));
     }
 
+    template <typename FilterFunc, typename T>
+    Filter<FilterFunc, std::initializer_list<T>> filter(
+            FilterFunc filter_func,
+            std::initializer_list<T> && il)
+    {
+        return Filter<FilterFunc, std::initializer_list<T>>(
+                filter_func, std::move(il));
+    }
+
     namespace detail {
 
         template <typename T>
@@ -139,17 +148,19 @@ namespace iter {
             decltype(filter(
                         detail::BoolTester<Container>(),
                         std::forward<Container>(container))) {
-        return filter(detail::BoolTester<Container>(),
+        return filter(
+                detail::BoolTester<Container>(),
                 std::forward<Container>(container));
     }
 
-    template <typename FilterFunc, typename T>
-    Filter<FilterFunc, std::initializer_list<T>> filter(
-            FilterFunc filter_func,
-            std::initializer_list<T> && il)
-    {
-        return Filter<FilterFunc, std::initializer_list<T>>(
-                filter_func, std::move(il));
+    template <typename T>
+    auto filter(std::initializer_list<T> && il) ->
+            decltype(filter(
+                        detail::BoolTester<std::initializer_list<T>>(),
+                        std::move(il))) {
+           return filter(
+                   detail::BoolTester<std::initializer_list<T>>(),
+                   std::move(il));
     }
 
 }
