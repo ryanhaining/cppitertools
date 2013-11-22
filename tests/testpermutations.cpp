@@ -27,5 +27,12 @@ int main() {
         }
         std::cout << std::endl;
     }
+    //std::next_permutation doesn't work on initializer_lists
+    for (auto vec : permutations({1,2,3,4})) {
+        for (auto c : vec) {
+            std::cout << c << " ";
+        }
+        std::cout << std::endl;
+    }
     return 0;
 }
