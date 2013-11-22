@@ -53,6 +53,15 @@ int main()
         std::cout << '\n';
     }
 
+    for (auto gb : groupby("aabbccccdd", [] (const char c) {return c < 'c';})){
+        std::cout << "key: " << gb.first << '\n';
+        std::cout << "content: ";
+        for (auto s : gb.second) {
+            std::cout << s << "  ";
+        }
+        std::cout << '\n';
+    }
+        
 
     return 0;
 }
