@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <iterator>
+#include <initializer_list>
 
 namespace iter {
 
@@ -14,14 +15,21 @@ namespace iter {
     template <typename Container, typename KeyFunc>
     GroupBy<Container, KeyFunc> groupby(Container &&, KeyFunc);
 
+    template <typename T, typename KeyFunc>
+    GroupBy<std::initializer_list<T>, KeyFunc> groupby(
+            std::initializer_list<T> &&, KeyFunc);
+
     template <typename Container, typename KeyFunc>
     class GroupBy : IterBase<Container> {
         private:
             Container & container;
             KeyFunc key_func;
 
-            // The filter function is the only thing allowed to create a Filter
             friend GroupBy groupby<Container, KeyFunc>(Container &&, KeyFunc);
+
+            template <typename T, typename KF>
+            friend GroupBy<std::initializer_list<T>, KF> groupby(
+                    std::initializer_list<T> &&, KF);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -212,14 +220,8 @@ namespace iter {
 
     };
 
-    template <typename Container, typename KeyFunc>
-    GroupBy<Container, KeyFunc> groupby(
-            Container && container, KeyFunc key_func) {
-        return GroupBy<Container, KeyFunc>(
-                std::forward<Container>(container),
-                key_func);
-    }
-
+    // Takes something and returns it, used for default key of comparing
+    // items in the sequence directly
     template <typename Container>
     class ItemReturner {
         private:
@@ -232,12 +234,41 @@ namespace iter {
             }
     };
 
+
+    template <typename Container, typename KeyFunc>
+    GroupBy<Container, KeyFunc> groupby(
+            Container && container, KeyFunc key_func) {
+        return GroupBy<Container, KeyFunc>(
+                std::forward<Container>(container),
+                key_func);
+    }
+
+
     template <typename Container>
     auto groupby(Container && container) ->
             decltype(groupby(std::forward<Container>(container),
                         ItemReturner<Container>())) {
         return groupby(std::forward<Container>(container),
                 ItemReturner<Container>());
+    }
+
+    
+    template <typename T, typename KeyFunc>
+    GroupBy<std::initializer_list<T>, KeyFunc> groupby(
+            std::initializer_list<T> && il, KeyFunc key_func) {
+        return GroupBy<std::initializer_list<T>, KeyFunc>(
+                std::move(il),
+                key_func);
+    }
+
+
+    template <typename T>
+    auto groupby(std::initializer_list<T> && il) ->
+            decltype(groupby(std::move(il),
+                        ItemReturner<std::initializer_list<T>>())) {
+        return groupby(
+                std::move(il),
+                ItemReturner<std::initializer_list<T>>());
     }
 
 }
