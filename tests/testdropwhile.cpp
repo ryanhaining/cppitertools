@@ -16,5 +16,11 @@ int main() {
     for (auto i : dropwhile([] (int i) {return i < 5;}, range(10))) {
         std::cout << i << '\n';
     }
+
+    for (auto i : dropwhile([] (int i) {return i < 5;}, 
+                {1, 2, 3, 4, 5, 6, 7, 8, 9})) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
