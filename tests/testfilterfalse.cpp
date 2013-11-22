@@ -66,6 +66,10 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "range(-1, 2)\n";
+    for (auto i : filterfalse(range(-1, 2))) {
+        std::cout << i << '\n';
+    }
 
     return 0;
 }
