@@ -12,7 +12,7 @@ namespace iter {
     class GroupBy;
 
     template <typename Container, typename KeyFunc>
-    GroupBy<Container, KeyFunc> groupby(Container &, KeyFunc);
+    GroupBy<Container, KeyFunc> groupby(Container &&, KeyFunc);
 
     template <typename Container, typename KeyFunc>
     class GroupBy : IterBase<Container> {
@@ -21,7 +21,7 @@ namespace iter {
             KeyFunc key_func;
 
             // The filter function is the only thing allowed to create a Filter
-            friend GroupBy groupby<Container, KeyFunc>(Container &, KeyFunc);
+            friend GroupBy groupby<Container, KeyFunc>(Container &&, KeyFunc);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -31,7 +31,7 @@ namespace iter {
                 decltype(std::declval<KeyFunc>()(
                             std::declval<contained_iter_ret>()));
 
-            GroupBy(Container & container, KeyFunc key_func) :
+            GroupBy(Container && container, KeyFunc key_func) :
                 container(container),
                 key_func(key_func)
             { }
@@ -213,8 +213,10 @@ namespace iter {
 
     template <typename Container, typename KeyFunc>
     GroupBy<Container, KeyFunc> groupby(
-            Container & container, KeyFunc key_func) {
-        return GroupBy<Container, KeyFunc>(container, key_func);
+            Container && container, KeyFunc key_func) {
+        return GroupBy<Container, KeyFunc>(
+                std::forward<Container>(container),
+                key_func);
     }
 
     template <typename Container>
@@ -230,9 +232,11 @@ namespace iter {
     };
 
     template <typename Container>
-    auto groupby(Container & container) ->
-            decltype(groupby(container, ItemReturner<Container>())) {
-        return groupby(container, ItemReturner<Container>());
+    auto groupby(Container && container) ->
+            decltype(groupby(std::forward<Container>(container),
+                        ItemReturner<Container>())) {
+        return groupby(std::forward<Container>(container),
+                ItemReturner<Container>());
     }
 
 }
