@@ -13,7 +13,7 @@ namespace iter {
     class DropWhile;
 
     template <typename FilterFunc, typename Container>
-    DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container &);
+    DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container &&);
 
     template <typename FilterFunc, typename Container>
     class DropWhile : IterBase<Container> {
@@ -22,7 +22,7 @@ namespace iter {
             FilterFunc filter_func;
 
             friend DropWhile dropwhile<FilterFunc, Container>(
-                    FilterFunc, Container &);
+                    FilterFunc, Container &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -30,7 +30,7 @@ namespace iter {
 
             
             // Value constructor for use only in the dropwhile function
-            DropWhile(FilterFunc filter_func, Container & container) :
+            DropWhile(FilterFunc filter_func, Container && container) :
                 container(container),
                 filter_func(filter_func)
             { }
@@ -97,8 +97,10 @@ namespace iter {
     // Helper function to instantiate a DropWhile
     template <typename FilterFunc, typename Container>
     DropWhile<FilterFunc, Container> dropwhile(
-            FilterFunc filter_func, Container & container) {
-        return DropWhile<FilterFunc, Container>(filter_func, container);
+            FilterFunc filter_func, Container && container) {
+        return DropWhile<FilterFunc, Container>(
+                filter_func, 
+                std::forward<Container>(container));
     }
 
 }
