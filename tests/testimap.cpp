@@ -1,4 +1,5 @@
 #include <imap.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <iostream>
@@ -29,6 +30,10 @@ int main() {
 
     std::vector<int> vec4{1, 2, 3};
     for (auto i : imap([] (int a, int b) { return a + b; }, vec, vec4)) {
+        std::cout << i << '\n';
+    }
+
+    for (auto i : imap([] (const int x) { return x*x; }, iter::range(10))) {
         std::cout << i << '\n';
     }
 
