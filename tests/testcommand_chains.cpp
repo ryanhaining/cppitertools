@@ -31,6 +31,7 @@ int main() {
         }
     }
     std::cout << std::endl;
+    /*
     {
         std::vector<int> vec1{1,2,3,4,5,6};
         std::vector<int> vec2{7,8,9,10};
@@ -41,6 +42,7 @@ int main() {
                 << std::get<1>(t) << std::endl;
         }
     }
+    */
     std::cout << std::endl;
     {
         std::vector<int> vec1{1,2,3,4,5,6};
