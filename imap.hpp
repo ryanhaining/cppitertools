@@ -67,12 +67,12 @@ namespace iter {
     class IMap;
 
     template <typename MapFunc, typename... Containers>
-    IMap<MapFunc, Containers...> imap(MapFunc, Containers &...);
+    IMap<MapFunc, Containers...> imap(MapFunc, Containers &&...);
 
     template <typename MapFunc, typename... Containers>
     class IMap {
         // The imap function is the only thing allowed to create a IMap
-        friend IMap imap<MapFunc, Containers...>(MapFunc, Containers & ...);
+        friend IMap imap<MapFunc, Containers...>(MapFunc, Containers && ...);
 
         // The type returned when dereferencing the Containers...::Iterator
         // XXX depends on zip using iterator_range.  would be nice if it didn't
@@ -87,9 +87,9 @@ namespace iter {
             Zipped zipped;
             
             // Value constructor for use only in the imap function
-            IMap(MapFunc map_func, Containers & ... containers) :
+            IMap(MapFunc map_func, Containers && ... containers) :
                 map_func(map_func),
-                zipped(zip(containers...))
+                zipped(zip(std::forward<Containers>(containers)...))
             { }
             IMap () = delete;
             IMap & operator=(const IMap &) = delete;
@@ -137,8 +137,10 @@ namespace iter {
     // Helper function to instantiate a IMap
     template <typename MapFunc, typename... Containers>
     IMap<MapFunc, Containers...> imap(
-            MapFunc map_func, Containers & ... containers) {
-        return IMap<MapFunc, Containers...>(map_func, containers...);
+            MapFunc map_func, Containers && ... containers) {
+        return IMap<MapFunc, Containers...>(
+                map_func,
+                std::forward<Containers>(containers)...);
     }
 
 }
