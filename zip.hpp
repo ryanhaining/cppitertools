@@ -34,9 +34,9 @@ namespace iter {
             zip_iter(const Iterator & i) :
                 iter(i){ }
 
-            auto operator*() -> decltype(std::tie(*iter))
+            auto operator*() -> decltype(std::forward_as_tuple(*iter))
             {
-                return std::tie(*iter);
+                return std::forward_as_tuple(*iter);
             }
             zip_iter & operator++() {
                 ++iter;
@@ -60,9 +60,9 @@ namespace iter {
             zip_iter(const First & f, const Second & s) :
                 iter1(f),iter2(s) { }
 
-            auto operator*() -> decltype(std::tie(*iter1,*iter2))
+            auto operator*() -> decltype(std::forward_as_tuple(*iter1,*iter2))
             {
-                return std::tie(*iter1,*iter2);
+                return std::forward_as_tuple(*iter1,*iter2);
             }
             zip_iter & operator++() {
                 ++iter1;
@@ -84,7 +84,7 @@ namespace iter {
         public:
             using elem_type = decltype(*iter);
             using tuple_type = 
-                decltype(std::tuple_cat(std::tie(*iter),*inner_iter));
+                decltype(std::tuple_cat(std::forward_as_tuple(*iter),*inner_iter));
 
             zip_iter(const First & f, const Rest & ... rest) :
                 iter(f),
@@ -93,7 +93,7 @@ namespace iter {
 
             tuple_type operator*()
             {
-                return std::tuple_cat(std::tie(*iter),*inner_iter);
+                return std::tuple_cat(std::forward_as_tuple(*iter),*inner_iter);
             }
 
             zip_iter & operator++() {
