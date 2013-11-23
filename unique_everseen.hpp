@@ -27,7 +27,7 @@ namespace iter
                     }
                     else return false;
                 };
-        return filter<decltype(func),Container>(func,std::forward<Container>(container));
+        return filter(func,std::forward<Container>(container));
     }
 }
 
