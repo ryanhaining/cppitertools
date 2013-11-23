@@ -25,8 +25,7 @@ namespace iter
                         return *(++last) != e;
                     }
                 };
-        //return filter(func,std::forward<Container>(container));
-        return filter<decltype(func),Container>(func,std::forward<Container>(container));
+        return filter(func,std::forward<Container>(container));
     }
 }
 
