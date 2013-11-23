@@ -15,7 +15,6 @@
 #include <grouper.hpp>
 #include <imap.hpp>
 #include <iterator_range.hpp>
-#include <iterbase.hpp>
 #include <moving_section.hpp>
 #include <permutations.hpp>
 #include <powerset.hpp>
