@@ -1,5 +1,6 @@
 #include <zip.hpp>
 #include <chain.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <string>
@@ -24,6 +25,11 @@ int main() {
         for (auto e : zip(ivec, svec)) {
             std::cout << std::get<0>(e) << std::endl;
             std::cout << std::get<1>(e) << std::endl;
+        }
+
+        for (auto e : zip(iter::range(10), iter::range(10, 20))) {
+            std::cout << std::get<0>(e) << '\n';
+            std::cout << std::get<1>(e) << '\n';
         }
     }
     //Aaron's test
@@ -81,6 +87,10 @@ int main() {
                 << std::get<2>(e) << std::endl;
         }
     }
+
+
+
+
     return 0;
 }
 
