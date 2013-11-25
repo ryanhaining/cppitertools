@@ -83,6 +83,7 @@ namespace iter {
 
                     void skip_failures() {
                         while (this->sub_iter != this->sub_end &&
+                               this->selector_iter != this->selector_end &&
                                 !*this->selector_iter) {
                             this->increment_iterators();
                         }
