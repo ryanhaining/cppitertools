@@ -46,6 +46,13 @@ int main(void)
     for (auto i : compress(range(10), {true, false, true, false, true})) {
         std::cout << i << '\n';
     }
+
+    std::cout << "Should print 0 2 4\n";
+    for (auto i : compress({0, 1, 2, 3, 4, 5},
+                {true, false, true, false, true}))
+    {
+        std::cout << i << '\n';
+    }
         
 
     return 0;
