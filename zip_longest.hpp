@@ -1,11 +1,12 @@
 #ifndef ZIP_LONGEST_HPP
 #define ZIP_LONGEST_HPP
 
+#include "iterator_range.hpp"
+
 #include <boost/optional.hpp>
 #include <tuple>
 #include <utility>
 #include <iterator>
-#include "iterator_range.hpp"
 
 namespace iter {
     template <typename ... Containers>

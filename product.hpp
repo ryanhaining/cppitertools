@@ -1,9 +1,10 @@
 #ifndef PRODUCT_HPP
 #define PRODUCT_HPP
+#include "iterator_range.hpp"
+
 #include <tuple>
 #include <utility>
 #include <iterator>
-#include "iterator_range.hpp"
 
 namespace iter {
     template <typename ... Containers>

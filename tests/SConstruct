@@ -3,7 +3,7 @@ import os
 
 env = Environment(
     CXX='c++',
-    CXXFLAGS= ['-g',  '-Wall', '-Wextra',
+    CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include'],
     CPPPATH='..',

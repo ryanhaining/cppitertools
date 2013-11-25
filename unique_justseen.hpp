@@ -2,6 +2,7 @@
 #define UNIQUE_JUSTSEEN_HPP
 
 #include "filter.hpp"
+
 #include <type_traits>
 #include <functional>
 #include <utility>

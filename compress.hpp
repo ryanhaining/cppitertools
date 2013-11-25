@@ -1,7 +1,7 @@
 #ifndef COMPRESS__H__
 #define COMPRESS__H__
 
-#include <iterbase.hpp>
+#include "iterbase.hpp"
 
 #include <utility>
 #include <initializer_list>

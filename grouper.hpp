@@ -2,6 +2,7 @@
 #define GROUPER_HPP 
 
 #include "iterator_range.hpp"
+
 #include <vector>
 #include <algorithm>
 #include <functional>

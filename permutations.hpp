@@ -2,6 +2,7 @@
 #define PERMUTATIONS_HPP
 
 #include "iterator_range.hpp"
+
 #include <algorithm>
 #include <initializer_list>
 #include <vector>
