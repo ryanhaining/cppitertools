@@ -1,9 +1,11 @@
 #include <compress.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <iostream>
 
 using iter::compress;
+using iter::range;
 
 template <typename DataType, typename SelectorType>
 void testcase(std::vector<DataType> data_vec,
@@ -30,6 +32,10 @@ int main(void)
     std::cout << "Should print 2\n";
     testcase(ivec, bvec3);
 
+    for (auto i : compress(range(10), bvec)) {
+        std::cout << i << '\n';
+    }
+    
 
     return 0;
 }
