@@ -32,6 +32,7 @@ int main(void)
     std::cout << "Should print 2\n";
     testcase(ivec, bvec3);
 
+    std::cout << "Should print 0 2 4\n";
     for (auto i : compress(range(10), bvec)) {
         std::cout << i << '\n';
     }
