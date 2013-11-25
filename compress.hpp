@@ -14,6 +14,10 @@ namespace iter {
     template <typename Container, typename Selector>
     Compressed<Container, Selector> compress(Container &&, Selector &&);
 
+    template <typename T, typename Selector>
+    Compressed<std::initializer_list<T>, Selector> compress(
+            std::initializer_list<T> &&, Selector &&);
+
 
     template <typename Container, typename Selector>
     class Compressed : public IterBase<Container> {
@@ -25,6 +29,9 @@ namespace iter {
             // the compress function
             friend Compressed compress<Container, Selector>(
                     Container &&, Selector &&);
+            template <typename T, typename Sel>
+            friend Compressed<std::initializer_list<T>, Sel> compress(
+                    std::initializer_list<T> &&, Sel &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -116,6 +123,13 @@ namespace iter {
                 std::forward<Selector>(selectors));
     }
 
+    template <typename T, typename Selector>
+    Compressed<std::initializer_list<T>, Selector> compress(
+            std::initializer_list<T> && il, Selector && selectors) {
+        return Compressed<std::initializer_list<T>, Selector>(
+                std::move(il),
+                std::forward<Selector>(selectors));
+    }
 }
 
 #endif //ifndef COMPRESS__H__
