@@ -42,5 +42,11 @@ int main(void)
         std::cout << i << '\n';
     }
 
+    std::cout << "Should print 0 2 4\n";
+    for (auto i : compress(range(10), {true, false, true, false, true})) {
+        std::cout << i << '\n';
+    }
+        
+
     return 0;
 }
