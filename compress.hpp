@@ -3,7 +3,6 @@
 
 #include <iterbase.hpp>
 
-
 #include <utility>
 
 namespace iter {
@@ -13,7 +12,7 @@ namespace iter {
     class Compressed;
 
     template <typename Container, typename Selector>
-    Compressed<Container, Selector> compress(Container &, Selector &);
+    Compressed<Container, Selector> compress(Container &&, Selector &&);
 
 
     template <typename Container, typename Selector>
@@ -25,7 +24,7 @@ namespace iter {
             // The only thing allowed to directly instantiate an Compressed is
             // the compress function
             friend Compressed compress<Container, Selector>(
-                    Container &, Selector &);
+                    Container &&, Selector &&);
 
             using typename IterBase<Container>::contained_iter_type;
 
@@ -35,7 +34,7 @@ namespace iter {
             using selector_iter_type = decltype(std::begin(selectors));
             
             // Value constructor for use only in the compress function
-            Compressed(Container & container, Selector & selectors) :
+            Compressed(Container && container, Selector && selectors) :
                 container(container),
                 selectors(selectors)
             { }
@@ -111,8 +110,10 @@ namespace iter {
     // Helper function to instantiate an Compressed
     template <typename Container, typename Selector>
     Compressed<Container, Selector> compress(
-            Container & container, Selector & selectors) {
-        return Compressed<Container, Selector>(container, selectors);
+            Container && container, Selector && selectors) {
+        return Compressed<Container, Selector>(
+                std::forward<Container>(container),
+                std::forward<Selector>(selectors));
     }
 
 }
