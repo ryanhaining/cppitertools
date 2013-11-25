@@ -37,6 +37,10 @@ int main(void)
         std::cout << i << '\n';
     }
     
+    std::cout << "Should print 0 2 4\n";
+    for (auto i : compress({0,1,2,3,4,5}, bvec)) {
+        std::cout << i << '\n';
+    }
 
     return 0;
 }
