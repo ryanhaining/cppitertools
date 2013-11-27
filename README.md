@@ -18,6 +18,7 @@ library.
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
+[groupby](#groupby)<br />
 [compress](#compress)<br />
 [chain](#chain)<br />
 [reverse](#reverse)<br />
@@ -207,6 +208,29 @@ for (auto i : cycle(vec)) {
 }
 ```
 
+groupby
+-------
+Separate an iterable into groups sharing a common key.  The following example
+creates a new group whenever a string of a different length is encountered.
+```c++
+vector<string> vec = {
+    "hi", "ab", "ho",
+    "abc", "def",
+    "abcde", "efghi"
+};
+
+for (auto gb : groupby(vec, [] (const string &s) {return s.length(); })) {
+    cout << "key: " << gb.first << '\n';
+    cout << "content: ";
+    for (auto s : gb.second) {
+        cout << s << "  ";
+    }
+    cout << '\n';
+}
+```
+*Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
+It just iterates through, making a new group each time there is a key change.
+Thus, the the group is unsorted, the same key may appear multiple times.
 
 zip
 ---
