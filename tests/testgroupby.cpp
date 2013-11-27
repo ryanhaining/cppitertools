@@ -29,6 +29,15 @@ int main()
         std::cout << '\n';
     }
 
+    for (auto gb : groupby(vec, [] (const std::string &s) {return s.length(); })) {
+        std::cout << "key: " << gb.first << '\n';
+        std::cout << "content: ";
+        for (auto s : gb.second) {
+            std::cout << s << "  ";
+        }
+        std::cout << '\n';
+    }
+
     std::cout << "skipping length of 3\n";
     for (auto gb : groupby(vec, &length)) {
         if (gb.first == 3) {
