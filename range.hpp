@@ -22,7 +22,7 @@ namespace iter {
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
         virtual const char *what() const throw() { 
-            return "Range() step argument must not be zero";
+            return "Range() step must be non-zero";
         }
     };
 
@@ -46,11 +46,6 @@ namespace iter {
             const T start; 
             const T stop;
             const T step;
-            void step_check() const throw(RangeException) {
-                if (step == 0) {
-                    throw RangeException();
-                }
-            }
 
             Range(T stop) :
                 start(0),
@@ -58,19 +53,11 @@ namespace iter {
                 step(1)
             { }
 
-            Range(T start, T stop) :
-                start(start),
-                stop(stop),
-                step(1)
-            { }
-
-            Range(T start, T stop, T step) :
+            Range(T start, T stop, T step=1) :
                 start(start),
                 stop(stop),
                 step(step)
-            {
-                this->step_check();
-            }
+            { }
 
         public:
             Range() = delete;
@@ -105,19 +92,18 @@ namespace iter {
                     // There are two odd cases that need to be handled
                     //
                     // 1) The Range is infinite, such as
-                    // Range (-1, 0, -1) which would go    forever down toward
+                    // Range (-1, 0, -1) which would go forever down toward
                     // infinitely (theoretically).  If this occurs, the Range
                     // will instead effectively be empty
                     //
                     // 2) (stop - start) % step != 0.  For
-                    // example Range(1, 10, 2).  The     iterator will never be
+                    // example Range(1, 10, 2).  The iterator will never be
                     // exactly equal to the stop value.
                     bool operator!=(const Range::Iterator & other) const {
                         return !(this->step > 0 && this->value >= other.value) 
                             && !(this->step < 0 && this->value <= other.value);
                     }
             };
-
 
             Iterator begin() const {
                 return Iterator(start, step);
@@ -127,7 +113,6 @@ namespace iter {
                 return Iterator(stop, step);
             }
     };
-
 
 
     template <typename T>
@@ -142,6 +127,9 @@ namespace iter {
 
     template <typename T>
     Range<T> range(T start, T stop, T step) {
+        if (step == 0) {
+            throw RangeException();
+        }
         return Range<T>(start, stop, step);
     }
 }
