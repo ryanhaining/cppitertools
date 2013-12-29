@@ -55,11 +55,15 @@ namespace iter {
                     const contained_iter_type sub_end;
                     FilterFunc filter_func;
 
-                    // increment until the iterator points to is true on the 
-                    // predicate.  Called by constructor and operator++
+                    // check if the current value is true under the predicate
+                    // if it is not, set the sub_iter to the end using
+                    // placement new to avoid the requirement of the iterator
+                    // having an operator=
                     void check_current() {
                         if (!this->filter_func(*this->sub_iter)) {
-                            this->sub_iter = this->sub_end;
+                            this->sub_iter.~contained_iter_type();
+                            new(&this->sub_iter) contained_iter_type(
+                                    this->sub_end);
                         }
                     }
 
