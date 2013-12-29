@@ -72,11 +72,6 @@ namespace iter {
                         step(step)
                     { }
 
-                    Iterator & operator=(const Iterator &other) {
-                        this->value = other.value;
-                        return *this;
-                    }
-
                     T operator*() const {
                         return this->value;
                     }
