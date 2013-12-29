@@ -75,7 +75,10 @@ namespace iter {
                         sub_end(end),
                         filter_func(filter_func)
                     { 
-                        this->check_current();
+                        if (this->sub_iter != this->sub_end) {
+                            // only do the check if not already at the end
+                            this->check_current();
+                        }
                     } 
 
                     contained_iter_ret operator*() const {
