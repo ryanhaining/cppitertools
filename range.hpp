@@ -21,8 +21,8 @@ namespace iter {
 
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
-        virtual const char *what() const throw() { 
-            return "Range() step must be non-zero";
+        virtual const char *what() const noexcept { 
+            return "range step must be non-zero";
         }
     };
 
