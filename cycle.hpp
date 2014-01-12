@@ -21,7 +21,7 @@ namespace iter {
             std::initializer_list<T> &&);
 
     template <typename Container>
-    class Cycle : public IterBase<Container>{
+    class Cycle {
         private:
             // The cycle function is the only thing allowed to create a Cycle
             friend Cycle cycle<Container>(Container &&);
@@ -29,9 +29,9 @@ namespace iter {
             friend Cycle<std::initializer_list<T>> cycle(
                     std::initializer_list<T> &&);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             Container & container;
             
@@ -44,18 +44,19 @@ namespace iter {
             Cycle(const Cycle &) = default;
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type begin;
-                    const contained_iter_type end;
+                    using iter_type = iterator_type<Container>;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> begin;
+                    const iterator_type<Container> end;
                 public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end) :
+                    Iterator (iterator_type<Container> iter,
+                            iterator_type<Container> end) :
                         sub_iter(iter),
                         begin(iter),
                         end(end)
                     { } 
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
@@ -65,8 +66,8 @@ namespace iter {
                         if (!(this->sub_iter != this->end)) {
                             // explicit destruction with placement new in order
                             // to support iterators with no operator=
-                            this->sub_iter.~contained_iter_type();
-                            new(&this->sub_iter) contained_iter_type(
+                            this->sub_iter.~iter_type();
+                            new(&this->sub_iter) iterator_type<Container>(
                                     this->begin);
                         }
                         return *this;
