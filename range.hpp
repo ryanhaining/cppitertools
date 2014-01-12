@@ -16,6 +16,7 @@
 // If a step of 0 is provided, a RangeException will be thrown
 
 #include <exception>
+#include <type_traits>
 
 namespace iter {
 
