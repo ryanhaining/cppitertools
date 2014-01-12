@@ -21,7 +21,7 @@ namespace iter {
             FilterFunc, std::initializer_list<T> &&);
 
     template <typename FilterFunc, typename Container>
-    class DropWhile : IterBase<Container> {
+    class DropWhile  {
         private:
             Container & container;
             FilterFunc filter_func;
@@ -33,9 +33,9 @@ namespace iter {
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
                     FF, std::initializer_list<T> &&);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             
             // Value constructor for use only in the dropwhile function
@@ -50,8 +50,8 @@ namespace iter {
             DropWhile(const DropWhile &) = default;
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // skip all values for which the predicate is true
@@ -63,8 +63,8 @@ namespace iter {
                     }
 
                 public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end,
+                    Iterator (iterator_type<Container> iter,
+                            iterator_type<Container> end,
                             FilterFunc filter_func) :
                         sub_iter(iter),
                         sub_end(end),
@@ -73,7 +73,7 @@ namespace iter {
                         this->skip_passes();
                     } 
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
