@@ -68,10 +68,15 @@ namespace iter {
                     T value;
                     const T step;
 
-                    bool not_equal_to(const Iterator& other, std::true_type /*unsigned*/) const{
+                    // compare unsigned values
+                    bool not_equal_to(
+                            const Iterator& other, std::true_type ) const {
                         return this->value < other.value;
                     }
-                    bool not_equal_to(const Iterator& other, std::false_type /*signed*/) const{
+
+                    // compare signed values
+                    bool not_equal_to(
+                            const Iterator& other, std::false_type) const {
                         return !(this->step > 0 && this->value >= other.value) 
                             && !(this->step < 0 && this->value <= other.value);
                     }
@@ -104,7 +109,8 @@ namespace iter {
                     // example Range(1, 10, 2).  The iterator will never be
                     // exactly equal to the stop value.
                     bool operator!=(const Iterator & other) const { 
-                        return not_equal_to(other, typename std::is_unsigned<T>::type());
+                        return not_equal_to(
+                                other, typename std::is_unsigned<T>::type());
                     }
             };
 
