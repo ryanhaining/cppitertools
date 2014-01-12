@@ -17,9 +17,6 @@ namespace iter {
             private:
                 FilterFunc filter_func;
 
-                using contained_iter_ret =
-                    typename IterBase<Container>::contained_iter_ret;
-
             public:
                 PredicateFlipper(FilterFunc filter_func) :
                     filter_func(filter_func)
@@ -29,7 +26,7 @@ namespace iter {
                 PredicateFlipper(const PredicateFlipper &) = default;
 
                 // Calls the filter_func 
-                bool operator() (const contained_iter_ret item) const {
+                bool operator() (const iterator_deref<Container> item) const {
                     return !bool(filter_func(item));
                 }
         };
@@ -37,13 +34,9 @@ namespace iter {
         // Reverses the bool() conversion result of anything that supports a
         // bool conversion
         template <typename Container>
-        class BoolFlipper : public BoolTester<Container> {
-            private:
-                using contained_iter_ret = 
-                    typename BoolTester<Container>::contained_iter_ret;
-
+        class BoolFlipper {
             public:
-                bool operator() (const contained_iter_ret item) const {
+                bool operator() (const iterator_deref<Container> item) const {
                     return !bool(item);
                 }
         };
