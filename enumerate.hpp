@@ -43,11 +43,6 @@ namespace iter {
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T> &&);
 
-            using contained_iter_ret =
-                typename IterBase<Container>::contained_iter_ret;
-            using contained_iter_type =
-                typename IterBase<Container>::contained_iter_type;
-
             Enumerable(Container && container) : container(container) { }
             
         public:
@@ -62,8 +57,8 @@ namespace iter {
             class IterYield {
                 public:
                     std::size_t index;
-                    contained_iter_ret element;
-                    IterYield(std::size_t i, contained_iter_ret elem): 
+                    iterator_deref<Container> element;
+                    IterYield(std::size_t i, iterator_deref<Container> elem): 
                         index(i),
                         element(elem)
                     { }
@@ -74,10 +69,10 @@ namespace iter {
             //  Each dereference returns an IterYield.
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
+                    iterator_type<Container> sub_iter;
                     std::size_t index;
                 public:
-                    Iterator (contained_iter_type si) :
+                    Iterator (iterator_type<Container> si) :
                         sub_iter(si),
                         index(0) { } 
 
