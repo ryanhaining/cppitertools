@@ -63,7 +63,11 @@ namespace iter {
                         ++this->sub_iter;
                         // reset to beginning upon reaching the end
                         if (!(this->sub_iter != this->end)) {
-                            this->sub_iter = this->begin;
+                            // explicit destruction with placement new in order
+                            // to support iterators with no operator=
+                            this->sub_iter.~contained_iter_type();
+                            new(&this->sub_iter) contained_iter_type(
+                                    this->begin);
                         }
                         return *this;
                     }

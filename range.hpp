@@ -1,5 +1,5 @@
-#ifndef __RANGE__H__
-#define __RANGE__H__
+#ifndef RANGE__H__
+#define RANGE__H__
 
 // range() for range-based loops with start, stop, and step.
 //
@@ -16,13 +16,14 @@
 // If a step of 0 is provided, a RangeException will be thrown
 
 #include <exception>
+#include <type_traits>
 
 namespace iter {
 
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
-        virtual const char *what() const throw() { 
-            return "Range() step must be non-zero";
+        virtual const char *what() const noexcept { 
+            return "range step must be non-zero";
         }
     };
 
@@ -66,16 +67,19 @@ namespace iter {
                 private:
                     T value;
                     const T step;
+
+                    bool not_equal_to(const Range::Iterator& other, std::true_type /*unsigned*/) const{
+                        return this->value < other.value;
+                    }
+                    bool not_equal_to(const Range::Iterator& other, std::false_type /*signed*/) const{
+                        return !(this->step > 0 && this->value >= other.value) 
+                            && !(this->step < 0 && this->value <= other.value);
+                    }
                 public:
                     Iterator(T val, T step) :
                         value(val),
                         step(step)
                     { }
-
-                    Iterator & operator=(const Iterator &other) {
-                        this->value = other.value;
-                        return *this;
-                    }
 
                     T operator*() const {
                         return this->value;
@@ -99,9 +103,8 @@ namespace iter {
                     // 2) (stop - start) % step != 0.  For
                     // example Range(1, 10, 2).  The iterator will never be
                     // exactly equal to the stop value.
-                    bool operator!=(const Range::Iterator & other) const {
-                        return !(this->step > 0 && this->value >= other.value) 
-                            && !(this->step < 0 && this->value <= other.value);
+                    bool operator!=(const Range::Iterator & other) const { 
+                        return not_equal_to(other, typename std::is_unsigned<T>::type());
                     }
             };
 
@@ -134,4 +137,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef __RANGE__H__
+#endif //ifndef RANGE__H__
