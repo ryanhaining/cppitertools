@@ -21,7 +21,7 @@ namespace iter {
             FilterFunc, std::initializer_list<T> &&);
 
     template <typename FilterFunc, typename Container>
-    class TakeWhile : IterBase<Container>{
+    class TakeWhile {
         private:
             Container & container;
             FilterFunc filter_func;
@@ -33,9 +33,9 @@ namespace iter {
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
                     FF, std::initializer_list<T> &&);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             // Value constructor for use only in the takewhile function
             TakeWhile(FilterFunc filter_func, Container && container) :
@@ -51,8 +51,9 @@ namespace iter {
 
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
+                    using iter_type = iterator_type<Container>;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // check if the current value is true under the predicate
@@ -61,15 +62,15 @@ namespace iter {
                     // having an operator=
                     void check_current() {
                         if (!this->filter_func(*this->sub_iter)) {
-                            this->sub_iter.~contained_iter_type();
-                            new(&this->sub_iter) contained_iter_type(
+                            this->sub_iter.~iter_type();
+                            new(&this->sub_iter) iterator_type<Container>(
                                     this->sub_end);
                         }
                     }
 
                 public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end,
+                    Iterator (iterator_type<Container> iter,
+                            iterator_type<Container> end,
                             FilterFunc filter_func) :
                         sub_iter(iter),
                         sub_end(end),
@@ -81,7 +82,7 @@ namespace iter {
                         }
                     } 
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
