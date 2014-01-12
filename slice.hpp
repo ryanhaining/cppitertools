@@ -52,7 +52,7 @@ namespace iter {
 
 
     template <typename Container, typename DifferenceType>
-    class Slice : public IterBase<Container>{
+    class Slice {
         private:
             Container & container;
             DifferenceType start;
@@ -65,9 +65,9 @@ namespace iter {
             //template <typename T>
             //friend Slice<std::initializer_list<T>> slice(std::initializer_list<T> &&);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             
         public:
@@ -99,13 +99,13 @@ namespace iter {
 
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
+                    iterator_type<Container> sub_iter;
                     DifferenceType current;
                     const DifferenceType stop;
                     const DifferenceType step;
 
                 public:
-                    Iterator (contained_iter_type si, DifferenceType start,
+                    Iterator (iterator_type<Container> si, DifferenceType start,
                             DifferenceType stop, DifferenceType step) :
                         sub_iter(si),
                         current(start),
@@ -113,7 +113,7 @@ namespace iter {
                         step(step)
                     { }
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
