@@ -5,7 +5,8 @@
 // This file consists of utilities used for the generic nature of the
 // iterable wrapper classes.  As such, the contents of this file should be
 // considered UNDOCUMENTED and is subject to change without warning.  This
-// also applies to the name of the file
+// also applies to the name of the file.  No user code should include
+// this file directly.
 
 #include <utility>
 #include <iterator>
