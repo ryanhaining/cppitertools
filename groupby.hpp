@@ -20,7 +20,7 @@ namespace iter {
             std::initializer_list<T> &&, KeyFunc);
 
     template <typename Container, typename KeyFunc>
-    class GroupBy : IterBase<Container> {
+    class GroupBy  {
         private:
             Container & container;
             KeyFunc key_func;
@@ -31,13 +31,13 @@ namespace iter {
             friend GroupBy<std::initializer_list<T>, KF> groupby(
                     std::initializer_list<T> &&, KF);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             using key_func_ret =
                 decltype(std::declval<KeyFunc>()(
-                            std::declval<contained_iter_ret>()));
+                            std::declval<iterator_deref<Container>>()));
 
             GroupBy(Container && container, KeyFunc key_func) :
                 container(container),
@@ -57,17 +57,17 @@ namespace iter {
 
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
-                    contained_iter_type sub_iter_peek;
-                    const contained_iter_type sub_end;
+                    iterator_type<Container> sub_iter;
+                    iterator_type<Container> sub_iter_peek;
+                    const iterator_type<Container> sub_end;
                     KeyFunc key_func;
 
                     using KeyGroupPair =
                         std::pair<key_func_ret, Group>;
 
                 public:
-                    Iterator (contained_iter_type si,
-                              contained_iter_type end,
+                    Iterator (iterator_type<Container> si,
+                              iterator_type<Container> end,
                               KeyFunc key_func) :
                         sub_iter(si),
                         sub_end(end),
@@ -100,7 +100,7 @@ namespace iter {
                         return this->sub_iter == this->sub_end;
                     }
 
-                    contained_iter_ret current() const {
+                    iterator_deref<Container> current() const {
                         return *this->sub_iter;
                     }
 
@@ -188,7 +188,7 @@ namespace iter {
                                 return *this;
                             }
 
-                            contained_iter_ret operator*() const {
+                            iterator_deref<Container> operator*() const {
                                 return this->group.owner.current();
                             }
                     };
@@ -224,12 +224,10 @@ namespace iter {
     // items in the sequence directly
     template <typename Container>
     class ItemReturner {
-        private:
-            using contained_iter_ret =
-                typename IterBase<Container>::contained_iter_ret;
         public:
             ItemReturner() = default;
-            contained_iter_ret operator() (contained_iter_ret item) const {
+            iterator_deref<Container> operator() (
+                    iterator_deref<Container> item) const {
                 return item;
             }
     };
