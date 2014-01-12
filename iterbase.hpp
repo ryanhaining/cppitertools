@@ -1,26 +1,26 @@
 #ifndef ITERBASE__HPP__
 #define ITERBASE__HPP__
 
+
+// This file consists of utilities used for the generic nature of the
+// iterable wrapper classes.  As such, the contents of this file should be
+// considered UNDOCUMENTED and is subject to change without warning.  This
+// also applies to the name of the file
+
 #include <utility>
 #include <iterator>
 
 namespace iter {
-    template <typename Iterable>
-    class IterBase{
-        public:
-            // Type of the Container::Iterator, but since the name of that 
-            // iterator can be anything, we have to grab it with this
-            using contained_iter_type =
-                decltype(std::begin(std::declval<Iterable&>()));
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using iterator_type =
+        decltype(std::begin(std::declval<Container&>()));
 
-            // The type returned when dereferencing the Container::Iterator
-            using contained_iter_ret =
-                decltype(*std::declval<contained_iter_type&>());
-            
-            IterBase() = default;
-            IterBase(const IterBase &) = default;
-            IterBase & operator=(const IterBase &) = delete;
-    };
+    // iterator_deref<C> is the type obtained by dereferencing an iterator
+    // to an object of type C
+    template <typename Container>
+    using iterator_deref = 
+        decltype(*std::declval<iterator_type<Container>&>());
 }
 
 #endif // #ifndef ITERBASE__HPP__
