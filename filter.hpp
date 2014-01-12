@@ -21,7 +21,7 @@ namespace iter {
             FilterFunc, std::initializer_list<T> &&);
 
     template <typename FilterFunc, typename Container>
-    class Filter : IterBase<Container>{
+    class Filter {
         private:
             Container & container;
             FilterFunc filter_func;
@@ -33,9 +33,9 @@ namespace iter {
             template <typename FF, typename T>
             friend Filter<FF, std::initializer_list<T>> filter(
                     FF, std::initializer_list<T> &&);
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
             
             // Value constructor for use only in the filter function
             Filter(FilterFunc filter_func, Container && container) :
@@ -50,8 +50,8 @@ namespace iter {
 
             class Iterator {
                 protected:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // increment until the iterator points to is true on the 
@@ -64,8 +64,8 @@ namespace iter {
                     }
 
                 public:
-                    Iterator (contained_iter_type iter,
-                            contained_iter_type end,
+                    Iterator (iterator_type<Container> iter,
+                            iterator_type<Container> end,
                             FilterFunc filter_func) :
                         sub_iter(iter),
                         sub_end(end),
@@ -74,7 +74,7 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
@@ -131,12 +131,8 @@ namespace iter {
 
         template <typename Container>
         class BoolTester {
-            protected:
-                using contained_iter_ret =
-                    typename IterBase<Container>::contained_iter_ret;
-
             public:
-                bool operator() (const contained_iter_ret item) const {
+                bool operator() (const iterator_deref<Container> item) const {
                     return bool(item);
                 }
         };
