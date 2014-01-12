@@ -15,16 +15,16 @@ namespace iter {
     Sorted<Container, CompareFunc> sorted(Container &, CompareFunc);
 
     template <typename Container, typename CompareFunc>
-    class Sorted : IterBase<Container> {
+    class Sorted  {
         private:
             friend Sorted
                 sorted<Container, CompareFunc>(Container &, CompareFunc);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
-            std::vector<contained_iter_type> sorted_iters;
+            std::vector<iterator_type<Container>> sorted_iters;
 
             using sorted_iter_type = decltype(std::begin(sorted_iters));
 
@@ -42,8 +42,8 @@ namespace iter {
 
                 // sort by comparing the elements that the iterators point to
                 std::sort(std::begin(sorted_iters), std::end(sorted_iters),
-                        [&] (const contained_iter_type & it1,
-                            const contained_iter_type & it2)
+                        [&] (const iterator_type<Container> & it1,
+                            const iterator_type<Container> & it2)
                         { return compare_func(*it1, *it2); });
             }
 
@@ -61,7 +61,7 @@ namespace iter {
                     IteratorIterator(const IteratorIterator &) = default;
 
                     // Dereference the current iterator before returning
-                    contained_iter_ret operator*() {
+                    iterator_deref<Container> operator*() {
                         return *sorted_iter_type::operator*();
                     }
             };
