@@ -28,7 +28,7 @@ namespace iter {
             std::initializer_list<T> &&, std::initializer_list<U> &&);
 
     template <typename Container, typename Selector>
-    class Compressed : public IterBase<Container> {
+    class Compressed  {
         private:
             Container & container;
             Selector & selectors;
@@ -50,9 +50,9 @@ namespace iter {
             friend Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
                     std::initializer_list<T> &&, std::initializer_list<U> &&);
 
-            using typename IterBase<Container>::contained_iter_type;
+            
 
-            using typename IterBase<Container>::contained_iter_ret;
+            
 
             // Selector::Iterator type
             using selector_iter_type = decltype(std::begin(selectors));
@@ -70,8 +70,8 @@ namespace iter {
 
             class Iterator {
                 private:
-                    contained_iter_type sub_iter;
-                    const contained_iter_type sub_end;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
 
                     selector_iter_type selector_iter;
                     const selector_iter_type selector_end;
@@ -90,8 +90,8 @@ namespace iter {
                     }
 
                 public:
-                    Iterator (contained_iter_type cont_iter,
-                              contained_iter_type cont_end,
+                    Iterator (iterator_type<Container> cont_iter,
+                              iterator_type<Container> cont_end,
                               selector_iter_type sel_iter,
                               selector_iter_type sel_end) :
                         sub_iter(cont_iter),
@@ -102,7 +102,7 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    contained_iter_ret operator*() const {
+                    iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
 
