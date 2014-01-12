@@ -1,5 +1,5 @@
-#ifndef __RANGE__H__
-#define __RANGE__H__
+#ifndef RANGE__H__
+#define RANGE__H__
 
 // range() for range-based loops with start, stop, and step.
 //
@@ -137,4 +137,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef __RANGE__H__
+#endif //ifndef RANGE__H__
