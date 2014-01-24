@@ -7,9 +7,7 @@
 
 namespace iter {
 
-    namespace {
-        typedef long DefaultRangeType;
-    }
+    using DefaultRangeType = long;
 
     Range<DefaultRangeType> count() {
         return range(DefaultRangeType(0),
