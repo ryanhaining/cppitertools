@@ -39,8 +39,8 @@ namespace iter {
                 decltype(std::declval<KeyFunc>()(
                             std::declval<iterator_deref<Container>>()));
 
-            GroupBy(Container && container, KeyFunc key_func) :
-                container(container),
+            GroupBy(Container && container, KeyFunc key_func)
+                : container{container},
                 key_func(key_func)
             { }
 
@@ -68,9 +68,9 @@ namespace iter {
                 public:
                     Iterator (iterator_type<Container> si,
                               iterator_type<Container> end,
-                              KeyFunc key_func) :
-                        sub_iter(si),
-                        sub_end(end),
+                              KeyFunc key_func)
+                        : sub_iter{si},
+                        sub_end{end},
                         key_func(key_func)
                     { }
 
@@ -148,10 +148,10 @@ namespace iter {
                     Group & operator=(const Group &) = delete;
 
                     Group & operator=(Group &&) = default;
-                    Group (Group && other) :
-                            owner(other.owner),
-                            key(other.key),
-                            completed(other.completed) {
+                    Group (Group && other)
+                            : owner{other.owner},
+                            key{other.key},
+                            completed{other.completed} {
                         other.completed = true;
                     }
 
@@ -167,9 +167,9 @@ namespace iter {
 
                         public:
                             GroupIterator(const Group & group,
-                                          key_func_ret key) :
-                                key(key),
-                                group(group)
+                                          key_func_ret key)
+                                : key{key},
+                                group{group}
                             { }
 
                             GroupIterator(const GroupIterator &) = default;
@@ -194,28 +194,26 @@ namespace iter {
                     };
 
                     GroupIterator begin() const {
-                        return GroupIterator(*this, key);
+                        return {*this, key};
                     }
 
                     GroupIterator end() const {
-                        return GroupIterator(*this, key);
+                        return {*this, key};
                     }
 
             };
 
 
             Iterator begin() const {
-                return Iterator(
-                        std::begin(this->container),
+                return {std::begin(this->container),
                         std::end(this->container),
-                        this->key_func);
+                        this->key_func};
             }
 
             Iterator end() const {
-                return Iterator(
+                return {std::end(this->container),
                         std::end(this->container),
-                        std::end(this->container),
-                        this->key_func);
+                        this->key_func};
             }
 
     };
@@ -236,9 +234,7 @@ namespace iter {
     template <typename Container, typename KeyFunc>
     GroupBy<Container, KeyFunc> groupby(
             Container && container, KeyFunc key_func) {
-        return GroupBy<Container, KeyFunc>(
-                std::forward<Container>(container),
-                key_func);
+        return {std::forward<Container>(container), key_func};
     }
 
 
@@ -254,9 +250,7 @@ namespace iter {
     template <typename T, typename KeyFunc>
     GroupBy<std::initializer_list<T>, KeyFunc> groupby(
             std::initializer_list<T> && il, KeyFunc key_func) {
-        return GroupBy<std::initializer_list<T>, KeyFunc>(
-                std::move(il),
-                key_func);
+        return {std::move(il), key_func};
     }
 
 
