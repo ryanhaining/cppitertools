@@ -48,16 +48,16 @@ namespace iter {
             const T stop;
             const T step;
 
-            Range(T stop) :
-                start(0),
-                stop(stop),
-                step(1)
+            Range(T stop)
+                : start{0},
+                stop{stop},
+                step{1}
             { }
 
-            Range(T start, T stop, T step=1) :
-                start(start),
-                stop(stop),
-                step(step)
+            Range(T start, T stop, T step =1)
+                : start{start},
+                stop{stop},
+                step{step}
             { }
 
         public:
@@ -81,9 +81,9 @@ namespace iter {
                             && !(this->step < 0 && this->value <= other.value);
                     }
                 public:
-                    Iterator(T val, T step) :
-                        value(val),
-                        step(step)
+                    Iterator(T val, T step)
+                        : value{val},
+                        step{step}
                     { }
 
                     T operator*() const {
@@ -115,23 +115,23 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(start, step);
+                return {start, step};
             }
 
             Iterator end() const { 
-                return Iterator(stop, step);
+                return {stop, step};
             }
     };
 
 
     template <typename T>
     Range<T> range(T stop) {
-        return Range<T>(stop);
+        return {stop};
     }
 
     template <typename T>
     Range<T> range(T start, T stop) {
-        return Range<T>(start, stop);
+        return {start, stop};
     }
 
     template <typename T>
@@ -139,7 +139,7 @@ namespace iter {
         if (step == 0) {
             throw RangeException();
         }
-        return Range<T>(start, stop, step);
+        return {start, stop, step};
     }
 }
 
