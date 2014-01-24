@@ -43,7 +43,7 @@ namespace iter {
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T> &&);
 
-            Enumerable(Container && container) : container(container) { }
+            Enumerable(Container && container) : container{container} { }
             
         public:
             // Value constructor for use only in the enumerate function
@@ -58,9 +58,9 @@ namespace iter {
                 public:
                     std::size_t index;
                     iterator_deref<Container> element;
-                    IterYield(std::size_t i, iterator_deref<Container> elem): 
-                        index(i),
-                        element(elem)
+                    IterYield(std::size_t i, iterator_deref<Container> elem)
+                        : index{i},
+                        element{elem}
                     { }
             };
 
@@ -72,9 +72,10 @@ namespace iter {
                     iterator_type<Container> sub_iter;
                     std::size_t index;
                 public:
-                    Iterator (iterator_type<Container> si) :
-                        sub_iter(si),
-                        index(0) { } 
+                    Iterator (iterator_type<Container> si)
+                        : sub_iter{si},
+                        index{0}
+                    { } 
 
                     IterYield operator*() const {
                         return IterYield(this->index, *this->sub_iter);
@@ -104,13 +105,14 @@ namespace iter {
     // Helper function to instantiate an Enumerable
     template <typename Container>
     Enumerable<Container> enumerate(Container && container) {
-        return Enumerable<Container>(std::forward<Container>(container));
+        return {std::forward<Container>(container)};
     }
 
     template <typename T>
-    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T> && il)
+    Enumerable<std::initializer_list<T>> enumerate(
+            std::initializer_list<T> && il)
     {
-        return Enumerable<std::initializer_list<T>>(std::move(il));
+        return {std::move(il)};
     }
 
 }
