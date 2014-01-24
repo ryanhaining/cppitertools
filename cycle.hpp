@@ -29,14 +29,10 @@ namespace iter {
             friend Cycle<std::initializer_list<T>> cycle(
                     std::initializer_list<T> &&);
 
-            
-
-            
-
             Container & container;
             
             // Value constructor for use only in the cycle function
-            Cycle(Container && container) : container(container) { }
+            Cycle(Container && container) : container{container} { }
             Cycle () = delete;
             Cycle & operator=(const Cycle &) = delete;
 
@@ -50,10 +46,10 @@ namespace iter {
                     const iterator_type<Container> end;
                 public:
                     Iterator (iterator_type<Container> iter,
-                            iterator_type<Container> end) :
-                        sub_iter(iter),
-                        begin(iter),
-                        end(end)
+                            iterator_type<Container> end)
+                        : sub_iter{iter},
+                        begin{iter},
+                        end{end}
                     { } 
 
                     iterator_deref<Container> operator*() const {
@@ -79,13 +75,13 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(std::begin(this->container),
-                        std::end(this->container));
+                return {std::begin(this->container),
+                        std::end(this->container)};
             }
 
             Iterator end() const {
-                return Iterator(std::end(this->container),
-                    std::end(this->container));
+                return {std::end(this->container),
+                        std::end(this->container)};
             }
 
     };
@@ -93,13 +89,13 @@ namespace iter {
     // Helper function to instantiate an Filter
     template <typename Container>
     Cycle<Container> cycle(Container && container) {
-        return Cycle<Container>(std::forward<Container>(container));
+        return {std::forward<Container>(container)};
     }
 
     template <typename T>
     Cycle<std::initializer_list<T>> cycle(std::initializer_list<T> && il)
     {
-        return Cycle<std::initializer_list<T>>(std::move(il));
+        return {std::move(il)};
     }
 }
 
