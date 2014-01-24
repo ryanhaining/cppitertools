@@ -34,12 +34,9 @@ namespace iter {
             friend Filter<FF, std::initializer_list<T>> filter(
                     FF, std::initializer_list<T> &&);
             
-
-            
-            
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container && container) :
-                container(container),
+            Filter(FilterFunc filter_func, Container && container)
+                : container{container},
                 filter_func(filter_func)
             { }
             Filter () = delete;
@@ -66,9 +63,9 @@ namespace iter {
                 public:
                     Iterator (iterator_type<Container> iter,
                             iterator_type<Container> end,
-                            FilterFunc filter_func) :
-                        sub_iter(iter),
-                        sub_end(end),
+                            FilterFunc filter_func)
+                        : sub_iter{iter},
+                        sub_end{end},
                         filter_func(filter_func)
                     { 
                         this->skip_failures();
@@ -90,17 +87,15 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(
-                        std::begin(this->container),
+                return {std::begin(this->container),
                         std::end(this->container),
-                        this->filter_func);
+                        this->filter_func};
             }
 
             Iterator end() const {
-                return Iterator(
+                return {std::end(this->container),
                         std::end(this->container),
-                        std::end(this->container),
-                        this->filter_func);
+                        this->filter_func};
             }
 
     };
@@ -109,8 +104,7 @@ namespace iter {
     template <typename FilterFunc, typename Container>
     Filter<FilterFunc, Container> filter(
             FilterFunc filter_func, Container && container) {
-        return Filter<FilterFunc, Container>(
-                filter_func, std::forward<Container>(container));
+        return {filter_func, std::forward<Container>(container)};
     }
 
     template <typename FilterFunc, typename T>
@@ -118,8 +112,7 @@ namespace iter {
             FilterFunc filter_func,
             std::initializer_list<T> && il)
     {
-        return Filter<FilterFunc, std::initializer_list<T>>(
-                filter_func, std::move(il));
+        return {filter_func, std::move(il)};
     }
 
     namespace detail {
