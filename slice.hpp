@@ -72,11 +72,11 @@ namespace iter {
             
         public:
             Slice(Container & container, DifferenceType start,
-                  DifferenceType stop, DifferenceType step) :
-                container(container),
-                start(start),
-                stop(stop),
-                step(step)
+                  DifferenceType stop, DifferenceType step)
+                : container{container},
+                start{start},
+                stop{stop},
+                step{step}
             { 
                 // sets stop = start if the range is empty
                 if ((start < stop && step <=0) ||
@@ -106,11 +106,11 @@ namespace iter {
 
                 public:
                     Iterator (iterator_type<Container> si, DifferenceType start,
-                            DifferenceType stop, DifferenceType step) :
-                        sub_iter(si),
-                        current(start),
-                        stop(stop),
-                        step(step)
+                            DifferenceType stop, DifferenceType step)
+                        : sub_iter{si},
+                        current{start},
+                        stop{stop},
+                        step{step}
                     { }
 
                     iterator_deref<Container> operator*() const {
@@ -130,15 +130,13 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(
-                        std::next(std::begin(this->container), this->start),
-                        this->start, this->stop, this->step);
+                return {std::next(std::begin(this->container), this->start),
+                        this->start, this->stop, this->step};
             }
 
             Iterator end() const {
-                return Iterator(
-                        std::next(std::begin(this->container), this->stop),
-                        this->stop, this->stop, this->step);
+                return {std::next(std::begin(this->container), this->stop),
+                        this->stop, this->stop, this->step};
             }
 
     };
@@ -148,30 +146,27 @@ namespace iter {
     Slice<Container, DifferenceType> slice(
             Container && container, DifferenceType start,
             DifferenceType stop, DifferenceType step=1) {
-        return Slice<Container, DifferenceType>(
-                std::forward<Container>(container), start, stop, step);
+        return {std::forward<Container>(container), start, stop, step};
     }
 
     //only give the end as an arg and assume step  is 1 and begin is 0
     template <typename Container, typename DifferenceType>
     Slice<Container, DifferenceType> slice(
             Container && container, DifferenceType stop) {
-        return Slice<Container, DifferenceType>(
-                std::forward<Container>(container), 0, stop, 1);
+        return {std::forward<Container>(container), 0, stop, 1};
     }
 
     template <typename T, typename DifferenceType>
     Slice<std::initializer_list<T>, DifferenceType> slice(
             std::initializer_list<T> && il, DifferenceType start,
             DifferenceType stop, DifferenceType step=1) {
-        return Slice<std::initializer_list<T>, DifferenceType>(
-                il, start, stop, step);
+        return {il, start, stop, step};
     }
 
     template <typename T, typename DifferenceType>
     Slice<std::initializer_list<T>, DifferenceType> slice(
             std::initializer_list<T> && il, DifferenceType stop) {
-        return Slice<std::initializer_list<T>, DifferenceType>(il, 0, stop, 1);
+        return {il, 0, stop, 1};
     }
 }
 
