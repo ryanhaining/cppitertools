@@ -93,11 +93,11 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(std::begin(this->container));
+                return {std::begin(this->container)};
             }
 
             Iterator end() const {
-                return Iterator(std::end(this->container));
+                return {std::end(this->container)};
             }
 
     };
