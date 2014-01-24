@@ -20,10 +20,6 @@ namespace iter {
             friend Sorted
                 sorted<Container, CompareFunc>(Container &, CompareFunc);
 
-            
-
-            
-
             std::vector<iterator_type<Container>> sorted_iters;
 
             using sorted_iter_type = decltype(std::begin(sorted_iters));
@@ -55,8 +51,8 @@ namespace iter {
             // them when accessed with operator *
             class IteratorIterator : public sorted_iter_type {
                 public:
-                    IteratorIterator(sorted_iter_type iter) :
-                        sorted_iter_type(iter)
+                    IteratorIterator(sorted_iter_type iter)
+                        : sorted_iter_type{iter}
                     { }
                     IteratorIterator(const IteratorIterator &) = default;
 
@@ -67,20 +63,19 @@ namespace iter {
             };
 
             IteratorIterator begin() {
-                IteratorIterator iteriter(std::begin(sorted_iters));
-                return iteriter;
+                return {std::begin(sorted_iters)};
+                
             }
 
             IteratorIterator end() {
-                IteratorIterator iteriter(std::end(sorted_iters));
-                return iteriter;
+                return {std::end(sorted_iters)};
             }
     };
 
     template <typename Container, typename CompareFunc>
     Sorted<Container, CompareFunc> sorted(
             Container & container, CompareFunc compare_func) {
-        return Sorted<Container, CompareFunc>(container, compare_func);
+        return {container, compare_func};
     }
 
     template <typename Container>
