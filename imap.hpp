@@ -125,11 +125,11 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return Iterator(this->map_func, this->zipped.begin());
+                return {this->map_func, this->zipped.begin()};
             }
 
             Iterator end() const {
-                return Iterator(this->map_func, this->zipped.end());
+                return {this->map_func, this->zipped.end()};
             }
 
     };
@@ -138,9 +138,7 @@ namespace iter {
     template <typename MapFunc, typename... Containers>
     IMap<MapFunc, Containers...> imap(
             MapFunc map_func, Containers && ... containers) {
-        return IMap<MapFunc, Containers...>(
-                map_func,
-                std::forward<Containers>(containers)...);
+        return {map_func, std::forward<Containers>(containers)...};
     }
 
 }
