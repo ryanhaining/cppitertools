@@ -22,6 +22,32 @@ namespace iter {
     template <typename Container>
     using iterator_deref = 
         decltype(*std::declval<iterator_type<Container>&>());
+
+
+  //get the weakest iterator type in a bunch of iters
+  template<typename ... Rest>
+  struct weakest_iterator;
+  
+  template<typename Only>
+  struct weakest_iterator<Only>{
+	using value = typename std::iterator_traits<Only>::iterator_category;
+  };
+  
+  template <typename First, typename ... Rest>
+  struct weakest_iterator<First, Rest...>{
+	
+	using bestOfTheRest = typename weakest_iterator<Rest...>::value;
+	using thisTag = typename std::iterator_traits<First>::iterator_category;
+	using value = typename
+	  std::conditional<std::is_base_of<thisTag,  bestOfTheRest>::value,
+					   thisTag, //this is the weakest
+					   bestOfTheRest>::type; //one of the others is weaker
+	
+  };
+
+
+
+
 }
 
 #endif // #ifndef ITERBASE__HPP__

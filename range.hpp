@@ -17,6 +17,7 @@
 
 #include <exception>
 #include <type_traits>
+#include <iterator>
 
 namespace iter {
 
@@ -80,16 +81,26 @@ namespace iter {
                         return !(this->step > 0 && this->value >= other.value) 
                             && !(this->step < 0 && this->value <= other.value);
                     }
-                public:
+			public:
+			  //this could easily be changed to be a bidirectional iterator
+			  //if desired (not sure why it would be...?)
+			  using iterator_category = std::forward_iterator_tag; 
+			  using difference_type = ptrdiff_t;
+			  using value_type = T;
+			  using pointer = T*;
+			  using reference = T&;
                     Iterator(T val, T step)
-                        : value{val},
+					  : value{val},
                         step{step}
                     { }
 
-                    T operator*() const {
+                    reference operator*() {
                         return this->value;
                     }
 
+			  const reference operator*() const {
+				return this->value;
+			  }
                     Iterator & operator++() {
                         this->value += this->step;
                         return *this;
@@ -142,5 +153,7 @@ namespace iter {
         return {start, stop, step};
     }
 }
+
+
 
 #endif //ifndef RANGE__H__

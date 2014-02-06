@@ -77,9 +77,12 @@ namespace iter {
                         index{0}
                     { } 
 
-                    IterYield operator*() const {
+                    const IterYield operator*() const {
                         return IterYield(this->index, *this->sub_iter);
                     }
+			  IterYield operator*() {
+				return IterYield(this->index, *this->sub_iter);
+			  }
 
                     Iterator & operator++() { 
                         ++this->sub_iter;

@@ -77,7 +77,11 @@ namespace iter {
         // The type returned when dereferencing the Containers...::Iterator
         // XXX depends on zip using iterator_range.  would be nice if it didn't
         using Zipped = 
-            iterator_range<zip_iter<decltype(std::declval<Containers>().begin())...>>;
+		  iterator_range<
+		  zip_iter<typename
+				   iter::weakest_iterator<decltype(std::declval<Containers>().begin())...>::value,
+				   decltype(std::declval<Containers>().begin())...>>;
+				   //				   decltype(std::declval<Containers>().begin())...>>;
 
         using ZippedIterType = decltype(std::declval<Zipped>().begin());
             //typename std::remove_const<decltype(std::declval<Zipped>().begin())>::type;
@@ -108,10 +112,12 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
+			  //template<typename U = zipiter::value_type> bool f(Type* x);
+			  //template<typename... List> bool f(std::tuple<List...>* x);
                     auto operator*() const -> 
-                        decltype(detail::call(this->map_func, *(this->zipiter)))
+					  decltype(detail::call(this->map_func, (*(this->zipiter)).asTuple()))
                     {
-                        return detail::call(this->map_func, *(this->zipiter));
+					  return detail::call(this->map_func, (*(this->zipiter)).asTuple());
                     }
 
                     Iterator & operator++() { 
