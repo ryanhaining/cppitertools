@@ -81,7 +81,6 @@ namespace iter {
 		  zip_iter<typename
 				   iter::weakest_iterator<decltype(std::declval<Containers>().begin())...>::value,
 				   decltype(std::declval<Containers>().begin())...>>;
-				   //				   decltype(std::declval<Containers>().begin())...>>;
 
         using ZippedIterType = decltype(std::declval<Zipped>().begin());
             //typename std::remove_const<decltype(std::declval<Zipped>().begin())>::type;

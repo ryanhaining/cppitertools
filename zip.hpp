@@ -53,6 +53,7 @@ namespace iter {
 	std::swap(t1.data, t2.data);
   }
   
+  //concatenate wrapped tuple lists
   template<typename T1, typename ... T2s>
   tupleWrapper<T1, T2s...> wrapperCat(tupleWrapper<T1> t1, tupleWrapper<T2s...> t2){
 	return tupleWrapper<T1, T2s...>{std::tuple_cat(t1.asTuple(), t2.asTuple())};
@@ -236,9 +237,7 @@ namespace iter {
 
 	using value_type = 
 	  decltype(wrapperCat(elem_type(*iter), *inner_iter));
-								  //typename std::iterator_traits<Rest>::value_type ...>;
-	//	  decltype(std::tuple_cat(std::forward_as_tuple(elem_type),
-	//							  std::iterator_traits<decltype(inner_iter)>::value_type));
+
 
 	using iterator_category = WeakestTag; 
 	using difference_type = ptrdiff_t;
@@ -249,12 +248,12 @@ namespace iter {
                 iter(f),
                 inner_iter(rest...) {}
 
-	//this seems wrong, since operator* should return a refernce
-	//however, the tuple type contains references, so I think it works out
-            value_type operator*()
+	//most iterators operator* return a reference.  Since our tuples are ephemeral
+	//we have to return a tuple of references by value
+	//std::swap does NOT work with temporary tuples (even those containing references)
+	//hence the extra wrapperCat type, whose swap can be specialized by ADL
+	value_type operator*()
             {
-			  //                return std::tuple_cat(std::forward_as_tuple(*iter),*inner_iter);
-			  //		  return std::tuple_cat(elem_type(*iter), *inner_iter);
 			  return wrapperCat(elem_type(*iter), *inner_iter);
             }
 
@@ -351,10 +350,9 @@ namespace iter {
 	}
 					  
 
-	//When would these results be different between different iterators?
-	//What's the "right thing to do" when the ranges are different lengths?
+	//I don't understand why the condition here is and, not or
             bool operator!=(const zip_iter & rhs) const {
-			  return (this->iter != rhs.iter) && //|| //not equal if either are unequal
+			  return (this->iter != rhs.iter) && 
                     (this->inner_iter != rhs.inner_iter);
             }
 	//stl compatible iterators should implement == as well
