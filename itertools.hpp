@@ -15,7 +15,7 @@
 #include "grouper.hpp"
 #include "imap.hpp"
 #include "iterator_range.hpp"
-#include "moving_section.hpp"
+#include "sliding_window.hpp"
 #include "permutations.hpp"
 #include "powerset.hpp"
 #include "product.hpp"

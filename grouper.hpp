@@ -63,7 +63,7 @@ namespace iter {
                   //  this->group.push_back(this->container.begin() + i);
             }
 
-            //seems like conclassor is same as moving_section_iter
+            //seems like conclassor is same as sliding_window_iter
             grouper_iter(Container && c) :
                 container(std::forward<Container>(c))
             {

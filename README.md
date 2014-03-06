@@ -23,7 +23,7 @@ library.
 [chain](#chain)<br />
 [reverse](#reverse)<br />
 [slice](#slice)<br />
-[moving_section](#moving_section)<br />
+[sliding_window](#sliding_window)<br />
 [grouper](#grouper)<br />
 
 ##### Combinatoric fuctions
@@ -350,7 +350,7 @@ for (auto i : slice(a,0,15,3)) {
 }
 ```
 
-moving_section
+sliding_window
 -------------
 
 Takes a section from a range and increments the whole section.  
@@ -371,7 +371,7 @@ take a section of size 4, output is:
 Example Usage:
 ```c++
 std::vector<int> v = {1,2,3,4,5,6,7,8,9};                                      
-for (auto sec : moving_section(v,4)) {                                         
+for (auto sec : sliding_window(v,4)) {                                         
     for (auto i : sec) {                                                       
         std::cout << i << " ";                                                 
         i.get() = 90; 

@@ -2,7 +2,7 @@ import platform
 import os
 
 env = Environment(
-    CXX='c++',
+    CXX='g++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include'],
@@ -30,7 +30,7 @@ progs = Split('''
               combinations_with_replacement 
               combinations 
               powerset
-              moving_section
+              sliding_window
               imap
               count
               filterfalse

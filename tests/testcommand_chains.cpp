@@ -47,7 +47,7 @@ int main() {
     {
         std::vector<int> vec1{1,2,3,4,5,6};
         std::vector<int> vec2{7,8,9,10};
-        for (auto s : moving_section(chain(vec1,vec2),4)) {
+        for (auto s : sliding_window(chain(vec1,vec2),4)) {
             for (auto i : s) std::cout << i << " ";
             std::cout<<std::endl;
         }

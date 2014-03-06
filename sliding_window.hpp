@@ -1,5 +1,5 @@
-#ifndef MOVING_SECTION_HPP
-#define MOVING_SECTION_HPP
+#ifndef SLIDING_WINDOW_HPP
+#define SLIDING_WINDOW_HPP
 
 #include "iterator_range.hpp"
 
@@ -12,17 +12,17 @@
 
 namespace iter {
     template <typename Container>
-        struct moving_section_iter;
+        struct sliding_window_iter;
     template <typename Container>
-        iterator_range<moving_section_iter<Container>>
-        moving_section(Container && container, size_t s) {
-            auto begin = moving_section_iter<Container>(std::forward<Container>(container),s);
-            auto end = moving_section_iter<Container>(std::forward<Container>(container));
-            return iterator_range<moving_section_iter<Container>>(begin,end);
+        iterator_range<sliding_window_iter<Container>>
+        sliding_window(Container && container, size_t s) {
+            auto begin = sliding_window_iter<Container>(std::forward<Container>(container),s);
+            auto end = sliding_window_iter<Container>(std::forward<Container>(container));
+            return iterator_range<sliding_window_iter<Container>>(begin,end);
         }
 
     template <typename Container>
-        struct moving_section_iter {
+        struct sliding_window_iter {
             typename 
                 std::conditional<std::is_lvalue_reference<Container>::value,
                 Container&,
@@ -32,7 +32,7 @@ namespace iter {
             using Iterator = decltype(std::begin(container));
             std::vector<Iterator> section;
             size_t section_size = 0;
-            moving_section_iter(Container && c, size_t s) :
+            sliding_window_iter(Container && c, size_t s) :
                 container(std::forward<Container>(c)),section_size(s) {
                     size_t i = 0;
                     for (auto iter = std::begin(container); i < section_size;++iter,++i) {
@@ -41,20 +41,20 @@ namespace iter {
                     //for (size_t i = 0; i < section_size; ++i) 
                       //  section.push_back(container.begin()+i);
                 }
-            moving_section_iter(Container && c) : container(std::forward<Container>(c))
+            sliding_window_iter(Container && c) : container(std::forward<Container>(c))
             //creates the end iterator
             {
                 section.push_back(std::end(container));
             }
 
-            moving_section_iter & operator++() {
+            sliding_window_iter & operator++() {
                 for (auto & iter : section) {
                     ++iter;
                 }
                 return *this;
                 //std::for_each(section.begin(),section.end(),[](Iterator & i){++i;});
             }
-            bool operator!=(const moving_section_iter & rhs) {
+            bool operator!=(const sliding_window_iter & rhs) {
                return this->section.back() != rhs.section.back();
             }
             using Deref_type = std::vector<std::reference_wrapper<typename std::remove_reference<decltype(*std::declval<Iterator>())>::type>>;
@@ -70,9 +70,9 @@ namespace iter {
 }
 namespace std {
     template <typename Container>
-        struct iterator_traits<iter::moving_section_iter<Container>> {
+        struct iterator_traits<iter::sliding_window_iter<Container>> {
             using difference_type = ptrdiff_t;
             using iterator_category = input_iterator_tag;
         };
 }
-#endif //MOVING_SECTION_HPP
+#endif //SLIDING_WINDOW_HPP
