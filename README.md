@@ -230,7 +230,7 @@ for (auto gb : groupby(vec, [] (const string &s) {return s.length(); })) {
 ```
 *Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
 It just iterates through, making a new group each time there is a key change.
-Thus, the the group is unsorted, the same key may appear multiple times.
+Thus, if the the group is unsorted, the same key may appear multiple times.
 
 zip
 ---
