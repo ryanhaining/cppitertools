@@ -71,9 +71,13 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    const iterator_deref<Container> operator*() const {
                         return *this->sub_iter;
                     }
+
+			  iterator_deref<Container> operator*() {
+				return *this->sub_iter;
+			  }
 
                     Iterator & operator++() { 
                         ++this->sub_iter;

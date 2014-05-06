@@ -19,6 +19,13 @@ namespace iter {
                 const Iterator end;//never really used but kept it for consistency
 
             public:
+	  using value_type = typename std::iterator_traits<Iterator>::value_type;
+	  using difference_type = ptrdiff_t; //not sure when this gets used...
+	  using pointer = value_type*;
+	  using reference = value_type&;
+	  using iterator_category = std::forward_iterator_tag; //could probably be made bidirectional
+	  
+	  
                 chain_iter(Container && container, bool is_end=false) :
                     begin(std::begin(container)),end(std::end(container)) {
                         if(is_end) begin = std::end(container);
@@ -48,6 +55,12 @@ namespace iter {
                 chain_iter<Containers...> next_iter;
 
             public:
+		  using value_type = typename std::iterator_traits<Iterator>::value_type;
+		  using difference_type = ptrdiff_t; //not sure when this gets used...
+		  using pointer = value_type*;
+		  using reference = value_type&;
+		  using iterator_category = std::forward_iterator_tag; //could probably be made bidirectional
+
                 chain_iter(Container && container, Containers&& ... containers, bool is_end=false) :
                     begin(std::begin(container)),
                     end(std::end(container)),
@@ -94,11 +107,13 @@ namespace iter {
                 iterator_range<chain_iter<Containers...>>(begin,end);
         }
 }
+/*
+  //put these as using decs in the iterator itself
 namespace std {
     template <typename ... Containers>
         struct iterator_traits<iter::chain_iter<Containers...>> {
             using difference_type = ptrdiff_t;
             using iterator_category = input_iterator_tag;
         };
-}
+		}*/
 #endif //CHAIN_HPP
