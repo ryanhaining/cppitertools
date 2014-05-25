@@ -47,29 +47,36 @@ namespace iter {
             Accumulator(const Accumulator &) = default;
 
             class Iterator {
+                // NOTE can AccumVal and iterator_deref<> be different?
                 using AccumVal =
                     typename std::result_of<AccumulateFunc(
-                            iterator_deref<Container>, iterator_deref<Container>)>::type;
+                            iterator_deref<Container>,
+                            iterator_deref<Container>)>::type;
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
                     AccumulateFunc accumulate_func;
+                    AccumVal acc_val;
                 public:
                     Iterator (iterator_type<Container> iter,
                             iterator_type<Container> end,
                             AccumulateFunc accumulate_func)
                         : sub_iter{iter},
                         sub_end{end},
-                        accumulate_func(accumulate_func)
+                        accumulate_func(accumulate_func),
+                        acc_val(iter == end ? AccumVal{} : *iter)
                     { } 
 
-                    iterator_deref<Container> operator*() const {
-                        return *this->sub_iter;
+                    AccumVal operator*() const {
+                        return this->acc_val;
                     }
 
                     Iterator & operator++() { 
                         ++this->sub_iter;
-                        // TODO
+                        if (this->sub_iter != this->sub_end) {
+                            this->acc_val = accumulate_func(
+                                    this->acc_val, *this->sub_iter);
+                        }
                         return *this;
                     }
 
