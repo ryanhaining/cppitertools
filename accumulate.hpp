@@ -1,5 +1,5 @@
-#ifndef accumulate__H__
-#define accumulate__H__
+#ifndef ACCUMULATE__H__
+#define ACCUMULATE__H__
 
 #include "iterbase.hpp"
 
@@ -10,18 +10,18 @@
 namespace iter {
 
     //Forward declarations of Accumulator and accumulate
-    template <typename AccumulateFunc, typename Container>
+    template <typename Container, typename AccumulateFunc>
     class Accumulator;
 
     template <typename Container, typename AccumulateFunc>
-    Accumulator<AccumulateFunc, Container> accumulate(
+    Accumulator<Container, AccumulateFunc> accumulate(
             Container &&, AccumulateFunc);
 
     template <typename AccumulateFunc, typename T>
-    Accumulator<AccumulateFunc, std::initializer_list<T>> accumulate(
+    Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
             std::initializer_list<T> &&, AccumulateFunc);
 
-    template <typename AccumulateFunc, typename Container>
+    template <typename Container, typename AccumulateFunc>
     class Accumulator {
         private:
             Container & container;
@@ -36,7 +36,7 @@ namespace iter {
                     std::initializer_list<T> &&, AF);
             
             // Value constructor for use only in the accumulate function
-            Accumulator(AccumulateFunc accumulate_func, Container && container)
+            Accumulator(Container && container, AccumulateFunc accumulate_func)
                 : container{container},
                 accumulate_func(accumulate_func)
             { }
@@ -47,7 +47,6 @@ namespace iter {
             Accumulator(const Accumulator &) = default;
 
             class Iterator {
-                // NOTE can AccumVal and iterator_deref<> be different?
                 using AccumVal =
                     typename std::result_of<AccumulateFunc(
                             iterator_deref<Container>,
@@ -101,21 +100,21 @@ namespace iter {
 
     // Helper function to instantiate an Accumulator
     template <typename Container, typename AccumulateFunc>
-    Accumulator<AccumulateFunc, Container> accumulate(
+    Accumulator<Container, AccumulateFunc> accumulate(
             Container && container,
             AccumulateFunc accumulate_func)
     {
-        return {accumulate_func, std::forward<Container>(container)};
+        return {std::forward<Container>(container), accumulate_func};
     }
 
     template <typename T, typename AccumulateFunc>
-    Accumulator<AccumulateFunc, std::initializer_list<T>> accumulate(
+    Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
             std::initializer_list<T> && il,
             AccumulateFunc accumulate_func)
     {
-        return {accumulate_func, std::move(il)};
+        return {std::move(il), accumulate_func};
     }
 
 }
 
-#endif //ifndef accumulate__H__
+#endif //ifndef ACCUMULATE__H__
