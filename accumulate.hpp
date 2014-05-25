@@ -63,7 +63,7 @@ namespace iter {
                         : sub_iter{iter},
                         sub_end{end},
                         accumulate_func(accumulate_func),
-                        acc_val(iter == end ? AccumVal{} : *iter)
+                        acc_val(!(iter != end) ? AccumVal{} : *iter)
                     { } 
 
                     AccumVal operator*() const {
