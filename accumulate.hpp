@@ -17,7 +17,7 @@ namespace iter {
     Accumulator<Container, AccumulateFunc> accumulate(
             Container &&, AccumulateFunc);
 
-    template <typename AccumulateFunc, typename T>
+    template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
             std::initializer_list<T> &&, AccumulateFunc);
 
@@ -31,7 +31,7 @@ namespace iter {
             friend Accumulator accumulate<Container, AccumulateFunc>(
                     Container &&, AccumulateFunc);
 
-            template <typename AF, typename T>
+            template <typename T, typename AF>
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
                     std::initializer_list<T> &&, AF);
             
@@ -47,6 +47,7 @@ namespace iter {
             Accumulator(const Accumulator &) = default;
 
             class Iterator {
+                // AccumVal must be default constructible
                 using AccumVal =
                     typename std::result_of<AccumulateFunc(
                             iterator_deref<Container>,
