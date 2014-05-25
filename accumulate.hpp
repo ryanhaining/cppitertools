@@ -6,6 +6,7 @@
 #include <utility>
 #include <iterator>
 #include <initializer_list>
+#include <functional>
 
 namespace iter {
 
@@ -108,12 +109,28 @@ namespace iter {
         return {std::forward<Container>(container), accumulate_func};
     }
 
+    template <typename Container>
+    auto accumulate(Container && container) -> 
+        decltype(accumulate(std::forward<Container>(container),
+                    std::plus<iterator_deref<Container>>{}))
+    {
+        return accumulate(std::forward<Container>(container),
+                std::plus<iterator_deref<Container>>{});
+    }
+
     template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
             std::initializer_list<T> && il,
             AccumulateFunc accumulate_func)
     {
         return {std::move(il), accumulate_func};
+    }
+
+    template <typename T>
+    auto accumulate(std::initializer_list<T> && il) ->
+        decltype(accumulate(std::move(il), std::plus<T>{}))
+    {
+        return accumulate(std::move(il), std::plus<T>{});
     }
 
 }
