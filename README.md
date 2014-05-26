@@ -20,6 +20,7 @@ evaluation wherever possible.
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
 [groupby](#groupby)<br />
+[accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [chain](#chain)<br />
 [reverse](#reverse)<br />
@@ -232,6 +233,31 @@ for (auto gb : groupby(vec, [] (const string &s) {return s.length(); })) {
 *Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
 It just iterates through, making a new group each time there is a key change.
 Thus, if the the group is unsorted, the same key may appear multiple times.
+
+accumulate
+-------
+Differs from `std::accumulate` (which in my humble opinion should be named 
+`std::reduce` or `std::foldl`).  It is similar to a functional reduce where one 
+can see all of the intermediate results.  By default, it keeps a running sum.
+Prints: `1 3 6 10 15`
+```c++
+for (auto i : accumulate(range(1, 6))) {
+    cout << i << '\n';
+}
+```
+A second, optional argument may provide an alternative binary function 
+to compute results.  The following example multiplies the numbers, rather
+than adding them.
+Prints: `1 2 6 24 120`
+
+```c++
+for (auto i : accumulate(range(1, 6), std::multiplies<int>{})) {
+    cout << i << '\n';
+}
+```
+
+Note: The intermediate result type must support default construction
+and assignment.
 
 zip
 ---
