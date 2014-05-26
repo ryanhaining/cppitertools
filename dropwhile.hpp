@@ -14,35 +14,35 @@ namespace iter {
     class DropWhile;
 
     template <typename FilterFunc, typename Container>
-    DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container &&);
+    DropWhile<FilterFunc, Container> dropwhile(FilterFunc, Container&&);
 
     template <typename FilterFunc, typename T>
     DropWhile<FilterFunc, std::initializer_list<T>> dropwhile(
-            FilterFunc, std::initializer_list<T> &&);
+            FilterFunc, std::initializer_list<T>&&);
 
     template <typename FilterFunc, typename Container>
     class DropWhile  {
         private:
-            Container & container;
+            Container& container;
             FilterFunc filter_func;
 
             friend DropWhile dropwhile<FilterFunc, Container>(
-                    FilterFunc, Container &&);
+                    FilterFunc, Container&&);
 
             template <typename FF, typename T>
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
-                    FF, std::initializer_list<T> &&);
+                    FF, std::initializer_list<T>&&);
             
             // Value constructor for use only in the dropwhile function
-            DropWhile(FilterFunc filter_func, Container && container)
+            DropWhile(FilterFunc filter_func, Container&& container)
                 : container{container},
                 filter_func(filter_func)
             { }
-            DropWhile () = delete;
-            DropWhile & operator=(const DropWhile &) = delete;
+            DropWhile() = delete;
+            DropWhile& operator=(const DropWhile&) = delete;
 
         public:
-            DropWhile(const DropWhile &) = default;
+            DropWhile(const DropWhile&) = default;
             class Iterator {
                 private:
                     iterator_type<Container> sub_iter;
@@ -99,13 +99,13 @@ namespace iter {
     // Helper function to instantiate a DropWhile
     template <typename FilterFunc, typename Container>
     DropWhile<FilterFunc, Container> dropwhile(
-            FilterFunc filter_func, Container && container) {
+            FilterFunc filter_func, Container&& container) {
         return {filter_func, std::forward<Container>(container)};
     }
 
     template <typename FilterFunc, typename T>
     DropWhile<FilterFunc, std::initializer_list<T>> dropwhile(
-            FilterFunc filter_func, std::initializer_list<T> && il)
+            FilterFunc filter_func, std::initializer_list<T>&& il)
     {
         return {filter_func, std::move(il)};
     }
