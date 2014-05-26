@@ -73,7 +73,7 @@ namespace iter {
                         return this->acc_val;
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         if (this->sub_iter != this->sub_end) {
                             this->acc_val = accumulate_func(
@@ -82,7 +82,7 @@ namespace iter {
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
             };
