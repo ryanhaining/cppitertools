@@ -14,36 +14,36 @@ namespace iter {
     class TakeWhile;
 
     template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container &&);
+    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container&&);
 
     template <typename FilterFunc, typename T>
     TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc, std::initializer_list<T> &&);
+            FilterFunc, std::initializer_list<T>&&);
 
     template <typename FilterFunc, typename Container>
     class TakeWhile {
         private:
-            Container & container;
+            Container& container;
             FilterFunc filter_func;
 
             friend TakeWhile takewhile<FilterFunc, Container>(
-                    FilterFunc, Container &&);
+                    FilterFunc, Container&&);
 
             template <typename FF, typename T>
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
-                    FF, std::initializer_list<T> &&);
+                    FF, std::initializer_list<T>&&);
 
             // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container && container)
+            TakeWhile(FilterFunc filter_func, Container&& container)
                 : container{container},
                 filter_func(filter_func)
             { }
 
             TakeWhile () = delete;
-            TakeWhile & operator=(const TakeWhile &) = delete;
+            TakeWhile& operator=(const TakeWhile&) = delete;
 
         public:
-            TakeWhile(const TakeWhile &) = default;
+            TakeWhile(const TakeWhile&) = default;
 
             class Iterator {
                 private:
@@ -82,13 +82,13 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         this->check_current();
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
             };
@@ -110,13 +110,13 @@ namespace iter {
     // Helper function to instantiate a TakeWhile
     template <typename FilterFunc, typename Container>
     TakeWhile<FilterFunc, Container> takewhile(
-            FilterFunc filter_func, Container && container) {
+            FilterFunc filter_func, Container&& container) {
         return {filter_func, std::forward<Container>(container)};
     }
 
     template <typename FilterFunc, typename T>
     TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc filter_func, std::initializer_list<T> && il)
+            FilterFunc filter_func, std::initializer_list<T>&& il)
     {
         return {filter_func, std::move(il)};
     }
