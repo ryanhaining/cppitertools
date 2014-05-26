@@ -62,7 +62,7 @@ namespace iter {
 
         public:
             Range() = delete;
-            Range(const Range &) = default;
+            Range(const Range&) = default;
             class Iterator {
                 private:
                     T value;
@@ -90,7 +90,7 @@ namespace iter {
                         return this->value;
                     }
 
-                    Iterator & operator++() {
+                    Iterator& operator++() {
                         this->value += this->step;
                         return *this;
                     }
@@ -108,7 +108,7 @@ namespace iter {
                     // 2) (stop - start) % step != 0.  For
                     // example Range(1, 10, 2).  The iterator will never be
                     // exactly equal to the stop value.
-                    bool operator!=(const Iterator & other) const { 
+                    bool operator!=(const Iterator& other) const { 
                         return not_equal_to(
                                 other, typename std::is_unsigned<T>::type());
                     }
