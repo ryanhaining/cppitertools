@@ -14,36 +14,36 @@ namespace iter {
     class Filter;
 
     template <typename FilterFunc, typename Container>
-    Filter<FilterFunc, Container> filter(FilterFunc, Container &&);
+    Filter<FilterFunc, Container> filter(FilterFunc, Container&&);
 
     template <typename FilterFunc, typename T>
     Filter<FilterFunc, std::initializer_list<T>> filter(
-            FilterFunc, std::initializer_list<T> &&);
+            FilterFunc, std::initializer_list<T>&&);
 
     template <typename FilterFunc, typename Container>
     class Filter {
         private:
-            Container & container;
+            Container& container;
             FilterFunc filter_func;
 
             // The filter function is the only thing allowed to create a Filter
             friend Filter filter<FilterFunc, Container>(
-                    FilterFunc, Container &&);
+                    FilterFunc, Container&&);
 
             template <typename FF, typename T>
             friend Filter<FF, std::initializer_list<T>> filter(
-                    FF, std::initializer_list<T> &&);
+                    FF, std::initializer_list<T>&&);
             
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container && container)
+            Filter(FilterFunc filter_func, Container&& container)
                 : container{container},
                 filter_func(filter_func)
             { }
-            Filter () = delete;
-            Filter & operator=(const Filter &) = delete;
+            Filter() = delete;
+            Filter& operator=(const Filter&) = delete;
 
         public:
-            Filter(const Filter &) = default;
+            Filter(const Filter&) = default;
 
             class Iterator {
                 protected:
@@ -75,13 +75,13 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         this->skip_failures();
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
             };
@@ -103,14 +103,14 @@ namespace iter {
     // Helper function to instantiate a Filter
     template <typename FilterFunc, typename Container>
     Filter<FilterFunc, Container> filter(
-            FilterFunc filter_func, Container && container) {
+            FilterFunc filter_func, Container&& container) {
         return {filter_func, std::forward<Container>(container)};
     }
 
     template <typename FilterFunc, typename T>
     Filter<FilterFunc, std::initializer_list<T>> filter(
             FilterFunc filter_func,
-            std::initializer_list<T> && il)
+            std::initializer_list<T>&& il)
     {
         return {filter_func, std::move(il)};
     }
@@ -118,7 +118,7 @@ namespace iter {
     namespace detail {
 
         template <typename T>
-        bool boolean_cast(const T & t) {
+        bool boolean_cast(const T& t) {
             return bool(t);
         }
 
@@ -133,7 +133,7 @@ namespace iter {
 
 
     template <typename Container>
-    auto filter(Container && container) ->
+    auto filter(Container&& container) ->
             decltype(filter(
                         detail::BoolTester<Container>(),
                         std::forward<Container>(container))) {
@@ -143,7 +143,7 @@ namespace iter {
     }
 
     template <typename T>
-    auto filter(std::initializer_list<T> && il) ->
+    auto filter(std::initializer_list<T>&& il) ->
             decltype(filter(
                         detail::BoolTester<std::initializer_list<T>>(),
                         std::move(il))) {
