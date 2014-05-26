@@ -28,7 +28,7 @@ namespace iter {
             friend Cycle<std::initializer_list<T>> cycle(
                     std::initializer_list<T>&&);
 
-            Container & container;
+            Container& container;
             
             // Value constructor for use only in the cycle function
             Cycle(Container&& container) : container{container} { }
