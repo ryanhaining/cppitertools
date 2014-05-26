@@ -15,10 +15,10 @@ namespace iter {
             iterator_range<zip_iter<decltype(std::begin(containers))...>>
     {
         auto begin =
-            zip_iter<decltype(containers.begin())...>(std::begin(containers)...);
+            zip_iter<decltype(std::begin(containers))...>(std::begin(containers)...);
 
         auto end =
-            zip_iter<decltype(containers.end())...>(std::end(containers)...);
+            zip_iter<decltype(std::begin(containers))...>(std::end(containers)...);
 
         return iterator_range<decltype(begin)>(begin,end);
     }
