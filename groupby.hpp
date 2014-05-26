@@ -48,9 +48,9 @@ namespace iter {
             GroupBy() = delete;
             GroupBy(const GroupBy&) = delete;
             GroupBy& operator=(const GroupBy&) = delete;
+            GroupBy& operator=(GroupBy&&) = delete;
 
             GroupBy(GroupBy&&) = default;
-            GroupBy& operator=(GroupBy&&) = default;
 
             class Iterator;
             class Group;
@@ -146,8 +146,8 @@ namespace iter {
                     Group() = delete;
                     Group(const Group&) = delete;
                     Group& operator=(const Group&) = delete;
+                    Group& operator=(Group&&) = delete;
 
-                    Group& operator=(Group&&) = default;
                     Group(Group&& other)
                             : owner{other.owner},
                             key{other.key},
