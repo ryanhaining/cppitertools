@@ -33,7 +33,7 @@ namespace iter {
     template <typename Container>
     class Enumerable {
         private:
-            Container & container;
+            Container& container;
 
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
