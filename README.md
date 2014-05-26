@@ -237,7 +237,7 @@ Thus, if the the group is unsorted, the same key may appear multiple times.
 accumulate
 -------
 Differs from `std::accumulate` (which in my humble opinion should be named 
-`std::reduce` or `std::foldl`).  It is imilar to a functional reduce where one 
+`std::reduce` or `std::foldl`).  It is similar to a functional reduce where one 
 can see all of the intermediate results.  By default, it keeps a running sum.
 Prints: `1 3 6 10 15`
 ```c++
