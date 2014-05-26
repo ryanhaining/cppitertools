@@ -13,23 +13,23 @@ namespace iter {
     class GroupBy;
 
     template <typename Container, typename KeyFunc>
-    GroupBy<Container, KeyFunc> groupby(Container &&, KeyFunc);
+    GroupBy<Container, KeyFunc> groupby(Container&&, KeyFunc);
 
     template <typename T, typename KeyFunc>
     GroupBy<std::initializer_list<T>, KeyFunc> groupby(
-            std::initializer_list<T> &&, KeyFunc);
+            std::initializer_list<T>&&, KeyFunc);
 
     template <typename Container, typename KeyFunc>
     class GroupBy  {
         private:
-            Container & container;
+            Container& container;
             KeyFunc key_func;
 
-            friend GroupBy groupby<Container, KeyFunc>(Container &&, KeyFunc);
+            friend GroupBy groupby<Container, KeyFunc>(Container&&, KeyFunc);
 
             template <typename T, typename KF>
             friend GroupBy<std::initializer_list<T>, KF> groupby(
-                    std::initializer_list<T> &&, KF);
+                    std::initializer_list<T>&&, KF);
 
             
 
@@ -39,18 +39,18 @@ namespace iter {
                 decltype(std::declval<KeyFunc>()(
                             std::declval<iterator_deref<Container>>()));
 
-            GroupBy(Container && container, KeyFunc key_func)
+            GroupBy(Container&& container, KeyFunc key_func)
                 : container{container},
                 key_func(key_func)
             { }
 
         public:
-            GroupBy () = delete;
-            GroupBy(const GroupBy &) = delete;
-            GroupBy& operator=(const GroupBy &) = delete;
+            GroupBy() = delete;
+            GroupBy(const GroupBy&) = delete;
+            GroupBy& operator=(const GroupBy&) = delete;
 
-            GroupBy (GroupBy &&) = default;
-            GroupBy & operator=(GroupBy &&) = default;
+            GroupBy(GroupBy&&) = default;
+            GroupBy& operator=(GroupBy&&) = default;
 
             class Iterator;
             class Group;
@@ -82,11 +82,11 @@ namespace iter {
                                     this->key_func(*this->sub_iter)));
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         return *this;
                     }
 
-                    bool operator!=(const Iterator &) const {
+                    bool operator!=(const Iterator&) const {
                         return !this->exhausted();
                     }
 
@@ -114,7 +114,7 @@ namespace iter {
                 private:
                     friend Iterator;
                     friend class GroupIterator;
-                    Iterator & owner;
+                    Iterator& owner;
                     key_func_ret key;
 
                     // completed is set if a Group is iterated through
@@ -128,7 +128,7 @@ namespace iter {
                     // when called.
                     mutable bool completed = false;
 
-                    Group(Iterator & owner, key_func_ret key) :
+                    Group(Iterator& owner, key_func_ret key) :
                         owner(owner),
                         key(key)
                     { }
@@ -143,12 +143,12 @@ namespace iter {
                     }
                            
                     // movable, non-copyable
-                    Group () = delete;
-                    Group (const Group &) = delete;
-                    Group & operator=(const Group &) = delete;
+                    Group() = delete;
+                    Group(const Group&) = delete;
+                    Group& operator=(const Group&) = delete;
 
-                    Group & operator=(Group &&) = default;
-                    Group (Group && other)
+                    Group& operator=(Group&&) = default;
+                    Group(Group&& other)
                             : owner{other.owner},
                             key{other.key},
                             completed{other.completed} {
@@ -158,23 +158,23 @@ namespace iter {
                     class GroupIterator {
                         private:
                             const key_func_ret key;
-                            const Group & group;
+                            const Group& group;
 
                             bool not_at_end() const {
-                                return !this->group.owner.exhausted() &&
+                                return !this->group.owner.exhausted()&&
                                     this->group.owner.next_key() == this->key;
                             }
 
                         public:
-                            GroupIterator(const Group & group,
+                            GroupIterator(const Group& group,
                                           key_func_ret key)
                                 : key{key},
                                 group{group}
                             { }
 
-                            GroupIterator(const GroupIterator &) = default;
+                            GroupIterator(const GroupIterator&) = default;
 
-                            bool operator!=(const GroupIterator &) const {
+                            bool operator!=(const GroupIterator&) const {
                                 if (this->not_at_end()) {
                                     return true;
                                 } else {
@@ -183,7 +183,7 @@ namespace iter {
                                 }
                             }
 
-                            GroupIterator & operator++() {
+                            GroupIterator& operator++() {
                                 this->group.owner.increment_iterator();
                                 return *this;
                             }
@@ -233,13 +233,13 @@ namespace iter {
 
     template <typename Container, typename KeyFunc>
     GroupBy<Container, KeyFunc> groupby(
-            Container && container, KeyFunc key_func) {
+            Container&& container, KeyFunc key_func) {
         return {std::forward<Container>(container), key_func};
     }
 
 
     template <typename Container>
-    auto groupby(Container && container) ->
+    auto groupby(Container&& container) ->
             decltype(groupby(std::forward<Container>(container),
                         ItemReturner<Container>())) {
         return groupby(std::forward<Container>(container),
@@ -249,13 +249,13 @@ namespace iter {
     
     template <typename T, typename KeyFunc>
     GroupBy<std::initializer_list<T>, KeyFunc> groupby(
-            std::initializer_list<T> && il, KeyFunc key_func) {
+            std::initializer_list<T>&& il, KeyFunc key_func) {
         return {std::move(il), key_func};
     }
 
 
     template <typename T>
-    auto groupby(std::initializer_list<T> && il) ->
+    auto groupby(std::initializer_list<T>&& il) ->
             decltype(groupby(std::move(il),
                         ItemReturner<std::initializer_list<T>>())) {
         return groupby(
