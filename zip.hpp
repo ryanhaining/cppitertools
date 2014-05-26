@@ -20,7 +20,7 @@ namespace iter {
         auto end =
             zip_iter<decltype(std::begin(containers))...>(std::end(containers)...);
 
-        return iterator_range<decltype(begin)>(begin,end);
+        return {begin,end};
     }
 
 
