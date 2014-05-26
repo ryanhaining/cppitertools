@@ -16,11 +16,11 @@ namespace iter {
 
     template <typename Container, typename AccumulateFunc>
     Accumulator<Container, AccumulateFunc> accumulate(
-            Container &&, AccumulateFunc);
+            Container&&, AccumulateFunc);
 
     template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T> &&, AccumulateFunc);
+            std::initializer_list<T>&&, AccumulateFunc);
 
     template <typename Container, typename AccumulateFunc>
     class Accumulator {
@@ -30,22 +30,22 @@ namespace iter {
 
             // The accumulate function is the only thing allowed to create a Accumulator
             friend Accumulator accumulate<Container, AccumulateFunc>(
-                    Container &&, AccumulateFunc);
+                    Container&&, AccumulateFunc);
 
             template <typename T, typename AF>
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
-                    std::initializer_list<T> &&, AF);
+                    std::initializer_list<T>&&, AF);
             
             // Value constructor for use only in the accumulate function
-            Accumulator(Container && container, AccumulateFunc accumulate_func)
+            Accumulator(Container&& container, AccumulateFunc accumulate_func)
                 : container{container},
                 accumulate_func(accumulate_func)
             { }
             Accumulator () = delete;
-            Accumulator & operator=(const Accumulator &) = delete;
+            Accumulator & operator=(const Accumulator&) = delete;
 
         public:
-            Accumulator(const Accumulator &) = default;
+            Accumulator(const Accumulator&) = default;
 
             class Iterator {
                 // AccumVal must be default constructible
@@ -65,6 +65,7 @@ namespace iter {
                         : sub_iter{iter},
                         sub_end{end},
                         accumulate_func(accumulate_func),
+                        // only get first value if not an end iterator
                         acc_val(!(iter != end) ? AccumVal{} : *iter)
                     { } 
 
@@ -103,14 +104,14 @@ namespace iter {
     // Helper function to instantiate an Accumulator
     template <typename Container, typename AccumulateFunc>
     Accumulator<Container, AccumulateFunc> accumulate(
-            Container && container,
+            Container&& container,
             AccumulateFunc accumulate_func)
     {
         return {std::forward<Container>(container), accumulate_func};
     }
 
     template <typename Container>
-    auto accumulate(Container && container) -> 
+    auto accumulate(Container&& container) -> 
         decltype(accumulate(std::forward<Container>(container),
                     std::plus<iterator_deref<Container>>{}))
     {
@@ -120,14 +121,14 @@ namespace iter {
 
     template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T> && il,
+            std::initializer_list<T>&& il,
             AccumulateFunc accumulate_func)
     {
         return {std::move(il), accumulate_func};
     }
 
     template <typename T>
-    auto accumulate(std::initializer_list<T> && il) ->
+    auto accumulate(std::initializer_list<T>&& il) ->
         decltype(accumulate(std::move(il), std::plus<T>{}))
     {
         return accumulate(std::move(il), std::plus<T>{});
