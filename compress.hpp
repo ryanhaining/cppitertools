@@ -103,13 +103,13 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         this->increment_iterators();
                         this->skip_failures();
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter &&
                             this->selector_iter != other.selector_iter;
                     }
