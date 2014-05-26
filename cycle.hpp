@@ -14,30 +14,29 @@ namespace iter {
     class Cycle;
 
     template <typename Container>
-    Cycle<Container> cycle(Container &&);
+    Cycle<Container> cycle(Container&&);
 
     template <typename T>
-    Cycle<std::initializer_list<T>> cycle(
-            std::initializer_list<T> &&);
+    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>&&);
 
     template <typename Container>
     class Cycle {
         private:
             // The cycle function is the only thing allowed to create a Cycle
-            friend Cycle cycle<Container>(Container &&);
+            friend Cycle cycle<Container>(Container&&);
             template <typename T>
             friend Cycle<std::initializer_list<T>> cycle(
-                    std::initializer_list<T> &&);
+                    std::initializer_list<T>&&);
 
             Container & container;
             
             // Value constructor for use only in the cycle function
-            Cycle(Container && container) : container{container} { }
-            Cycle () = delete;
-            Cycle & operator=(const Cycle &) = delete;
+            Cycle(Container&& container) : container{container} { }
+            Cycle() = delete;
+            Cycle& operator=(const Cycle&) = delete;
 
         public:
-            Cycle(const Cycle &) = default;
+            Cycle(const Cycle&) = default;
             class Iterator {
                 private:
                     using iter_type = iterator_type<Container>;
@@ -88,12 +87,12 @@ namespace iter {
 
     // Helper function to instantiate an Filter
     template <typename Container>
-    Cycle<Container> cycle(Container && container) {
+    Cycle<Container> cycle(Container&& container) {
         return {std::forward<Container>(container)};
     }
 
     template <typename T>
-    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T> && il)
+    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>&& il)
     {
         return {std::move(il)};
     }
