@@ -2,7 +2,7 @@ import platform
 import os
 
 env = Environment(
-    CXX='g++',
+    CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include'],
@@ -13,6 +13,7 @@ env = Environment(
 env['ENV']['TERM'] = os.environ['TERM']
 
 progs = Split('''
+              accumulate
               cycle 
               enumerate 
               range 
