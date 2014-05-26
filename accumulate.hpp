@@ -25,7 +25,7 @@ namespace iter {
     template <typename Container, typename AccumulateFunc>
     class Accumulator {
         private:
-            Container & container;
+            Container& container;
             AccumulateFunc accumulate_func;
 
             // The accumulate function is the only thing allowed to create a Accumulator
