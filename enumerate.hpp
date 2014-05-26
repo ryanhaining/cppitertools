@@ -80,13 +80,13 @@ namespace iter {
                         return IterYield(this->index, *this->sub_iter);
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         ++this->index;
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
             };
