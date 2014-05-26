@@ -30,7 +30,7 @@ namespace iter {
     template <typename Container, typename Selector>
     class Compressed  {
         private:
-            Container & container;
+            Container& container;
             Selector & selectors;
 
             // The only thing allowed to directly instantiate an Compressed is
