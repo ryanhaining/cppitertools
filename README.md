@@ -1,8 +1,9 @@
 CPPItertools
 ============
 
-range-based for loop add-ons inspired by the python builtins and itertools
-library.
+range-based for loop add-ons inspired by the Python builtins and itertools
+library.  Like itertools and the Python3 builtins, this library uses lazy
+evaluation wherever possible.
 
 *Note*: Everthing is inside the `iter` namespace.
 
@@ -230,7 +231,7 @@ for (auto gb : groupby(vec, [] (const string &s) {return s.length(); })) {
 ```
 *Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
 It just iterates through, making a new group each time there is a key change.
-Thus, the the group is unsorted, the same key may appear multiple times.
+Thus, if the the group is unsorted, the same key may appear multiple times.
 
 zip
 ---
