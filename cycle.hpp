@@ -55,7 +55,7 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         // reset to beginning upon reaching the end
                         if (!(this->sub_iter != this->end)) {
@@ -68,7 +68,7 @@ namespace iter {
                         return *this;
                     }
 
-                    constexpr bool operator!=(const Iterator &) const {
+                    constexpr bool operator!=(const Iterator&) const {
                         return true;
                     }
             };
