@@ -18,7 +18,7 @@ namespace iter {
         template <typename F, typename Tuple, bool Done, int Total, int... N>
         struct call_impl
         {
-            static auto call(F f, Tuple && t) -> 
+            static auto call(F f, Tuple&& t) -> 
                 decltype(call_impl<F,
                     Tuple,
                     Total == 1 + sizeof...(N),
@@ -38,7 +38,7 @@ namespace iter {
         template <typename F, typename Tuple, int Total, int... N>
         struct call_impl<F, Tuple, true, Total, N...>
         {
-            static auto call(F f, Tuple && t) -> 
+            static auto call(F f, Tuple&& t) -> 
                 decltype(f(std::get<N>(std::forward<Tuple>(t))...))
             {
                 return f(std::get<N>(std::forward<Tuple>(t))...);
@@ -47,7 +47,7 @@ namespace iter {
 
         // user invokes this
         template <typename F, typename Tuple>
-        auto call(F f, Tuple && t) -> 
+        auto call(F f, Tuple&& t) -> 
             decltype(call_impl<F,
                 Tuple,
                 0 == std::tuple_size<typename std::decay<Tuple>::type>::value,
@@ -67,12 +67,12 @@ namespace iter {
     class IMap;
 
     template <typename MapFunc, typename... Containers>
-    IMap<MapFunc, Containers...> imap(MapFunc, Containers &&...);
+    IMap<MapFunc, Containers...> imap(MapFunc, Containers&&...);
 
     template <typename MapFunc, typename... Containers>
     class IMap {
         // The imap function is the only thing allowed to create a IMap
-        friend IMap imap<MapFunc, Containers...>(MapFunc, Containers && ...);
+        friend IMap imap<MapFunc, Containers...>(MapFunc, Containers&& ...);
 
         // The type returned when dereferencing the Containers...::Iterator
         // XXX depends on zip using iterator_range.  would be nice if it didn't
@@ -87,15 +87,15 @@ namespace iter {
             Zipped zipped;
             
             // Value constructor for use only in the imap function
-            IMap(MapFunc map_func, Containers && ... containers) :
+            IMap(MapFunc map_func, Containers&& ... containers) :
                 map_func(map_func),
                 zipped(zip(std::forward<Containers>(containers)...))
             { }
-            IMap () = delete;
-            IMap & operator=(const IMap &) = delete;
+            IMap() = delete;
+            IMap& operator=(const IMap&) = delete;
 
         public:
-            IMap (const IMap &) = default;
+            IMap(const IMap&) = default;
 
             class Iterator {
                 private:
@@ -114,12 +114,12 @@ namespace iter {
                         return detail::call(this->map_func, *(this->zipiter));
                     }
 
-                    Iterator & operator++() { 
+                    Iterator& operator++() { 
                         ++this->zipiter;
                         return *this;
                     }
 
-                    bool operator!=(const Iterator & other) const {
+                    bool operator!=(const Iterator& other) const {
                         return this->zipiter != other.zipiter;
                     }
             };
@@ -137,7 +137,7 @@ namespace iter {
     // Helper function to instantiate a IMap
     template <typename MapFunc, typename... Containers>
     IMap<MapFunc, Containers...> imap(
-            MapFunc map_func, Containers && ... containers) {
+            MapFunc map_func, Containers&& ... containers) {
         return {map_func, std::forward<Containers>(containers)...};
     }
 
