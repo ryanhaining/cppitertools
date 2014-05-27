@@ -21,7 +21,6 @@ int main() {
             i = 69;
             std::cout << std::get<1>(e) << std::endl;
         }
-
         for (auto e : zip(ivec, svec)) {
             std::cout << std::get<0>(e) << std::endl;
             std::cout << std::get<1>(e) << std::endl;
@@ -31,6 +30,13 @@ int main() {
             std::cout << std::get<0>(e) << '\n';
             std::cout << std::get<1>(e) << '\n';
         }
+
+        int arr[] = {1,2,3,3,4};
+        for (auto e : zip(iter::range(10), arr)) {
+            std::cout << std::get<0>(e) << '\n';
+            std::cout << std::get<1>(e) << '\n';
+        }
+            
     }
     //Aaron's test
     {
@@ -87,8 +93,6 @@ int main() {
                 << std::get<2>(e) << std::endl;
         }
     }
-
-
 
 
     return 0;
