@@ -74,17 +74,10 @@ namespace iter {
         // The imap function is the only thing allowed to create a IMap
         friend IMap imap<MapFunc, Containers...>(MapFunc, Containers&& ...);
 
-        // The type returned when dereferencing the Containers...::Iterator
-        // XXX depends on zip using iterator_range.  would be nice if it didn't
-        using Zipped = 
-            iterator_range<zip_iter<decltype(std::declval<Containers>().begin())...>>;
-
-        using ZippedIterType = decltype(std::declval<Zipped>().begin());
-            //typename std::remove_const<decltype(std::declval<Zipped>().begin())>::type;
-
+        using ZippedIterType = iterator_type<Zipped<Containers...>>;
         private:
             MapFunc map_func;
-            Zipped zipped;
+            Zipped<Containers...> zipped;
             
             // Value constructor for use only in the imap function
             IMap(MapFunc map_func, Containers&& ... containers) :
@@ -103,7 +96,7 @@ namespace iter {
                     mutable ZippedIterType zipiter;
 
                 public:
-                    Iterator (MapFunc map_func, ZippedIterType zipiter) :
+                    Iterator(MapFunc map_func, ZippedIterType zipiter) :
                         map_func(map_func),
                         zipiter(zipiter)
                     { } 
