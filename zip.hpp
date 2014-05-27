@@ -1,119 +1,113 @@
-#ifndef ZIP_HPP
-#define ZIP_HPP
+#include "iterbase.hpp"
 
-#include "iterator_range.hpp"
-
-#include <tuple>
 #include <iterator>
+#include <tuple>
+#include <utility>
 
 namespace iter {
-    template <typename ... Rest>
-    class zip_iter;
+    template <typename Container, typename... RestContainers>
+    class Zipped {
+        private:
+            Container& container;
+            Zipped<RestContainers...> rest_zipped;
+        public:
+            Zipped(Container&& container, RestContainers&&... rest)
+                : container{container},
+                rest_zipped{std::forward<RestContainers>(rest)...}
+            { }
 
-    template <typename ... Containers>
-    auto zip(Containers && ... containers) ->
-            iterator_range<zip_iter<decltype(std::begin(containers))...>>
-    {
-        auto begin =
-            zip_iter<decltype(std::begin(containers))...>(std::begin(containers)...);
+            class Iterator {
+                private:
+                    using RestIter =
+                        typename Zipped<RestContainers...>::Iterator;
 
-        auto end =
-            zip_iter<decltype(std::begin(containers))...>(std::end(containers)...);
+                    iterator_type<Container> iter;
+                    RestIter rest_iter;
+                public:
+                    Iterator(iterator_type<Container> it, const RestIter& rest)
+                        : iter{it},
+                        rest_iter{rest}
+                    { }
 
-        return {begin,end};
+                    Iterator& operator++() {
+                        ++this->iter;
+                        ++this->rest_iter;
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->iter != other.iter &&
+                            this->rest_iter != other.rest_iter;
+                    }
+
+                    auto operator*() ->
+                        decltype(std::tuple_cat(std::make_tuple(
+                                        *this->iter), *this->rest_iter))
+                    {
+                        return std::tuple_cat(std::make_tuple(
+                                    *this->iter), *this->rest_iter);
+                    }
+            };
+
+            Iterator begin() const {
+                return {std::begin(this->container),
+                    std::begin(this->rest_zipped)};
+            }
+
+            Iterator end() const {
+                return {std::end(this->container),
+                    std::end(this->rest_zipped)};
+            }
+    };
+
+
+    template <typename Container>
+    class Zipped<Container> {
+        private:
+            Container& container;
+        public:
+            Zipped(Container&& container)
+                : container{container}
+            { }
+
+            class Iterator {
+                private:
+                    iterator_type<Container> iter;
+                public:
+                    Iterator(iterator_type<Container> it)
+                        : iter{it}
+                    { }
+
+                    Iterator& operator++() {
+                        ++this->iter;
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        // if this->iter == other.iter, then won't every other
+                        // level have to be the same? 
+                        // in other words, I should only have to compare iter,
+                        // and not rest as well
+                        return this->iter != other.iter;
+                    }
+
+                    auto operator*() -> decltype(std::make_tuple(*this->iter))
+                    {
+                        return std::make_tuple(*this->iter);
+                    }
+            };
+
+            Iterator begin() const {
+                return {std::begin(this->container)};
+            }
+
+            Iterator end() const {
+                return {std::end(this->container)};
+            }
+    };
+
+    template <typename... Containers>
+    Zipped<Containers...> zip(Containers&&... containers) {
+        return {std::forward<Containers>(containers)...};
     }
-
-
-    template <typename Iterator>
-    class zip_iter<Iterator> {
-        private:
-            Iterator iter;
-
-        public:
-            using elem_type = decltype(*iter);
-            zip_iter(const Iterator & i) :
-                iter(i){ }
-
-            auto operator*() -> decltype(std::forward_as_tuple(*iter))
-            {
-                return std::forward_as_tuple(*iter);
-            }
-            zip_iter & operator++() {
-                ++iter;
-                return *this;
-            }
-            bool operator!=(const zip_iter & rhs) const {
-                return (this->iter != rhs.iter);
-            }
-    };
-#if 0
-    template <typename First, typename Second>
-        struct zip_iter<First,Second> {
-
-        private:
-            First iter1;
-            Second iter2;
-
-        public:
-            using Elem1_t = decltype(*iter1);
-            using Elem2_t = decltype(*iter2);
-            zip_iter(const First & f, const Second & s) :
-                iter1(f),iter2(s) { }
-
-            auto operator*() -> decltype(std::forward_as_tuple(*iter1,*iter2))
-            {
-                return std::forward_as_tuple(*iter1,*iter2);
-            }
-            zip_iter & operator++() {
-                ++iter1;
-                ++iter2;
-                return *this;
-            }
-            bool operator!=(const zip_iter & rhs) const {
-                return (this->iter1 != rhs.iter1) && (this->iter2 != rhs.iter2);
-            }
-        };
-#endif
-    //this specialization commented out 
-    template <typename First, typename ... Rest>
-    class zip_iter<First,Rest...> {
-        private:
-            First iter;
-            zip_iter<Rest...> inner_iter;
-            
-        public:
-            using elem_type = decltype(*iter);
-            using tuple_type = 
-                decltype(std::tuple_cat(std::forward_as_tuple(*iter),*inner_iter));
-
-            zip_iter(const First & f, const Rest & ... rest) :
-                iter(f),
-                inner_iter(rest...) {}
-
-
-            tuple_type operator*()
-            {
-                return std::tuple_cat(std::forward_as_tuple(*iter),*inner_iter);
-            }
-
-            zip_iter & operator++() {
-                ++iter;
-                ++inner_iter;
-                return *this;
-            }
-
-            bool operator!=(const zip_iter & rhs) const {
-                return (this->iter != rhs.iter) &&
-                    (this->inner_iter != rhs.inner_iter);
-            }
-    };
 }
-
-namespace std {
-    template <typename ... Containers>
-        struct iterator_traits<iter::zip_iter<Containers...>> {
-            using difference_type = ptrdiff_t;
-            using iterator_category = input_iterator_tag;
-        };
-}
-#endif //ZIP_HPP
