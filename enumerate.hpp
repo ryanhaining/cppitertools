@@ -20,32 +20,33 @@
 
 namespace iter {
 
-#if 0
     //Forward declarations of Enumerable and enumerate
     template <typename Container>
     class Enumerable;
 
-    template <typename T>
-    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T>&&);
+    template <typename Container>
+    Enumerable<Container&> enumerate(Container&);
 
     template <typename Container>
     Enumerable<Container> enumerate(Container&&);
-#endif
+
+    template <typename T>
+    Enumerable<std::initializer_list<T>> enumerate(std::initializer_list<T>);
 
     template <typename Container>
     class Enumerable {
-        //private:
-        public:
+        private:
             Container container;
 
-#if 0
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
-            friend Enumerable enumerate<Container>(Container);
+            template <typename C>
+            friend Enumerable<C&> enumerate(C&);
+            template <typename C>
+            friend Enumerable<C> enumerate(C&&);
             template <typename T>
             friend Enumerable<std::initializer_list<T>> enumerate(
-                    std::initializer_list<T>&&);
-#endif
+                    std::initializer_list<T>);
     
             Enumerable(Container container)
                 : container(std::forward<Container>(container))
