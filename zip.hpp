@@ -1,3 +1,6 @@
+#ifndef ZIP__H__
+#define ZIP__H__
+
 #include "iterbase.hpp"
 
 #include <iterator>
@@ -111,3 +114,5 @@ namespace iter {
         return {std::forward<Containers>(containers)...};
     }
 }
+
+#endif //#ifndef ZIP__H__
