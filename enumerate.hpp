@@ -7,6 +7,7 @@
 #include <iterator>
 #include <functional>
 #include <initializer_list>
+#include <type_traits>
 
 
 // enumerate functionality for python-style for-each enumerate loops
@@ -25,9 +26,6 @@ namespace iter {
     class Enumerable;
 
     template <typename Container>
-    Enumerable<Container&> enumerate(Container&);
-
-    template <typename Container>
     Enumerable<Container> enumerate(Container&&);
 
     template <typename T>
@@ -35,19 +33,23 @@ namespace iter {
 
     template <typename Container>
     class Enumerable {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
         private:
             Container container;
 
+            // lvalue ref if it's an lvalue, non-ref type otherwise
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
-            template <typename C>
-            friend Enumerable<C&> enumerate(C&);
-            template <typename C>
-            friend Enumerable<C> enumerate(C&&);
+            friend Enumerable enumerate<Container>(Container&&);
             template <typename T>
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T>);
-    
+
+            // FIXME it seems like if an rvalue is passed, Container will
+            // not be a reference type at all, which will cause this to copy
+            // construct rather than move construct.  But somehow that doesn't
+            // happen and it gets move constructed.  Must investigate further
             Enumerable(Container container)
                 : container(std::forward<Container>(container))
             { }
@@ -113,30 +115,18 @@ namespace iter {
 
     };
 
-    // any lvalues passed will go here, instantiating Enumerabe<Container&>
-    // this will result in enumerate iterating over a reference to the
-    // provided value, as is the usual intention
-    template <typename Container>
-    Enumerable<Container&> enumerate(Container& container) {
-        return {container};
-    }
-
-    // any rvalue passed will go here, instantiating Enumerabel<Container>
-    // instead of binding a reference, the Enumerable ctor will move construct
-    // the temporary `container` as a data member
     template <typename Container>
     Enumerable<Container> enumerate(Container&& container) {
-        return {std::move(container)};
+        return {std::forward<Container>(container)};
     }
 
     // for initializer lists.  copy constructs the list into the Enumerable
     template <typename T>
     Enumerable<std::initializer_list<T>> enumerate(
             std::initializer_list<T> il)
-    {
+    {   
         return {il};
     }
-
 }
 
 #endif //ifndef ENUMERABLE__H__
