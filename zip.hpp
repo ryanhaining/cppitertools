@@ -4,20 +4,34 @@
 #include <tuple>
 #include <utility>
 
+
 namespace iter {
+    template <typename Container, typename... RestContainers>
+    class Zipped;
+
+    template <typename... Containers>
+    Zipped<Containers...> zip(Containers&&...);
+
     template <typename Container, typename... RestContainers>
     class Zipped {
         static_assert(!std::is_rvalue_reference<Container>::value,
                 "Itertools cannot be templated with rvalue references");
+
+        friend Zipped zip<Container, RestContainers...>(
+                Container&&, RestContainers&&...);
+
+        template <typename C, typename... RC>
+        friend class Zipped;
+
         private:
             Container container;
             Zipped<RestContainers...> rest_zipped;
-        public:
             Zipped(Container container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_zipped{std::forward<RestContainers>(rest)...}
             { }
 
+        public:
             class Iterator {
                 private:
                     using RestIter =
@@ -67,12 +81,19 @@ namespace iter {
     class Zipped<Container> {
         static_assert(!std::is_rvalue_reference<Container>::value,
                 "Itertools cannot be templated with rvalue references");
+
+        friend Zipped zip<Container>(Container&&);
+
+        template <typename C, typename... RC>
+        friend class Zipped;
+
         private:
             Container container;
-        public:
             Zipped(Container container)
                 : container(std::forward<Container>(container))
             { }
+
+        public:
 
             class Iterator {
                 private:
