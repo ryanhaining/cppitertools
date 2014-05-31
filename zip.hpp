@@ -7,12 +7,14 @@
 namespace iter {
     template <typename Container, typename... RestContainers>
     class Zipped {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
         private:
-            Container& container;
+            Container container;
             Zipped<RestContainers...> rest_zipped;
         public:
-            Zipped(Container&& container, RestContainers&&... rest)
-                : container{container},
+            Zipped(Container container, RestContainers&&... rest)
+                : container(std::forward<Container>(container)),
                 rest_zipped{std::forward<RestContainers>(rest)...}
             { }
 
@@ -49,12 +51,12 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                     std::begin(this->rest_zipped)};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                     std::end(this->rest_zipped)};
             }
@@ -63,11 +65,13 @@ namespace iter {
 
     template <typename Container>
     class Zipped<Container> {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
         private:
-            Container& container;
+            Container container;
         public:
-            Zipped(Container&& container)
-                : container{container}
+            Zipped(Container container)
+                : container(std::forward<Container>(container))
             { }
 
             class Iterator {
@@ -97,11 +101,11 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container)};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container)};
             }
     };
