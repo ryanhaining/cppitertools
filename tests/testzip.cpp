@@ -95,9 +95,8 @@ int main() {
         std::cout<<std::endl;
         const std::vector<double> constvector{1.1,2.2,3.3,4.4};
         for (auto e : zip(
-                    // the chain test breaks it, but its chain's fault
-                    //iter::chain(std::vector<int>(5,5),
-                    //           std::array<int,2>{{1,2}}),
+                    iter::chain(std::vector<int>{5,6},
+                               std::array<int,2>{{1,2}}),
                     std::initializer_list<const char *>{
                          "asdfas","aaron","ryan","apple","juice"},
                     std::initializer_list<int>{1, 2, 3, 4},
@@ -106,7 +105,7 @@ int main() {
 
             std::cout << std::get<0>(e) << " " 
                 << std::get<1>(e) << " "
-                //<< std::get<2>(e)
+                << std::get<2>(e)
                 << '\n';
         }
     }
