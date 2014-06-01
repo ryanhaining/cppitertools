@@ -143,7 +143,7 @@ namespace iter {
     }
 
     template <typename T>
-    auto filter(std::initializer_list<T>&& il) ->
+    auto filter(std::initializer_list<T> il) ->
             decltype(filter(
                         detail::BoolTester<std::initializer_list<T>>(),
                         std::move(il))) {
