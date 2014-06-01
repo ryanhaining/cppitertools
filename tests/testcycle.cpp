@@ -57,5 +57,14 @@ int main() {
         ++count;
     }
 
+    count = 0;
+    for (auto i : std::vector<int>{1,2,3,4,5}) {
+        std::cout << i << '\n';
+        if (count == 20) {
+            break;
+        }
+        ++count;
+    }
+
     return 0;
 }
