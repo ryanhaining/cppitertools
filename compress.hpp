@@ -115,12 +115,12 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container), std::end(this->container),
                     std::begin(this->selectors), std::end(this->selectors)};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container), std::end(this->container),
                         std::end(this->selectors), std::end(this->selectors)};
             }
