@@ -117,11 +117,11 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {this->map_func, this->zipped.begin()};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {this->map_func, this->zipped.end()};
             }
 
