@@ -37,5 +37,9 @@ int main() {
         std::cout << i << '\n';
     }
 
+    for (auto i : imap([] (const int x) { return x*x; },
+                       std::vector<int>{1,2,3,4,5})){
+        std::cout << i << '\n';
+    }
     return 0;
 }
