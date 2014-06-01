@@ -18,12 +18,12 @@ namespace iter {
 
     template <typename FilterFunc, typename T>
     Filter<FilterFunc, std::initializer_list<T>> filter(
-            FilterFunc, std::initializer_list<T>&&);
+            FilterFunc, std::initializer_list<T>);
 
     template <typename FilterFunc, typename Container>
     class Filter {
         private:
-            Container& container;
+            Container container;
             FilterFunc filter_func;
 
             // The filter function is the only thing allowed to create a Filter
@@ -32,11 +32,11 @@ namespace iter {
 
             template <typename FF, typename T>
             friend Filter<FF, std::initializer_list<T>> filter(
-                    FF, std::initializer_list<T>&&);
+                    FF, std::initializer_list<T>);
             
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container&& container)
-                : container{container},
+            Filter(FilterFunc filter_func, Container container)
+                : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
             Filter() = delete;
@@ -110,7 +110,7 @@ namespace iter {
     template <typename FilterFunc, typename T>
     Filter<FilterFunc, std::initializer_list<T>> filter(
             FilterFunc filter_func,
-            std::initializer_list<T>&& il)
+            std::initializer_list<T> il)
     {
         return {filter_func, std::move(il)};
     }
