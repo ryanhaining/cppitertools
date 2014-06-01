@@ -83,5 +83,11 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "vector temporary with default\n";
+    for (auto i : filterfalse(
+                std::vector<int>{-1, -2, 0, 0, 0, 0, 1, 2, 3})) {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
