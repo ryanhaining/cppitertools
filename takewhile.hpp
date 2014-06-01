@@ -93,13 +93,13 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                         std::end(this->container),
                         this->filter_func};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                         std::end(this->container),
                         this->filter_func};
