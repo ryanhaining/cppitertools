@@ -7,6 +7,7 @@
 #include <iterator>
 #include <initializer_list>
 #include <functional>
+#include <type_traits>
 
 namespace iter {
 
@@ -20,29 +21,28 @@ namespace iter {
 
     template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T>&&, AccumulateFunc);
+            std::initializer_list<T>, AccumulateFunc);
 
     template <typename Container, typename AccumulateFunc>
     class Accumulator {
         private:
-            Container& container;
+            Container container;
             AccumulateFunc accumulate_func;
 
-            // The accumulate function is the only thing allowed to create a Accumulator
             friend Accumulator accumulate<Container, AccumulateFunc>(
                     Container&&, AccumulateFunc);
 
             template <typename T, typename AF>
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
-                    std::initializer_list<T>&&, AF);
+                    std::initializer_list<T>, AF);
             
             // Value constructor for use only in the accumulate function
             Accumulator(Container&& container, AccumulateFunc accumulate_func)
-                : container{container},
+                : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
             { }
-            Accumulator () = delete;
-            Accumulator & operator=(const Accumulator&) = delete;
+            Accumulator() = delete;
+            Accumulator& operator=(const Accumulator&) = delete;
 
         public:
             Accumulator(const Accumulator&) = default;
@@ -50,9 +50,14 @@ namespace iter {
             class Iterator {
                 // AccumVal must be default constructible
                 using AccumVal =
-                    typename std::result_of<AccumulateFunc(
-                            iterator_deref<Container>,
-                            iterator_deref<Container>)>::type;
+                    typename std::remove_reference<
+                        typename std::result_of<AccumulateFunc(
+                                iterator_deref<Container>,
+                                iterator_deref<Container>)>::type>::type;
+                static_assert(
+                        std::is_default_constructible<AccumVal>::value,
+                        "Cannot accumulate a non-default constructible type");
+
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
@@ -113,22 +118,24 @@ namespace iter {
     template <typename Container>
     auto accumulate(Container&& container) -> 
         decltype(accumulate(std::forward<Container>(container),
-                    std::plus<iterator_deref<Container>>{}))
+                    std::plus<typename std::remove_reference<
+                        iterator_deref<Container>>::type>{}))
     {
         return accumulate(std::forward<Container>(container),
-                std::plus<iterator_deref<Container>>{});
+                    std::plus<typename std::remove_reference<
+                        iterator_deref<Container>>::type>{});
     }
 
     template <typename T, typename AccumulateFunc>
     Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T>&& il,
+            std::initializer_list<T> il,
             AccumulateFunc accumulate_func)
     {
         return {std::move(il), accumulate_func};
     }
 
     template <typename T>
-    auto accumulate(std::initializer_list<T>&& il) ->
+    auto accumulate(std::initializer_list<T> il) ->
         decltype(accumulate(std::move(il), std::plus<T>{}))
     {
         return accumulate(std::move(il), std::plus<T>{});
