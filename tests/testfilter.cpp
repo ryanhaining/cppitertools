@@ -72,5 +72,12 @@ int main() {
         std::cout << i << '\n';
     }
 
+    std::cout << "ever numbers in vector temporary\n";
+    for (auto i : filter([] (const int i) {return i % 2 == 0;},
+                         std::vector<int>{1, 2, 3, 4, 5, 6, 7}))
+    {
+        std::cout << i << '\n';
+    }
+
     return 0;
 }
