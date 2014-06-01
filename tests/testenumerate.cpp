@@ -1,3 +1,5 @@
+#include "testbase.hpp"
+
 #include <enumerate.hpp>
 #include <range.hpp>
 
@@ -36,15 +38,23 @@ int main() {
         std::cout << e.index << ": " << e.element << '\n';
     }
 
-
     std::cout << "initializer list\n";
     for (auto e : enumerate({0, 1, 4, 9, 16, 25})) {
         std::cout << e.index << "^2 = " << e.element << '\n';
     }
 
-
     std::cout << "range(10, 20, 2)\n";
     for (auto e : enumerate(range(10, 20, 2))) {
+        std::cout << e.index << ": " << e.element << '\n';
+    }
+
+    std::cout << "range(10, 20, 2)\n";
+    for (auto e : enumerate(enumerate(range(10, 20, 2)))) {
+        std::cout << e.index << ": " << e.element.element << '\n';
+    }
+
+    std::cout << "vector temporary\n";
+    for (auto e : enumerate(std::vector<int>(5,2))) {
         std::cout << e.index << ": " << e.element << '\n';
     }
 
