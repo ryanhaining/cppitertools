@@ -38,7 +38,6 @@ namespace iter {
         private:
             Container container;
 
-            // lvalue ref if it's an lvalue, non-ref type otherwise
             // The only thing allowed to directly instantiate an Enumerable is
             // the enumerate function
             friend Enumerable enumerate<Container>(Container&&);
@@ -46,16 +45,12 @@ namespace iter {
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T>);
 
-            // FIXME it seems like if an rvalue is passed, Container will
-            // not be a reference type at all, which will cause this to copy
-            // construct rather than move construct.  But somehow that doesn't
-            // happen and it gets move constructed.  Must investigate further
+            // Value constructor for use only in the enumerate function
             Enumerable(Container container)
                 : container(std::forward<Container>(container))
             { }
             
         public:
-            // Value constructor for use only in the enumerate function
             Enumerable() = delete;
             Enumerable& operator=(const Enumerable&) = delete;
             Enumerable(const Enumerable&) = delete;
