@@ -193,24 +193,24 @@ namespace iter {
                             }
                     };
 
-                    GroupIterator begin() const {
+                    GroupIterator begin() {
                         return {*this, key};
                     }
 
-                    GroupIterator end() const {
+                    GroupIterator end() {
                         return {*this, key};
                     }
 
             };
 
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                         std::end(this->container),
                         this->key_func};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                         std::end(this->container),
                         this->key_func};
