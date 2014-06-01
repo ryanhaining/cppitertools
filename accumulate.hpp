@@ -37,7 +37,7 @@ namespace iter {
                     std::initializer_list<T>, AF);
             
             // Value constructor for use only in the accumulate function
-            Accumulator(Container&& container, AccumulateFunc accumulate_func)
+            Accumulator(Container container, AccumulateFunc accumulate_func)
                 : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
             { }
