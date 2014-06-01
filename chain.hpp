@@ -1,104 +1,139 @@
-#ifndef CHAIN_HPP
-#define CHAIN_HPP
-
-#include "iterator_range.hpp"
+#include "iterbase.hpp"
 
 #include <utility>
 #include <iterator>
+#include <initializer_list>
+#include <type_traits>
 
 namespace iter {
-    template <typename ... Containers>
-        struct chain_iter;
+    template <typename Container, typename...RestContainers>
+    class Chained;
+
+    template <typename... Containers>
+    Chained<Containers...> chain(Containers&&...);
+
+    template <typename Container, typename... RestContainers>
+    class Chained {
+        friend Chained chain<Container, RestContainers...>(
+                Container&&, RestContainers&&...);
+        template <typename C, typename... RC>
+        friend class Chained;
+
+        private:
+            Container container;
+            Chained<RestContainers...> rest_chained;
+            Chained(Container container, RestContainers&&... rest)
+                : container(std::forward<Container>(container)),
+                rest_chained{std::forward<RestContainers>(rest)...}
+            { }
+
+        public:
+            class Iterator {
+                private:
+                    using RestIter =
+                        typename Chained<RestContainers...>::Iterator;
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
+                    RestIter rest_iter;
+                    bool at_end;
+
+                public:
+                    Iterator(const iterator_type<Container>& s_begin,
+                            const iterator_type<Container>& s_end,
+                            RestIter rest_iter)
+                        : sub_iter{s_begin},
+                        sub_end{s_end},
+                        rest_iter{rest_iter},
+                        at_end{!(sub_iter != sub_end)}
+                    { }
+                    
+                    Iterator& operator++() {
+                        if (this->at_end) {
+                            ++this->rest_iter;
+                        } else {
+                            ++this->sub_iter;
+                            if (!(this->sub_iter != this->sub_end)) {
+                                this->at_end = true;
+                            }
+                        }
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter ||
+                            this->rest_iter != other.rest_iter;
+                    }
+
+                    iterator_deref<Container> operator*() {
+                        return this->at_end ?
+                            *this->rest_iter : *this->sub_iter;
+                    }
+            };
+
+            Iterator begin() {
+                return {std::begin(this->container),
+                    std::end(this->container),
+                    std::begin(this->rest_chained)};
+            }
+
+            Iterator end() {
+                return {std::end(this->container),
+                    std::end(this->container),
+                    std::end(this->rest_chained)};
+            }
+    };
     template <typename Container>
-        struct chain_iter<Container> {
+    class Chained<Container> {
+        friend Chained chain<Container>(Container&&);
+        template <typename C, typename... RC>
+        friend class Chained;
 
-            private:
-                //using Iterator = decltype(std::declval<Container>().begin());
-                using Iterator = decltype(std::begin(std::declval<Container>()));
-                Iterator begin;
-                const Iterator end;//never really used but kept it for consistency
+        private:
+            Container container;
+            Chained(Container container)
+                : container(std::forward<Container>(container))
+            { }
 
-            public:
-                chain_iter(Container && container, bool is_end=false) :
-                    begin(std::begin(container)),end(std::end(container)) {
-                        if(is_end) begin = std::end(container);
-                    }
-                chain_iter & operator++()
-                {
-                    ++begin;
-                    return *this;
-                }
-                auto operator*()->decltype(*begin)
-                {
-                    return *begin;
-                }
-                bool operator!=(const chain_iter & rhs) const{
-                    return this->begin != rhs.begin;
-                }
-        };
-    template <typename Container, typename ... Containers>
-        struct chain_iter<Container,Containers...>
-        {
-            private:
-                //using Iterator = decltype(std::declval<Container>().begin());
-                using Iterator = decltype(std::begin(std::declval<Container>()));
-                Iterator begin;
-                const Iterator end;
-                bool end_reached = false;
-                chain_iter<Containers...> next_iter;
+        public:
+            class Iterator {
+                private:
+                    iterator_type<Container> sub_iter;
+                    const iterator_type<Container> sub_end;
 
-            public:
-                chain_iter(Container && container, Containers&& ... containers, bool is_end=false) :
-                    begin(std::begin(container)),
-                    end(std::end(container)),
-                    next_iter(std::forward<Containers>(containers)...,is_end) {
-                        if(is_end)
-                            begin = std::end(container);
+                public:
+                    Iterator(const iterator_type<Container>& s_begin,
+                            const iterator_type<Container>& s_end)
+                        : sub_iter{s_begin},
+                        sub_end{s_end}
+                    { }
+                    
+                    Iterator& operator++() {
+                        ++this->sub_iter;
+                        return *this;
                     }
-                chain_iter & operator++()
-                {
-                    if (!(begin != end)) {
-                        ++next_iter;
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
                     }
-                    else {
-                        ++begin;
+
+                    iterator_deref<Container> operator*() {
+                        return *this->sub_iter;
                     }
-                    return *this;               
-                }
-                auto operator*()->decltype(*begin)
-                {
-                    if (!(begin != end)) {
-                        return *next_iter;
-                    }
-                    else {
-                        return *begin;
-                    }
-                }   
-                bool operator !=(const chain_iter & rhs) const {
-                    if (!(begin != end)) {
-                        return this->next_iter != rhs.next_iter;
-                    }
-                    else
-                        return this->begin != rhs.begin;
-                }
-        };
-    
-    template <typename ... Containers>
-        iterator_range<chain_iter<Containers...>> chain(Containers&& ... containers)
-        {
-            auto begin = 
-                chain_iter<Containers...>(std::forward<Containers>(containers)...);
-            auto end =
-                chain_iter<Containers...>(std::forward<Containers>(containers)...,true);
-            return 
-                iterator_range<chain_iter<Containers...>>(begin,end);
-        }
+            };
+
+            Iterator begin() {
+                return {std::begin(this->container),
+                    std::end(this->container)};
+            }
+
+            Iterator end() {
+                return {std::end(this->container),
+                    std::end(this->container)};
+            }
+    };
+
+    template <typename... Containers>
+    Chained<Containers...> chain(Containers&&... containers) {
+        return {std::forward<Containers>(containers)...};
+    }
 }
-namespace std {
-    template <typename ... Containers>
-        struct iterator_traits<iter::chain_iter<Containers...>> {
-            using difference_type = ptrdiff_t;
-            using iterator_category = input_iterator_tag;
-        };
-}
-#endif //CHAIN_HPP
