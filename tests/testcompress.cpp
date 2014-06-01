@@ -53,6 +53,14 @@ int main(void)
     {
         std::cout << i << '\n';
     }
+
+    std::cout << "Should print 0 2 4\n";
+    for (auto i : compress(std::vector<int>{0, 1, 2, 3, 4, 5},
+                std::vector<bool>{true, false, true, false, true}))
+    {
+        std::cout << i << '\n';
+    }
+
         
 
     return 0;
