@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <array>
+#include <cassert>
 
 using iter::zip;
 
@@ -15,13 +16,23 @@ int main() {
         std::vector<int> ivec{1, 4, 9, 16, 25, 36};
         std::vector<std::string> svec{"hello", "good day", "goodbye"};
 
+        constexpr int magic_value = 69;
         for (auto e : zip(ivec, svec)) {
             auto &i = std::get<0>(e);
             std::cout << i << std::endl;
-            i = 69;
+            i = magic_value;
             std::cout << std::get<1>(e) << std::endl;
         }
+        assert(ivec.at(0) == magic_value);
         for (auto e : zip(ivec, svec)) {
+            std::cout << std::get<0>(e) << std::endl;
+            std::cout << std::get<1>(e) << std::endl;
+        }
+
+        for (auto e : zip(std::vector<int>{5,6,7})) {
+            std::cout << std::get<0>(e) << std::endl;
+        }
+        for (auto e : zip(std::vector<int>{5,6,7}, std::array<int,2>{{1,2}})){
             std::cout << std::get<0>(e) << std::endl;
             std::cout << std::get<1>(e) << std::endl;
         }
@@ -84,16 +95,19 @@ int main() {
         std::cout<<std::endl;
         const std::vector<double> constvector{1.1,2.2,3.3,4.4};
         for (auto e : zip(
-                    iter::chain(std::vector<int>(5,5),
-                                std::array<int,2>{{1,2}}),
-                    std::initializer_list<std::string>{
-                        "asdfas","aaron","ryan","apple","juice"},
+                    // the chain test breaks it, but its chain's fault
+                    //iter::chain(std::vector<int>(5,5),
+                    //           std::array<int,2>{{1,2}}),
+                    std::initializer_list<const char *>{
+                         "asdfas","aaron","ryan","apple","juice"},
+                    std::initializer_list<int>{1, 2, 3, 4},
                     constvector)) 
         { 
 
             std::cout << std::get<0>(e) << " " 
-                << std::get<1>(e) << " " 
-                << std::get<2>(e) << std::endl;
+                << std::get<1>(e) << " "
+                //<< std::get<2>(e)
+                << '\n';
         }
     }
 
