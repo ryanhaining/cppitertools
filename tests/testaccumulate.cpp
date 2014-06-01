@@ -25,5 +25,9 @@ int main() {
         std::cout << v << '\n';
     }
 
+    for (auto v : iter::accumulate(std::vector<int>{1,2,3,4,5,6,7,8,9})) {
+        std::cout << v << '\n';
+    }
+
     return 0;
 }
