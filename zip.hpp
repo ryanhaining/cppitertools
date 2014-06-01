@@ -57,11 +57,15 @@ namespace iter {
                     }
 
                     auto operator*() ->
-                        decltype(std::tuple_cat(std::make_tuple(
-                                        *this->iter), *this->rest_iter))
+                        decltype(std::tuple_cat(
+                                    std::tuple<iterator_deref<Container>>{
+                                        *this->iter},
+                                    *this->rest_iter))
                     {
-                        return std::tuple_cat(std::make_tuple(
-                                    *this->iter), *this->rest_iter);
+                        return std::tuple_cat(
+                                std::tuple<iterator_deref<Container>>{
+                                    *this->iter},
+                                *this->rest_iter);
                     }
             };
 
@@ -109,16 +113,12 @@ namespace iter {
                     }
 
                     bool operator!=(const Iterator& other) const {
-                        // if this->iter == other.iter, then won't every other
-                        // level have to be the same? 
-                        // in other words, I should only have to compare iter,
-                        // and not rest as well
                         return this->iter != other.iter;
                     }
 
-                    auto operator*() -> decltype(std::make_tuple(*this->iter))
-                    {
-                        return std::make_tuple(*this->iter);
+                    std::tuple<iterator_deref<Container>> operator*() {
+                        return std::tuple<iterator_deref<Container>>{
+                            *this->iter};
                     }
             };
 
