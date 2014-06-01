@@ -74,7 +74,7 @@ namespace iter {
 
     //specializations for initializer_lists
     template <typename FilterFunc, typename T>
-    auto filterfalse(FilterFunc filter_func, std::initializer_list<T>&& container) ->
+    auto filterfalse(FilterFunc filter_func, std::initializer_list<T> container) ->
             decltype(filter(
                         detail::PredicateFlipper<FilterFunc, std::initializer_list<T>>(
                             filter_func),
@@ -87,7 +87,7 @@ namespace iter {
     // Single argument version, uses a BoolFlipper to reverse the truthiness
     // of an object
     template <typename T>
-    auto filterfalse(std::initializer_list<T>&& container) ->
+    auto filterfalse(std::initializer_list<T> container) ->
             decltype(filter(
                         detail::BoolFlipper<std::initializer_list<T>>(),
                         std::move(container))) {
