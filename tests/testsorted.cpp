@@ -8,7 +8,7 @@ using iter::sorted;
 
 int main()
 {
-    std::vector<int> vec = {19, 3, 45, 32, 10, 0, 90, 15, 1, 7, 5, 6, 69};
+    std::vector<int> vec = {19, 45, 32, 10, 0, 90, 15, 1, 7, 5, 6, 69};
     for (auto i : sorted(vec)) {
         std::cout << i << '\n';
     }
@@ -28,5 +28,9 @@ int main()
     }
         
 
+    for (auto i : sorted(
+                std::vector<int>{19, 45, 32, 10, 0, 90, 15, 1, 7, 5, 6, 69})) {
+        std::cout << i << '\n';
+    }
     return 0;
 }
