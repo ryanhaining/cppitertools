@@ -5,6 +5,7 @@ env = Environment(
     CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
+                '-fdiagnostics-color=always',
                '-I/usr/local/include'],
     CPPPATH='..',
     LINKFLAGS='-L/usr/local/lib')
@@ -19,7 +20,7 @@ progs = Split('''
               range 
               zip 
               slice 
-              reverse 
+              reversed 
               filter 
               repeat 
               takewhile 
@@ -37,7 +38,6 @@ progs = Split('''
               filterfalse
               grouper
               chain
-              command_chains
               groupby
               sorted
               unique_justseen
