@@ -18,12 +18,12 @@ namespace iter {
 
     template <typename FilterFunc, typename T>
     TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc, std::initializer_list<T>&&);
+            FilterFunc, std::initializer_list<T>);
 
     template <typename FilterFunc, typename Container>
     class TakeWhile {
         private:
-            Container& container;
+            Container container;
             FilterFunc filter_func;
 
             friend TakeWhile takewhile<FilterFunc, Container>(
@@ -31,11 +31,11 @@ namespace iter {
 
             template <typename FF, typename T>
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
-                    FF, std::initializer_list<T>&&);
+                    FF, std::initializer_list<T>);
 
             // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container&& container)
-                : container{container},
+            TakeWhile(FilterFunc filter_func, Container container)
+                : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
 
@@ -93,13 +93,13 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                         std::end(this->container),
                         this->filter_func};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                         std::end(this->container),
                         this->filter_func};
@@ -116,7 +116,7 @@ namespace iter {
 
     template <typename FilterFunc, typename T>
     TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc filter_func, std::initializer_list<T>&& il)
+            FilterFunc filter_func, std::initializer_list<T> il)
     {
         return {filter_func, std::move(il)};
     }

@@ -17,30 +17,26 @@ namespace iter {
 
     template <typename T, typename KeyFunc>
     GroupBy<std::initializer_list<T>, KeyFunc> groupby(
-            std::initializer_list<T>&&, KeyFunc);
+            std::initializer_list<T>, KeyFunc);
 
     template <typename Container, typename KeyFunc>
     class GroupBy  {
         private:
-            Container& container;
+            Container container;
             KeyFunc key_func;
 
             friend GroupBy groupby<Container, KeyFunc>(Container&&, KeyFunc);
 
             template <typename T, typename KF>
             friend GroupBy<std::initializer_list<T>, KF> groupby(
-                    std::initializer_list<T>&&, KF);
-
-            
-
-            
+                    std::initializer_list<T>, KF);
 
             using key_func_ret =
                 decltype(std::declval<KeyFunc>()(
                             std::declval<iterator_deref<Container>>()));
 
-            GroupBy(Container&& container, KeyFunc key_func)
-                : container{container},
+            GroupBy(Container container, KeyFunc key_func)
+                : container(std::forward<Container>(container)),
                 key_func(key_func)
             { }
 
@@ -193,24 +189,24 @@ namespace iter {
                             }
                     };
 
-                    GroupIterator begin() const {
+                    GroupIterator begin() {
                         return {*this, key};
                     }
 
-                    GroupIterator end() const {
+                    GroupIterator end() {
                         return {*this, key};
                     }
 
             };
 
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                         std::end(this->container),
                         this->key_func};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                         std::end(this->container),
                         this->key_func};
@@ -249,13 +245,13 @@ namespace iter {
     
     template <typename T, typename KeyFunc>
     GroupBy<std::initializer_list<T>, KeyFunc> groupby(
-            std::initializer_list<T>&& il, KeyFunc key_func) {
+            std::initializer_list<T> il, KeyFunc key_func) {
         return {std::move(il), key_func};
     }
 
 
     template <typename T>
-    auto groupby(std::initializer_list<T>&& il) ->
+    auto groupby(std::initializer_list<T> il) ->
             decltype(groupby(std::move(il),
                         ItemReturner<std::initializer_list<T>>())) {
         return groupby(

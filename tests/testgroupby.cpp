@@ -89,6 +89,18 @@ int main()
         }
         std::cout << '\n';
     }
+
+    std::cout << "with vector temporary:\n";
+    for (auto gb : groupby(
+                std::vector<char>{'a', 'a', 'b', 'b', 'c', 'c', 'd', 'd'},
+                [] (const char c) {return c < 'c'; })) {
+        std::cout << "key: " << gb.first << '\n';
+        std::cout << "content: ";
+        for (auto s : gb.second) {
+            std::cout << s << "  ";
+        }
+        std::cout << '\n';
+    }
         
 
     return 0;

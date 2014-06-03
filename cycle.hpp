@@ -17,7 +17,7 @@ namespace iter {
     Cycle<Container> cycle(Container&&);
 
     template <typename T>
-    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>&&);
+    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>);
 
     template <typename Container>
     class Cycle {
@@ -26,12 +26,14 @@ namespace iter {
             friend Cycle cycle<Container>(Container&&);
             template <typename T>
             friend Cycle<std::initializer_list<T>> cycle(
-                    std::initializer_list<T>&&);
+                    std::initializer_list<T>);
 
-            Container& container;
+            Container container;
             
             // Value constructor for use only in the cycle function
-            Cycle(Container&& container) : container{container} { }
+            Cycle(Container container)
+                : container(std::forward<Container>(container))
+            { }
             Cycle() = delete;
             Cycle& operator=(const Cycle&) = delete;
 
@@ -73,12 +75,12 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container),
                         std::end(this->container)};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container),
                         std::end(this->container)};
             }
@@ -92,7 +94,7 @@ namespace iter {
     }
 
     template <typename T>
-    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>&& il)
+    Cycle<std::initializer_list<T>> cycle(std::initializer_list<T> il)
     {
         return {std::move(il)};
     }

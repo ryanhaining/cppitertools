@@ -17,21 +17,21 @@ namespace iter {
 
     template <typename T, typename Selector>
     Compressed<std::initializer_list<T>, Selector> compress(
-            std::initializer_list<T>&&, Selector&&);
+            std::initializer_list<T>, Selector&&);
 
     template <typename Container, typename T>
     Compressed<Container, std::initializer_list<T>> compress(
-            Container&&, std::initializer_list<T>&&);
+            Container&&, std::initializer_list<T>);
 
     template <typename T, typename U>
     Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
-            std::initializer_list<T>&&, std::initializer_list<U>&&);
+            std::initializer_list<T>, std::initializer_list<U>);
 
     template <typename Container, typename Selector>
     class Compressed  {
         private:
-            Container& container;
-            Selector & selectors;
+            Container container;
+            Selector selectors;
 
             // The only thing allowed to directly instantiate an Compressed is
             // the compress function
@@ -40,24 +40,24 @@ namespace iter {
 
             template <typename T, typename Sel>
             friend Compressed<std::initializer_list<T>, Sel> compress(
-                    std::initializer_list<T>&&, Sel&&);
+                    std::initializer_list<T>, Sel&&);
 
             template <typename Con, typename T>
             friend Compressed<Con, std::initializer_list<T>> compress(
-                    Con&&, std::initializer_list<T>&&);
+                    Con&&, std::initializer_list<T>);
 
             template <typename T, typename U>
             friend Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
-                    std::initializer_list<T>&&, std::initializer_list<U>&&);
+                    std::initializer_list<T>, std::initializer_list<U>);
 
             
             // Selector::Iterator type
             using selector_iter_type = decltype(std::begin(selectors));
             
             // Value constructor for use only in the compress function
-            Compressed(Container&& container, Selector&& selectors)
-                : container{container},
-                selectors{selectors}
+            Compressed(Container container, Selector selectors)
+                : container(std::forward<Container>(container)),
+                selectors(std::forward<Selector>(selectors))
             { }
             Compressed() = delete;
             Compressed& operator=(const Compressed&) = delete;
@@ -115,12 +115,12 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            Iterator begin() {
                 return {std::begin(this->container), std::end(this->container),
                     std::begin(this->selectors), std::end(this->selectors)};
             }
 
-            Iterator end() const {
+            Iterator end() {
                 return {std::end(this->container), std::end(this->container),
                         std::end(this->selectors), std::end(this->selectors)};
             }
@@ -137,22 +137,22 @@ namespace iter {
 
     template <typename T, typename Selector>
     Compressed<std::initializer_list<T>, Selector> compress(
-            std::initializer_list<T>&& data, Selector&& selectors) {
+            std::initializer_list<T> data, Selector&& selectors) {
         return {std::move(data),
                 std::forward<Selector>(selectors)};
     }
 
     template <typename Container, typename T>
     Compressed<Container, std::initializer_list<T>> compress(
-            Container&& container, std::initializer_list<T>&& selectors) {
+            Container&& container, std::initializer_list<T> selectors) {
         return {std::forward<Container>(container),
                 std::move(selectors)};
     }
 
     template <typename T, typename U>
     Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
-            std::initializer_list<T>&& data,
-            std::initializer_list<U>&& selectors) {
+            std::initializer_list<T> data,
+            std::initializer_list<U> selectors) {
         return {std::move(data),
                 std::move(selectors)};
     }

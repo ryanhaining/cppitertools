@@ -1,7 +1,8 @@
+#include <iostream>
+
 #include <slice.hpp>
 #include <range.hpp>
 
-#include <iostream>
 #include <vector>
 #include <array>
 
@@ -68,6 +69,12 @@ int main() {
 
     std::cout << "\ninitializer list\n";
     for (auto i : iter::slice({1, 2, 4, 8, 16, 32, 64, 128}, 2, 6)) {
+        std::cout << i << '\n';
+    }
+
+    std::cout << "\nvector temporary\n";
+    for (auto i : iter::slice(
+                std::vector<int>{1, 2, 4, 8, 16, 32, 64, 128}, 2, 6)) {
         std::cout << i << '\n';
     }
 
