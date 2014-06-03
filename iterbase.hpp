@@ -22,6 +22,17 @@ namespace iter {
     template <typename Container>
     using iterator_deref = 
         decltype(*std::declval<iterator_type<Container>&>());
+
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using reverse_iterator_type =
+        decltype(std::declval<Container&>().rbegin());
+
+    // iterator_deref<C> is the type obtained by dereferencing an iterator
+    // to an object of type C
+    template <typename Container>
+    using reverse_iterator_deref = 
+        decltype(*std::declval<reverse_iterator_type<Container>&>());
 }
 
 #endif // #ifndef ITERBASE__HPP__
