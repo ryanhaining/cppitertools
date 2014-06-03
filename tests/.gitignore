@@ -7,7 +7,7 @@ testenumerate
 testrange
 testslice
 testzip
-testreverse
+testreversed
 testrepeat
 testfilter
 testzip_longest
