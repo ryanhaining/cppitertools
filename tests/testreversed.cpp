@@ -30,7 +30,13 @@ int main () {
 
     std::cout << "with temporary\n";
     for (auto i : iter::reversed(std::vector<int>{1, 2, 3, 4, 5, 6, 7})) {
-        std::cout << i << std::endl;
+        std::cout << i << '\n';
+    }
+
+    std::cout << "statically sized array\n";
+    int arr[] = {1, 2, 3, 4, 5, 6, 7};
+    for (auto i : iter::reversed(arr)) {
+        std::cout << i << '\n';
     }
 
 
