@@ -87,7 +87,7 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate an Filter
+    // Helper function to instantiate a Cycle
     template <typename Container>
     Cycle<Container> cycle(Container&& container) {
         return {std::forward<Container>(container)};
