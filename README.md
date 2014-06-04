@@ -23,7 +23,7 @@ evaluation wherever possible.
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [chain](#chain)<br />
-[reverse](#reverse)<br />
+[reversed](#reversed)<br />
 [slice](#slice)<br />
 [sliding_window](#sliding_window)<br />
 [grouper](#grouper)<br />
@@ -352,13 +352,13 @@ for (auto i : chain(empty,vec1,arr1)) {
 }
 ```
 
-reverse
+reversed
 -------
 
 Iterates over elements of a sequence in reverse order.
 
 ```c++
-for (auto i : reverse(a)) {                                          
+for (auto i : reversed(a)) {                                          
     cout << i << '\n';                                           
 }
 ```
