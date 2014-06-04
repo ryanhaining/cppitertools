@@ -21,7 +21,7 @@
 #include "product.hpp"
 #include "range.hpp"
 #include "repeat.hpp"
-#include "reverse.hpp"
+#include "reversed.hpp"
 #include "slice.hpp"
 #include "sorted.hpp"
 #include "takewhile.hpp"
