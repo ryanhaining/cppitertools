@@ -2,6 +2,7 @@
 *.swp
 testaccumulate
 testchain
+testchainfromiterable
 testcycle
 testenumerate
 testrange

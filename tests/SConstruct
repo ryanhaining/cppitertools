@@ -38,6 +38,7 @@ progs = Split('''
               filterfalse
               grouper
               chain
+              chainfromiterable
               groupby
               sorted
               unique_justseen
