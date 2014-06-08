@@ -6,16 +6,13 @@
 #include <type_traits>
 
 namespace iter {
-    template <typename Container, typename...RestContainers>
-    class Chained;
-
-    template <typename... Containers>
-    Chained<Containers...> chain(Containers&&...);
+    // rather than a chain function, use a callable object to support
+    // from_iterable
+    class ChainMaker;
 
     template <typename Container, typename... RestContainers>
     class Chained {
-        friend Chained chain<Container, RestContainers...>(
-                Container&&, RestContainers&&...);
+        friend class ChainMaker;
         template <typename C, typename... RC>
         friend class Chained;
 
@@ -84,7 +81,7 @@ namespace iter {
     };
     template <typename Container>
     class Chained<Container> {
-        friend Chained chain<Container>(Container&&);
+        friend class ChainMaker;
         template <typename C, typename... RC>
         friend class Chained;
 
@@ -132,8 +129,17 @@ namespace iter {
             }
     };
 
-    template <typename... Containers>
-    Chained<Containers...> chain(Containers&&... containers) {
-        return {std::forward<Containers>(containers)...};
+    class ChainMaker {
+        public:
+            // expose regular call operator to provide usual chain()
+            template <typename... Containers>
+            Chained<Containers...> operator()(Containers&&... cs) const {
+                return {std::forward<Containers>(cs)...};
+            }
+    };
+
+    namespace {
+        constexpr auto chain = ChainMaker{};
     }
+
 }
