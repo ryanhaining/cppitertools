@@ -23,6 +23,7 @@ evaluation wherever possible.
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [chain](#chain)<br />
+[chain.from\_iterable](#chain.from_iterable)<br />
 [reversed](#reversed)<br />
 [slice](#slice)<br />
 [sliding_window](#sliding_window)<br />
@@ -349,6 +350,25 @@ array<int,4> arr1{{7,8,9,10}};
 
 for (auto i : chain(empty,vec1,arr1)) {                             
     cout << i << '\n';                                          
+}
+```
+
+chain.from_iterable
+-------------------
+
+Similar to chain, but rather than taking a variadic number of iterables,
+it takes an iterable of iterables and chains the contained iterables together.
+A simple example is shown below using a vector of vectors to represent
+a 2d ragged array, and prints it in row-major order.
+```c++
+vector<vector<int>> matrix = {
+    {1, 2, 3},
+    {4, 5},
+    {6, 8, 9, 10, 11, 12}
+};
+
+for (auto i : chain.from_iterable(matrix)) {
+    cout << i << '\n';
 }
 ```
 
