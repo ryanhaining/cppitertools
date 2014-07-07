@@ -8,59 +8,58 @@
 
 namespace iter {
 
-    // Everything in detail namespace 
-    // modified from http://stackoverflow.com/questions/10766112/
-    // Question by Thomas http://stackoverflow.com/users/115355/thomas
-    // Answer by Kerrek SB http://stackoverflow.com/users/596781/kerrek-sb
-    namespace detail
-    {
-        // implementation details, users never invoke these directly
-        template <typename F, typename Tuple, bool Done, int Total, int... N>
-        struct call_impl
-        {
-            static auto call(F f, Tuple&& t) -> 
-                decltype(call_impl<F,
-                    Tuple,
-                    Total == 1 + sizeof...(N),
-                    Total,
-                    N...,
-                    sizeof...(N)>::call(f, std::forward<Tuple>(t)))
-            {
-                return call_impl<F,
-                    Tuple,
-                    Total == 1 + sizeof...(N),
-                    Total,
-                    N...,
-                    sizeof...(N)>::call(f, std::forward<Tuple>(t));
-            }
-        };
+    namespace detail {
 
-        template <typename F, typename Tuple, int Total, int... N>
-        struct call_impl<F, Tuple, true, Total, N...>
+    template <std::size_t Index, typename Functor, typename Tup>
+    struct Expander {
+        template <typename... Ts>
+        static auto call(Functor&& f, Tup&& tup, Ts&&... args)
+            -> decltype(Expander<Index-1, Functor, Tup>::call(
+                    std::forward<Functor>(f),
+                    std::forward<Tup>(tup),
+                    std::get<Index-1>(tup),
+                    std::forward<Ts>(args)...))
         {
-            static auto call(F f, Tuple&& t) -> 
-                decltype(f(std::get<N>(std::forward<Tuple>(t))...))
-            {
-                return f(std::get<N>(std::forward<Tuple>(t))...);
-            }
-        };
-
-        // user invokes this
-        template <typename F, typename Tuple>
-        auto call(F f, Tuple&& t) -> 
-            decltype(call_impl<F,
-                Tuple,
-                0 == std::tuple_size<typename std::decay<Tuple>::type>::value,
-                std::tuple_size<typename std::decay<Tuple>::type>::value>
-                ::call(f,std::forward<Tuple>(t)))
-        {
-            typedef typename std::decay<Tuple>::type ttype;
-            return call_impl<F,
-                Tuple,
-                0 == std::tuple_size<ttype>::value,
-                std::tuple_size<ttype>::value>::call(f,std::forward<Tuple>(t));
+            // recurse
+            return Expander<Index-1, Functor, Tup>::call(
+                    std::forward<Functor>(f),
+                    std::forward<Tup>(tup),
+                    std::get<Index-1>(tup), // pull out one element
+                    std::forward<Ts>(args)...); // everything already expanded
         }
+    };
+
+    template <typename Functor, typename Tup>
+    struct Expander<0, Functor, Tup> {
+        template <typename... Ts>
+        static auto call(Functor&& f, Tup&&, Ts&&... args)
+            -> decltype(f(std::forward<Ts>(args)...))
+        {
+            static_assert(
+                std::tuple_size<
+                    typename std::remove_reference<Tup>::type>::value
+                    == sizeof...(Ts),
+                "tuple has not been fully expanded");
+            return f(std::forward<Ts>(args)...); // the actual call
+        }
+    };
+
+    template <typename Functor, typename Tup>
+    auto call_with_tuple(Functor&& f, Tup&& tup)
+        -> decltype(Expander<std::tuple_size<
+                    typename std::remove_reference<Tup>::type>::value,
+                    Functor, Tup>::call(
+                        std::forward<Functor>(f),
+                        std::forward<Tup>(tup)))
+    {
+        return Expander<std::tuple_size<
+            typename std::remove_reference<Tup>::type>::value,
+            Functor, Tup>::call(
+                std::forward<Functor>(f),
+                std::forward<Tup>(tup));
     }
+
+    } // end detail
 
     //Forward declarations of IMap and imap
     template <typename MapFunc, typename... Containers>
@@ -102,9 +101,11 @@ namespace iter {
                     { } 
 
                     auto operator*() const -> 
-                        decltype(detail::call(this->map_func, *(this->zipiter)))
+                        decltype(detail::call_with_tuple(
+                                    this->map_func, *(this->zipiter)))
                     {
-                        return detail::call(this->map_func, *(this->zipiter));
+                        return detail::call_with_tuple(
+                                this->map_func, *(this->zipiter));
                     }
 
                     Iterator& operator++() { 
