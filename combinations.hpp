@@ -44,7 +44,8 @@ namespace iter {
 
                 using item_t = typename 
                     std::remove_const<
-                    typename std::remove_reference<iterator_deref<Container>>::type>::type;
+                        typename std::remove_reference<
+                            iterator_deref<Container>>::type>::type;
 
             public:
                 Iterator(Container& i, size_t N)
@@ -60,8 +61,7 @@ namespace iter {
                         if (std::begin(items) + inc != std::end(items)) {
                             iter = std::begin(items)+inc;
                             ++inc;
-                        }
-                        else {
+                        } else {
                             not_done = false;
                             break;
                         }
@@ -78,41 +78,45 @@ namespace iter {
 
 
                 Iterator& operator++() {
-                    for (auto iter = indicies.rbegin(); iter != indicies.rend(); ++iter) {
+                    for (auto iter = indicies.rbegin();
+                            iter != indicies.rend();
+                            ++iter) {
                         ++(*iter);
-                        //what we have to check here is if the distance between the
-                        //index and the end of indicies is >= the distance between
-                        //the item and end of item
+                        //what we have to check here is if the distance between
+                        //the index and the end of indicies is >= the distance
+                        //between the item and end of item
                         if ((*iter + std::distance(indicies.rbegin(),iter)) ==
                                 std::end(items)) {
                             if ( (iter + 1) != indicies.rend()) {
                                 size_t inc = 1;
-                                for (auto down = iter; down != indicies.rbegin()-1;--down) {
+                                for (auto down = iter;
+                                        down != indicies.rbegin()-1;
+                                        --down) {
                                     (*down) = (*(iter + 1)) + 1 + inc;
                                     /*if (*down == items.cend()) {
                                         iter = iter + 1;
                                     }*/
                                     ++inc;
                                 }
-                            }
-                            else {
+                            } else {
                                 not_done = false;
                                 break;
                             }
+                        } else {
+                            break; 
                         }
-                        else break; 
-                        //we break because none of the rest of the items need to 
-                        //be incremented
+                        //we break because none of the rest of the items need
+                        //to be incremented
                     }
                     return *this;
                 }
 
                 bool operator !=(const Iterator&)
                 {
-                    //because of the way this is done you have to start from the 
-                    //begining of the range and end at the end, you could break in 
-                    //the middle of the loop though, it's not different from the way
-                    //that python's works
+                    //because of the way this is done you have to start from
+                    //the begining of the range and end at the end, you could
+                    //break in the middle of the loop though, it's not
+                    //different from the way that python's works
                     return not_done;
                 }
         };
