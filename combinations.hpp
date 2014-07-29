@@ -57,7 +57,7 @@ namespace iter {
                         return;
                     }
                     size_t inc = 0;
-                    for (auto& iter : indicies) {
+                    for (auto& iter : this->indicies) {
                         if (std::begin(items) + inc != std::end(items)) {
                             iter = std::begin(items)+inc;
                             ++inc;
