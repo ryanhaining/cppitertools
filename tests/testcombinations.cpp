@@ -30,6 +30,11 @@ int main() {
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
     }
+    std::cout << "initializer list\n";
+    for (auto i : combinations({1,2,3,4},1)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
 
     std::cout << "temporary\n";
     for (auto i : combinations(std::vector<int>{1,2,3,4,5}, 3)) {
