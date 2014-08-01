@@ -24,14 +24,14 @@ namespace iter {
             Powersetter(Container in_container)
                 : container(std::forward<Container>(in_container))
             {
-                std::size_t i = 0;
+                combinators.push_back(combinations(this->container, 0));
+                std::size_t i = 1;
                 for (auto iter = std::begin(this->container),
                             end = std::end(this->container);
                         iter != end;
                         ++iter, ++i) {
                     combinators.push_back(combinations(this->container, i));
                 }
-                combinators.push_back(combinations(this->container, i));
             }
 
             class Iterator {
