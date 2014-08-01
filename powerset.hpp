@@ -1,76 +1,84 @@
-#ifndef POWERSET_HPP
-#define POWERSET_HPP
+#ifndef POWERSET_HPP_
+#define POWERSET_HPP_
 
-#include "iterator_range.hpp"
+#include "iterbase.hpp"
 #include "combinations.hpp"
 
+#include <vector>
 #include <initializer_list>
+#include <utility>
+#include <iterator>
 
 namespace iter {
     template <typename Container>
-        struct powerset_iter;
+    class Powersetter {
+        private:
+            Container container;
+
+        public:
+            Powersetter(Container container)
+                : container(std::forward<Container>(container))
+            { }
+
+            class Iterator {
+                private:
+                    std::size_t container_size;
+                    std::size_t list_size = 0;
+                    bool not_done = true;
+
+                    using CombinatorType =
+                        decltype(combinations(std::declval<Container&>(), 0));
+                    std::vector<CombinatorType> combinators;
+                    std::vector<iterator_type<CombinatorType>> inner_iters;
+                public:
+                    Iterator(Container& container)
+                        : container_size{container.size()}
+                    {
+                        for (std::size_t i = 0; i <= container_size; ++i) {
+                            combinators.push_back(combinations(container, i));
+                            inner_iters.push_back(std::begin(combinators.back()));
+                        }
+                    }
+
+                    Iterator& operator++() {
+                        ++inner_iters[list_size];
+                        if (!(inner_iters[list_size] != inner_iters[list_size])) {
+                            ++list_size;
+                        }
+                        if (container_size < list_size) {
+                            not_done = false;
+                        }
+
+                        return *this;
+                    }
+
+                    auto operator*() -> decltype(*inner_iters[0]) {
+                        return *(inner_iters[list_size]);
+                    }
+
+                    bool operator != (const Iterator&) {
+                        return not_done;
+                    }
+            }; 
+
+            Iterator begin() {
+                return {this->container};
+            }
+
+            Iterator end() {
+                return {this->container};
+            }
+    };
 
     template <typename Container>
-        iterator_range<powerset_iter<Container>>
-        powerset(const Container & container)
-        {
-            auto begin = powerset_iter<Container>(container);
-            auto end = powerset_iter<Container>(container);
-            return iterator_range<powerset_iter<Container>>(begin,end);
-        }
+    Powersetter<Container> powerset(Container&& container) {
+        return {std::forward<Container>(container)};
+    }
 
     template <typename T>
-        iterator_range<powerset_iter<std::initializer_list<T>>>
-        powerset(std::initializer_list<T> && container)
-        {
-            auto begin = powerset_iter<std::initializer_list<T>>(container);
-            auto end = powerset_iter<std::initializer_list<T>>(container);
-            return {begin,end};
-        }
-
-
-    template <typename Container>
-        struct powerset_iter {
-        private:
-            const Container & container;
-            size_t list_size = 0;
-            std::vector<combinations_iter<Container>> inner_iters;
-            bool not_done = true;
-        public:
-            powerset_iter(const Container & c) : 
-                container(c),
-                inner_iters()
-                {
-                    for (size_t i = 0; i <= container.size();++i) {
-                        inner_iters.push_back(combinations_iter<Container>(container,i));
-                    }
-                }
-            //default constructor
-            powerset_iter & operator++()
-            {
-                ++(inner_iters[list_size]);
-                
-                if (!(inner_iters[list_size] != inner_iters[list_size])) {
-                    ++list_size;
-                    //inner_iter = combinations_iter<Container>(container,list_size);
-                }
-                if (container.size() < list_size) not_done = false;
-                return *this;
-            }
-            auto operator*() const -> decltype(*inner_iters[list_size]) 
-            {
-                return *(inner_iters[list_size]);
-            }
-            bool operator != (const powerset_iter &) {
-               return not_done;
-            }
-        }; 
+    Powersetter<std::initializer_list<T>> powerset(
+            std::initializer_list<T> il) {
+        return {il};
+    }
 }
-namespace std {
-    template <typename Container>
-        struct iterator_traits<iter::powerset_iter<Container>> {
-            using difference_type = ptrdiff_t;
-            using iterator_category = input_iterator_tag;
-        };
-}
-#endif //POWERSET_HPP
+#endif // #ifndef POWERSET_HPP_
