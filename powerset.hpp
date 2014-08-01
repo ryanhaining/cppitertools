@@ -3,7 +3,9 @@
 
 #include "iterbase.hpp"
 #include "combinations.hpp"
+#include "enumerate.hpp"
 
+#include <cassert>
 #include <vector>
 #include <initializer_list>
 #include <utility>
@@ -19,12 +21,17 @@ namespace iter {
             
             std::vector<CombinatorType> combinators;
         public:
-            Powersetter(Container container)
-                : container(std::forward<Container>(container))
+            Powersetter(Container in_container)
+                : container(std::forward<Container>(in_container))
             {
-                for (std::size_t i = 0; i <= this->container.size(); ++i) {
+                std::size_t i = 0;
+                for (auto iter = std::begin(this->container),
+                            end = std::end(this->container);
+                        iter != end;
+                        ++iter, ++i) {
                     combinators.push_back(combinations(this->container, i));
                 }
+                combinators.push_back(combinations(this->container, i));
             }
 
             class Iterator {
@@ -36,9 +43,8 @@ namespace iter {
                     std::vector<CombinatorType>& combinators;
                     std::vector<iterator_type<CombinatorType>> inner_iters;
                 public:
-                    Iterator(Container& container,
-                            std::vector<CombinatorType>& combs)
-                        : container_size{container.size()},
+                    Iterator(std::vector<CombinatorType>& combs)
+                        : container_size{combs.size() - 1},
                         combinators(combs)
                     {
                         for (auto& comb : combinators) {
@@ -68,11 +74,11 @@ namespace iter {
             }; 
 
             Iterator begin() {
-                return {this->container, this->combinators};
+                return {this->combinators};
             }
 
             Iterator end() {
-                return {this->container, this->combinators};
+                return {this->combinators};
             }
     };
 
