@@ -10,15 +10,22 @@
 #include <iterator>
 
 namespace iter {
-    template <typename Container>
+    template <typename Container,
+              typename CombinatorType=
+                  decltype(combinations(std::declval<Container&>(), 0))>
     class Powersetter {
         private:
             Container container;
-
+            
+            std::vector<CombinatorType> combinators;
         public:
             Powersetter(Container container)
                 : container(std::forward<Container>(container))
-            { }
+            {
+                for (std::size_t i = 0; i <= this->container.size(); ++i) {
+                    combinators.push_back(combinations(this->container, i));
+                }
+            }
 
             class Iterator {
                 private:
@@ -26,17 +33,16 @@ namespace iter {
                     std::size_t list_size = 0;
                     bool not_done = true;
 
-                    using CombinatorType =
-                        decltype(combinations(std::declval<Container&>(), 0));
-                    std::vector<CombinatorType> combinators;
+                    std::vector<CombinatorType>& combinators;
                     std::vector<iterator_type<CombinatorType>> inner_iters;
                 public:
-                    Iterator(Container& container)
-                        : container_size{container.size()}
+                    Iterator(Container& container,
+                            std::vector<CombinatorType>& combs)
+                        : container_size{container.size()},
+                        combinators(combs)
                     {
-                        for (std::size_t i = 0; i <= container_size; ++i) {
-                            combinators.push_back(combinations(container, i));
-                            inner_iters.push_back(std::begin(combinators.back()));
+                        for (auto& comb : combinators) {
+                            inner_iters.push_back(std::begin(comb));
                         }
                     }
 
@@ -62,11 +68,11 @@ namespace iter {
             }; 
 
             Iterator begin() {
-                return {this->container};
+                return {this->container, this->combinators};
             }
 
             Iterator end() {
-                return {this->container};
+                return {this->container, this->combinators};
             }
     };
 
