@@ -43,8 +43,8 @@ namespace iter {
                 std::vector<iterator_type<Container>> indicies;
                 bool not_done = true;
 
-                using item_t = typename 
-                    std::remove_const<
+                using item_t =
+                    typename std::remove_const<
                         typename std::remove_reference<
                             iterator_deref<Container>>::type>::type;
 
