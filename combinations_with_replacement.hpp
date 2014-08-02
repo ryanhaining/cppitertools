@@ -8,43 +8,39 @@
 #include <type_traits>
 
 namespace iter {
-    //if size isn't passed as template argument would have to switch to vectors
-    //for everything, generally I would say you don't need to decide the amount
-    //of items in your combination at runtime, but rather it is a way to view 
-    //a list based on the problem your solving, that being said it would be easy
-    //to make it decided at runtime
-#if 0
-    template <typename Container>
-        struct combinations_with_replacement_iter;
 
     template <typename Container>
-        iterator_range<combinations_with_replacement_iter<Container>>
-        combinations_with_replacement(Container & container, std::size_t N) {
-            auto begin = combinations_with_replacement_iter<Container>(container, N);
-            auto end = combinations_with_replacement_iter<Container>(container, N);
-            return 
-                iterator_range<combinations_with_replacement_iter<Container>>(begin,end);
-        }
-     template <typename T>
-        iterator_range<combinations_with_replacement_iter<std::initializer_list<T>>>
-        combinations_with_replacement(std::initializer_list<T> && container, std::size_t N) {
-            auto begin = combinations_with_replacement_iter<std::initializer_list<T>>(container, N);
-            auto end = combinations_with_replacement_iter<std::initializer_list<T>>(container, N);
-            return {begin,end};
-        }
-#endif
+    class CombinatorWithReplacement;
+
+    template <typename Container>
+    CombinatorWithReplacement<Container> combinations_with_replacement(
+            Container&&, std::size_t);
+
+    template <typename T>
+    CombinatorWithReplacement<std::initializer_list<T>>
+    combinations_with_replacement(
+            std::initializer_list<T>, std::size_t);
+
     template <typename Container>
     class CombinatorWithReplacement {
         private:
             Container container;
             std::size_t length;
 
-        public:
+            friend CombinatorWithReplacement
+                combinations_with_replacement<Container>(
+                        Container&& ,std::size_t);
+            template <typename T>
+            friend CombinatorWithReplacement<std::initializer_list<T>>
+            combinations_with_replacement(
+                    std::initializer_list<T>, std::size_t);
+
            CombinatorWithReplacement(Container container, std::size_t n)
                : container(std::forward<Container>(container)),
                length{n}
            { }
 
+        public:
            class Iterator {
                private:
                    Container& items;
