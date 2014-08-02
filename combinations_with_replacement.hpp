@@ -120,6 +120,12 @@ namespace iter {
         return {std::forward<Container>(container), length};
     }
 
+    template <typename T>
+    CombinatorWithReplacement<std::initializer_list<T>> 
+    combinations_with_replacement(
+            std::initializer_list<T> il, std::size_t length) {
+        return {il, length};
+    }
 }
 
 #endif //COMBINATIONS_WITH_REPLACEMENT_HPP
