@@ -1,11 +1,12 @@
-#ifndef COMBINATIONS_WITH_REPLACEMENT_HPP
-#define COMBINATIONS_WITH_REPLACEMENT_HPP
+#ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
+#define COMBINATIONS_WITH_REPLACEMENT_HPP_
 
-#include "iterator_range.hpp"
 #include "iterbase.hpp"
 
+#include <iterator>
 #include <vector>
 #include <type_traits>
+#include <initializer_list>
 
 namespace iter {
 
@@ -71,32 +72,36 @@ namespace iter {
 
 
                    Iterator& operator++() {
-                       for (auto iter = indicies.rbegin(); iter != indicies.rend(); ++iter) {
+                       for (auto iter = indicies.rbegin();
+                               iter != indicies.rend();
+                               ++iter) {
                            ++(*iter);
                            if (*iter == std::end(items)) {
                                if ( (iter + 1) != indicies.rend()) {
-                                   for (auto down = iter; down != indicies.rbegin()-1;--down) {
+                                   for (auto down = iter;
+                                           down != indicies.rbegin()-1;
+                                           --down) {
                                        (*down) = (*(iter + 1)) + 1; 
                                    }
-                               }
-                               else {
+                               } else {
                                    not_done = false;
                                    break;
                                }
+                           } else {
+                               //we break because none of the rest of the items
+                               //need to be incremented
+                               break; 
                            }
-                           else break; 
-                           //we break because none of the rest of the items need to 
-                           //be incremented
                        }
                        return *this;
                    }
 
                    bool operator !=(const Iterator&) const
                    {
-                       //because of the way this is done you have to start from the 
-                       //begining of the range and end at the end, you could break in 
-                       //the middle of the loop though, it's not different from the way
-                       //that python's works
+                       //because of the way this is done you have to start from
+                       //the begining of the range and end at the end, you
+                       //could break in the middle of the loop though, it's not
+                       //different from the waythat python's works
                        return not_done;
                    }
            };
@@ -124,4 +129,4 @@ namespace iter {
     }
 }
 
-#endif //COMBINATIONS_WITH_REPLACEMENT_HPP
+#endif // #ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
