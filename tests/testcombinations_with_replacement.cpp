@@ -19,13 +19,13 @@ int main() {
         std::cout<<std::endl;
     }
 
-#if 0
-    for (auto i : combinations_with_replacement(v,1)) {
-        //std::cout << i << std::endl;
+    for (auto i : combinations_with_replacement({1,2,3,4},4)) {
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
     }
-    for (auto i : combinations_with_replacement({1,2,3,4},4)) {
+
+#if 0
+    for (auto i : combinations_with_replacement(v,1)) {
         //std::cout << i << std::endl;
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
