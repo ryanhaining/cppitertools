@@ -42,8 +42,9 @@ namespace iter {
                         : section_size{s}
                     {
                         auto iter = std::begin(container);
+                        auto end = std::end(container);
                         for (std::size_t i = 0;
-                                i < section_size;
+                                i < section_size && iter != end;
                                 ++iter, ++i) {
                             section.push_back(iter);
                         }
