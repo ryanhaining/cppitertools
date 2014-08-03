@@ -12,19 +12,6 @@
 #include <iterator>
 
 namespace iter {
-#if 0
-    template <typename Container>
-    struct sliding_window_iter;
-
-    template <typename Container>
-    iterator_range<sliding_window_iter<Container>>
-    sliding_window(Container&& container, std::size_t s) {
-        auto begin = sliding_window_iter<Container>(std::forward<Container>(container),s);
-        auto end = sliding_window_iter<Container>(std::forward<Container>(container));
-        return iterator_range<sliding_window_iter<Container>>(begin,end);
-    }
-#endif
-
     template <typename Container>
     class SlidingWindow {
         private:
@@ -101,6 +88,12 @@ namespace iter {
     SlidingWindow<Container> sliding_window(
             Container&& container, std::size_t window_size) {
         return {std::forward<Container>(container), window_size};
+    }
+
+    template <typename T>
+    SlidingWindow<std::initializer_list<T>> sliding_window(
+            std::initializer_list<T> il, std::size_t window_size) {
+        return {il, window_size};
     }
 }
 
