@@ -13,21 +13,39 @@
 
 namespace iter {
     template <typename Container>
+    class SlidingWindow;
+
+    template <typename Container>
+    SlidingWindow<Container> sliding_window(Container&&, std::size_t);
+
+    template <typename T>
+    SlidingWindow<std::initializer_list<T>> sliding_window(
+            std::initializer_list<T>, std::size_t);
+
+    template <typename Container>
     class SlidingWindow {
         private:
             Container container;
             std::size_t window_size;
 
-        public:
+            friend SlidingWindow sliding_window<Container>(
+                    Container&&, std::size_t);
+            
+            template <typename T>
+            friend SlidingWindow<std::initializer_list<T>> sliding_window(
+                    std::initializer_list<T>, std::size_t);
+
             SlidingWindow(Container container, std::size_t win_sz)
                 : container(std::forward<Container>(container)),
                 window_size{win_sz}
             { }
 
+        public:
+
             class Iterator {
                 private:
-                    // confusing, but, just makes the type of the vector returned by
-                    // operator*()
+                    // confusing, but, just makes the type of the vector
+                    // returned by operator*()
                     using OpDerefElemType =
                         std::reference_wrapper<
                             typename std::remove_reference<
