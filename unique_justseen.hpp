@@ -31,6 +31,16 @@ namespace iter
                     groupby(std::forward<Container>(container)))>{},
                 groupby(std::forward<Container>(container)));
     }
+
+    template <typename T>
+    auto unique_justseen(std::initializer_list<T> il) ->
+        decltype(imap(GroupFrontGetter<decltype(
+                        groupby(std::forward<std::initializer_list<T>>(il)))>{},
+                groupby(std::forward<std::initializer_list<T>>(il)))) {
+        return imap(GroupFrontGetter<decltype(
+                    groupby(std::forward<std::initializer_list<T>>(il)))>{},
+                groupby(std::forward<std::initializer_list<T>>(il)));
+    }
 }
 
 #endif //UNIQUE_JUSTSEEN_HPP
