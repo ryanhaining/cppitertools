@@ -24,5 +24,12 @@ int main() {
     }
     std::cout << '\n';
 
+    std::cout << "with static array\n";
+    int arr[] = {1, 1, 2, 3, 3, 3, 4};
+    for (auto i : unique_justseen(arr)) {
+        std::cout << i << " ";
+    }
+    std::cout << '\n';
+
     return 0;
 }
