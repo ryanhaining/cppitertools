@@ -89,6 +89,7 @@ namespace iter {
 
         public:
             IMap(const IMap&) = default;
+            IMap(IMap&&) = default;
 
             class Iterator {
                 private:
@@ -101,7 +102,7 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
-                    auto operator*() const -> 
+                    auto operator*() -> 
                         decltype(detail::call(this->map_func, *(this->zipiter)))
                     {
                         return detail::call(this->map_func, *(this->zipiter));
