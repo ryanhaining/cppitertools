@@ -13,7 +13,7 @@ int main() {
     std::cout << '\n';
 
     std::cout << "with temporary\n";
-    for (auto i : unique_justseen({1,1,1,2,3,3})) {
+    for (auto i : unique_justseen(std::vector<int>{1,1,1,2,3,3})) {
         std::cout << i << " ";
     }
     std::cout << '\n';
