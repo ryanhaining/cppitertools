@@ -20,18 +20,37 @@ namespace iter
     {
         using elem_t = iterator_deref<Container>;
         std::unordered_set<typename std::remove_reference<elem_t>::type> elem_seen;
-        std::function<bool(elem_t)> func = [elem_seen](elem_t e) mutable
+
+        std::function<bool(elem_t)> func =
         //has to be captured by value because it goes out of scope when the 
         //function returns
-                {
-                    if (elem_seen.find(e) == std::end(elem_seen)){
-                        elem_seen.insert(e);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                };
-        return filter(func,std::forward<Container>(container));
+            [elem_seen](elem_t e) mutable
+            {
+                if (elem_seen.find(e) == std::end(elem_seen)){
+                    elem_seen.insert(e);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+        return filter(func, std::forward<Container>(container));
+    }
+
+    template <typename T>
+    auto unique_everseen(std::initializer_list<T> il) 
+        -> Filter<std::function<bool(T)>, std::initializer_list<T>>
+    {
+        std::unordered_set<T> elem_seen;
+        std::function<bool(T)> func = [elem_seen](const T& e) mutable
+            {
+                if (elem_seen.find(e) == std::end(elem_seen)){
+                    elem_seen.insert(e);
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+        return filter(func, il);
     }
 }
 
