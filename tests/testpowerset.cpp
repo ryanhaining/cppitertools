@@ -10,10 +10,18 @@ int main() {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
     }
-    for (auto v : powerset({1,2,3,4})) {
+    std::cout << "with temporary\n";
+    for (auto v : powerset(std::vector<int>{1,2,3})) {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
     }
+    std::cout << "with initializer_list\n";
+    for (auto v : powerset({1,2,3})) {
+        for (auto i : v) std::cout << i << " ";
+        std::cout << std::endl;
+    }
+#if 0
+#endif
 
     return 0;
 }

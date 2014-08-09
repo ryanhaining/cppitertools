@@ -81,8 +81,6 @@ namespace iter {
                             size(this->container))) {
                     this->stop = static_cast<DifferenceType>(size(
                                 this->container));
-                    std::cout << "stop is too large\n";
-                    std::cout << "stop is now: " << this->stop << '\n';
                 }
                 if (this->start < 0) {
                     this->start = 0; 

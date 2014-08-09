@@ -5,7 +5,7 @@
 
 int main() {
     using iter::permutations;
-    std::vector<int> v = {1,2,3,4,5};
+    std::vector<int> v = {1,2,3};
     for (auto vec : permutations(v)) {
         for (auto i : vec) {
             std::cout << i << " ";
@@ -27,6 +27,8 @@ int main() {
         }
         std::cout << std::endl;
     }
+
+    std::cout << "init list\n";
     //std::next_permutation doesn't work on initializer_lists
     for (auto vec : permutations({1,2,3,4})) {
         for (auto c : vec) {
