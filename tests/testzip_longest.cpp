@@ -30,7 +30,8 @@ int main() {
             std::cout << std::get<1>(e) << std::endl; 
         }
 
-        for (auto e : zip_longest("helloworld", ivec)) {
+        for (auto e : zip_longest("helloworld",
+                    std::vector<int>{1,2,3})) {
             std::cout << std::get<0>(e) << std::endl; 
             std::cout << std::get<1>(e) << std::endl; 
         }
