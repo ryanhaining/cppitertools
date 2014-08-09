@@ -1,108 +1,170 @@
-#ifndef ZIP_LONGEST_HPP
-#define ZIP_LONGEST_HPP
+#ifndef ZIP_LONGEST_HPP_
+#define ZIP_LONGEST_HPP_
 
-#include "iterator_range.hpp"
+#include "iterbase.hpp"
 
 #include <boost/optional.hpp>
+#include <iterator>
 #include <tuple>
 #include <utility>
-#include <iterator>
+
 
 namespace iter {
-    template <typename ... Containers>
-        struct zip_longest_iter;
-    template <typename ... Containers>
-        iterator_range<zip_longest_iter<Containers...>>
-        zip_longest(Containers && ... containers)
-        {
-            auto begin = 
-                zip_longest_iter<Containers...>(std::forward<Containers>(containers)...);
-            auto end = 
-                zip_longest_iter<Containers...>(std::forward<Containers>(containers)...);
-            return iterator_range<decltype(begin)>(begin,end);
-        }   
-    /*
-    template <int N,typename Tuple>
-    auto zip_get(Tuple & t)->decltype(*std::get<N>(t))&
-    {
-        return *std::get<N>(t);
-    }
-    */
+    template <typename Container, typename... RestContainers>
+    class ZippedLongest;
+
+    template <typename... Containers>
+    ZippedLongest<Containers...> zip_longest(Containers&&...);
+
+    template <typename Container, typename... RestContainers>
+    class ZippedLongest {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
+
+        friend ZippedLongest zip_longest<Container, RestContainers...>(
+                Container&&, RestContainers&&...);
+
+        template <typename C, typename... RC>
+        friend class ZippedLongest;
+
+        private:
+            Container container;
+            ZippedLongest<RestContainers...> rest_zipped;
+            ZippedLongest(Container container, RestContainers&&... rest)
+                : container(std::forward<Container>(container)),
+                rest_zipped{std::forward<RestContainers>(rest)...}
+            { }
+
+        public:
+            class Iterator {
+                private:
+                    using RestIter =
+                        typename ZippedLongest<RestContainers...>::Iterator;
+                    using OptType = boost::optional<iterator_deref<Container>>;
+
+                    iterator_type<Container> iter;
+                    iterator_type<Container> end;
+                    RestIter rest_iter;
+
+                public:
+                    Iterator(
+                            iterator_type<Container> it,
+                            iterator_type<Container> in_end,
+                            const RestIter& rest)
+                        : iter{it},
+                        end{in_end},
+                        rest_iter{rest}
+                    { }
+
+                    Iterator& operator++() {
+                        if (this->iter != this->end) {
+                            ++this->iter;
+                        }
+                        ++this->rest_iter;
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->iter != other.iter ||
+                            this->rest_iter != other.rest_iter;
+                    }
+
+                    auto operator*() ->
+                        decltype(std::tuple_cat(
+                                    std::tuple<OptType>{OptType{*this->iter}},
+                                    *this->rest_iter))
+                    {
+                        if (this->iter != this->end) {
+                            return std::tuple_cat(
+                                    std::tuple<OptType>{OptType{*this->iter}},
+                                    *this->rest_iter);
+                        } else {
+                            return std::tuple_cat(
+                                    std::tuple<OptType>{OptType{}},
+                                    *this->rest_iter);
+                        }
+                    }
+            };
+
+            Iterator begin() {
+                return {std::begin(this->container),
+                    std::end(this->container),
+                    std::begin(this->rest_zipped)};
+            }
+
+            Iterator end() {
+                return {std::end(this->container),
+                    std::end(this->container),
+                    std::end(this->rest_zipped)};
+            }
+    };
+
+
     template <typename Container>
-        struct zip_longest_iter<Container> {
-        public:
-            using Iterator = decltype(std::begin(std::declval<Container>()));
+    class ZippedLongest<Container> {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
+
+        friend ZippedLongest zip_longest<Container>(Container&&);
+
+        template <typename C, typename... RC>
+        friend class ZippedLongest;
+
         private:
-            Iterator begin;
-            const Iterator end;
+            Container container;
+            ZippedLongest(Container container)
+                : container(std::forward<Container>(container))
+            { }
 
         public:
-            zip_longest_iter(Container && c) :
-                begin(std::begin(c)),end(std::end(c)) {}
 
-            std::tuple<boost::optional<decltype(*std::declval<Iterator>())>> 
-            operator*()     
-            {
-                return std::make_tuple(begin != end ? 
-                        boost::optional<decltype(*std::declval<Iterator>())>(*begin)
-                        : boost::optional<decltype(*std::declval<Iterator>())>());
-            }
-            zip_longest_iter & operator++() {
-                if(begin!=end)++begin;
-                return *this;
-            }
-            bool operator!=(const zip_longest_iter &) const {
-                return begin != end;
-            }
-        };
-    template <typename Container, typename ... Containers>
-        struct zip_longest_iter<Container,Containers...> {
-        public:
-            using Iterator = decltype(std::begin(std::declval<Container>()));
-        private:
-            Iterator begin;
-            const Iterator end;
-            zip_longest_iter<Containers...> inner_iter;
-            
-        public:
-            using Elem_t = decltype(*begin);
-            using tuple_t = 
-                decltype(std::tuple_cat(
-                            std::tuple<boost::optional<Elem_t>>(),
-                            *inner_iter));
+            class Iterator {
+                private:
+                    using OptType = boost::optional<iterator_deref<Container>>;
+                    iterator_type<Container> iter;
+                    iterator_type<Container> end;
+                public:
+                    Iterator(
+                            iterator_type<Container> it,
+                            iterator_type<Container> in_end)
+                        : iter{it},
+                        end{in_end}
+                    { }
 
-            zip_longest_iter(Container && c, Containers && ... containers) :
-                begin(std::begin(c)),
-                end(std::end(c)),
-                inner_iter(std::forward<Containers>(containers)...) {}
+                    Iterator& operator++() {
+                        if (this->iter != this->end) {
+                            ++this->iter;
+                        }
+                        return *this;
+                    }
 
-            //this is for returning a tuple of optional<iterator>
+                    bool operator!=(const Iterator& other) const {
+                        return this->iter != other.iter;
+                    }
 
-            tuple_t operator*()
-            {
-                return std::tuple_cat(std::make_tuple(begin != end 
-                            ?boost::optional<Elem_t>(*begin)
-                            :boost::optional<Elem_t>()),*inner_iter);
+                    std::tuple<OptType> operator*() {
+                        if (this->iter != this->end) {
+                            return std::tuple<OptType>{OptType{*this->iter}};
+                        }
+                        return std::tuple<OptType>{OptType{}};
+                    }
+            };
+
+            Iterator begin() {
+                return {std::begin(this->container),
+                    std::end(this->container)};
             }
-            zip_longest_iter & operator++() {
-                if (begin != end) ++begin;
-                ++inner_iter;
-                return *this;
+
+            Iterator end() {
+                return {std::end(this->container),
+                    std::end(this->container)};
             }
-            bool operator!=(const zip_longest_iter & rhs) const {
-                return begin != end || (this->inner_iter != rhs.inner_iter);
-            }
-        };
+    };
+
+    template <typename... Containers>
+    ZippedLongest<Containers...> zip_longest(Containers&&... containers) {
+        return {std::forward<Containers>(containers)...};
+    }
 }
-//should add reset after the end of a range is reached, just in case someone 
-//tries to use it again
-//this means it's only safe to use the range ONCE, which is fine because of
-//the input_iterator_tag
-namespace std {
-    template <typename ... Containers>
-        struct iterator_traits<iter::zip_longest_iter<Containers...>> {
-            using difference_type = ptrdiff_t;
-            using iterator_category = input_iterator_tag;
-        };
-}
-#endif //ZIP_LONGEST_HPP
+
+#endif // #ifndef ZIP_LONGEST_HPP_
