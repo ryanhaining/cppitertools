@@ -27,7 +27,11 @@ int main() {
 
         for (auto e : zip_longest(ivec, svec)) {
             std::cout << std::get<0>(e) << std::endl; 
-            //has to deref iter and the optional object
+            std::cout << std::get<1>(e) << std::endl; 
+        }
+
+        for (auto e : zip_longest("helloworld", ivec)) {
+            std::cout << std::get<0>(e) << std::endl; 
             std::cout << std::get<1>(e) << std::endl; 
         }
     }
