@@ -75,7 +75,7 @@ namespace iter {
                     { }
 
                     Iterator& operator++() {
-                        for (auto&& iter : section) {
+                        for (auto&& iter : this->section) {
                             ++iter;
                         }
                         return *this;
@@ -87,7 +87,7 @@ namespace iter {
 
                     DerefVec operator*() {
                         DerefVec vec;
-                        for (auto&& iter : section) {
+                        for (auto&& iter : this->section) {
                             vec.push_back(*iter);
                         }
                         return vec;
