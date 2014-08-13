@@ -96,7 +96,7 @@ namespace iter {
                         return this->sub_iter == this->sub_end;
                     }
 
-                    iterator_deref<Container> current() const {
+                    iterator_deref<Container> current() {
                         return *this->sub_iter;
                     }
 
@@ -184,7 +184,7 @@ namespace iter {
                                 return *this;
                             }
 
-                            iterator_deref<Container> operator*() const {
+                            iterator_deref<Container> operator*() {
                                 return this->group.owner.current();
                             }
                     };
