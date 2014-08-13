@@ -17,6 +17,11 @@ namespace iter
                 decltype(*std::begin(gb.second)) {
             return *std::begin(gb.second);
         }
+
+        auto operator()(iterator_deref<GroupByType>& gb) ->
+                decltype(*std::begin(gb.second)) {
+            return *std::begin(gb.second);
+        }
     };
 
 
