@@ -23,7 +23,7 @@ evaluation wherever possible.
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [chain](#chain)<br />
-[chain.from\_iterable](#chain.from_iterable)<br />
+[chain.from\_iterable](#chainfrom_iterable)<br />
 [reversed](#reversed)<br />
 [slice](#slice)<br />
 [sliding_window](#sliding_window)<br />
