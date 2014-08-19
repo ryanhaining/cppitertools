@@ -432,7 +432,7 @@ for (auto sec : sliding_window(v,4)) {
 grouper
 ------
 
-grouper is very similar to moving section, exception instead of the 
+grouper is very similar to sliding window, except instead of the 
 section sliding by only 1 it goes the length of the full section.
 
 Example usage:
