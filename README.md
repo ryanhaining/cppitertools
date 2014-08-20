@@ -126,7 +126,7 @@ Similar to filter, but only prints values that are false under the predicate.
 Prints values not greater than 4: `1 4 3 2 3 2 1 `
 ```c++
 vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
-for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+for (auto i : filterfalse([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
