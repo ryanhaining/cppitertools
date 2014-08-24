@@ -5,25 +5,13 @@
 
 #include <vector>
 #include <algorithm>
-#include <functional>
 #include <type_traits>
+#include <functional>
 #include <utility>
 #include <iterator>
+#include <initializer_list>
 
 namespace iter {
-#if 0
-    template <typename Container>
-    class grouper_iter;
-
-    template <typename Container>
-    iterator_range<grouper_iter<Container>> grouper(
-            Container && container, std::size_t s) {
-        auto begin = grouper_iter<Container>(std::forward<Container>(container), s);
-        auto end = grouper_iter<Container>(std::forward<Container>(container));
-        return iterator_range<grouper_iter<Container>>(begin, end);
-    }
-#endif
-
     template <typename Container>
     class Grouper {
         private:
@@ -118,6 +106,12 @@ namespace iter {
     template <typename Container>
     Grouper<Container> grouper(Container&& container, std::size_t group_size) {
         return {std::forward<Container>(container), group_size};
+    }
+
+    template <typename T>
+    Grouper<std::initializer_list<T>> grouper(
+            std::initializer_list<T> il, std::size_t group_size) {
+        return {il, group_size};
     }
 }
 #endif // #ifndef GROUPER_HPP_
