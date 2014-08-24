@@ -126,7 +126,7 @@ Similar to filter, but only prints values that are false under the predicate.
 Prints values not greater than 4: `1 4 3 2 3 2 1 `
 ```c++
 vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
-for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+for (auto i : filterfalse([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
@@ -432,7 +432,7 @@ for (auto sec : sliding_window(v,4)) {
 grouper
 ------
 
-grouper is very similar to moving section, exception instead of the 
+grouper is very similar to sliding window, except instead of the 
 section sliding by only 1 it goes the length of the full section.
 
 Example usage:
