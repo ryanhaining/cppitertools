@@ -9,14 +9,22 @@ int main() {
             std::cout << i << " ";
             i.get() *= 2;
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
+
+    for (auto sec : grouper(std::vector<int>{1,2,3,4,5,6,7,8,9}, 4)) {
+        for (auto i : sec) {
+            std::cout << i << " ";
+            i.get() *= 2;
+        }
+        std::cout << '\n';
+    }
+
     for (auto sec : grouper(v,3)) {
         for (auto i : sec) {
             std::cout << i << " ";
-            //i.get() = 90;
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
     std::vector<int> empty {};
     for (auto sec : grouper(empty,3)) {
@@ -25,14 +33,13 @@ int main() {
             std::cout << i << " Shouldn't print\n";
         }
     }
-    //works when perfect forwarding implemented
-    /*
-    for (auto sec : grouper({1,2,3,4,5,6,7,8},3)) {
+
+    int arr[] = {1,2,3,4,5,6,7};
+    for (auto sec : grouper(arr, 2)) {
         for (auto i : sec) {
-            std::cout << i << " ";
+            std::cout << i << ' ';
         }
-        std::cout << std::endl;
+        std::cout << '\n';
     }
-    */
     return 0;
 }
