@@ -13,16 +13,32 @@
 
 namespace iter {
     template <typename Container>
+    class Grouper;
+
+    template <typename Container>
+    Grouper<Container> grouper(Container&&, std::size_t);
+
+    template <typename T>
+    Grouper<std::initializer_list<T>> grouper(
+            std::initializer_list<T>, std::size_t);
+
+    template <typename Container>
     class Grouper {
         private:
             Container container;
             std::size_t group_size;
-        public:
+
             Grouper(Container c, std::size_t sz)
                 : container(std::forward<Container>(c)),
                 group_size{sz}
             { }
 
+            friend Grouper grouper<Container>(Container&&, std::size_t);
+            template <typename T>
+            friend Grouper<std::initializer_list<T>> grouper(
+                    std::initializer_list<T>, std::size_t);
+
+        public:
             class Iterator {
                 private:
                     Container& container;
