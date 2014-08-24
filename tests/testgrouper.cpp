@@ -41,5 +41,11 @@ int main() {
         }
         std::cout << '\n';
     }
-    return 0;
+
+    for (auto sec : grouper({1,2,3,4,5,6,7}, 2)) {
+        for (auto i : sec) {
+            std::cout << i << ' ';
+        }
+        std::cout << '\n';
+    }
 }
