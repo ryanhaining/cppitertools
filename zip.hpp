@@ -1,5 +1,5 @@
-#ifndef ZIP__H__
-#define ZIP__H__
+#ifndef ITER_ZIP_HPP_
+#define ITER_ZIP_HPP_
 
 #include "iterbase.hpp"
 
@@ -9,21 +9,22 @@
 
 
 namespace iter {
-    template <typename Container, typename... RestContainers>
+    template <typename... RestContainers>
     class Zipped;
 
     template <typename... Containers>
     Zipped<Containers...> zip(Containers&&...);
 
+    // specialization for at least 1 template argument
     template <typename Container, typename... RestContainers>
-    class Zipped {
+    class Zipped <Container, RestContainers...> {
         static_assert(!std::is_rvalue_reference<Container>::value,
                 "Itertools cannot be templated with rvalue references");
 
         friend Zipped zip<Container, RestContainers...>(
                 Container&&, RestContainers&&...);
 
-        template <typename C, typename... RC>
+        template <typename... RC>
         friend class Zipped;
 
         private:
@@ -43,6 +44,7 @@ namespace iter {
                     iterator_type<Container> iter;
                     RestIter rest_iter;
                 public:
+                    constexpr static const bool is_base_iter = false;
                     Iterator(iterator_type<Container> it, const RestIter& rest)
                         : iter{it},
                         rest_iter{rest}
@@ -56,7 +58,8 @@ namespace iter {
 
                     bool operator!=(const Iterator& other) const {
                         return this->iter != other.iter &&
-                            this->rest_iter != other.rest_iter;
+                            (RestIter::is_base_iter ||
+                                this->rest_iter != other.rest_iter);
                     }
 
                     auto operator*() ->
@@ -84,53 +87,45 @@ namespace iter {
     };
 
 
-    template <typename Container>
-    class Zipped<Container> {
-        static_assert(!std::is_rvalue_reference<Container>::value,
-                "Itertools cannot be templated with rvalue references");
-
-        friend Zipped zip<Container>(Container&&);
-
-        template <typename C, typename... RC>
-        friend class Zipped;
-
-        private:
-            Container container;
-            Zipped(Container container)
-                : container(std::forward<Container>(container))
-            { }
-
+    // any number of arguments, should only be instantiated if there are 0
+    // arguments, since the specialized version gets 1 or more
+    template <typename... Ts>
+    class Zipped {
+        static_assert(sizeof...(Ts) == 0,
+                "attempt to instantiate base case with more than 0 types");
         public:
-
             class Iterator {
-                private:
-                    iterator_type<Container> iter;
                 public:
-                    Iterator(iterator_type<Container> it)
-                        : iter{it}
-                    { }
+                    constexpr static const bool is_base_iter = true;
+
+                    Iterator() { }
+                    Iterator(const Iterator&) { }
+                    Iterator& operator=(const Iterator&) { return *this; }
 
                     Iterator& operator++() {
-                        ++this->iter;
                         return *this;
                     }
 
-                    bool operator!=(const Iterator& other) const {
-                        return this->iter != other.iter;
+                    // if this were to return true, there would be no need
+                    // for the is_base_iter static class attribute.
+                    // However, returning false causes an empty zip() call
+                    // to reach the "end" immediately. Returning true here
+                    // instead results in an infinite loop in the zip() case
+                    bool operator!=(const Iterator&) const {
+                        return false; 
                     }
 
-                    std::tuple<iterator_deref<Container>> operator*() {
-                        return std::tuple<iterator_deref<Container>>{
-                            *this->iter};
+                    std::tuple<> operator*() {
+                        return std::tuple<>{};
                     }
             };
 
             Iterator begin() {
-                return {std::begin(this->container)};
+                return {};
             }
 
             Iterator end() {
-                return {std::end(this->container)};
+                return {};
             }
     };
 
@@ -140,4 +135,4 @@ namespace iter {
     }
 }
 
-#endif //#ifndef ZIP__H__
+#endif // #ifndef ITER_ZIP_HPP_
