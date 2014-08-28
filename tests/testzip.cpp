@@ -13,6 +13,8 @@ using iter::zip;
 int main() {
     //Ryan's test
     {
+        for (auto t : zip()) { }
+
         std::vector<int> ivec{1, 4, 9, 16, 25, 36};
         std::vector<std::string> svec{"hello", "good day", "goodbye"};
 
