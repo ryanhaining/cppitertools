@@ -87,12 +87,8 @@ namespace iter {
     };
 
 
-    // any number of arguments, should only be instantiated if there are 0
-    // arguments, since the specialized version gets 1 or more
-    template <typename... Ts>
-    class Zipped {
-        static_assert(sizeof...(Ts) == 0,
-                "attempt to instantiate base case with more than 0 types");
+    template <>
+    class Zipped<> {
         public:
             class Iterator {
                 public:
@@ -112,7 +108,7 @@ namespace iter {
                     // to reach the "end" immediately. Returning true here
                     // instead results in an infinite loop in the zip() case
                     bool operator!=(const Iterator&) const {
-                        return false; 
+                        return false;
                     }
 
                     std::tuple<> operator*() {
