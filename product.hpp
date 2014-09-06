@@ -1,124 +1,148 @@
-#ifndef PRODUCT_HPP
-#define PRODUCT_HPP
-#include "iterator_range.hpp"
+#ifndef ITER_PRODUCT_HPP_
+#define ITER_PRODUCT_HPP_
 
+#include "iterbase.hpp"
+
+#include <iterator>
 #include <tuple>
 #include <utility>
-#include <iterator>
+
 
 namespace iter {
-    template <typename ... Containers>
-        struct product_iter;
-    template <typename ... Containers>
-        iterator_range<product_iter<Containers...>>
-        product(const Containers & ... containers) {
-            auto begin = product_iter<Containers...>(containers...);
-            auto end = product_iter<Containers...>(containers...);
-            return iterator_range<decltype(begin)>(begin,end);
-        }
-    //template <typenam
-    template <typename Container>
-        struct product_iter<Container> {
-            public:
-                using Iterator = decltype(std::begin(std::declval<Container>()));
-            private:
-                Iterator begin;
-                Iterator mover;
-                const Iterator end;
-            public:
-                product_iter(const Container & c) :
-                    begin(std::begin(c)),
-                    mover(std::begin(c)),
-                    end(std::end(c)){}
-                decltype(std::make_tuple(*mover)) operator*()
-                //since you can't modify anything anyway it's ok to return a
-                //tuple of whatever the iterator derefs to
-                {
-                    return std::make_tuple(*mover);
-                }
-                product_iter & operator++()
-                {
-                    ++mover;
-                    return *this;
-                }
-                bool is_not_empty_range() {
-                    return begin != end;
-                }
-                bool operator!=(const product_iter&) const 
-                {
-                    return mover != end;
-                }
-                bool is_next_iteration()
-                {
-                    if (!(mover != end)) {
-                        mover = begin;
-                        return true;
-                    }
-                    else return false;
-                }
-        };
+    template <typename... RestContainers>
+    class Productor;
 
-    template <typename Container, typename ...Containers>
-        struct product_iter<Container,Containers...>
-        {
-            public:
-                using Iterator = decltype(std::begin(std::declval<Container>()));
-            private:
-                Iterator begin;
-                Iterator mover;
-                const Iterator end;
-                product_iter<Containers...> inner_iter;
-                bool no_empty_ranges;
-            public:
-                using Tuple_type = decltype(std::tuple_cat(std::make_tuple(*mover),*inner_iter));
-                bool is_not_empty_range() {
-                    return begin != end && inner_iter.is_not_empty_range();
-                }
-                product_iter(const Container & c, const Containers & ... containers):
-                    begin(std::begin(c)),
-                    mover(std::begin(c)),
-                    end(std::end(c)),
-                    inner_iter(containers...){
-                        no_empty_ranges = is_not_empty_range();
+    template <typename... Containers>
+    Productor<Containers...> product(Containers&&...);
+
+    // specialization for at least 1 template argument
+    template <typename Container, typename... RestContainers>
+    class Productor <Container, RestContainers...> {
+        static_assert(!std::is_rvalue_reference<Container>::value,
+                "Itertools cannot be templated with rvalue references");
+
+        friend Productor product<Container, RestContainers...>(
+                Container&&, RestContainers&&...);
+
+        template <typename... RC>
+        friend class Productor;
+
+        private:
+            Container container;
+            Productor<RestContainers...> rest_products;
+            Productor(Container container, RestContainers&&... rest)
+                : container(std::forward<Container>(container)),
+                rest_products{std::forward<RestContainers>(rest)...}
+            { }
+
+        public:
+            class Iterator {
+                private:
+                    using RestIter =
+                        typename Productor<RestContainers...>::Iterator;
+
+                    iterator_type<Container> iter;
+                    const iterator_type<Container> begin;
+
+                    RestIter rest_iter;
+                    const RestIter rest_end;
+                public:
+                    constexpr static const bool is_base_iter = false;
+                    Iterator(iterator_type<Container> it,
+                            const RestIter& rest,
+                            const RestIter& in_rest_end)
+                        : iter{it},
+                        begin{it},
+                        rest_iter{rest},
+                        rest_end{in_rest_end}
+                    { }
+
+                    void reset() {
+                        this->iter = this->begin;
                     }
-                Tuple_type operator*()
-                {
-                    return std::tuple_cat(std::make_tuple(*mover),*inner_iter);
-                }
-                product_iter & operator++()
-                {
-                    ++inner_iter;
-                    if(inner_iter.is_next_iteration())
+
+                    Iterator& operator++() {
+                        ++this->rest_iter;
+                        if (!(this->rest_iter != this->rest_end)) {
+                            this->rest_iter.reset();
+                            ++this->iter;
+                        }
+                        return *this;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->iter != other.iter &&
+                            (RestIter::is_base_iter ||
+                                this->rest_iter != other.rest_iter);
+                    }
+
+                    auto operator*() ->
+                        decltype(std::tuple_cat(
+                                    std::tuple<iterator_deref<Container>>{
+                                        *this->iter},
+                                    *this->rest_iter))
                     {
-                        ++mover;
+                        return std::tuple_cat(
+                                std::tuple<iterator_deref<Container>>{
+                                    *this->iter},
+                                *this->rest_iter);
                     }
-                    return *this;
-                }
-                bool is_next_iteration()
-                {
-                    if(!(mover != end)) {
-                        mover = begin;
-                        return true;
-                    }
-                    else return false;
-                }
-                
-                bool operator!=(const product_iter&)const
-                {
-                    return mover != end && no_empty_ranges;
-                }
-                //will seg fault if anything but the first is an empty range 
-                //since != only checks the first one
-        };
-}
-namespace std {
-    template <typename ... Containers>
-        struct iterator_traits<iter::product_iter<Containers...>> {
-            using difference_type = ptrdiff_t;
-            using iterator_category = input_iterator_tag;
-        };
-}
-#endif //PRODUCT_HPP
-                    
-                    
+            };
 
+            Iterator begin() {
+                return {std::begin(this->container),
+                    std::begin(this->rest_products),
+                    std::end(this->rest_products)};
+            }
+
+            Iterator end() {
+                return {std::end(this->container),
+                    std::end(this->rest_products),
+                    std::end(this->rest_products)};
+            }
+    };
+
+
+    template <>
+    class Productor<> {
+        public:
+            class Iterator {
+                public:
+                    constexpr static const bool is_base_iter = true;
+
+                    Iterator() { }
+                    Iterator(const Iterator&) { }
+                    Iterator& operator=(const Iterator&) { return *this; }
+
+                    void reset() { }
+
+                    Iterator& operator++() {
+                        return *this;
+                    }
+
+                    // see note in zip about base case operator!=
+                    bool operator!=(const Iterator&) const {
+                        return false;
+                    }
+
+                    std::tuple<> operator*() {
+                        return std::tuple<>{};
+                    }
+            };
+
+            Iterator begin() {
+                return {};
+            }
+
+            Iterator end() {
+                return {};
+            }
+    };
+
+    template <typename... Containers>
+    Productor<Containers...> product(Containers&&... containers) {
+        return {std::forward<Containers>(containers)...};
+    }
+}
+
+#endif // #ifndef ITER_PRODUCT_HPP_
