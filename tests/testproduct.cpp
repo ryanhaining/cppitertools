@@ -42,5 +42,21 @@ int main() {
         std::cout << std::get<0>(t) << ", "
           << std::get<1>(t)  << std::endl;
     }
+    std::cout << '\n';
+
+    for (auto t : product()) { t=t; }
+
+    for (auto t : product(std::string{"hi"}, v1)) {
+        std::cout << std::get<0>(t) << ", "
+            << std::get<1>(t) << std::endl;
+    }
+    std::cout << '\n';
+
+    int arr[] = {1,2};
+    for (auto t : product(std::string{"hi"}, arr)) {
+        std::cout << std::get<0>(t) << ", "
+            << std::get<1>(t) << std::endl;
+    }
+
     return 0;
 }
