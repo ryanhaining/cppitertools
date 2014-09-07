@@ -1,6 +1,7 @@
 #ifndef ITERTOOLS_HPP
 #define ITERTOOLS_HPP
 
+#include "accumulate.hpp"
 #include "chain.hpp"
 #include "combinations.hpp"
 #include "combinations_with_replacement.hpp"
@@ -14,7 +15,6 @@
 #include "groupby.hpp"
 #include "grouper.hpp"
 #include "imap.hpp"
-#include "iterator_range.hpp"
 #include "sliding_window.hpp"
 #include "permutations.hpp"
 #include "powerset.hpp"
@@ -30,8 +30,6 @@
 #include "wrap_iter.hpp"
 #include "zip.hpp"
 #include "zip_longest.hpp"
-//not sure if should include "iterator_range.hpp"
-//since it's already in everything
 
 #endif
 
