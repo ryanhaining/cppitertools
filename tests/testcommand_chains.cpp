@@ -9,16 +9,14 @@
 using namespace iter;
 
 template <typename T>
-std::ostream & operator<<(std::ostream & o, const boost::optional<T> & opt) {
+std::ostream & operator<<(std::ostream & out, const boost::optional<T>& opt) {
     if (opt) {
-        std::cout << *opt; 
+        out << "Just " << *opt;
+    } else {
+        out << "Nothing";
     }
-    else {
-        std::cout << "Object disengaged of type " << typeid(T).name();
-    }
-    return o;
+    return out;
 }
-
 int main() {
     {
         std::vector<int> vec1{1,2,3,4,5,6};
@@ -30,8 +28,13 @@ int main() {
                 << std::get<1>(t) << std::endl;
         }
     }
+
+    std::string str = "hello world";
+    std::vector<int> vec = {6, 9, 6, 9};
+    for (auto p : enumerate(enumerate(str))) { }
+    for (auto p : enumerate(zip(str, vec))) { }
+
     std::cout << std::endl;
-    /*
     {
         std::vector<int> vec1{1,2,3,4,5,6};
         std::vector<int> vec2{7,8,9,10};
@@ -42,7 +45,6 @@ int main() {
                 << std::get<1>(t) << std::endl;
         }
     }
-    */
     std::cout << std::endl;
     {
         std::vector<int> vec1{1,2,3,4,5,6};
@@ -53,6 +55,8 @@ int main() {
         }
     }
     std::cout << std::endl;
+
+#if 0
     {
         std::vector<int> vec1{1,2,3,4,5,6};
         std::vector<int> vec2{7,8,9,10};
@@ -61,5 +65,6 @@ int main() {
             std::cout<<std::endl;
         }
     }
+#endif
     return 0;
 }
