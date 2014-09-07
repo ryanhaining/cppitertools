@@ -1,4 +1,7 @@
+#include "samples.hpp"
+
 #include <product.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <iostream>
@@ -7,12 +10,21 @@
 using iter::product;
 //has trouble with empty ranges and more than 2 ranges
 int main() {
+
+    std::vector<itertest::MoveOnly> mv;
+    for (auto i : iter::range(10)) {
+        mv.emplace_back(i);
+    }
     std::vector<int> empty{};
     std::vector<int> v1{1,2,3};
     std::vector<int> v2{7,8};
     std::vector<std::string> v3{"the","cat"};
     std::vector<std::string> v4{"hi","what","up","dude"};
 
+    for (auto t : product(v1, mv)) {
+        std::cout << std::get<0>(t) << ", "
+            << std::get<1>(t) << std::endl;
+    }
     for (auto t : product(empty,v1)) {
         std::cout << std::get<0>(t) << ", "
             << std::get<1>(t) << std::endl;
