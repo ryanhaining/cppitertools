@@ -8,7 +8,6 @@
 #include <string>
 
 using iter::product;
-//has trouble with empty ranges and more than 2 ranges
 int main() {
 
     std::vector<itertest::MoveOnly> mv;
