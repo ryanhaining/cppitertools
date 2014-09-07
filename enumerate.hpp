@@ -33,8 +33,6 @@ namespace iter {
 
     template <typename Container>
     class Enumerable {
-        static_assert(!std::is_rvalue_reference<Container>::value,
-                "Itertools cannot be templated with rvalue references");
         private:
             Container container;
 
@@ -51,15 +49,6 @@ namespace iter {
             { }
             
         public:
-            Enumerable() = delete;
-            Enumerable& operator=(const Enumerable&) = delete;
-            Enumerable(const Enumerable&) = delete;
-            Enumerable& operator=(Enumerable&&) = delete;
-
-            // movable only
-            Enumerable(Enumerable&&) = default;
-            ~Enumerable() = default;
-
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
             // .element referencing the value yielded by the subiterator
             class IterYield {
