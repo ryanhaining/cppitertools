@@ -43,6 +43,7 @@ progs = Split('''
               sorted
               unique_justseen
               unique_everseen
+              command_chains
               ''')
 
 
