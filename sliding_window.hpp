@@ -1,7 +1,6 @@
 #ifndef SLIDING_WINDOW_HPP_
 #define SLIDING_WINDOW_HPP_
 
-#include "iterator_range.hpp"
 #include "iterbase.hpp"
 
 #include <vector>
