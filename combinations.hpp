@@ -49,18 +49,20 @@ namespace iter {
                             iterator_deref<Container>>::type>::type;
 
             public:
-                Iterator(Container& i, size_t N)
+                Iterator(Container& i, std::size_t n)
                     : items(i),
-                    indicies(N)
+                    indicies(n)
                 {
-                    if (N == 0) {
+                    if (n == 0) {
                         not_done = false;
                         return;
                     }
                     size_t inc = 0;
                     for (auto& iter : this->indicies) {
-                        if (std::begin(items) + inc != std::end(items)) {
-                            iter = std::begin(items)+inc;
+                        auto it = std::begin(this->items);
+                        dumb_advance(it, std::end(this->items), inc);
+                        if (it != std::end(this->items)) {
+                            iter = it;
                             ++inc;
                         } else {
                             not_done = false;
@@ -83,20 +85,21 @@ namespace iter {
                             iter != indicies.rend();
                             ++iter) {
                         ++(*iter);
+
                         //what we have to check here is if the distance between
                         //the index and the end of indicies is >= the distance
                         //between the item and end of item
-                        if ((*iter + std::distance(indicies.rbegin(),iter)) ==
-                                std::end(items)) {
+                        auto dist = std::distance(
+                                this->indicies.rbegin(),iter);
+
+                        if (!(dumb_next(*iter, dist) !=
+                                std::end(this->items))) {
                             if ( (iter + 1) != indicies.rend()) {
                                 size_t inc = 1;
                                 for (auto down = iter;
                                         down != indicies.rbegin()-1;
                                         --down) {
-                                    (*down) = (*(iter + 1)) + 1 + inc;
-                                    /*if (*down == items.cend()) {
-                                        iter = iter + 1;
-                                    }*/
+                                    (*down) = dumb_next(*(iter + 1), 1 + inc);
                                     ++inc;
                                 }
                             } else {

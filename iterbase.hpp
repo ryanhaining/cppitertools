@@ -1,5 +1,5 @@
-#ifndef ITERBASE__HPP__
-#define ITERBASE__HPP__
+#ifndef ITERBASE_HPP_
+#define ITERBASE_HPP_
 
 
 // This file consists of utilities used for the generic nature of the
@@ -10,8 +10,40 @@
 
 #include <utility>
 #include <iterator>
+#include <cstddef>
 
 namespace iter {
+    // because std::advance assumes a lot and is actually smart, I need a dumb
+    // version that will work with most things
+    template <typename InputIt, typename Distance>
+    void dumb_advance(InputIt& iter, Distance distance) {
+        for (Distance i(0); i < distance; ++i) {
+            ++iter;
+        }
+    }
+
+    // iter will not be incremented past end
+    template <typename InputIt, typename Distance>
+    void dumb_advance(InputIt& iter, const InputIt& end, Distance distance=1) {
+        for (Distance i(0); i < distance && iter != end; ++i) {
+            ++iter;
+        }
+    }
+
+    template <typename ForwardIt, typename Distance>
+    ForwardIt dumb_next(ForwardIt it, Distance distance) {
+        dumb_advance(it, distance);
+        return it;
+    }
+
+    template <typename ForwardIt, typename Distance>
+    ForwardIt dumb_next(
+            ForwardIt it, const ForwardIt& end, Distance distance=1) {
+        dumb_advance(it, end, distance);
+        return it;
+    }
+
+
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
     using iterator_type =
@@ -35,4 +67,4 @@ namespace iter {
         decltype(*std::declval<reverse_iterator_type<Container>&>());
 }
 
-#endif // #ifndef ITERBASE__HPP__
+#endif // #ifndef ITERBASE_HPP_
