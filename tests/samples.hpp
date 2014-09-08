@@ -2,6 +2,7 @@
 #define ITERTOOLS_SAMPLE_CLASSES_HPP
 
 #include <iostream>
+#include <cstddef>
 
 namespace itertest {
     class MoveOnly {
@@ -28,5 +29,45 @@ namespace itertest {
             }
     };
 
+    class DerefByValue {
+        private:
+            static constexpr std::size_t N = 3;
+            int array[N] = {0};
+        public:
+            DerefByValue() = default;
+
+            class Iterator {
+                private:
+                    int *current;
+                public:
+                    Iterator() = default;
+                    Iterator(int *p)
+                        : current{p}
+                    { }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->current != other.current;
+                    }
+
+                    // for testing, iterator derefences to an int instead of
+                    // an int&
+                    int operator*() {
+                        return *this->current;
+                    }
+
+                    Iterator& operator++() {
+                        ++this->current;
+                        return *this;
+                    }
+            };
+
+            Iterator begin() {
+                return {this->array};
+            }
+
+            Iterator end() {
+                return {this->array + N};
+            }
+    };
 }
 #endif // #ifndef ITERTOOLS_SAMPLE_CLASSES_HPP
