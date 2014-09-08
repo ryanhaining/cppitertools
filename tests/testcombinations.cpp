@@ -1,5 +1,6 @@
 #include "samples.hpp"
 #include <combinations.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <string>
@@ -9,7 +10,16 @@
 using iter::combinations;
 int main() {
     itertest::DerefByValue dbv; 
+    std::vector<itertest::MoveOnly> mv;
+    for (auto i : iter::range(3)) {
+        mv.emplace_back(i);
+    }
     std::vector<int> v = {1,2,3,4,5};
+
+    for (auto i : combinations(mv,2)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
 
     for (auto i : combinations(v,0)) {
         for (auto j : i ) std::cout << j << " ";
@@ -62,6 +72,4 @@ int main() {
         for (auto j : i) std::cout << j << " ";
         std::cout << '\n';
     }
-
-    return 0;
 }
