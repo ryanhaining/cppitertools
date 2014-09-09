@@ -1,4 +1,6 @@
+#include "samples.hpp"
 #include <powerset.hpp>
+#include <range.hpp>
 #include <vector>
 #include <iostream>
 
@@ -20,8 +22,12 @@ int main() {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
     }
-#if 0
-#endif
+
+    std::cout << "with container of move-only objects\n";
+    std::vector<itertest::MoveOnly> mv;
+    for (auto i : iter::range(3)) {
+        mv.emplace_back(i);
+    }
 
     return 0;
 }
