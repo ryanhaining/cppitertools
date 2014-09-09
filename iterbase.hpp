@@ -10,6 +10,7 @@
 
 #include <utility>
 #include <iterator>
+#include <functional>
 #include <cstddef>
 
 namespace iter {
