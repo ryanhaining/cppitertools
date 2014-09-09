@@ -21,6 +21,13 @@ int main() {
         std::cout<<std::endl;
     }
 
+    itertest::DerefByValue dbv;
+    std::cout << "with deref by value iterator\n";
+    for (auto i : combinations_with_replacement(dbv, 2)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
+
     std::cout << "with container of move-only\n";
     for (auto i : combinations_with_replacement(mv,2)) {
         for (auto j : i ) std::cout << j << " ";
@@ -45,6 +52,4 @@ int main() {
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
     }
-
-    return 0;
 }
