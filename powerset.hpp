@@ -18,7 +18,7 @@ namespace iter {
     class Powersetter {
         private:
             Container container;
-            
+
             std::vector<CombinatorType> combinators;
         public:
             Powersetter(Container in_container)
