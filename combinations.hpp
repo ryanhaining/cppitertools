@@ -7,7 +7,6 @@
 #include <type_traits>
 #include <iterator>
 #include <initializer_list>
-#include <functional>
 
 namespace iter {
     template <typename Container>

@@ -4,7 +4,6 @@
 #include "iterbase.hpp"
 
 #include <iterator>
-#include <functional>
 #include <vector>
 #include <type_traits>
 #include <initializer_list>
