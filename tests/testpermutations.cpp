@@ -1,5 +1,9 @@
-#include <iostream>
+#include "samples.hpp"
+
 #include <permutations.hpp>
+#include <range.hpp>
+
+#include <iostream>
 #include <vector>
 #include <string>
 
@@ -19,7 +23,7 @@ int main() {
             std::cout << c << " ";
         }
         std::cout << std::endl;
-    } 
+    }
     s = "abc";
     for (auto vec : permutations(s)) {
         for (auto c : vec) {
@@ -36,5 +40,14 @@ int main() {
         }
         std::cout << std::endl;
     }
-    return 0;
+
+    std::cout << "with container of move-only objects\n";
+    std::vector<itertest::MoveOnly> mv;
+    for (auto i : iter::range(3)) {
+        mv.emplace_back(i);
+    }
+    for (auto v : permutations(mv)) {
+        for (auto i : v) std::cout << i << " ";
+        std::cout << std::endl;
+    }
 }
