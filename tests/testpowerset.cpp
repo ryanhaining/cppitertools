@@ -28,6 +28,9 @@ int main() {
     for (auto i : iter::range(3)) {
         mv.emplace_back(i);
     }
-
+    for (auto v : powerset(mv)) {
+        for (auto i : v) std::cout << i << " ";
+        std::cout << std::endl;
+    }
     return 0;
 }
