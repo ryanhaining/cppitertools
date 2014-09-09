@@ -1,4 +1,6 @@
+#include "samples.hpp"
 #include <combinations_with_replacement.hpp>
+#include <range.hpp>
 
 #include <vector>
 #include <string>
@@ -8,8 +10,19 @@
 using iter::combinations_with_replacement;
 
 int main() {
+    std::vector<itertest::MoveOnly> mv;
+    for (auto i : iter::range(3)) {
+        mv.emplace_back(i);
+    }
+
     std::vector<int> v = {1,2,3,};
     for (auto i : combinations_with_replacement(v,4)) {
+        for (auto j : i ) std::cout << j << " ";
+        std::cout<<std::endl;
+    }
+
+    std::cout << "with container of move-only\n";
+    for (auto i : combinations_with_replacement(mv,2)) {
         for (auto j : i ) std::cout << j << " ";
         std::cout<<std::endl;
     }
