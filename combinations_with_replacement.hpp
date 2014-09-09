@@ -71,12 +71,12 @@ namespace iter {
                                iter != indicies.rend();
                                ++iter) {
                            ++(*iter);
-                           if (*iter == std::end(items)) {
+                           if (!(*iter != std::end(items))) {
                                if ( (iter + 1) != indicies.rend()) {
                                    for (auto down = iter;
                                            down != indicies.rbegin()-1;
                                            --down) {
-                                       (*down) = (*(iter + 1)) + 1; 
+                                       (*down) = dumb_next(*(iter + 1)); 
                                    }
                                } else {
                                    not_done = false;
