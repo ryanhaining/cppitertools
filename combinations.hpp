@@ -44,17 +44,6 @@ namespace iter {
                 std::vector<iterator_type<Container>> indicies;
                 bool not_done = true;
 
-                // if the iterator dereferences to a reference type,
-                // then reference_wrapper<T>
-                // else T
-                using item_type  = 
-                    typename std::conditional<
-                    std::is_reference<iterator_deref<Container>>::value,
-                    std::reference_wrapper<
-                        typename std::remove_reference<
-                        iterator_deref<Container>>::type>,
-                    typename std::remove_const<
-                        iterator_deref<Container>>::type>::type;
             public:
                 Iterator(Container& i, std::size_t n)
                     : items(i),
@@ -78,8 +67,8 @@ namespace iter {
                     }
                 }
 
-                std::vector<item_type> operator*() {
-                    std::vector<item_type> values;
+                std::vector<collection_item_type<Container>> operator*() {
+                    std::vector<collection_item_type<Container>> values;
                     for (auto i : indicies) {
                         values.push_back(*i);
                     }
