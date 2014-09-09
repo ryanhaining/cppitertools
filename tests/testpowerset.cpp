@@ -32,5 +32,13 @@ int main() {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
     }
+
+    std::cout << "with deref-by-value iterator\n";
+    itertest::DerefByValue dbv;
+    for (auto v : powerset(dbv)) {
+        for (auto i : v) std::cout << i << " ";
+        std::cout << std::endl;
+    }
+
     return 0;
 }
