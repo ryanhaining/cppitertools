@@ -4,6 +4,7 @@
 #include "iterbase.hpp"
 
 #include <iterator>
+#include <functional>
 #include <vector>
 #include <type_traits>
 #include <initializer_list>
@@ -49,11 +50,6 @@ namespace iter {
                    bool not_done;
 
                public:
-                   using item_t =
-                       typename std::remove_const<
-                           typename std::remove_reference<
-                               iterator_deref<Container>>::type>::type;
-
                    Iterator(
                            Container& container, std::size_t n)
                        : items(container),
@@ -61,9 +57,8 @@ namespace iter {
                        not_done{n != 0}
                    { }
 
-                   std::vector<item_t> operator*()
-                   {
-                       std::vector<item_t> values;
+                   std::vector<collection_item_type<Container>> operator*() {
+                       std::vector<collection_item_type<Container>> values;
                        for (auto i : indicies) {
                            values.push_back(*i);
                        }
@@ -96,8 +91,7 @@ namespace iter {
                        return *this;
                    }
 
-                   bool operator !=(const Iterator&) const
-                   {
+                   bool operator !=(const Iterator&) const {
                        //because of the way this is done you have to start from
                        //the begining of the range and end at the end, you
                        //could break in the middle of the loop though, it's not
