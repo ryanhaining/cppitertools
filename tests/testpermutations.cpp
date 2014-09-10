@@ -51,7 +51,8 @@ int main() {
         std::cout << std::endl;
     }
 
-    itertest::DerefByValueFancy dbv;
+    std::cout << "with deref-by-value iterator\n";
+    itertest::DerefByValue dbv;
     for (auto v : permutations(dbv)) {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
