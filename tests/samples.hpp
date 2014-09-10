@@ -2,6 +2,7 @@
 #define ITERTOOLS_SAMPLE_CLASSES_HPP
 
 #include <iostream>
+#include <utility>
 #include <cstddef>
 
 namespace itertest {
@@ -19,14 +20,22 @@ namespace itertest {
             MoveOnly(MoveOnly&& other) noexcept
                 : i{other.i}
             { }
+
             MoveOnly& operator=(MoveOnly&& other) noexcept {
                 this->i = other.i;
                 return *this;
             }
+
+            // for std::next_permutation compatibility
+            friend bool operator<(const MoveOnly& lhs, const MoveOnly& rhs) {
+                return lhs.i < rhs.i;
+            }
+
             friend std::ostream& operator<<(
                     std::ostream& out, const MoveOnly& self) {
                 return out << self.i;
             }
+
     };
 
     class DerefByValue {
