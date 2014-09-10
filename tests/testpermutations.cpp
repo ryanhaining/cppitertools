@@ -50,4 +50,10 @@ int main() {
         for (auto i : v) std::cout << i << " ";
         std::cout << std::endl;
     }
+
+    itertest::DerefByValueFancy dbv;
+    for (auto v : permutations(dbv)) {
+        for (auto i : v) std::cout << i << " ";
+        std::cout << std::endl;
+    }
 }
