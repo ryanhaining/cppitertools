@@ -41,7 +41,7 @@ namespace itertest {
     class DerefByValue {
         private:
             static constexpr std::size_t N = 3;
-            int array[N] = {0};
+            int array[N] = {0, 1, 2};
         public:
             DerefByValue() = default;
 
@@ -76,6 +76,22 @@ namespace itertest {
 
             Iterator end() {
                 return {this->array + N};
+            }
+    };
+
+    class DerefByValueFancy {
+        private:
+            static constexpr std::size_t N = 3;
+            int array[N] = {0, 1, 2};
+        public:
+            DerefByValueFancy() = default;
+
+            int *begin() {
+                return this->array;
+            }
+
+            int *end() {
+                return this->array + N;
             }
     };
 }
