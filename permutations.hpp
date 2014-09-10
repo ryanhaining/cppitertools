@@ -1,9 +1,11 @@
 #ifndef PERMUTATIONS_HPP
 #define PERMUTATIONS_HPP
+#include "iterbase.hpp"
 
 #include <algorithm>
 #include <initializer_list>
 #include <vector>
+#include <utility>
 
 
 namespace iter {
@@ -24,29 +26,30 @@ namespace iter {
 
             class Iterator {
                 private:
-                    Container& container;
+                    using Permutable =
+                        std::vector<collection_item_type<Container>>;
+                    Permutable working_set;
                     bool is_not_last = true;
 
                 public:
                     Iterator(Container& c)
-                        : container(c) 
+                        : working_set{std::begin(c), std::end(c)}
                     { }
 
-                    Container& operator*() {
-                        return container;
+                    Permutable& operator*() {
+                        return working_set;
                     }
 
                     Iterator& operator++() {
                         is_not_last =
-                            std::next_permutation(std::begin(container),
-                                    std::end(container));
+                            std::next_permutation(std::begin(working_set),
+                                    std::end(working_set));
                         return *this;
                     }
 
                     bool operator!=(const Iterator&) const {
                         return is_not_last;
                     }
-
             };
 
             Iterator begin() {
@@ -63,8 +66,8 @@ namespace iter {
     // NOTE unlike other itertools, this one copies the input container
     // rather than taking a universal ref
     template <typename Container>
-    Permuter<Container> permutations(const Container& container) {
-        return {container};
+    Permuter<Container> permutations(Container&& container) {
+        return {std::forward<Container>(container)};
     }
 
     //since initializer_list doesn't have bidir iters this is a hack
