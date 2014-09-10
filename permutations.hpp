@@ -29,8 +29,13 @@ namespace iter {
 
                 public:
                     Iterator(Container& c)
-                        : working_set{std::begin(c), std::end(c)}
                     {
+                        // done like this instead of using vector ctor with
+                        // two iterators because that causes a substitution
+                        // failure when the iterator is minimal
+                        for (auto&& i : c) {
+                            working_set.emplace_back(i);
+                        }
                         std::sort(std::begin(working_set),
                                 std::end(working_set));
                     }
