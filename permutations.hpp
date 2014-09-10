@@ -1,5 +1,5 @@
-#ifndef PERMUTATIONS_HPP
-#define PERMUTATIONS_HPP
+#ifndef ITER_PERMUTATIONS_HPP_
+#define ITER_PERMUTATIONS_HPP_
 #include "iterbase.hpp"
 
 #include <algorithm>
@@ -16,13 +16,9 @@ namespace iter {
             Container container;
 
         public:
-            // always copy, never move
             Permuter(Container in_container)
                 : container(in_container)
-            {
-                    std::sort(std::begin(this->container),
-                        std::end(this->container));
-            }
+            { }
 
             class Iterator {
                 private:
@@ -34,7 +30,10 @@ namespace iter {
                 public:
                     Iterator(Container& c)
                         : working_set{std::begin(c), std::end(c)}
-                    { }
+                    {
+                        std::sort(std::begin(working_set),
+                                std::end(working_set));
+                    }
 
                     Permutable& operator*() {
                         return working_set;
@@ -63,22 +62,18 @@ namespace iter {
 
     };
 
-    // NOTE unlike other itertools, this one copies the input container
-    // rather than taking a universal ref
     template <typename Container>
     Permuter<Container> permutations(Container&& container) {
         return {std::forward<Container>(container)};
     }
 
-    //since initializer_list doesn't have bidir iters this is a hack
-    //to get it to work by using a vector in its place
     template <typename T>
-    Permuter<std::vector<T>> permutations(std::initializer_list<T> il) {
-        std::vector<T> vec = il;
-        return {std::move(vec)};
+    Permuter<std::initializer_list<T>> permutations(
+            std::initializer_list<T> il) {
+        return {il};
     }
 
 }
 
-#endif //PERMUTATIONS_HPP
+#endif // ITER_PERMUTATIONS_HPP_
 
