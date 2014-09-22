@@ -68,6 +68,10 @@ int main() {
         std::cout << std::get<0>(t) << ", "
             << std::get<1>(t) << std::endl;
     }
+    std::cout << '\n';
+    for (auto&& ij: iter::product(iter::range(10), iter::range(5))) {
+        std::cout << std::get<0>(ij) << "," << std::get<1>(ij) << std::endl;
+    }
 
     return 0;
 }
