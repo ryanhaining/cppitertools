@@ -66,7 +66,7 @@ namespace iter {
             class Iterator {
                 private:
                     T value;
-                    const T step;
+                    T step;
 
                     // compare unsigned values
                     bool not_equal_to(
