@@ -87,6 +87,17 @@ namespace iter {
                                     *this->iter},
                                 *this->rest_iter);
                     }
+                    auto operator*() const ->
+                        decltype(std::tuple_cat(
+                                    std::tuple<const iterator_deref<Container>>{
+                                        *this->iter},
+                                    *this->rest_iter))
+                    {
+                        return std::tuple_cat(
+                                std::tuple<const iterator_deref<Container>>{
+                                    *this->iter},
+                                *this->rest_iter);
+                    }
             };
 
             Iterator begin() {
@@ -125,7 +136,7 @@ namespace iter {
                         return false;
                     }
 
-                    std::tuple<> operator*() {
+                    std::tuple<> operator*() const {
                         return std::tuple<>{};
                     }
             };
