@@ -66,5 +66,13 @@ int main() {
         }
     }
 #endif
+    auto prod_range = iter::product(iter::range(10), iter::range(5));
+
+    for (auto&& ij: iter::filter(
+                [](std::tuple<unsigned, unsigned> const& c)
+                {return std::get<0>(c) >= std::get<1>(c);},
+                prod_range)) {
+                    std::cout << std::get<0>(ij) << "," << std::get<1>(ij) << std::endl;
+    }
     return 0;
 }
