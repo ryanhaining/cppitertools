@@ -1,5 +1,5 @@
-#ifndef ENUMERABLE__H__
-#define ENUMERABLE__H__
+#ifndef ITER_ENUMERATE_H_
+#define ITER_ENUMERATE_H_
 
 #include "iterbase.hpp"
 
@@ -113,4 +113,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef ENUMERABLE__H__
+#endif //#ifndef ITER_ENUMERATE_H_
