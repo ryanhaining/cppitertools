@@ -1,5 +1,5 @@
-#ifndef FILTER__H__
-#define FILTER__H__
+#ifndef ITER_FILTER_H_
+#define ITER_FILTER_H_
 
 #include "iterbase.hpp"
 
@@ -71,7 +71,7 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -154,4 +154,4 @@ namespace iter {
 
 }
 
-#endif //ifndef FILTER__H__
+#endif // #ifndef ITER_FILTER_H_
