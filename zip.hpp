@@ -8,106 +8,93 @@
 #include <utility>
 #include <algorithm>
 
-
 namespace iter {
 
     template <typename... Ts>
     void absorb(Ts&&...) { }
 
+#if 0
     template <typename... RestContainers>
     class Zipped;
 
     template <typename... Containers>
     Zipped<Containers...> zip(Containers&&...);
+#endif
 
     // specialization for at least 1 template argument
-    template <typename... Containers>
+    template <typename TupType, std::size_t... Is>
     class Zipped {
         private:
-            std::tuple<Containers...> containers;
-            std::make_index_sequence<sizeof...(Containers)> indices;
-            
+            TupType containers;
+            using iters_tuple =
+                std::tuple<iterator_type<decltype(
+                        std::get<Is>(std::declval<TupType>()))>...>;
         public:
-            Zipped(Containers... in_containers)
-                : containers{std::forward<Containers>(in_containers)...}
+            Zipped(TupType&& in_containers)
+                : containers(std::move(in_containers))
             { }
 
             class Iterator {
                 private:
-                    std::tuple<iterator_type<Containers>...> iters;
-                    std::make_index_sequence<sizeof...(Containers)> indices;
+                    using iters_tuple =
+                        std::tuple<iterator_type<decltype(
+                                std::get<Is>(std::declval<TupType>()))>...>;
+                    using iters_deref_tuple =
+                        std::tuple<iterator_deref<decltype(
+                                std::get<Is>(std::declval<TupType>()))>...>;
 
-                    bool not_equal(
-                            const Iterator&, std::index_sequence<>) const {
-                        return false;
+                    iters_tuple iters;
+
+                public:
+                    Iterator(iters_tuple&& its)
+                        : iters(std::move(its))
+                    { }
+
+                    Iterator& operator++() {
+                        absorb(++std::get<Is>(this->iters)...);
+                        return *this;
                     }
 
-                    template <std::size_t... Is>
-                    bool not_equal(const Iterator& other,
-                                   std::index_sequence<Is...>) const {
+                    bool operator!=(const Iterator& other) const {
+                        if (sizeof...(Is) == 0) return false;
+
                         bool results[] = { true,
                             (std::get<Is>(this->iters) !=
-                             std::get<Is>(other.iters))...
+                                 std::get<Is>(other.iters))...
                         };
                         return std::all_of(
                                 std::begin(results), std::end(results),
                                 [](bool b){ return b; } );
                     }
 
-                    template <std::size_t... Is>
-                    void increment(std::index_sequence<Is...>) {
-                        absorb(++std::get<Is>(this->iters)...);
-                    }
-
-                    template <std::size_t... Is>
-                    auto deref(std::index_sequence<Is...>) {
-                        return std::tuple<iterator_deref<Containers>...>{
+                    auto operator*() {
+                        return iters_deref_tuple{
                             (*std::get<Is>(this->iters))...};
                     }
-
-                public:
-                    Iterator(iterator_type<Containers>... its)
-                        : iters{its...}
-                    { }
-
-                    Iterator& operator++() {
-                        this->increment(this->indices);
-                        return *this;
-                    }
-
-                    bool operator!=(const Iterator& other) const {
-                        return this->not_equal(other, this->indices);
-                    }
-
-                    auto operator*() {
-                        return this->deref(this->indices);
-                    }
             };
-        private:
-            template <std::size_t... Is>
-            Iterator make_begin(std::index_sequence<Is...>) {
-                return {std::begin(std::get<Is>(this->containers))...};
-            }
-
-            template <std::size_t... Is>
-            Iterator make_end(std::index_sequence<Is...>) {
-                return {std::end(std::get<Is>(this->containers))...};
-            }
-
-        public:
 
             Iterator begin() {
-                return this->make_begin(this->indices);
+                return iters_tuple{
+                    std::begin(std::get<Is>(this->containers))...};
             }
 
             Iterator end() {
-                return this->make_end(this->indices);
+                return iters_tuple{
+                    std::end(std::get<Is>(this->containers))...};
             }
-        };
+    };
+
+    template <typename TupType, std::size_t... Is>
+    Zipped<TupType, Is...> zip_impl(
+            TupType&& in_containers, std::index_sequence<Is...>) {
+        return {std::move(in_containers)};
+    }
 
     template <typename... Containers>
-    Zipped<Containers...> zip(Containers&&... containers) {
-        return {std::forward<Containers>(containers)...};
+    auto zip(Containers&&... containers) {
+        return zip_impl(std::tuple<Containers...>{
+            std::forward<Containers>(containers)...},
+            std::index_sequence_for<Containers...>{});
     }
 }
 
