@@ -37,13 +37,14 @@ namespace iter {
                     std::tuple<iterator_type<Containers>...> iters;
                     std::make_index_sequence<sizeof...(Containers)> indices;
 
+                    bool not_equal(
+                            const Iterator&, std::index_sequence<>) const {
+                        return false;
+                    }
+
                     template <std::size_t... Is>
                     bool not_equal(const Iterator& other,
                                    std::index_sequence<Is...>) const {
-                        if (sizeof...(Is) == 0) {
-                            // empty zip() case, return false right away
-                            return false;
-                        }
                         bool results[] = { true,
                             (std::get<Is>(this->iters) !=
                              std::get<Is>(other.iters))...
