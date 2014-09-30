@@ -73,10 +73,11 @@ namespace iter {
         // The imap function is the only thing allowed to create a IMap
         friend IMap imap<MapFunc, Containers...>(MapFunc, Containers&& ...);
 
-        using ZippedIterType = iterator_type<Zipped<Containers...>>;
+        using ZippedType = decltype(zip(std::declval<Containers>()...));
+        using ZippedIterType = iterator_type<ZippedType>;
         private:
             MapFunc map_func;
-            Zipped<Containers...> zipped;
+            ZippedType zipped;
             
             // Value constructor for use only in the imap function
             IMap(MapFunc map_func, Containers&& ... containers) :
