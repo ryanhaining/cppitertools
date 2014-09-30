@@ -13,36 +13,35 @@ namespace iter {
     template <typename... Ts>
     void absorb(Ts&&...) { }
 
-#if 0
-    template <typename... RestContainers>
+    template <typename TupleType, std::size_t... Is>
     class Zipped;
 
-    template <typename... Containers>
-    Zipped<Containers...> zip(Containers&&...);
-#endif
+    template <typename TupleType, std::size_t... Is>
+    Zipped<TupleType, Is...> zip_impl(TupleType&&, std::index_sequence<Is...>);
 
-    // specialization for at least 1 template argument
-    template <typename TupType, std::size_t... Is>
+    template <typename TupleType, std::size_t... Is>
     class Zipped {
         private:
-            TupType containers;
+            TupleType containers;
             using iters_tuple =
                 std::tuple<iterator_type<decltype(
-                        std::get<Is>(std::declval<TupType>()))>...>;
-        public:
-            Zipped(TupType&& in_containers)
+                        std::get<Is>(std::declval<TupleType>()))>...>;
+            friend Zipped zip_impl<TupleType, Is...>(
+                    TupleType&&, std::index_sequence<Is...>);
+
+            Zipped(TupleType&& in_containers)
                 : containers(std::move(in_containers))
             { }
+        public:
 
             class Iterator {
                 private:
                     using iters_tuple =
                         std::tuple<iterator_type<decltype(
-                                std::get<Is>(std::declval<TupType>()))>...>;
+                                std::get<Is>(std::declval<TupleType>()))>...>;
                     using iters_deref_tuple =
                         std::tuple<iterator_deref<decltype(
-                                std::get<Is>(std::declval<TupType>()))>...>;
-
+                                std::get<Is>(std::declval<TupleType>()))>...>;
                     iters_tuple iters;
 
                 public:
@@ -84,9 +83,9 @@ namespace iter {
             }
     };
 
-    template <typename TupType, std::size_t... Is>
-    Zipped<TupType, Is...> zip_impl(
-            TupType&& in_containers, std::index_sequence<Is...>) {
+    template <typename TupleType, std::size_t... Is>
+    Zipped<TupleType, Is...> zip_impl(
+            TupleType&& in_containers, std::index_sequence<Is...>) {
         return {std::move(in_containers)};
     }
 
