@@ -31,8 +31,8 @@ int main() {
 
     std::string str = "hello world";
     std::vector<int> vec = {6, 9, 6, 9};
-    for (auto p : enumerate(enumerate(str))) { }
-    for (auto p : enumerate(zip(str, vec))) { }
+    for (auto p : enumerate(enumerate(str))) { (void)p; }
+    for (auto p : enumerate(zip(str, vec))) { (void)p; }
 
     std::cout << std::endl;
     {
