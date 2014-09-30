@@ -94,7 +94,7 @@ namespace iter {
             class Iterator {
                 private:
                     MapFunc map_func;
-                    mutable ZippedIterType zipiter;
+                    ZippedIterType zipiter;
 
                 public:
                     Iterator(MapFunc map_func, ZippedIterType zipiter) :
