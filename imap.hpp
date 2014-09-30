@@ -1,5 +1,5 @@
-#ifndef IMAP__H__
-#define IMAP__H__
+#ifndef ITER_IMAP_H_
+#define ITER_IMAP_H_
 
 #include "zip.hpp"
 
@@ -94,7 +94,7 @@ namespace iter {
             class Iterator {
                 private:
                     MapFunc map_func;
-                    mutable ZippedIterType zipiter;
+                    ZippedIterType zipiter;
 
                 public:
                     Iterator(MapFunc map_func, ZippedIterType zipiter) :
@@ -139,4 +139,4 @@ namespace iter {
 
 }
 
-#endif //ifndef IMAP__H__
+#endif // #ifndef ITER_IMAP_H_
