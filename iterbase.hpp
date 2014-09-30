@@ -9,6 +9,7 @@
 // this file directly.
 
 #include <utility>
+#include <tuple>
 #include <iterator>
 #include <functional>
 #include <cstddef>
@@ -78,6 +79,39 @@ namespace iter {
             iterator_deref<Container>>::type>,
         typename std::remove_const<
             iterator_deref<Container>>::type>::type;
+
+
+    namespace detail {
+        template <typename... Ts>
+        std::tuple<iterator_type<Ts>...> iterator_tuple_type_helper(
+                const std::tuple<Ts...>&);
+    }
+    // Given a tuple template argument, evaluates to a tuple of iterators
+    // for the template argument's contained types.
+    template <typename TupleType>
+    using iterator_tuple_type =
+        decltype(detail::iterator_tuple_type_helper(
+                    std::declval<TupleType>()));
+
+    namespace detail {
+        template <typename... Ts>
+        std::tuple<iterator_deref<Ts>...> iterator_tuple_deref_helper(
+                const std::tuple<Ts...>&);
+    }
+
+    // Given a tuple template argument, evaluates to a tuple of
+    // what the iterators for the template argument's contained types
+    // dereference to
+    template <typename TupleType>
+    using iterator_deref_tuple =
+        decltype(detail::iterator_tuple_deref_helper(
+                    std::declval<TupleType>()));
+
+    // function absorbing all arguments passed to it. used when
+    // applying a function to a parameter pack but not passing the evaluated
+    // results anywhere
+    template <typename... Ts>
+    void absorb(Ts&&...) { }
 
 }
 

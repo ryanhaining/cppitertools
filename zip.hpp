@@ -10,9 +10,6 @@
 
 namespace iter {
 
-    template <typename... Ts>
-    void absorb(Ts&&...) { }
-
     template <typename TupleType, std::size_t... Is>
     class Zipped;
 
@@ -23,9 +20,6 @@ namespace iter {
     class Zipped {
         private:
             TupleType containers;
-            using iters_tuple =
-                std::tuple<iterator_type<decltype(
-                        std::get<Is>(std::declval<TupleType>()))>...>;
             friend Zipped zip_impl<TupleType, Is...>(
                     TupleType&&, std::index_sequence<Is...>);
 
@@ -36,16 +30,10 @@ namespace iter {
 
             class Iterator {
                 private:
-                    using iters_tuple =
-                        std::tuple<iterator_type<decltype(
-                                std::get<Is>(std::declval<TupleType>()))>...>;
-                    using iters_deref_tuple =
-                        std::tuple<iterator_deref<decltype(
-                                std::get<Is>(std::declval<TupleType>()))>...>;
-                    iters_tuple iters;
+                    iterator_tuple_type<TupleType> iters;
 
                 public:
-                    Iterator(iters_tuple&& its)
+                    Iterator(iterator_tuple_type<TupleType>&& its)
                         : iters(std::move(its))
                     { }
 
@@ -67,19 +55,19 @@ namespace iter {
                     }
 
                     auto operator*() {
-                        return iters_deref_tuple{
+                        return iterator_deref_tuple<TupleType>{
                             (*std::get<Is>(this->iters))...};
                     }
             };
 
             Iterator begin() {
-                return iters_tuple{
-                    std::begin(std::get<Is>(this->containers))...};
+                return {iterator_tuple_type<TupleType>{
+                    std::begin(std::get<Is>(this->containers))...}};
             }
 
             Iterator end() {
-                return iters_tuple{
-                    std::end(std::get<Is>(this->containers))...};
+                return {iterator_tuple_type<TupleType>{
+                    std::end(std::get<Is>(this->containers))...}};
             }
     };
 
