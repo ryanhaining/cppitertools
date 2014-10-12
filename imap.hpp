@@ -4,62 +4,22 @@
 #include "zip.hpp"
 
 #include <utility>
-#include <type_traits>
 
 namespace iter {
 
     namespace detail {
-
-    template <std::size_t Index, typename Functor, typename Tup>
-    struct Expander {
-        template <typename... Ts>
-        static auto call(Functor&& f, Tup&& tup, Ts&&... args)
-            -> decltype(Expander<Index-1, Functor, Tup>::call(
-                    std::forward<Functor>(f),
-                    std::forward<Tup>(tup),
-                    std::get<Index-1>(tup),
-                    std::forward<Ts>(args)...))
-        {
-            // recurse
-            return Expander<Index-1, Functor, Tup>::call(
-                    std::forward<Functor>(f),
-                    std::forward<Tup>(tup),
-                    std::get<Index-1>(tup), // pull out one element
-                    std::forward<Ts>(args)...); // everything already expanded
+        template <typename MapFunc, typename TupleType, std::size_t... Is>
+        auto call_with_tuple_impl(MapFunc&& mf, TupleType&& tup,
+                             std::index_sequence<Is...>) {
+            return mf(std::get<Is>(tup)...);
         }
-    };
 
-    template <typename Functor, typename Tup>
-    struct Expander<0, Functor, Tup> {
-        template <typename... Ts>
-        static auto call(Functor&& f, Tup&&, Ts&&... args)
-            -> decltype(f(std::forward<Ts>(args)...))
-        {
-            static_assert(
-                std::tuple_size<
-                    typename std::remove_reference<Tup>::type>::value
-                    == sizeof...(Ts),
-                "tuple has not been fully expanded");
-            return f(std::forward<Ts>(args)...); // the actual call
+        template <typename MapFunc, typename... Ts>
+        auto call_with_tuple(MapFunc&& mf, std::tuple<Ts...>&& tup){
+            return call_with_tuple_impl(
+                    mf, tup, std::index_sequence_for<Ts...>{});
         }
-    };
-
-    template <typename Functor, typename Tup>
-    auto call_with_tuple(Functor&& f, Tup&& tup)
-        -> decltype(Expander<std::tuple_size<
-                    typename std::remove_reference<Tup>::type>::value,
-                    Functor, Tup>::call(
-                        std::forward<Functor>(f),
-                        std::forward<Tup>(tup)))
-    {
-        return Expander<std::tuple_size<
-            typename std::remove_reference<Tup>::type>::value,
-            Functor, Tup>::call(
-                std::forward<Functor>(f),
-                std::forward<Tup>(tup));
     }
-
-    } // end detail
 
     //Forward declarations of IMap and imap
     template <typename MapFunc, typename... Containers>
@@ -102,10 +62,7 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
-                    auto operator*() -> 
-                        decltype(detail::call_with_tuple(
-                                    this->map_func, *(this->zipiter)))
-                    {
+                    auto operator*() {
                         return detail::call_with_tuple(
                                 this->map_func, *(this->zipiter));
                     }
