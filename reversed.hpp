@@ -1,5 +1,5 @@
-#ifndef REVERSE_HPP__
-#define REVERSE_HPP__
+#ifndef ITER_REVERSE_HPP_
+#define ITER_REVERSE_HPP_
 
 #include "iterbase.hpp"
 
@@ -7,7 +7,6 @@
 #include <iterator>
 
 namespace iter {
-    //Forward declarations of Reverser and reversed
     template <typename Container>
     class Reverser;
 
@@ -19,11 +18,8 @@ namespace iter {
     class Reverser {
         private:
             Container container;
-            // The reversed function is the only thing allowed to create a
-            // Reverser
             friend Reverser reversed<Container>(Container&&);
             
-            // Value constructor for use only in the reversed function
             Reverser(Container container)
                 : container(std::forward<Container>(container))
             { }
@@ -71,9 +67,7 @@ namespace iter {
     }
 
     //
-    //
     // specialization for statically allocated arrays
-    // this involves some tricks
     //
     template <typename T, std::size_t N>
     Reverser<T[N]> reversed(T (&)[N]);
@@ -98,34 +92,17 @@ namespace iter {
             class Iterator {
                 private:
                     T *sub_iter;
-                    T *stop;
-                    T *dummy_end;
                 public:
-                    // iter should be the last element in the array
-                    // stop should be the first element
-                    // dummy should be what iter is set to when complete
-                    //    the implementation below sets the dummy to one-past-
-                    //    the end, since that's the only non-nullptr value that
-                    //    the pointer can be set to that is also not a part
-                    //    of the actual array
-                    Iterator (T *iter, T *stop, T *dummy)
-                        : sub_iter{iter},
-                        stop{stop},
-                        dummy_end{dummy}
+                    Iterator (T *iter)
+                        : sub_iter{iter}
                     { } 
 
                     auto operator*() -> decltype(*array) {
-                        return *this->sub_iter;
+                        return *(this->sub_iter - 1);
                     }
 
                     Iterator& operator++() { 
-                        if (this->sub_iter == this->stop) {
-                            this->sub_iter = this->dummy_end;
-                        } else {
-                            // decrementing the pointer is going forwards
-                            // in the reversed direction
-                            --this->sub_iter;
-                        }
+                        --this->sub_iter;
                         return *this;
                     }
 
@@ -134,18 +111,12 @@ namespace iter {
                     }
             };
 
-            T *dummy_end() const {
-                return this->array + N;
-            }
-
             Iterator begin() {
-                return {this->array + N - 1,
-                        this->array,
-                        this->dummy_end()};
+                return {this->array + N};
             }
 
             Iterator end() {
-            return {this->dummy_end(), this->dummy_end(), this->dummy_end()};
+            return {this->array};
             }
 
     };
@@ -157,4 +128,4 @@ namespace iter {
 
 }
 
-#endif //REVERSE_HPP__
+#endif //ITER_REVERSE_HPP_
