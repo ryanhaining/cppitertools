@@ -7,20 +7,6 @@
 
 namespace iter {
 
-    namespace detail {
-        template <typename MapFunc, typename TupleType, std::size_t... Is>
-        auto call_with_tuple_impl(MapFunc&& mf, TupleType&& tup,
-                             std::index_sequence<Is...>) {
-            return mf(std::get<Is>(tup)...);
-        }
-
-        template <typename MapFunc, typename... Ts>
-        auto call_with_tuple(MapFunc&& mf, std::tuple<Ts...>&& tup){
-            return call_with_tuple_impl(
-                    mf, tup, std::index_sequence_for<Ts...>{});
-        }
-    }
-
     //Forward declarations of IMap and imap
     template <typename MapFunc, typename... Containers>
     class IMap;
@@ -63,7 +49,7 @@ namespace iter {
                     { } 
 
                     auto operator*() {
-                        return detail::call_with_tuple(
+                        return call_with_tuple(
                                 this->map_func, *(this->zipiter));
                     }
 
