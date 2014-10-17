@@ -1,5 +1,11 @@
-CPPItertools
+CPPItertools C++14 development Branch
 ============
+
+**NOTE**: this branch is for refining and moving forward with the C++14
+standard.  It will be merged into master when compiler and library
+support for the standard approaches completion in common compilers.
+Specifically I'm considering clang and gcc, along with libstdc++
+and libc++
 
 range-based for loop add-ons inspired by the Python builtins and itertools
 library.  Like itertools and the Python3 builtins, this library uses lazy
