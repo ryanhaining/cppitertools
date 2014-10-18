@@ -117,7 +117,7 @@ namespace iter {
 
     namespace detail {
         template <typename Func, typename TupleType, std::size_t... Is>
-        auto call_with_tuple_impl(Func&& mf, TupleType&& tup,
+        decltype(auto) call_with_tuple_impl(Func&& mf, TupleType&& tup,
                 std::index_sequence<Is...>) {
             return mf(std::get<Is>(tup)...);
         }
@@ -125,9 +125,9 @@ namespace iter {
 
     // expand a TupleType into individual arguments when calling a Func
     template <typename Func, typename TupleType>
-    auto call_with_tuple(Func&& mf, TupleType&& tup) {
+    decltype(auto) call_with_tuple(Func&& mf, TupleType&& tup) {
         constexpr auto TUP_SIZE = std::tuple_size<
-            typename std::remove_reference<TupleType>::type>::value;
+            std::decay_t<TupleType>>::value;
         return detail::call_with_tuple_impl(
                 std::forward<Func>(mf),
                 std::forward<TupleType>(tup),
