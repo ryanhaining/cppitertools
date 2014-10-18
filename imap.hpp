@@ -48,7 +48,7 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
-                    auto operator*() {
+                    decltype(auto) operator*() {
                         return call_with_tuple(
                                 this->map_func, *(this->zipiter));
                     }
