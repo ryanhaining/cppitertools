@@ -4,9 +4,13 @@
 #include "iterbase.hpp"
 
 #include <utility>
+#include <type_traits>
+#include <array>
 #include <cassert>
+#include <memory>
 
 namespace iter {
+    // starmap with a container<T> where T is one of tuple, pair, array
     template <typename Func, typename Container>
     class StarMapper {
         private:
@@ -56,101 +60,104 @@ namespace iter {
         return {func, std::forward<Container>(container)};
     }
 
+
+    // starmap for a tuple or pair of tuples or pairs
     template <typename Func, typename TupleType,
              std::size_t Size =std::tuple_size<std::decay_t<TupleType>>::value>
     class TupleStarMapper {
         private:
-            Func func;
-            TupleType tup;
-        public:
-            TupleStarMapper(Func f, TupleType t)
-                : func(f),
-                tup(std::forward<TupleType>(t))
-            { }
+            class TupleExpanderBase {
+                protected:
+                    // deduced return type to return of Func when called with
+                    // one of TupleType
+                    using ResultType = 
+                        decltype(call_with_tuple(
+                                    std::declval<Func&>(),
+                                    std::get<0>(std::declval<TupleType&>())));
+                public:
+                    virtual ResultType call() = 0;
 
-            template <std::size_t Dummy, std::size_t Idx>
-            class Iterator {
+                    virtual ~TupleExpanderBase() { }
+            };
+
+            template <std::size_t Idx>
+            class TupleExpander : public TupleExpanderBase {
                 private:
                     Func func;
                     TupleType& tup;
-                    bool passed;
-                    Iterator<0, Idx + 1> next_level;
+                public:
+                    TupleExpander(Func f, TupleType& t)
+                        : func(f),
+                        tup(t)
+                    { }
+
+                    typename TupleExpanderBase::ResultType call() override {
+                        return call_with_tuple(
+                                this->func, std::get<Idx>(this->tup));
+                    }
+            };
+
+        private:
+            Func func;
+            TupleType tup;
+            std::array<std::unique_ptr<TupleExpanderBase>, Size> tuple_getters;
+
+            template <std::size_t... Is>
+            TupleStarMapper(Func f, TupleType t, std::index_sequence<Is...>)
+                : func(f),
+                tup(std::forward<TupleType>(t)),
+                tuple_getters(
+                        {std::make_unique<TupleExpander<Is>>(func, tup)...})
+            { }
+
+        public:
+            TupleStarMapper(Func f, TupleType t)
+                : TupleStarMapper(f, std::forward<TupleType>(t),
+                    std::make_index_sequence<Size>{})
+            { }
+
+            class Iterator {
+                private:
+                    std::array<std::unique_ptr<TupleExpanderBase>, Size>&
+                        tuple_getters;
+                    std::size_t index;
 
                 public:
-                    Iterator(Func f, TupleType& t, bool done)
-                        : func(f),
-                        tup(t),
-                        passed{done},
-                        next_level(f, t, done)
+                    Iterator(std::array<
+                                std::unique_ptr<TupleExpanderBase>, Size>& tg,
+                            std::size_t i)
+                        : tuple_getters(tg),
+                        index{i}
                     { }
 
                     decltype(auto) operator*() {
-                        if (this->passed) {
-                            return *this->next_level;
-                        } else {
-                            return call_with_tuple(
-                                    this->func, std::get<Idx>(this->tup));
-                        }
+                        return this->tuple_getters[this->index]->call();
                     }
 
                     Iterator operator++() {
-                        if (!this->passed) {
-                            this->passed = true;
-                        } else {
-                            ++this->next_level;
-                        }
+                        ++this->index;
                         return *this;
                     }
 
                     bool operator!=(const Iterator& other) const {
-                        return this->passed != other.passed
-                            || this->next_level != other.next_level;
+                        return this->index != other.index;
                     }
             };
 
-            template <std::size_t Dummy>
-            class Iterator<Dummy, Size> {
-                private:
-                    // data members unused since this should never get
-                    // dereferenced, but are needed to compile
-                    Func func;
-                    TupleType& tup;
-                public:
-                    Iterator(Func f, TupleType& t, bool)
-                        : func(f),
-                        tup(t)
-                    { }
-                    
-                    decltype(auto) operator*() {
-                        assert(false && "deref of last level in starmap");
-                        return call_with_tuple(func, std::get<0>(tup));
-                    }
-
-                    Iterator operator++() {
-                        assert(false && "++ on last level of starmap");
-                        return *this;
-                    }
-
-                    bool operator!=(const Iterator&) const {
-                        return false;
-                    }
-            };
-
-            Iterator<0, 0> begin() {
-                return {this->func, this->tup, false};
+            Iterator begin() {
+                return {this->tuple_getters, 0};
             }
 
-            Iterator<0, 0> end() {
-                return {this->func, this->tup, true};
+            Iterator end() {
+                return {this->tuple_getters, Size};
             }
     };
 
     template <typename Func, typename... Ts>
-    TupleStarMapper<Func, std::tuple<Ts...>> starmap(
-            Func func, std::tuple<Ts...> tup) {
+    TupleStarMapper<Func, std::tuple<Ts...>&> starmap(
+            Func func, std::tuple<Ts...>& tup) {
         return {func, tup};
     }
-    
 
 }
 
