@@ -1,5 +1,5 @@
-#ifndef ITERTOOLS_HPP
-#define ITERTOOLS_HPP
+#ifndef ITERTOOLS_HPP_
+#define ITERTOOLS_HPP_
 
 #include "accumulate.hpp"
 #include "chain.hpp"
@@ -24,6 +24,7 @@
 #include "reversed.hpp"
 #include "slice.hpp"
 #include "sorted.hpp"
+#include "starmap.hpp"
 #include "takewhile.hpp"
 #include "unique_everseen.hpp"
 #include "unique_justseen.hpp"
