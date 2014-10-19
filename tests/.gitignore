@@ -28,6 +28,7 @@ testgrouper
 testcommand_chains
 testgroupby
 testsorted
+teststarmap
 testunique_justseen
 testunique_everseen
 .sconsign.dblite

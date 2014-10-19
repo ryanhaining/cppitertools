@@ -34,6 +34,7 @@ progs = Split('''
               powerset
               sliding_window
               imap
+              starmap
               count
               filterfalse
               grouper
