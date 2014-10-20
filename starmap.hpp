@@ -55,11 +55,13 @@ namespace iter {
             }
     };
 
+
+
     template <typename Func, typename Container>
-    StarMapper<Func, Container> starmap(Func func, Container&& container) {
+    StarMapper<Func, Container> starmap_helper(
+            Func func, Container&& container, std::false_type) {
         return {func, std::forward<Container>(container)};
     }
-
 
     // starmap for a tuple or pair of tuples or pairs
     template <typename Func, typename TupleType,
@@ -153,12 +155,27 @@ namespace iter {
             }
     };
 
-    template <typename Func, typename... Ts>
-    TupleStarMapper<Func, std::tuple<Ts...>&> starmap(
-            Func func, std::tuple<Ts...>& tup) {
-        return {func, tup};
+    template <typename Func, typename TupleType>
+    TupleStarMapper<Func, TupleType> starmap_helper(
+            Func func, TupleType&& tup, std::true_type) {
+        return {func, std::forward<TupleType>(tup)};
     }
 
+    // "tag dispatch" to differentiate between normal containers and
+    // tuple-like containers, things that work with std::get
+    template <typename T, typename U =void>
+    struct is_tuple_like : public std::false_type { };
+
+    template <typename T>
+    struct is_tuple_like<T, decltype(std::get<0>(std::declval<T>()), void())>
+        : public std::true_type { };
+
+    template <typename Func, typename Seq>
+    auto starmap(Func func, Seq&& sequence) {
+        return starmap_helper(
+                func, std::forward<Seq>(sequence),
+                is_tuple_like<Seq>{});
+    }
 }
 
 
