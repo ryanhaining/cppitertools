@@ -66,6 +66,14 @@ void test_tuple_of_tuples() {
         std::cout << i << '\n';
     }
     std::cout << '\n';
+
+    std::cout << "pair<array<int>, tuple<int>>\n";
+    auto p = std::make_pair(std::array<int, 3>{15, 100, 2000},
+                            std::make_tuple(16));
+    for (auto&& i : starmap(c, p)) {
+        std::cout << i << '\n';
+    }
+    std::cout << '\n';
 }
 
 int main() {
