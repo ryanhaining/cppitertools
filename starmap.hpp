@@ -109,7 +109,7 @@ namespace iter {
                 : func(f),
                 tup(std::forward<TupleType>(t)),
                 tuple_getters(
-                        {std::make_unique<TupleExpander<Is>>(func, tup)...})
+                        {{std::make_unique<TupleExpander<Is>>(func, tup)...}})
             { }
 
         public:
