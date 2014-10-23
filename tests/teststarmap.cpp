@@ -59,7 +59,7 @@ void test_tuple_of_tuples() {
         std::cout << i << '\n';
     }
 
-    auto tup2 = std::make_tuple(std::array<int, 3>{15, 100, 2000},
+    auto tup2 = std::make_tuple(std::array<int, 3>{{15, 100, 2000}},
                                std::make_tuple(16));
     std::cout << "tuple<array<int>, tuple<int>>\n";
     for (auto&& i : starmap(c, tup2)) {
@@ -68,7 +68,7 @@ void test_tuple_of_tuples() {
     std::cout << '\n';
 
     std::cout << "pair<array<int>, tuple<int>>\n";
-    auto p = std::make_pair(std::array<int, 3>{15, 100, 2000},
+    auto p = std::make_pair(std::array<int, 3>{{15, 100, 2000}},
                             std::make_tuple(16));
     for (auto&& i : starmap(c, p)) {
         std::cout << i << '\n';
