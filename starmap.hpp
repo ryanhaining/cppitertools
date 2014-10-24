@@ -163,7 +163,7 @@ namespace iter {
 
     // "tag dispatch" to differentiate between normal containers and
     // tuple-like containers, things that work with std::get
-    template <typename T, typename U =void>
+    template <typename T, typename =void>
     struct is_tuple_like : public std::false_type { };
 
     template <typename T>
