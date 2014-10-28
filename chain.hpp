@@ -8,128 +8,140 @@
 #include <memory>
 #include <initializer_list>
 #include <type_traits>
+#include <tuple>
+#include <array>
 
 namespace iter {
     // rather than a chain function, use a callable object to support
     // from_iterable
     class ChainMaker;
 
-    template <typename Container, typename... RestContainers>
+    template <typename TupleType, std::size_t... Is>
     class Chained {
         friend class ChainMaker;
-        template <typename C, typename... RC>
-        friend class Chained;
 
         private:
-            Container container;
-            Chained<RestContainers...> rest_chained;
-            Chained(Container container, RestContainers&&... rest)
-                : container(std::forward<Container>(container)),
-                rest_chained{std::forward<RestContainers>(rest)...}
-            { }
-
-        public:
-            class Iterator {
-                private:
-                    using RestIter =
-                        typename Chained<RestContainers...>::Iterator;
-                    iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
-                    RestIter rest_iter;
-                    bool at_end;
-
+            class ChainIterWrapperBase {
+                protected:
+                    using ResultType =
+                        iterator_deref<std::tuple_element_t<0, TupleType>>;
                 public:
-                    Iterator(const iterator_type<Container>& s_begin,
-                            const iterator_type<Container>& s_end,
-                            RestIter rest_iter)
-                        : sub_iter{s_begin},
-                        sub_end{s_end},
-                        rest_iter{rest_iter},
-                        at_end{!(sub_iter != sub_end)}
-                    { }
-                    
-                    Iterator& operator++() {
-                        if (this->at_end) {
-                            ++this->rest_iter;
-                        } else {
-                            ++this->sub_iter;
-                            if (!(this->sub_iter != this->sub_end)) {
-                                this->at_end = true;
-                            }
-                        }
-                        return *this;
-                    }
-
-                    bool operator!=(const Iterator& other) const {
-                        return this->sub_iter != other.sub_iter ||
-                            this->rest_iter != other.rest_iter;
-                    }
-
-                    iterator_deref<Container> operator*() {
-                        return this->at_end ?
-                            *this->rest_iter : *this->sub_iter;
-                    }
+                    virtual ~ChainIterWrapperBase() { }
+                    virtual bool operator!=(
+                            const ChainIterWrapperBase&) const = 0;
+                    virtual bool operator==(
+                            const ChainIterWrapperBase&) const = 0;
+                    virtual ResultType operator*() = 0;
+                    virtual ChainIterWrapperBase& operator++() = 0;
             };
 
-            Iterator begin() {
-                return {std::begin(this->container),
-                    std::end(this->container),
-                    std::begin(this->rest_chained)};
-            }
-
-            Iterator end() {
-                return {std::end(this->container),
-                    std::end(this->container),
-                    std::end(this->rest_chained)};
-            }
-    };
-    template <typename Container>
-    class Chained<Container> {
-        friend class ChainMaker;
-        template <typename C, typename... RC>
-        friend class Chained;
-
-        private:
-            Container container;
-            Chained(Container container)
-                : container(std::forward<Container>(container))
-            { }
-
-        public:
-            class Iterator {
+            template <typename Container>
+            class ChainIterWrapper : public ChainIterWrapperBase {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
 
                 public:
-                    Iterator(const iterator_type<Container>& s_begin,
-                            const iterator_type<Container>& s_end)
-                        : sub_iter{s_begin},
-                        sub_end{s_end}
+                    ChainIterWrapper(const iterator_type<Container>& iter)
+                        : sub_iter{iter}
                     { }
-                    
-                    Iterator& operator++() {
+
+                    bool operator!=(const ChainIterWrapperBase& other)
+                            const override {
+                        return this->sub_iter !=
+                            static_cast<const ChainIterWrapper&>(
+                                    other).sub_iter;
+                    }
+
+                    bool operator==(const ChainIterWrapperBase& other)
+                            const override {
+                        return !(*this !=
+                                static_cast<const ChainIterWrapper&>(other));
+                    }
+
+                    typename ChainIterWrapper::ResultType operator*() {
+                        return *this->sub_iter;
+                    }
+
+                    ChainIterWrapper& operator++() override {
                         ++this->sub_iter;
                         return *this;
                     }
+            };
 
-                    bool operator!=(const Iterator& other) const {
-                        return this->sub_iter != other.sub_iter;
+
+        private:
+            using ArrayType =
+                std::array<std::unique_ptr<ChainIterWrapperBase>,
+                sizeof...(Is)>;
+            TupleType containers;
+            ArrayType end_iter_wrappers;
+
+            Chained(TupleType&& tup_containers)
+                : containers(std::move(tup_containers)),
+                end_iter_wrappers{{std::make_unique<
+                    ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>(
+                            std::end(std::get<Is>(this->containers)))...}}
+            { }
+
+        public:
+            class Iterator {
+                private:
+                    using ArrayType =
+                        std::array<std::unique_ptr<ChainIterWrapperBase>,
+                        sizeof...(Is)>;
+
+                    ArrayType iter_wrappers;
+                    const ArrayType& end_iter_wrappers;
+                    std::size_t index;
+
+                    void check_index() {
+                        while (this->index < iter_wrappers.size()
+                                && *this->iter_wrappers[this->index]
+                                    == *this->end_iter_wrappers[this->index]) {
+                            ++this->index;
+                        }
                     }
 
-                    iterator_deref<Container> operator*() {
-                        return *this->sub_iter;
+
+                public:
+                    Iterator(ArrayType&& iters, ArrayType& ends, std::size_t i)
+                        : iter_wrappers(std::move(iters)),
+                        end_iter_wrappers(ends),
+                        index{i}
+                    {
+                        this->check_index();
+                    }
+
+                    Iterator& operator++() {
+                        ++*this->iter_wrappers[this->index];
+                        this->check_index();
+                        return *this;
+                    }
+
+                    decltype(auto) operator*() {
+                        return **this->iter_wrappers[this->index];
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->index != other.index;
                     }
             };
 
+
             Iterator begin() {
-                return {std::begin(this->container),
-                    std::end(this->container)};
+                ArrayType a{{
+                    std::make_unique<
+                        ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>(
+                                std::begin(std::get<Is>(this->containers))
+                            )...}};
+                return {std::move(a), end_iter_wrappers, 0};
             }
 
             Iterator end() {
-                return {std::end(this->container),
-                    std::end(this->container)};
+                ArrayType a{{std::unique_ptr<
+                    ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>{
+                        nullptr}...}};
+                return {std::move(a), end_iter_wrappers, sizeof...(Is)};
             }
     };
 
@@ -179,7 +191,6 @@ namespace iter {
                        }
                        return *this;
                    }
-                       
 
                    bool operator!=(const Iterator& other) const {
                        return this->top_level_iter != other.top_level_iter &&
@@ -203,11 +214,22 @@ namespace iter {
 
 
     class ChainMaker {
+        private:
+            template <typename TupleType, std::size_t... Is>
+            Chained<TupleType, Is...> chain_impl(
+                    TupleType&& in_containers,
+                    std::index_sequence<Is...>) const {
+                return {std::move(in_containers)};
+            }
+
         public:
             // expose regular call operator to provide usual chain()
             template <typename... Containers>
-            Chained<Containers...> operator()(Containers&&... cs) const {
-                return {std::forward<Containers>(cs)...};
+            auto operator()(Containers&&... cs) const {
+                return this->chain_impl(
+                        std::tuple<Containers...>{
+                            std::forward<Containers>(cs)...},
+                        std::index_sequence_for<Containers...>{});
             }
 
             // chain.from_iterable
