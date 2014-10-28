@@ -1,5 +1,5 @@
-#ifndef CHAIN__HPP__
-#define CHAIN__HPP__
+#ifndef ITER_CHAIN_HPP_
+#define ITER_CHAIN_HPP_
 
 #include "iterbase.hpp"
 
@@ -246,4 +246,4 @@ namespace iter {
 
 }
 
-#endif //#define CHAIN__HPP__
+#endif // #ifndef ITER_CHAIN_HPP_
