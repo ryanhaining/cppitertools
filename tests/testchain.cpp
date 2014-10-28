@@ -11,6 +11,7 @@ using iter::chain;
 using il = std::initializer_list<int>; 
 
 int main() {
+
     {
         std::vector<int> ivec{1, 4, 7, 9};
         std::vector<int> lvec{100, 200, 300, 400, 500, 600};
@@ -57,5 +58,4 @@ int main() {
             std::cout << i << '\n';
         }
     }
-    return 0;
 }
