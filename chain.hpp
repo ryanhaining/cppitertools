@@ -106,11 +106,20 @@ namespace iter {
                 public:
                     Iterator(ArrayType&& iters, ArrayType& ends, std::size_t i)
                         : iter_wrappers(std::move(iters)),
-                        end_iter_wrappers(ends),
+                        end_iter_wrappers{ends},
                         index{i}
                     {
                         this->check_index();
                     }
+
+                    Iterator(const Iterator& other) 
+                        : iter_wrappers{{
+                            // make this not so awful.
+                            std::unique_ptr<ChainIterWrapperBase>{new ChainIterWrapper<std::tuple_element_t<Is, TupleType>>(dynamic_cast<ChainIterWrapper<std::tuple_element_t<Is, TupleType>>&>(*std::get<Is>(other.iter_wrappers)))}...
+                        }},
+                        end_iter_wrappers{other.end_iter_wrappers},
+                        index{other.index}
+                    { }
 
                     Iterator& operator++() {
                         ++*this->iter_wrappers[this->index];
