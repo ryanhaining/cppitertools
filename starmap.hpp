@@ -80,13 +80,11 @@ namespace iter {
                 return call_with_tuple(f, std::get<Idx>(t));
             }
 
-            using v =
-                void_t<decltype(get_and_call_with_tuple<Is>(func, tup))...>;
-
             using ResultType = decltype(get_and_call_with_tuple<0>(func, tup));
-            using CallerFunc = std::function<ResultType(Func&, TupType&)>;
+            using CallerFunc = ResultType (*)(Func&, TupType&);
 
-            const static std::array<CallerFunc, sizeof...(Is)> callers;
+            constexpr static std::array<CallerFunc, sizeof...(Is)> callers{{
+                get_and_call_with_tuple<Is>...}};
 
         public:
             TupleStarMapper(Func f, TupType t)
@@ -129,13 +127,11 @@ namespace iter {
                 return {this->func, this->tup, sizeof...(Is)};
             }
     };
-    // initialize array with a caller function for each index
     template <typename Func, typename TupType, std::size_t... Is>
-    const std::array<
+    constexpr std::array<
         typename TupleStarMapper<Func, TupType, Is...>::CallerFunc,
         sizeof...(Is)>
-        TupleStarMapper<Func, TupType, Is...>::callers{{
-            get_and_call_with_tuple<Is>...}};
+        TupleStarMapper<Func, TupType, Is...>::callers;
 
 
 

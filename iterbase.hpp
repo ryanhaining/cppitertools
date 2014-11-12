@@ -134,10 +134,6 @@ namespace iter {
                 std::make_index_sequence<TUP_SIZE>{});
     }
 
-    // this will eventually make it into the standard, but for now:
-    template <typename...>
-    using void_t = void;
-
 }
 
 #endif // #ifndef ITERBASE_HPP_
