@@ -59,81 +59,56 @@ namespace iter {
 
     template <typename Func, typename Container>
     StarMapper<Func, Container> starmap_helper(
-            Func func, Container&& container, std::false_type) {
-        return {func, std::forward<Container>(container)};
+            Func&& func, Container&& container, std::false_type) {
+        return {std::forward<Func>(func), std::forward<Container>(container)};
     }
 
     // starmap for a tuple or pair of tuples or pairs
-    template <typename Func, typename TupleType,
-             std::size_t Size =std::tuple_size<std::decay_t<TupleType>>::value>
+    template <typename Func, typename TupType, std::size_t... Is>
     class TupleStarMapper {
         private:
-            class TupleExpanderBase {
-                protected:
-                    // deduced return type to return of Func when called with
-                    // one of TupleType
-                    using ResultType = 
-                        decltype(call_with_tuple(
-                                    std::declval<Func&>(),
-                                    std::get<0>(std::declval<TupleType&>())));
-                public:
-                    virtual ResultType call() = 0;
-
-                    virtual ~TupleExpanderBase() { }
-            };
-
-            template <std::size_t Idx>
-            class TupleExpander : public TupleExpanderBase {
-                private:
-                    Func func;
-                    TupleType& tup;
-                public:
-                    TupleExpander(Func f, TupleType& t)
-                        : func(f),
-                        tup(t)
-                    { }
-
-                    typename TupleExpanderBase::ResultType call() override {
-                        return call_with_tuple(
-                                this->func, std::get<Idx>(this->tup));
-                    }
-            };
+            Func func;
+            TupType tup;
 
         private:
-            Func func;
-            TupleType tup;
-            std::array<std::unique_ptr<TupleExpanderBase>, Size> tuple_getters;
+            static_assert(sizeof...(Is)
+                    == std::tuple_size<std::decay_t<TupType>>::value,
+                    "tuple size doesn't match size of Is");
 
-            template <std::size_t... Is>
-            TupleStarMapper(Func f, TupleType t, std::index_sequence<Is...>)
-                : func(f),
-                tup(std::forward<TupleType>(t)),
-                tuple_getters(
-                        {std::make_unique<TupleExpander<Is>>(func, tup)...})
-            { }
+            template <std::size_t Idx>
+            static decltype(auto) get_and_call_with_tuple(Func& f, TupType &t){
+                return call_with_tuple(f, std::get<Idx>(t));
+            }
+
+            using v =
+                void_t<decltype(get_and_call_with_tuple<Is>(func, tup))...>;
+
+            using ResultType = decltype(get_and_call_with_tuple<0>(func, tup));
+            using CallerFunc = std::function<ResultType(Func&, TupType&)>;
+
+            const static std::array<CallerFunc, sizeof...(Is)> callers;
 
         public:
-            TupleStarMapper(Func f, TupleType t)
-                : TupleStarMapper(f, std::forward<TupleType>(t),
-                    std::make_index_sequence<Size>{})
+            TupleStarMapper(Func f, TupType t)
+                : func(std::forward<Func>(f)),
+                tup(std::forward<TupType>(t))
             { }
 
             class Iterator {
                 private:
-                    std::array<std::unique_ptr<TupleExpanderBase>, Size>&
-                        tuple_getters;
+                    Func& func;
+                    TupType& tup;
                     std::size_t index;
 
                 public:
-                    Iterator(std::array<
-                                std::unique_ptr<TupleExpanderBase>, Size>& tg,
-                            std::size_t i)
-                        : tuple_getters(tg),
+                    Iterator(Func& f, TupType& t, std::size_t i)
+                        : func{f},
+                        tup{t},
                         index{i}
                     { }
 
                     decltype(auto) operator*() {
-                        return this->tuple_getters[this->index]->call();
+                        return callers[this->index](this->func, this->tup);
                     }
 
                     Iterator operator++() {
@@ -147,19 +122,40 @@ namespace iter {
             };
 
             Iterator begin() {
-                return {this->tuple_getters, 0};
+                return {this->func, this->tup, 0};
             }
 
             Iterator end() {
-                return {this->tuple_getters, Size};
+                return {this->func, this->tup, sizeof...(Is)};
             }
     };
+    // initialize array with a caller function for each index
+    template <typename Func, typename TupType, std::size_t... Is>
+    const std::array<
+        typename TupleStarMapper<Func, TupType, Is...>::CallerFunc,
+        sizeof...(Is)>
+        TupleStarMapper<Func, TupType, Is...>::callers{{
+            get_and_call_with_tuple<Is>...}};
 
-    template <typename Func, typename TupleType>
-    TupleStarMapper<Func, TupleType> starmap_helper(
-            Func func, TupleType&& tup, std::true_type) {
-        return {func, std::forward<TupleType>(tup)};
+
+
+    template <typename Func, typename TupType, std::size_t... Is>
+    TupleStarMapper<Func, TupType, Is...> starmap_helper_impl(
+            Func&& func, TupType&& tup, std::index_sequence<Is...>)
+    {
+        return {std::forward<Func>(func), std::forward<TupType>(tup)};
     }
+
+    template <typename Func, typename TupType>
+    auto starmap_helper(
+            Func&& func, TupType&& tup, std::true_type) {
+        return starmap_helper_impl(
+            std::forward<Func>(func),
+            std::forward<TupType>(tup),
+            std::make_index_sequence<
+                std::tuple_size<std::decay_t<TupType>>::value>{});
+    }
+
 
     // "tag dispatch" to differentiate between normal containers and
     // tuple-like containers, things that work with std::get
@@ -171,9 +167,10 @@ namespace iter {
         : public std::true_type { };
 
     template <typename Func, typename Seq>
-    auto starmap(Func func, Seq&& sequence) {
+    auto starmap(Func&& func, Seq&& sequence) {
         return starmap_helper(
-                func, std::forward<Seq>(sequence),
+                std::forward<Func>(func),
+                std::forward<Seq>(sequence),
                 is_tuple_like<Seq>{});
     }
 }
