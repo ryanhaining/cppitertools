@@ -19,6 +19,11 @@ int main() {
         for (auto e : chain(ivec, lvec)) {
             std::cout << e << std::endl;
         }
+
+        auto c = chain(ivec, lvec);
+        auto it = std::begin(c);
+        auto it2 = std::begin(c);
+        it = it2;
     }
     {
         std::vector<int> empty{};
@@ -58,4 +63,5 @@ int main() {
             std::cout << i << '\n';
         }
     }
+
 }
