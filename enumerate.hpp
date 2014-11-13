@@ -43,6 +43,9 @@ namespace iter {
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T>);
 
+            // for IterYield
+            using BasePair = std::pair<std::size_t, iterator_deref<Container>> ;
+
             // Value constructor for use only in the enumerate function
             Enumerable(Container container)
                 : container(std::forward<Container>(container))
@@ -51,14 +54,11 @@ namespace iter {
         public:
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
             // .element referencing the value yielded by the subiterator
-            class IterYield {
+            class IterYield : public BasePair {
                 public:
-                    std::size_t index;
-                    iterator_deref<Container> element;
-                    IterYield(std::size_t i, iterator_deref<Container> elem)
-                        : index{i},
-                        element{elem}
-                    { }
+                    using BasePair::BasePair;
+                    decltype(BasePair::first)& index = BasePair::first;
+                    decltype(BasePair::second)& element = BasePair::second;
             };
 
             //  Holds an iterator of the contained type and a size_t for the
