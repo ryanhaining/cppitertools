@@ -112,7 +112,8 @@ namespace iter {
     // function absorbing all arguments passed to it. used when
     // applying a function to a parameter pack but not passing the evaluated
     // results anywhere
-    void absorb(...) { }
+    template <typename... Ts>
+    void absorb(Ts&&...) { }
 
     namespace detail {
         template <typename Func, typename TupleType, std::size_t... Is>
