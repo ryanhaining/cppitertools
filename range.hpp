@@ -17,6 +17,7 @@
 
 #include <exception>
 #include <type_traits>
+#include <iterator>
 
 namespace iter {
 
@@ -63,7 +64,9 @@ namespace iter {
         public:
             Range() = delete;
             Range(const Range&) = default;
-            class Iterator {
+            class Iterator :
+                public std::iterator<std::forward_iterator_tag, T>
+            {
                 private:
                     T value;
                     T step;
