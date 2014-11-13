@@ -44,7 +44,7 @@ namespace iter {
                     std::initializer_list<T>);
 
             // for IterYield
-            using BasePair = std::pair<std::size_t, iterator_deref<Container>> ;
+            using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
 
             // Value constructor for use only in the enumerate function
             Enumerable(Container container)
@@ -64,7 +64,9 @@ namespace iter {
             //  Holds an iterator of the contained type and a size_t for the
             //  index.  Each call to ++ increments both of these data members.
             //  Each dereference returns an IterYield.
-            class Iterator {
+            class Iterator :
+                public std::iterator<std::forward_iterator_tag, IterYield>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     std::size_t index;
