@@ -3,156 +3,145 @@
 
 #include "iterbase.hpp"
 
-#include <utility>
+#include <array>
+#include <initializer_list>
 #include <iterator>
 #include <memory>
-#include <initializer_list>
-#include <type_traits>
 #include <tuple>
-#include <array>
+#include <type_traits>
+#include <utility>
 
 namespace iter {
     // rather than a chain function, use a callable object to support
     // from_iterable
     class ChainMaker;
 
-    template <typename TupleType, std::size_t... Is>
-    class Chained {
+template <typename TupType, std::size_t... Is>
+class Chained {
+    private:
         friend class ChainMaker;
 
-        private:
-            class ChainIterWrapperBase {
-                protected:
-                    using ResultType =
-                        iterator_deref<std::tuple_element_t<0, TupleType>>;
-                public:
-                    virtual ~ChainIterWrapperBase() { }
-                    virtual bool operator!=(
-                            const ChainIterWrapperBase&) const = 0;
-                    virtual bool operator==(
-                            const ChainIterWrapperBase&) const = 0;
-                    virtual ResultType operator*() = 0;
-                    virtual ChainIterWrapperBase& operator++() = 0;
+        static_assert(std::tuple_size<std::decay_t<TupType>>::value
+                == sizeof...(Is),
+                "tuple size != sizeof Is");
+
+        using IterTupType = iterator_tuple_type<TupType>;
+
+        using DerefType =
+            iterator_deref<std::tuple_element_t<0, TupType>>;
+
+        template <std::size_t Idx>
+        static DerefType get_and_deref(IterTupType& iters) {
+            return *std::get<Idx>(iters);
+        }
+
+        template <std::size_t Idx>
+        static void get_and_increment(IterTupType& iters) {
+            ++std::get<Idx>(iters);
+        }
+
+        template <std::size_t Idx>
+        static bool get_and_check_not_equal(
+                const IterTupType& lhs, const IterTupType& rhs) {
+            return std::get<Idx>(lhs) != std::get<Idx>(rhs);
+        }
+
+        using DerefFunc = DerefType (*)(IterTupType&);
+        using IncFunc = void (*)(IterTupType&);
+        using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
+
+
+        constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{{
+            get_and_deref<Is>...}};
+        
+        constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{{
+            get_and_increment<Is>...}};
+
+        constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{{
+            get_and_check_not_equal<Is>...}};
+
+    private:
+        TupType tup;
+    public:
+        Chained(TupType t)
+            : tup(t)
+        { }
+
+        class Iterator {
+            private:
+                std::size_t index;
+                IterTupType iters;
+                IterTupType ends;
+
+                void check_for_end_and_adjust() {
+                    while (this->index < sizeof...(Is)
+                            && !(neq_comparers[this->index](
+                                    this->iters, this->ends))) {
+                        ++this->index;
+                    }
+                }
+            public:
+                Iterator(std::size_t i,
+                        IterTupType&& in_iters,
+                        IterTupType&& in_ends)
+                    : index{i},
+                    iters(in_iters),
+                    ends(in_ends)
+                {
+                    this->check_for_end_and_adjust();
+                }
+
+                decltype(auto) operator*() {
+                    return derefers[this->index](this->iters);
+                }
+
+                Iterator& operator++() {
+                    incrementers[this->index](this->iters);
+                    this->check_for_end_and_adjust();
+                    return *this;
+                }
+
+                bool operator!=(const Iterator& other) const {
+                    return this->index != other.index
+                        || (this->index != sizeof...(Is)
+                                && neq_comparers.at(this->index)(
+                                    this->iters,other.iters));
+                }
+
+
+        };
+
+        Iterator begin() {
+            return {
+                0,
+                IterTupType{std::begin(std::get<Is>(this->tup))...},
+                IterTupType{std::end(std::get<Is>(this->tup))...}
             };
+        }
 
-            template <typename Container>
-            class ChainIterWrapper : public ChainIterWrapperBase {
-                private:
-                    iterator_type<Container> sub_iter;
-
-                public:
-                    ChainIterWrapper(const iterator_type<Container>& iter)
-                        : sub_iter{iter}
-                    { }
-
-                    bool operator!=(const ChainIterWrapperBase& other)
-                            const override {
-                        return this->sub_iter !=
-                            static_cast<const ChainIterWrapper&>(
-                                    other).sub_iter;
-                    }
-
-                    bool operator==(const ChainIterWrapperBase& other)
-                            const override {
-                        return !(*this !=
-                                static_cast<const ChainIterWrapper&>(other));
-                    }
-
-                    typename ChainIterWrapper::ResultType operator*() {
-                        return *this->sub_iter;
-                    }
-
-                    ChainIterWrapper& operator++() override {
-                        ++this->sub_iter;
-                        return *this;
-                    }
+        Iterator end() {
+            return {
+                sizeof...(Is),
+                IterTupType{std::end(std::get<Is>(this->tup))...},
+                IterTupType{std::end(std::get<Is>(this->tup))...}
             };
+        }
+};
 
+template <typename TupType, std::size_t... Is>
+constexpr std::array<
+    typename Chained<TupType, Is...>::DerefFunc, sizeof...(Is)>
+    Chained<TupType, Is...>::derefers;
 
-        private:
-            using ArrayType =
-                std::array<std::unique_ptr<ChainIterWrapperBase>,
-                sizeof...(Is)>;
-            TupleType containers;
-            ArrayType end_iter_wrappers;
+template <typename TupType, std::size_t... Is>
+constexpr std::array<
+    typename Chained<TupType, Is...>::IncFunc, sizeof...(Is)>
+    Chained<TupType, Is...>::incrementers;
 
-            Chained(TupleType&& tup_containers)
-                : containers(std::move(tup_containers)),
-                end_iter_wrappers{{std::make_unique<
-                    ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>(
-                            std::end(std::get<Is>(this->containers)))...}}
-            { }
-
-        public:
-            class Iterator {
-                private:
-                    using ArrayType =
-                        std::array<std::unique_ptr<ChainIterWrapperBase>,
-                        sizeof...(Is)>;
-
-                    ArrayType iter_wrappers;
-                    const ArrayType& end_iter_wrappers;
-                    std::size_t index;
-
-                    void check_index() {
-                        while (this->index < iter_wrappers.size()
-                                && *this->iter_wrappers[this->index]
-                                    == *this->end_iter_wrappers[this->index]) {
-                            ++this->index;
-                        }
-                    }
-
-
-                public:
-                    Iterator(ArrayType&& iters, ArrayType& ends, std::size_t i)
-                        : iter_wrappers(std::move(iters)),
-                        end_iter_wrappers{ends},
-                        index{i}
-                    {
-                        this->check_index();
-                    }
-
-                    Iterator(const Iterator& other) 
-                        : iter_wrappers{{
-                            // make this not so awful.
-                            std::unique_ptr<ChainIterWrapperBase>{new ChainIterWrapper<std::tuple_element_t<Is, TupleType>>(dynamic_cast<ChainIterWrapper<std::tuple_element_t<Is, TupleType>>&>(*std::get<Is>(other.iter_wrappers)))}...
-                        }},
-                        end_iter_wrappers{other.end_iter_wrappers},
-                        index{other.index}
-                    { }
-
-                    Iterator& operator++() {
-                        ++*this->iter_wrappers[this->index];
-                        this->check_index();
-                        return *this;
-                    }
-
-                    decltype(auto) operator*() {
-                        return **this->iter_wrappers[this->index];
-                    }
-
-                    bool operator!=(const Iterator& other) const {
-                        return this->index != other.index;
-                    }
-            };
-
-
-            Iterator begin() {
-                ArrayType a{{
-                    std::make_unique<
-                        ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>(
-                                std::begin(std::get<Is>(this->containers))
-                            )...}};
-                return {std::move(a), end_iter_wrappers, 0};
-            }
-
-            Iterator end() {
-                ArrayType a{{std::unique_ptr<
-                    ChainIterWrapper<std::tuple_element_t<Is, TupleType>>>{
-                        nullptr}...}};
-                return {std::move(a), end_iter_wrappers, sizeof...(Is)};
-            }
-    };
+template <typename TupType, std::size_t... Is>
+constexpr std::array<
+    typename Chained<TupType, Is...>::NeqFunc, sizeof...(Is)>
+    Chained<TupType, Is...>::neq_comparers;
 
     template <typename Container>
     class ChainedFromIterable {
