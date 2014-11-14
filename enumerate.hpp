@@ -65,7 +65,7 @@ namespace iter {
             //  index.  Each call to ++ increments both of these data members.
             //  Each dereference returns an IterYield.
             class Iterator :
-                public std::iterator<std::forward_iterator_tag, IterYield>
+                public std::iterator<std::input_iterator_tag, IterYield>
             {
                 private:
                     iterator_type<Container> sub_iter;
