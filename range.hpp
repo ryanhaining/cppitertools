@@ -1,5 +1,5 @@
-#ifndef RANGE__H__
-#define RANGE__H__
+#ifndef ITER_RANGE_H_
+#define ITER_RANGE_H_
 
 // range() for range-based loops with start, stop, and step.
 //
@@ -64,8 +64,8 @@ namespace iter {
         public:
             Range() = delete;
             Range(const Range&) = default;
-            class Iterator :
-                public std::iterator<std::forward_iterator_tag, T>
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, T>
             {
                 private:
                     T value;
@@ -146,4 +146,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef RANGE__H__
+#endif // #ifndef ITER_RANGE_H_
