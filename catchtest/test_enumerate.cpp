@@ -1,5 +1,7 @@
 #include <enumerate.hpp>
 
+#include "test_helpers.hpp"
+
 #include <vector>
 #include <string>
 #include <iterator>
@@ -19,6 +21,9 @@ std::string toString( const std::pair<A, B>& p) {
 
 using Vec = std::vector<std::pair<std::size_t, char>>;
 using iter::enumerate;
+
+using itertest::BasicIterable;
+using itertest::SolidInt;
 
 TEST_CASE("Basic Function", "[enumerate]") {
     std::string str = "abc";
@@ -72,4 +77,25 @@ TEST_CASE("initializer_list works", "[enumerate]") {
     Vec v(std::begin(e), std::end(e));
     Vec vc{{0, 'a'}, {1, 'b'}, {2, 'c'}};
     REQUIRE( v == vc );
+}
+
+TEST_CASE("binds reference when it should", "[enumerate]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    auto e = enumerate(bi);
+    (void)e;
+    REQUIRE_FALSE( bi.was_moved_from() );
+}
+
+TEST_CASE("moves rvalues into enumerable object", "[enumerate]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    auto e = enumerate(std::move(bi));
+    REQUIRE( bi.was_moved_from());
+    (void)e;
+}
+
+TEST_CASE("Doesn't move or copy elements of iterable", "[enumerate]") {
+    constexpr SolidInt arr[] = {6, 7, 8};
+    for (auto&& i : enumerate(arr)) {
+        (void)i;
+    }
 }
