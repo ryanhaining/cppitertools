@@ -18,8 +18,9 @@ namespace iter {
     // specialization for at least 1 template argument
     template <typename Container, typename... RestContainers>
     class Zipped <Container, RestContainers...> {
-        static_assert(!std::is_rvalue_reference<Container>::value,
-                "Itertools cannot be templated with rvalue references");
+        using ZipIterDeref =
+            std::tuple<iterator_deref<Container>,
+                iterator_deref<RestContainers>...>;
 
         friend Zipped zip<Container, RestContainers...>(
                 Container&&, RestContainers&&...);
@@ -36,7 +37,9 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator :
+                public std::iterator<std::forward_iterator_tag, ZipIterDeref>
+        {
                 private:
                     using RestIter =
                         typename Zipped<RestContainers...>::Iterator;
@@ -90,7 +93,9 @@ namespace iter {
     template <>
     class Zipped<> {
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::forward_iterator_tag, std::tuple<>>
+            {
                 public:
                     constexpr static const bool is_base_iter = true;
 
