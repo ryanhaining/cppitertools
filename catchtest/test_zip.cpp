@@ -26,3 +26,11 @@ TEST_CASE("Simple case, same length", "[zip]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("One empty, all empty", "[zip]") {
+    std::vector<int> iv = {1,2,3};
+    std::string s{};
+    auto z = zip(iv, s);
+    REQUIRE_FALSE( std::begin(z) != std::end(z) );
+    auto z2 = zip(s, iv);
+    REQUIRE_FALSE( std::begin(z2) != std::end(z2) );
+}
