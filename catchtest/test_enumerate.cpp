@@ -93,6 +93,14 @@ TEST_CASE("moves rvalues into enumerable object", "[enumerate]") {
     (void)e;
 }
 
+TEST_CASE("Works with const iterable", "[enumerate]") {
+    const std::string s{"ace"};
+    auto e = enumerate(s);
+    Vec v(std::begin(e), std::end(e));
+    Vec vc{{0, 'a'}, {1, 'c'}, {2, 'e'}};
+    REQUIRE( v == vc );
+}
+
 TEST_CASE("Doesn't move or copy elements of iterable", "[enumerate]") {
     constexpr SolidInt arr[] = {6, 7, 8};
     for (auto&& i : enumerate(arr)) {
