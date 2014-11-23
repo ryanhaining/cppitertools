@@ -44,3 +44,7 @@ TEST_CASE("terminates on shortest sequence", "[zip]") {
     REQUIRE( std::distance(std::begin(z), std::end(z)) == 2 );
 }
 
+TEST_CASE("Empty zip()", "[zip]") {
+    auto z = zip();
+    REQUIRE_FALSE( std::begin(z) != std::end(z) );
+}
