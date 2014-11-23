@@ -8,6 +8,7 @@
 #include <iterator>
 #include <utility>
 #include <sstream>
+#include <iterator>
 
 #include "catch.hpp"
 
@@ -34,3 +35,12 @@ TEST_CASE("One empty, all empty", "[zip]") {
     auto z2 = zip(s, iv);
     REQUIRE_FALSE( std::begin(z2) != std::end(z2) );
 }
+
+TEST_CASE("terminates on shortest sequence", "[zip]") {
+    std::vector<int> iv{1,2,3,4,5};
+    std::string s{"hi"};
+    auto z = zip(iv, s);
+
+    REQUIRE( std::distance(std::begin(z), std::end(z)) == 2 );
+}
+
