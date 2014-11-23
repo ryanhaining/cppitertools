@@ -61,13 +61,13 @@ TEST_CASE("Modify sequence through zip", "[zip]") {
     REQUIRE( iv == vc);
 }
 
-TEST_CASE("Binds reference when it should", "[zip]") {
+TEST_CASE("zip binds reference when it should", "[zip]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     zip(bi);
     REQUIRE_FALSE( bi.was_moved_from() );
 }
 
-TEST_CASE("Moves rvalues", "[zip]") {
+TEST_CASE("zip moves rvalues", "[zip]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     zip(std::move(bi));
     REQUIRE( bi.was_moved_from() );
@@ -79,4 +79,11 @@ TEST_CASE("Can bind ref and move in single zip", "[zip]") {
     zip(b1, std::move(b2));
     REQUIRE_FALSE( b1.was_moved_from() );
     REQUIRE( b2.was_moved_from() );
+}
+
+TEST_CASE("zip doesn't move or copy elements of iterable", "[zip]") {
+    constexpr SolidInt arr[] = {6, 7, 8};
+    for (auto&& t : zip(arr)) {
+        (void)std::get<0>(t);
+    }
 }

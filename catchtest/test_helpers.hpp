@@ -1,12 +1,15 @@
 #ifndef TEST_HELPER_H_
 #define TEST_HELPER_H_
 
+#include <stdexcept>
+
 namespace itertest {
 
 // move-constructible only int wrapper
 class SolidInt {
     private:
         const int i;
+        bool moved_from = false;
     public:
         constexpr SolidInt(int n)
             : i{n}
@@ -18,9 +21,19 @@ class SolidInt {
 
         SolidInt() = delete;
         SolidInt(const SolidInt&) = delete;
-        constexpr SolidInt(SolidInt&&) noexcept = default;
         SolidInt& operator=(const SolidInt&) = delete;
         SolidInt& operator=(SolidInt&&) = delete;
+
+        SolidInt(SolidInt&& other)
+            : i{other.i}
+        {
+            if (other.moved_from) {
+                throw std::invalid_argument{
+                    "Object was constructed with a move ctor"};
+            }
+            other.moved_from = true;
+        }
+
 };
 
 
