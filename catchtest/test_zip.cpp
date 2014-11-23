@@ -48,3 +48,13 @@ TEST_CASE("Empty zip()", "[zip]") {
     auto z = zip();
     REQUIRE_FALSE( std::begin(z) != std::end(z) );
 }
+
+TEST_CASE("Modify sequence through zip", "[zip]") {
+    std::vector<int> iv{1,2,3};
+    for (auto&& t : zip(iv)) {
+        std::get<0>(t) = -1;
+    }
+
+    const std::vector<int> vc{-1, -1, -1};
+    REQUIRE( iv == vc);
+}
