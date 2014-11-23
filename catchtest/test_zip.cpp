@@ -13,6 +13,8 @@
 #include "catch.hpp"
 
 using iter::zip;
+using itertest::BasicIterable;
+using itertest::SolidInt;
 
 TEST_CASE("Simple case, same length", "[zip]") {
     using Tu = std::tuple<int, char, double>;
@@ -57,4 +59,24 @@ TEST_CASE("Modify sequence through zip", "[zip]") {
 
     const std::vector<int> vc{-1, -1, -1};
     REQUIRE( iv == vc);
+}
+
+TEST_CASE("Binds reference when it should", "[zip]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    zip(bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+}
+
+TEST_CASE("Moves rvalues", "[zip]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    zip(std::move(bi));
+    REQUIRE( bi.was_moved_from() );
+}
+
+TEST_CASE("Can bind ref and move in single zip", "[zip]") {
+    BasicIterable<char> b1{'x', 'y', 'z'};
+    BasicIterable<char> b2{'a', 'b'};
+    zip(b1, std::move(b2));
+    REQUIRE_FALSE( b1.was_moved_from() );
+    REQUIRE( b2.was_moved_from() );
 }
