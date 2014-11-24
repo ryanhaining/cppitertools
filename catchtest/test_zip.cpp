@@ -53,12 +53,16 @@ TEST_CASE("Empty zip()", "[zip]") {
 
 TEST_CASE("Modify sequence through zip", "[zip]") {
     std::vector<int> iv{1,2,3};
-    for (auto&& t : zip(iv)) {
+    std::vector<int> iv2{1,2,3,4};
+    for (auto&& t : zip(iv, iv2)) {
         std::get<0>(t) = -1;
+        std::get<1>(t) = -1;
     }
 
     const std::vector<int> vc{-1, -1, -1};
+    const std::vector<int> vc2{-1, -1, -1, 4};
     REQUIRE( iv == vc);
+    REQUIRE( iv2 == vc2);
 }
 
 TEST_CASE("zip binds reference when it should", "[zip]") {
