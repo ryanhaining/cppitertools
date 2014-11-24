@@ -37,13 +37,13 @@ TEST_CASE("initializer_list works", "[accumulate]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("binds reference when it should", "[enumerate]") {
+TEST_CASE("binds reference when it should", "[accumulate]") {
     BasicIterable<int> bi{1, 2};
     accumulate(bi);
     REQUIRE_FALSE( bi.was_moved_from() );
 }
 
-TEST_CASE("moves rvalues into enumerable object", "[enumerate]") {
+TEST_CASE("moves rvalues into accumulator object", "[accumulate]") {
     BasicIterable<int> bi{1, 2};
     accumulate(std::move(bi));
     REQUIRE( bi.was_moved_from() );
