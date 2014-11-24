@@ -1,6 +1,6 @@
 #include <zip.hpp>
 
-#include "test_helpers.hpp"
+#include "helpers.hpp"
 
 #include <vector>
 #include <tuple>
