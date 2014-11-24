@@ -9,7 +9,7 @@ namespace itertest {
 class SolidInt {
     private:
         const int i;
-        bool moved_from = false;
+        bool made_from_move = false;
     public:
         constexpr SolidInt(int n)
             : i{n}
@@ -25,13 +25,13 @@ class SolidInt {
         SolidInt& operator=(SolidInt&&) = delete;
 
         SolidInt(SolidInt&& other)
-            : i{other.i}
+            : i{other.i},
+            made_from_move{true}
         {
-            if (other.moved_from) {
+            if (other.made_from_move) {
                 throw std::invalid_argument{
                     "Object was constructed with a move ctor"};
             }
-            other.moved_from = true;
         }
 
 };
