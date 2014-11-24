@@ -5,11 +5,12 @@ LINK.o = $(CXX)
 
 all: test_main
 
-test_main: test_main.o test_range.o test_enumerate.o test_zip.o
+test_main: test_main.o test_range.o test_enumerate.o test_zip.o test_helpers.o
 
 test_range.o: test_range.cpp ../range.hpp
 test_enumerate.o: test_enumerate.cpp ../enumerate.hpp
 test_zip.o: test_zip.cpp ../zip.hpp
+test_helpers.o: test_helpers.cpp helpers.hpp
 
 clean:
 	rm -f test_main *.o
