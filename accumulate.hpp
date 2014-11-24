@@ -36,7 +36,16 @@ namespace iter {
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
                     std::initializer_list<T>, AF);
             
-            // Value constructor for use only in the accumulate function
+            // AccumVal must be default constructible
+            using AccumVal =
+                typename std::remove_reference<
+                    typename std::result_of<AccumulateFunc(
+                            iterator_deref<Container>,
+                            iterator_deref<Container>)>::type>::type;
+            static_assert(
+                    std::is_default_constructible<AccumVal>::value,
+                    "Cannot accumulate a non-default constructible type");
+
             Accumulator(Container container, AccumulateFunc accumulate_func)
                 : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
@@ -47,17 +56,9 @@ namespace iter {
         public:
             Accumulator(const Accumulator&) = default;
 
-            class Iterator {
-                // AccumVal must be default constructible
-                using AccumVal =
-                    typename std::remove_reference<
-                        typename std::result_of<AccumulateFunc(
-                                iterator_deref<Container>,
-                                iterator_deref<Container>)>::type>::type;
-                static_assert(
-                        std::is_default_constructible<AccumVal>::value,
-                        "Cannot accumulate a non-default constructible type");
-
+            class Iterator 
+                : public std::iterator<std::forward_iterator_tag, AccumVal>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
