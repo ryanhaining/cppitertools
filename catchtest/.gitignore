@@ -1,2 +1,4 @@
 *.o
-test_main
+test_*
+!test_*.cpp
+.sconsign.dblite
