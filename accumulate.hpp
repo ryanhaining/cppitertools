@@ -50,11 +50,7 @@ namespace iter {
                 : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
             { }
-            Accumulator() = delete;
-            Accumulator& operator=(const Accumulator&) = delete;
-
         public:
-            Accumulator(const Accumulator&) = default;
 
             class Iterator 
                 : public std::iterator<std::forward_iterator_tag, AccumVal>
