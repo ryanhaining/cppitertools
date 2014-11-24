@@ -1,5 +1,5 @@
-#ifndef ACCUMULATE__H__
-#define ACCUMULATE__H__
+#ifndef ITER_ACCUMULATE_H_
+#define ITER_ACCUMULATE_H_
 
 #include "iterbase.hpp"
 
@@ -143,4 +143,4 @@ namespace iter {
 
 }
 
-#endif //ifndef ACCUMULATE__H__
+#endif //ifndef ITER_ACCUMULATE_H_
