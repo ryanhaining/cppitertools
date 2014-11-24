@@ -71,7 +71,7 @@ namespace iter {
                         acc_val(!(iter != end) ? AccumVal{} : *iter)
                     { } 
 
-                    AccumVal operator*() const {
+                    const AccumVal& operator*() const {
                         return this->acc_val;
                     }
 
