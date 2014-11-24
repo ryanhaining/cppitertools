@@ -18,6 +18,7 @@ progs = Split(
     enumerate
     zip
     range
+    accumulate
     '''
 )
 
