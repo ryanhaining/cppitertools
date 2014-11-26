@@ -16,6 +16,13 @@ namespace iter {
 
     template <typename Container, typename... RestContainers>
     class Chained {
+        static_assert(
+                are_same<iterator_deref<Container>,
+                    iterator_deref<RestContainers>...>::value,
+                "All chained iterables must have iterators that "
+                "dereference to the same type, including cv-qualifiers "
+                "and references.");
+
         friend class ChainMaker;
         template <typename C, typename... RC>
         friend class Chained;
