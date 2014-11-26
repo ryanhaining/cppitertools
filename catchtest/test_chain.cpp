@@ -24,3 +24,14 @@ TEST_CASE("chain three strings", "[chain]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("chain with different container types", "[chain]") {
+    std::string s1{"abc"};
+    std::list<char> li{'m', 'n', 'o'};
+    std::vector<char> vec{'x', 'y', 'z'};
+    auto ch = chain(s1, li, vec);
+
+    Vec v(std::begin(ch), std::end(ch));
+    Vec vc{'a','b','c','m','n','o','x','y','z'};
+
+    REQUIRE( v == vc );
+}
