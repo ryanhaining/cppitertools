@@ -38,7 +38,7 @@ namespace iter {
 
         public:
             class Iterator :
-                public std::iterator<std::forward_iterator_tag, ZipIterDeref>
+                public std::iterator<std::input_iterator_tag, ZipIterDeref>
         {
                 private:
                     using RestIter =
@@ -94,7 +94,7 @@ namespace iter {
     class Zipped<> {
         public:
             class Iterator
-                : public std::iterator<std::forward_iterator_tag, std::tuple<>>
+                : public std::iterator<std::input_iterator_tag, std::tuple<>>
             {
                 public:
                     constexpr static const bool is_base_iter = true;
