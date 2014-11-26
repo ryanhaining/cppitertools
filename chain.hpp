@@ -19,6 +19,9 @@ namespace iter {
         friend class ChainMaker;
         template <typename C, typename... RC>
         friend class Chained;
+        
+        using iter_traits_deref =
+            typename std::remove_reference<iterator_deref<Container>>::type;
 
         private:
             Container container;
@@ -29,7 +32,10 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<
+                      std::input_iterator_tag, iter_traits_deref>
+            {
                 private:
                     using RestIter =
                         typename Chained<RestContainers...>::Iterator;
@@ -89,6 +95,9 @@ namespace iter {
         template <typename C, typename... RC>
         friend class Chained;
 
+        using iter_traits_deref =
+            typename std::remove_reference<iterator_deref<Container>>::type;
+
         private:
             Container container;
             Chained(Container container)
@@ -96,7 +105,10 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<
+                      std::input_iterator_tag, iter_traits_deref>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
