@@ -85,3 +85,21 @@ TEST_CASE("chain handles empty containers", "[chain]") {
         REQUIRE( v == vc );
     }
 }
+
+TEST_CASE("chain with only empty containers", "[chain]") {
+    std::string emp{};
+    SECTION("one empty container") {
+        auto ch = chain(emp);
+        REQUIRE_FALSE( std::begin(ch) != std::end(ch) );
+    }
+
+    SECTION("two empty containers") {
+        auto ch = chain(emp, emp);
+        REQUIRE_FALSE( std::begin(ch) != std::end(ch) );
+    }
+
+    SECTION("three empty containers") {
+        auto ch = chain(emp, emp, emp);
+        REQUIRE_FALSE( std::begin(ch) != std::end(ch) );
+    }
+}
