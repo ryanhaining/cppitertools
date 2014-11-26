@@ -53,7 +53,7 @@ namespace iter {
         public:
 
             class Iterator 
-                : public std::iterator<std::forward_iterator_tag, AccumVal>
+                : public std::iterator<std::input_iterator_tag, AccumVal>
             {
                 private:
                     iterator_type<Container> sub_iter;
