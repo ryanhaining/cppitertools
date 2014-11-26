@@ -35,3 +35,53 @@ TEST_CASE("chain with different container types", "[chain]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("chain handles empty containers", "[chain]") {
+    std::string emp;
+    std::string a{"a"};
+    std::string b{"b"};
+    std::string c{"c"};
+    Vec vc{'a', 'b', 'c'};
+
+    SECTION("Empty container at front") {
+        auto ch = chain(emp, a, b, c);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+
+    SECTION("Empty container at back") {
+        auto ch = chain(a, b, c, emp);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+
+    SECTION("Empty container in middle") {
+        auto ch = chain(a, emp, b, emp, c);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+
+    SECTION("Consecutive empty containers at front") {
+        auto ch = chain(emp, emp, a, b, c);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+
+    SECTION("Consecutive empty containers at back") {
+        auto ch = chain(a, b, c, emp, emp);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+
+    SECTION("Consecutive empty containers in middle") {
+        auto ch = chain(a, emp, emp, b, emp, emp, c);
+        Vec v(std::begin(ch), std::end(ch));
+
+        REQUIRE( v == vc );
+    }
+}
