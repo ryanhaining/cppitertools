@@ -12,6 +12,7 @@
 #include <iterator>
 #include <functional>
 #include <cstddef>
+#include <type_traits>
 
 namespace iter {
     // because std::advance assumes a lot and is actually smart, I need a dumb
@@ -81,16 +82,12 @@ namespace iter {
 
 
     template <typename... Ts>
-    struct are_same {
-        constexpr static bool value = true;
-    };
+    struct are_same : std::true_type { };
 
     template <typename T, typename U, typename... Ts>
-    struct are_same<T, U, Ts...> {
-        constexpr static bool value =
-            std::is_same<T, U>::value && are_same<T, Ts...>::value;
-    };
-
+    struct are_same<T, U, Ts...> 
+        : std::integral_constant<bool,
+            std::is_same<T, U>::value && are_same<T, Ts...>::value> { };
 }
 
 #endif // #ifndef ITERBASE_HPP_
