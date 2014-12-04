@@ -12,6 +12,7 @@
 
 using iter::chain;
 using itertest::SolidInt;
+using itertest::BasicIterable;
 using Vec = const std::vector<char>;
 
 TEST_CASE("chain three strings", "[chain]") {
@@ -110,5 +111,20 @@ TEST_CASE("Chain doesn't move or copy elements of iterable", "[chain]") {
     constexpr SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& i : chain(arr, arr)) {
         (void)i;
+    }
+}
+
+TEST_CASE("chain binds reference to lvalue and moves rvalue", "[chain]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    BasicIterable<char> bi2{'a', 'j', 'm'};
+    SECTION("First moved, second ref'd") {
+        chain(std::move(bi), bi2);
+        REQUIRE( bi.was_moved_from() );
+        REQUIRE_FALSE( bi2.was_moved_from() );
+    }
+    SECTION("First ref'd, second moved") {
+        chain(bi, std::move(bi2));
+        REQUIRE_FALSE( bi.was_moved_from() );
+        REQUIRE( bi2.was_moved_from() );
     }
 }
