@@ -86,7 +86,7 @@ TEST_CASE("Can bind ref and move in single zip", "[zip]") {
 }
 
 TEST_CASE("zip doesn't move or copy elements of iterable", "[zip]") {
-    constexpr SolidInt arr[] = {6, 7, 8};
+    constexpr SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& t : zip(arr)) {
         (void)std::get<0>(t);
     }
