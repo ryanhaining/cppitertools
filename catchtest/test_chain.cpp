@@ -1,3 +1,4 @@
+#include "helpers.hpp"
 #include <chain.hpp>
 
 #include <vector>
@@ -10,6 +11,7 @@
 #include "catch.hpp"
 
 using iter::chain;
+using itertest::SolidInt;
 using Vec = const std::vector<char>;
 
 TEST_CASE("chain three strings", "[chain]") {
@@ -101,5 +103,12 @@ TEST_CASE("chain with only empty containers", "[chain]") {
     SECTION("three empty containers") {
         auto ch = chain(emp, emp, emp);
         REQUIRE_FALSE( std::begin(ch) != std::end(ch) );
+    }
+}
+
+TEST_CASE("Chain doesn't move or copy elements of iterable", "[chain]") {
+    constexpr SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : chain(arr, arr)) {
+        (void)i;
     }
 }
