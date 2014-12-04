@@ -102,7 +102,7 @@ TEST_CASE("Works with const iterable", "[enumerate]") {
 }
 
 TEST_CASE("Doesn't move or copy elements of iterable", "[enumerate]") {
-    constexpr SolidInt arr[] = {6, 7, 8};
+    constexpr SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& i : enumerate(arr)) {
         (void)i;
     }
