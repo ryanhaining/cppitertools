@@ -5,11 +5,10 @@
 
 namespace itertest {
 
-// move-constructible only int wrapper
+// non-copyable. non-movable. non-default-constructible
 class SolidInt {
     private:
         const int i;
-        bool made_from_move = false;
     public:
         constexpr SolidInt(int n)
             : i{n}
@@ -23,17 +22,7 @@ class SolidInt {
         SolidInt(const SolidInt&) = delete;
         SolidInt& operator=(const SolidInt&) = delete;
         SolidInt& operator=(SolidInt&&) = delete;
-
-        SolidInt(SolidInt&& other)
-            : i{other.i},
-            made_from_move{true}
-        {
-            if (other.made_from_move) {
-                throw std::invalid_argument{
-                    "Object was constructed with a move ctor"};
-            }
-        }
-
+        SolidInt(SolidInt&&) = delete;
 };
 
 
