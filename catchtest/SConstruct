@@ -20,6 +20,7 @@ progs = Split(
     range
     accumulate
     chain
+    combinations
     '''
 )
 
