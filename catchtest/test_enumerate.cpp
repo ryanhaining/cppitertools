@@ -25,7 +25,7 @@ using iter::enumerate;
 using itertest::BasicIterable;
 using itertest::SolidInt;
 
-TEST_CASE("Basic Function", "[enumerate]") {
+TEST_CASE("Basic Functioning enumerate", "[enumerate]") {
     std::string str = "abc";
     auto e = enumerate(str);
     Vec v(std::begin(e), std::end(e));
@@ -34,13 +34,20 @@ TEST_CASE("Basic Function", "[enumerate]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("Empty", "[enumerate]") {
+TEST_CASE("Empty enumerate", "[enumerate]") {
     std::string emp{};
     auto e = enumerate(emp);
-    Vec v(std::begin(e), std::end(e));
-
-    REQUIRE( v.empty() );
+    REQUIRE( std::begin(e) == std::end(e) );
 }
+
+TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
+    std::string s{"amz"};
+    auto e = enumerate(s);
+    auto it = std::begin(e);
+    it++;
+    REQUIRE( (*it).first == 2 );
+}
+
 
 TEST_CASE("Modifications through enumerate affect container", "[enumerate]") {
     std::vector<int> v{1, 2, 3, 4};
@@ -52,7 +59,7 @@ TEST_CASE("Modifications through enumerate affect container", "[enumerate]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("Static array works", "[enumerate]") {
+TEST_CASE("enumerate with static array works", "[enumerate]") {
     char arr[] = {'w', 'x', 'y'};
 
     SECTION("Conversion to vector") {
