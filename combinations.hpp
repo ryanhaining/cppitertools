@@ -1,5 +1,5 @@
-#ifndef COMBINATIONS_HPP_
-#define COMBINATIONS_HPP_
+#ifndef ITER_COMBINATIONS_HPP_
+#define ITER_COMBINATIONS_HPP_
 
 #include "iterbase.hpp"
 
@@ -35,9 +35,13 @@ namespace iter {
                 length{in_length}
             { }
 
+            using CombIteratorDeref =
+                std::vector<collection_item_type<Container>>;
         public:
 
-        class Iterator {
+        class Iterator :
+            public std::iterator<std::input_iterator_tag, CombIteratorDeref>
+        {
             private:
                 Container& items;
                 std::vector<iterator_type<Container>> indicies;
@@ -66,8 +70,8 @@ namespace iter {
                     }
                 }
 
-                std::vector<collection_item_type<Container>> operator*() {
-                    std::vector<collection_item_type<Container>> values;
+                CombIteratorDeref operator*() {
+                    CombIteratorDeref values;
                     for (auto i : indicies) {
                         values.push_back(*i);
                     }
@@ -141,4 +145,4 @@ namespace iter {
         return {il, length};
     }
 }
-#endif //#ifndef COMBINATIONS_HPP_
+#endif
