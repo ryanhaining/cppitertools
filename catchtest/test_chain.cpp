@@ -15,7 +15,7 @@ using itertest::SolidInt;
 using itertest::BasicIterable;
 using Vec = const std::vector<char>;
 
-TEST_CASE("chain three strings", "[chain]") {
+TEST_CASE("chain: three strings", "[chain]") {
     std::string s1{"abc"};
     std::string s2{"mno"};
     std::string s3{"xyz"};
@@ -27,7 +27,7 @@ TEST_CASE("chain three strings", "[chain]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("chain with different container types", "[chain]") {
+TEST_CASE("chain: with different container types", "[chain]") {
     std::string s1{"abc"};
     std::list<char> li{'m', 'n', 'o'};
     std::vector<char> vec{'x', 'y', 'z'};
@@ -39,7 +39,7 @@ TEST_CASE("chain with different container types", "[chain]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("chain handles empty containers", "[chain]") {
+TEST_CASE("chain: handles empty containers", "[chain]") {
     std::string emp;
     std::string a{"a"};
     std::string b{"b"};
@@ -89,7 +89,7 @@ TEST_CASE("chain handles empty containers", "[chain]") {
     }
 }
 
-TEST_CASE("chain with only empty containers", "[chain]") {
+TEST_CASE("chain: with only empty containers", "[chain]") {
     std::string emp{};
     SECTION("one empty container") {
         auto ch = chain(emp);
@@ -107,14 +107,14 @@ TEST_CASE("chain with only empty containers", "[chain]") {
     }
 }
 
-TEST_CASE("Chain doesn't move or copy elements of iterable", "[chain]") {
+TEST_CASE("chain: doesn't move or copy elements of iterable", "[chain]") {
     constexpr SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& i : chain(arr, arr)) {
         (void)i;
     }
 }
 
-TEST_CASE("chain binds reference to lvalue and moves rvalue", "[chain]") {
+TEST_CASE("chain: binds reference to lvalue and moves rvalue", "[chain]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     BasicIterable<char> bi2{'a', 'j', 'm'};
     SECTION("First moved, second ref'd") {
@@ -127,4 +127,10 @@ TEST_CASE("chain binds reference to lvalue and moves rvalue", "[chain]") {
         REQUIRE_FALSE( bi.was_moved_from() );
         REQUIRE( bi2.was_moved_from() );
     }
+}
+
+TEST_CASE("chain: operator==", "[chain]") {
+    std::string emp{};
+    auto ch = chain(emp);
+    REQUIRE( std::begin(ch) == std::end(ch) );
 }
