@@ -144,11 +144,52 @@ TEST_CASE("chain: postfix ++", "[chain]") {
 }
 
 
-TEST_CASE("chain.from_iterable: basic test", "chain.from_iterable") {
+TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
     std::vector<std::string> sv{"abc", "xyz"};
     auto ch = chain.from_iterable(sv);
     std::vector<char> v(std::begin(ch), std::end(ch));
 
     std::vector<char> vc{'a', 'b', 'c', 'x', 'y', 'z'};
     REQUIRE( v == vc );
+}
+
+TEST_CASE("chain.from_iterable: iterators cant be copy constructed "
+        "and assigned", "[chain.from_iterable]") {
+    std::vector<std::string> sv{"abc", "xyz"};
+    auto ch = chain.from_iterable(sv);
+    auto it = std::begin(ch);
+
+    SECTION("Copy constructed") {
+        auto it2 = it;
+        ++it;
+        REQUIRE( it != it2 );
+    }
+
+    SECTION("Copy assigned") {
+        auto it2 = std::end(ch);
+        it2 = it;
+        REQUIRE( it == it2 );
+    }
+}
+
+TEST_CASE("chain.from_iterable: postfix ++", "[chain.from_iterable]") {
+    std::vector<std::string> sv{"a", "n"};
+    auto ch = chain.from_iterable(sv);
+    auto it = std::begin(ch);
+    it++;
+    REQUIRE( *it == 'n' );
+}
+
+
+TEST_CASE("chain.from_iterable: moves rvalues and binds ref to lvalues",
+        "[chain.from_iterable]") {
+    BasicIterable<std::string> bi{"abc", "xyz"};
+    SECTION("Moves rvalue") {
+        chain.from_iterable(std::move(bi));
+        REQUIRE( bi.was_moved_from() );
+    }
+    SECTION("Binds ref to lvalue") {
+        chain.from_iterable(bi);
+        REQUIRE_FALSE( bi.was_moved_from() );
+    }
 }
