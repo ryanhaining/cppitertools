@@ -45,7 +45,7 @@ TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
     auto e = enumerate(s);
     auto it = std::begin(e);
     it++;
-    REQUIRE( (*it).first == 2 );
+    REQUIRE( (*it).first == 1 );
 }
 
 
