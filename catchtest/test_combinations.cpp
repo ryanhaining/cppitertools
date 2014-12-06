@@ -28,5 +28,11 @@ TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
 TEST_CASE("combinations: size too large gives no results", "[combinations]") {
     std::string s{"ABCD"};
     auto c = combinations(s, 5);
-    REQUIRE( !(std::begin(c) != std::end(c)) );
+    REQUIRE( std::begin(c) == std::end(c) );
+}
+
+TEST_CASE("combinations: size 0 gives nothing", "[combinations]") {
+    std::string s{"ABCD"};
+    auto c = combinations(s, 0);
+    REQUIRE( std::begin(c) == std::end(c) );
 }
