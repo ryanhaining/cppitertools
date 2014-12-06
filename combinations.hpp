@@ -121,6 +121,10 @@ namespace iter {
                     //different from the way that python's works
                     return not_done;
                 }
+
+                bool operator==(const Iterator& other) const {
+                    return !(*this != other);
+                }
         };
 
         Iterator begin() {
