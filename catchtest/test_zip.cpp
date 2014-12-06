@@ -97,5 +97,5 @@ TEST_CASE("zip: postfix ++", "[zip]") {
     auto z = zip(v);
     auto it = std::begin(z);
     it++;
-    REQUIRE( !(it != std::end(z)) );
+    REQUIRE( it == std::end(z) );
 }
