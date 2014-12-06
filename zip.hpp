@@ -59,6 +59,12 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->iter != other.iter &&
                             (RestIter::is_base_iter ||
@@ -104,6 +110,10 @@ namespace iter {
                     Iterator& operator=(const Iterator&) { return *this; }
 
                     Iterator& operator++() {
+                        return *this;
+                    }
+
+                    Iterator operator++(int) {
                         return *this;
                     }
 
