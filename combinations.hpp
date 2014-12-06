@@ -114,6 +114,12 @@ namespace iter {
                     return *this;
                 }
 
+                Iterator operator++(int) {
+                    auto ret = *this;
+                    ++*this;
+                    return ret;
+                }
+
                 bool operator!=(const Iterator&) const {
                     //because of the way this is done you have to start from
                     //the begining of the range and end at the end, you could
