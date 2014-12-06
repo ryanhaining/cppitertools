@@ -71,6 +71,10 @@ namespace iter {
                                 this->rest_iter != other.rest_iter);
                     }
 
+                    bool operator==(const Iterator& other) const {
+                        return !(*this == other);
+                    }
+
                     auto operator*() ->
                         decltype(std::tuple_cat(
                                     std::tuple<iterator_deref<Container>>{
@@ -124,6 +128,10 @@ namespace iter {
                     // instead results in an infinite loop in the zip() case
                     bool operator!=(const Iterator&) const {
                         return false;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     std::tuple<> operator*() {
