@@ -134,3 +134,12 @@ TEST_CASE("chain: operator==", "[chain]") {
     auto ch = chain(emp);
     REQUIRE( std::begin(ch) == std::end(ch) );
 }
+
+TEST_CASE("chain: postfix ++", "[chain]") {
+    std::string s1{"a"}, s2{"b"};
+    auto ch = chain(s1, s2);
+    auto it = std::begin(ch);
+    it++;
+    REQUIRE( *it == 'b');
+}
+
