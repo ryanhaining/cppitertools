@@ -39,6 +39,13 @@ TEST_CASE("range(0) is empty", "[range]") {
     REQUIRE( std::begin(r) == std::end(r) );
 }
 
+TEST_CASE("range: postfix++", "[range]") {
+    auto r = iter::range(3);
+    auto it = std::begin(r);
+    it++;
+    REQUIRE( *it == 1 );
+}
+
 TEST_CASE("start > stop produces empty range", "[range]") {
     auto r = range(5, 0);
     Vec v(std::begin(r), std::end(r));
