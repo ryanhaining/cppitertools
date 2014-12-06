@@ -50,7 +50,16 @@ TEST_CASE("accumulate: moves rvalues when it should", "[accumulate]") {
 }
 
 TEST_CASE("accumulate: operator==", "[accumulate]") {
-    std::vector<int> v;
+    Vec v;
     auto a = accumulate(v);
     REQUIRE( std::begin(a) == std::end(a) );
 }
+
+TEST_CASE("accumulate: postfix ++", "[accumulate]") {
+    Vec ns{2,3};
+    auto a = accumulate(ns);
+    auto it = std::begin(a);
+    it++;
+    REQUIRE( *it == 5 );
+}
+
