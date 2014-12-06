@@ -78,6 +78,10 @@ namespace iter {
                             this->rest_iter != other.rest_iter;
                     }
 
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
                     iterator_deref<Container> operator*() {
                         return this->at_end ?
                             *this->rest_iter : *this->sub_iter;
@@ -134,6 +138,10 @@ namespace iter {
 
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     iterator_deref<Container> operator*() {
@@ -204,6 +212,10 @@ namespace iter {
                        return this->top_level_iter != other.top_level_iter &&
                            (this->sub_iter_p != other.sub_iter_p ||
                             *this->sub_iter_p != *other.sub_iter_p);
+                   }
+
+                   bool operator==(const Iterator& other) const {
+                       return !(*this != other);
                    }
 
                    iterator_deref<iterator_deref<Container>> operator*() {
