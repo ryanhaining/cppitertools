@@ -10,7 +10,7 @@ using Vec = const std::vector<int>;
 using iter::range;
 
 
-TEST_CASE("Range works with only stop", "[range]") {
+TEST_CASE("range: works with only stop", "[range]") {
     auto r = range(5);
     Vec v(std::begin(r), std::end(r));
     Vec vc{0, 1, 2, 3, 4};
@@ -18,7 +18,7 @@ TEST_CASE("Range works with only stop", "[range]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("Range works with start and stop", "[range]") {
+TEST_CASE("range: works with start and stop", "[range]") {
     auto r = range(1, 5);
     Vec v(std::begin(r), std::end(r));
     Vec vc {1, 2, 3, 4};
@@ -26,7 +26,7 @@ TEST_CASE("Range works with start and stop", "[range]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("Range works with positive step > 1", "[range]") {
+TEST_CASE("range: works with positive step > 1", "[range]") {
     auto r = range(1, 10, 3);
     Vec v(std::begin(r), std::end(r));
     Vec vc{1, 4, 7};
@@ -36,8 +36,7 @@ TEST_CASE("Range works with positive step > 1", "[range]") {
 
 TEST_CASE("range(0) is empty", "[range]") {
     auto r = iter::range(0);
-    Vec v(std::begin(r), std::end(r));
-    REQUIRE( v.empty() );
+    REQUIRE( std::begin(r) == std::end(r) );
 }
 
 TEST_CASE("start > stop produces empty range", "[range]") {
@@ -52,14 +51,14 @@ TEST_CASE("start < stop and step < 0 produces empty range", "[range]") {
     REQUIRE( v.empty() );
 }
 
-TEST_CASE("Range with only a negative stop is empty", "[range]") {
+TEST_CASE("range: with only a negative stop is empty", "[range]") {
     auto r = range(-3);
     Vec v(std::begin(r), std::end(r));
 
     REQUIRE( v.empty() );
 }
 
-TEST_CASE("Range works with negative step", "[range]") {
+TEST_CASE("range: works with negative step", "[range]") {
     auto r = range(5, -5, -3);
     Vec v(std::begin(r), std::end(r));
     Vec vc{5, 2, -1, -4};
@@ -67,7 +66,7 @@ TEST_CASE("Range works with negative step", "[range]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("Range stops short when step doesn't divide stop-start", "[range]") {
+TEST_CASE("range: stops short when step doesn't divide stop-start", "[range]") {
     auto r = range(0, 5, 2);
     Vec v(std::begin(r), std::end(r));
     Vec vc{0, 2, 4};
@@ -76,7 +75,7 @@ TEST_CASE("Range stops short when step doesn't divide stop-start", "[range]") {
 
 }
 
-TEST_CASE("Range stops short when step > stop-start", "[range]") {
+TEST_CASE("range: stops short when step > stop-start", "[range]") {
     auto r = range(0, 10, 20);
     Vec v(std::begin(r), std::end(r));
     REQUIRE( v.size() == 1 );
@@ -86,7 +85,7 @@ TEST_CASE("No 0 step ranges allowed", "[range]") {
     REQUIRE_THROWS(range(0, 1, 0));
 }
 
-TEST_CASE("Range works with a variable start, stop, and step", "[range]") {
+TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
     constexpr int a = 10;
     constexpr int b = 100;
     constexpr int c = 50;
