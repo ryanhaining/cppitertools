@@ -187,9 +187,29 @@ namespace iter {
                     using SubIter = iterator_type<SubContainer>;
 
                    iterator_type<Container> top_level_iter;
-                   const iterator_type<Container> top_level_end;
+                   iterator_type<Container> top_level_end;
                    std::unique_ptr<SubIter> sub_iter_p;
                    std::unique_ptr<SubIter> sub_end_p;
+
+                   static std::unique_ptr<SubIter> clone_sub_pointer(
+                           const SubIter* sub_iter) {
+                       return std::unique_ptr<SubIter>{ sub_iter ?
+                           new SubIter{*sub_iter} : nullptr};
+                   }
+
+                   bool sub_iters_differ(const Iterator& other) const {
+                       if (this->sub_iter_p == other.sub_iter_p) {
+                           return false;
+                       }
+                       if (this->sub_iter_p == nullptr
+                               || other.sub_iter_p == nullptr) {
+                           // since the first check tests if they're the same,
+                           // this will return if only one is nullptr
+                           return true;
+                       }
+                       return *this->sub_iter_p != *other.sub_iter_p;
+                   }
+
                 public:
                    Iterator(iterator_type<Container> top_iter,
                            iterator_type<Container> top_end)
@@ -204,11 +224,26 @@ namespace iter {
                    Iterator(const Iterator& other)
                        : top_level_iter{other.top_level_iter},
                        top_level_end{other.top_level_end},
-                       sub_iter_p{other.sub_iter_p ?
-                           new SubIter{*other.sub_iter_p} : nullptr},
-                       sub_end_p{other.sub_end_p ?
-                           new SubIter{*other.sub_end_p} : nullptr}
+                       sub_iter_p{clone_sub_pointer(other.sub_iter_p.get())},
+                       sub_end_p{clone_sub_pointer(other.sub_end_p.get())}
                    { }
+
+                   Iterator& operator=(const Iterator& other) {
+                       if (this == &other) return *this;
+
+                       this->top_level_iter = other.top_level_iter;
+                       this->top_level_end = other.top_level_end;
+                       this->sub_iter_p =
+                               clone_sub_pointer(other.sub_iter_p.get());
+                       this->sub_end_p =
+                               clone_sub_pointer(other.sub_end_p.get());
+
+                       return *this;
+                   }
+
+                   Iterator(Iterator&&) = default;
+                   Iterator& operator=(Iterator&&) = default;
+                   ~Iterator() = default;
 
                    Iterator& operator++() {
                        ++*this->sub_iter_p;
@@ -235,9 +270,8 @@ namespace iter {
                    }
 
                    bool operator!=(const Iterator& other) const {
-                       return this->top_level_iter != other.top_level_iter &&
-                           (this->sub_iter_p != other.sub_iter_p ||
-                            *this->sub_iter_p != *other.sub_iter_p);
+                       return this->top_level_iter != other.top_level_iter
+                            || this->sub_iters_differ(other);
                    }
 
                    bool operator==(const Iterator& other) const {
