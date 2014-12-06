@@ -111,9 +111,17 @@ namespace iter {
                     // 2) (stop - start) % step != 0.  For
                     // example Range(1, 10, 2).  The iterator will never be
                     // exactly equal to the stop value.
+                    //
+                    // Another way to think about it is that the "end"
+                    // iterator represents the range of values that are invalid
+                    // So, if an iterator is not equal to that, it is valid
                     bool operator!=(const Iterator& other) const { 
                         return not_equal_to(
                                 other, typename std::is_unsigned<T>::type());
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -140,7 +148,7 @@ namespace iter {
     template <typename T>
     Range<T> range(T start, T stop, T step) {
         if (step == 0) {
-            throw RangeException();
+            throw RangeException{};
         }
         return {start, stop, step};
     }
