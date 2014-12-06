@@ -73,6 +73,12 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter ||
                             this->rest_iter != other.rest_iter;
@@ -134,6 +140,12 @@ namespace iter {
                     Iterator& operator++() {
                         ++this->sub_iter;
                         return *this;
+                    }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
                     bool operator!=(const Iterator& other) const {
@@ -206,7 +218,13 @@ namespace iter {
                        }
                        return *this;
                    }
-                       
+
+
+                   Iterator operator++(int) {
+                       auto ret = *this;
+                       ++*this;
+                       return ret;
+                   }
 
                    bool operator!=(const Iterator& other) const {
                        return this->top_level_iter != other.top_level_iter &&
