@@ -56,6 +56,10 @@ namespace iter {
     using iterator_deref = 
         decltype(*std::declval<iterator_type<Container>&>());
 
+    template <typename Container>
+    using iterator_traits_deref =
+        typename std::remove_reference<iterator_deref<Container>>::type;
+
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
     using reverse_iterator_type =
