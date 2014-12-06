@@ -27,9 +27,6 @@ namespace iter {
         template <typename C, typename... RC>
         friend class Chained;
         
-        using iter_traits_deref =
-            typename std::remove_reference<iterator_deref<Container>>::type;
-
         private:
             Container container;
             Chained<RestContainers...> rest_chained;
@@ -41,7 +38,8 @@ namespace iter {
         public:
             class Iterator
                 : public std::iterator<
-                      std::input_iterator_tag, iter_traits_deref>
+                      std::input_iterator_tag,
+                      iterator_traits_deref<Container>>
             {
                 private:
                     using RestIter =
@@ -112,9 +110,6 @@ namespace iter {
         template <typename C, typename... RC>
         friend class Chained;
 
-        using iter_traits_deref =
-            typename std::remove_reference<iterator_deref<Container>>::type;
-
         private:
             Container container;
             Chained(Container container)
@@ -124,7 +119,8 @@ namespace iter {
         public:
             class Iterator
                 : public std::iterator<
-                      std::input_iterator_tag, iter_traits_deref>
+                      std::input_iterator_tag,
+                      iterator_traits_deref<Container>>
             {
                 private:
                     iterator_type<Container> sub_iter;
@@ -182,7 +178,10 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                :public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<iterator_deref<Container>>>
+            {
                 private:
                     using SubContainer = iterator_deref<Container>;
                     using SubIter = iterator_type<SubContainer>;
@@ -200,6 +199,15 @@ namespace iter {
                            nullptr : new SubIter{std::begin(*top_iter)}},
                        sub_end_p{!(top_iter != top_end) ?  // iter == end ?
                            nullptr : new SubIter{std::end(*top_iter)}}
+                   { }
+
+                   Iterator(const Iterator& other)
+                       : top_level_iter{other.top_level_iter},
+                       top_level_end{other.top_level_end},
+                       sub_iter_p{other.sub_iter_p ?
+                           new SubIter{*other.sub_iter_p} : nullptr},
+                       sub_end_p{other.sub_end_p ?
+                           new SubIter{*other.sub_end_p} : nullptr}
                    { }
 
                    Iterator& operator++() {
