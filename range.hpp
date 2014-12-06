@@ -98,6 +98,12 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     // This operator would more accurately read as "in bounds"
                     // or "incomplete" because exact comparison with the end
                     // isn't good enough for the purposes of this Iterator.
