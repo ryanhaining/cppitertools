@@ -193,3 +193,9 @@ TEST_CASE("chain.from_iterable: moves rvalues and binds ref to lvalues",
         REQUIRE_FALSE( bi.was_moved_from() );
     }
 }
+
+TEST_CASE("chain.from_iterable: empty", "[empty]") {
+    const std::vector<std::string> v{};
+    auto ch = chain.from_iterable(v);
+    REQUIRE( std::begin(ch) == std::end(ch) );
+}
