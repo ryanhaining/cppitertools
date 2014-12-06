@@ -16,7 +16,7 @@ using iter::zip;
 using itertest::BasicIterable;
 using itertest::SolidInt;
 
-TEST_CASE("Simple case, same length", "[zip]") {
+TEST_CASE("zip: Simple case, same length", "[zip]") {
     using Tu = std::tuple<int, char, double>;
     using ResVec = const std::vector<Tu>;
     std::vector<int> iv {10, 20, 30};
@@ -29,7 +29,7 @@ TEST_CASE("Simple case, same length", "[zip]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("One empty, all empty", "[zip]") {
+TEST_CASE("zip: One empty, all empty", "[zip]") {
     std::vector<int> iv = {1,2,3};
     std::string s{};
     auto z = zip(iv, s);
@@ -38,7 +38,7 @@ TEST_CASE("One empty, all empty", "[zip]") {
     REQUIRE_FALSE( std::begin(z2) != std::end(z2) );
 }
 
-TEST_CASE("terminates on shortest sequence", "[zip]") {
+TEST_CASE("zip: terminates on shortest sequence", "[zip]") {
     std::vector<int> iv{1,2,3,4,5};
     std::string s{"hi"};
     auto z = zip(iv, s);
@@ -46,12 +46,12 @@ TEST_CASE("terminates on shortest sequence", "[zip]") {
     REQUIRE( std::distance(std::begin(z), std::end(z)) == 2 );
 }
 
-TEST_CASE("Empty zip()", "[zip]") {
+TEST_CASE("zip: Empty", "[zip]") {
     auto z = zip();
     REQUIRE_FALSE( std::begin(z) != std::end(z) );
 }
 
-TEST_CASE("Modify sequence through zip", "[zip]") {
+TEST_CASE("zip: Modify sequence through zip", "[zip]") {
     std::vector<int> iv{1,2,3};
     std::vector<int> iv2{1,2,3,4};
     for (auto&& t : zip(iv, iv2)) {
@@ -65,19 +65,19 @@ TEST_CASE("Modify sequence through zip", "[zip]") {
     REQUIRE( iv2 == vc2);
 }
 
-TEST_CASE("zip binds reference when it should", "[zip]") {
+TEST_CASE("zip: binds reference when it should", "[zip]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     zip(bi);
     REQUIRE_FALSE( bi.was_moved_from() );
 }
 
-TEST_CASE("zip moves rvalues", "[zip]") {
+TEST_CASE("zip: moves rvalues", "[zip]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     zip(std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
 
-TEST_CASE("Can bind ref and move in single zip", "[zip]") {
+TEST_CASE("zip: Can bind ref and move in single zip", "[zip]") {
     BasicIterable<char> b1{'x', 'y', 'z'};
     BasicIterable<char> b2{'a', 'b'};
     zip(b1, std::move(b2));
@@ -85,9 +85,17 @@ TEST_CASE("Can bind ref and move in single zip", "[zip]") {
     REQUIRE( b2.was_moved_from() );
 }
 
-TEST_CASE("zip doesn't move or copy elements of iterable", "[zip]") {
+TEST_CASE("zip: doesn't move or copy elements of iterable", "[zip]") {
     constexpr SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& t : zip(arr)) {
         (void)std::get<0>(t);
     }
+}
+
+TEST_CASE("zip: postfix ++", "[zip]") {
+    const std::vector<int> v = {1};
+    auto z = zip(v);
+    auto it = std::begin(z);
+    it++;
+    REQUIRE( !(it != std::end(z)) );
 }
