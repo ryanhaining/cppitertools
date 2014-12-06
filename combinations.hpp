@@ -114,8 +114,7 @@ namespace iter {
                     return *this;
                 }
 
-                bool operator !=(const Iterator&)
-                {
+                bool operator!=(const Iterator&) const {
                     //because of the way this is done you have to start from
                     //the begining of the range and end at the end, you could
                     //break in the middle of the loop though, it's not
