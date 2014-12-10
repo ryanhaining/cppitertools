@@ -40,3 +40,10 @@ TEST_CASE("combinations_with_replacement: big size is no problem",
     REQUIRE( ans == sc );
 }
     
+TEST_CASE("combinations_with_replacement: 0 size is empty",
+        "[combinations_with_replacement]") {
+    std::string s{"A"};
+    auto cwr = combinations_with_replacement(s, 0);
+    REQUIRE( std::begin(cwr) == std::end(cwr) );
+}
+
