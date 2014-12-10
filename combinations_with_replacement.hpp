@@ -41,8 +41,14 @@ namespace iter {
                length{n}
            { }
 
+            using CombIteratorDeref =
+                std::vector<collection_item_type<Container>>;
+
         public:
-           class Iterator {
+            class Iterator :
+                public std::iterator<std::input_iterator_tag,
+                    CombIteratorDeref>
+            {
                private:
                    Container& items;
                    std::vector<iterator_type<Container>> indicies;
@@ -56,7 +62,7 @@ namespace iter {
                        not_done{n != 0}
                    { }
 
-                   std::vector<collection_item_type<Container>> operator*() {
+                   CombIteratorDeref operator*() {
                        std::vector<collection_item_type<Container>> values;
                        for (auto i : indicies) {
                            values.push_back(*i);
