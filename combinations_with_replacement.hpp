@@ -1,5 +1,5 @@
-#ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
-#define COMBINATIONS_WITH_REPLACEMENT_HPP_
+#ifndef ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
+#define ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 
 #include "iterbase.hpp"
 
@@ -96,13 +96,25 @@ namespace iter {
                        return *this;
                    }
 
-                   bool operator !=(const Iterator&) const {
+
+                   Iterator operator++(int) {
+                       auto ret = *this;
+                       ++*this;
+                       return ret;
+                   }
+
+                   bool operator!=(const Iterator&) const {
                        //because of the way this is done you have to start from
                        //the begining of the range and end at the end, you
                        //could break in the middle of the loop though, it's not
-                       //different from the waythat python's works
+                       //different from the way that python's works
                        return not_done;
                    }
+
+                   bool operator==(const Iterator& other) const {
+                       return !(*this != other);
+                   }
+
            };
 
            Iterator begin() {
@@ -128,4 +140,4 @@ namespace iter {
     }
 }
 
-#endif // #ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
+#endif
