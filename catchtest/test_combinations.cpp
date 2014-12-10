@@ -10,6 +10,7 @@
 
 
 using iter::combinations;
+using itertest::BasicIterable;
 using CharCombSet = std::multiset<std::vector<char>>;
 
 TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
@@ -36,3 +37,16 @@ TEST_CASE("combinations: size 0 gives nothing", "[combinations]") {
     auto c = combinations(s, 0);
     REQUIRE( std::begin(c) == std::end(c) );
 }
+
+TEST_CASE("combinations: binds to lvalues, moves rvalues", "[combinations]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    SECTION("binds to lvalues") {
+        combinations(bi, 1);
+        REQUIRE_FALSE( bi.was_moved_from() );
+    }
+    SECTION("moves rvalues") {
+        combinations(std::move(bi), 1);
+        REQUIRE( bi.was_moved_from() );
+    }
+}
+
