@@ -31,7 +31,7 @@ TEST_CASE("count: start at 10", "[count]") {
     REQUIRE( v == vc );
 }
 
-TEST_CASE("count with step", "[count]") {
+TEST_CASE("count: with step", "[count]") {
     std::vector<int> v{};
     for (auto i : count(2, -1)) {
         v.push_back(i);
@@ -40,4 +40,15 @@ TEST_CASE("count with step", "[count]") {
 
     const std::vector<int> vc{2,1,0,-1,-2,-3};
     REQUIRE( v == vc);
+}
+
+TEST_CASE("count: with step > 1", "[count]") {
+    std::vector<int> v{};
+    for (auto i : count(10, 2)) {
+        v.push_back(i);
+        if (i == 16) break;
+    }
+
+    const std::vector<int> vc{10, 12, 14, 16};
+    REQUIRE( v == vc );
 }
