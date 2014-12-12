@@ -47,3 +47,11 @@ TEST_CASE("combinations_with_replacement: 0 size is empty",
     REQUIRE( std::begin(cwr) == std::end(cwr) );
 }
 
+
+TEST_CASE("combinations_with_replacement: doesn't move or copy elements of iterable",
+        "[combinations_with_replacement]") {
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : combinations_with_replacement(arr, 1)) {
+        (void)i;
+    }
+}
