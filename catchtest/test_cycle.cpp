@@ -43,3 +43,10 @@ TEST_CASE("cycle: binds to lvalues, moves rvalues", "[cycle]") {
         REQUIRE( bi.was_moved_from() );
     }
 }
+
+TEST_CASE("cycle: doesn't move or copy elements of iterable",
+        "[cycle]") {
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
+    auto c = cycle(arr);
+    *std::begin(c);
+}
