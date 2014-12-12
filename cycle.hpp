@@ -34,12 +34,12 @@ namespace iter {
             Cycle(Container container)
                 : container(std::forward<Container>(container))
             { }
-            Cycle() = delete;
-            Cycle& operator=(const Cycle&) = delete;
 
         public:
-            Cycle(const Cycle&) = default;
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                            iterator_traits_deref<Container>>
+            {
                 private:
                     using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
