@@ -93,3 +93,10 @@ TEST_CASE("compress: workds with truthy and falsey values", "[compress]") {
     Vec vc = {1,3};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("compress: terminates on shorter selectors", "[compress]") {
+    std::vector<int> ivec{1, 2, 3, 4, 5};
+    std::vector<bool> bvec{true};
+    auto c = compress(ivec, bvec);
+    REQUIRE( std::distance(std::begin(c), std::end(c)) == 1 );
+}
