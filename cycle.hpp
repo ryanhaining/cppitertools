@@ -73,6 +73,10 @@ namespace iter {
                     constexpr bool operator!=(const Iterator&) const {
                         return true;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
             };
 
             Iterator begin() {
