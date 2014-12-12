@@ -27,3 +27,11 @@ TEST_CASE("dropwhile: doesn't skip anything if it shouldn't", "[dropwhile]") {
     Vec vc = {3,4,5,6};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("dropwhile: skips all elements when all are true under predicate",
+        "[dropwhile]") {
+    Vec ns {3,4,5,6};
+    auto d = dropwhile([](int i){return i != 0; }, ns);
+    REQUIRE( std::begin(d) == std::end(d) );
+}
+
