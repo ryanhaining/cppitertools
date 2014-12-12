@@ -24,6 +24,7 @@ progs = Split(
     combinations_with_replacement
     compress
     count
+    cycle
     '''
 )
 
