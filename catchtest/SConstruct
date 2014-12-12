@@ -23,6 +23,7 @@ progs = Split(
     combinations
     combinations_with_replacement
     compress
+    count
     '''
 )
 
