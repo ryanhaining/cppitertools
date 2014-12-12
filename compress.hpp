@@ -60,11 +60,8 @@ namespace iter {
                 : container(std::forward<Container>(container)),
                 selectors(std::forward<Selector>(selectors))
             { }
-            Compressed() = delete;
-            Compressed& operator=(const Compressed&) = delete;
 
         public:
-            Compressed(const Compressed&) = default;
 
             class Iterator 
                 : public std::iterator<std::input_iterator_tag,
@@ -111,6 +108,12 @@ namespace iter {
                         this->increment_iterators();
                         this->skip_failures();
                         return *this;
+                    }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
                     bool operator!=(const Iterator& other) const {
