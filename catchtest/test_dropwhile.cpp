@@ -1,0 +1,21 @@
+#include <dropwhile.hpp>
+
+#include "helpers.hpp"
+
+#include <vector>
+#include <string>
+#include <iterator>
+
+#include "catch.hpp"
+
+using iter::dropwhile;
+
+using Vec = const std::vector<int>;
+
+TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
+    Vec ns{1,2,3,4,5,6,7,8};
+    auto d = dropwhile([](int i){return i < 5; }, ns);
+    Vec v(std::begin(d), std::end(d));
+    Vec vc = {5,6,7,8};
+    REQUIRE( v == vc );
+}
