@@ -114,3 +114,10 @@ TEST_CASE("compress: nothing on empty selectors", "[compress]") {
     auto c = compress(ivec, bvec);
     REQUIRE( std::begin(c) == std::end(c) );
 }
+
+TEST_CASE("compress: nothing on empty data", "[compress]") {
+    std::vector<int> ivec{};
+    std::vector<bool> bvec{true, true, true};
+    auto c = compress(ivec, bvec);
+    REQUIRE( std::begin(c) == std::end(c) );
+}
