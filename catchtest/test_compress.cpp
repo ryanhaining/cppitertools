@@ -73,3 +73,23 @@ TEST_CASE("compress: binds to lvalues, moves rvalues", "[compress]") {
         REQUIRE( bi.was_moved_from() );
     }
 }
+
+struct BoolLike {
+    public:
+        bool state;
+        explicit operator bool() const {
+            return this->state;
+        }
+};
+
+TEST_CASE("compress: workds with truthy and falsey values", "[compress]") {
+    std::vector<BoolLike> bvec{{true}, {false}, {true}, {false}};
+
+    Vec ivec{1,2,3,4};
+
+    auto c = compress(ivec, bvec);
+    Vec v(std::begin(c), std::end(c));
+
+    Vec vc = {1,3};
+    REQUIRE( v == vc );
+}
