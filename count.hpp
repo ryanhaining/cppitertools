@@ -24,7 +24,7 @@ namespace iter {
 
     template <typename T>
     Range<T> count(T start) {
-        return range(start, T(1));
+        return count(start, T(1));
     }
 }
 
