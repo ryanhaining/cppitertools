@@ -24,3 +24,22 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
     vc.insert(std::end(vc), std::begin(ns), std::end(ns));
     REQUIRE( v == vc );
 }
+
+TEST_CASE("cycle: empty cycle terminates", "[cycle]") {
+    std::vector<int> ns;
+    auto c = cycle(ns);
+    std::vector<int> v(std::begin(c), std::end(c)); 
+    REQUIRE( v.empty() );
+}
+
+TEST_CASE("cycle: binds to lvalues, moves rvalues", "[cycle]") {
+    itertest::BasicIterable<char> bi{'x', 'y', 'z'};
+    SECTION("binds to lvalues") {
+        cycle(bi);
+        REQUIRE_FALSE( bi.was_moved_from() );
+    }
+    SECTION("moves rvalues") {
+        cycle(std::move(bi));
+        REQUIRE( bi.was_moved_from() );
+    }
+}
