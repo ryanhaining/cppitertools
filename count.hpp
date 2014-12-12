@@ -1,5 +1,5 @@
-#ifndef COUNT__H__
-#define COUNT__H__
+#ifndef ITER_COUNT_H_
+#define ITER_COUNT_H_
 
 #include "range.hpp"
 
@@ -29,5 +29,4 @@ namespace iter {
 }
 
 
-#endif //define COUNT__H__
-
+#endif
