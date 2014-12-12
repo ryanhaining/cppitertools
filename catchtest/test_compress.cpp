@@ -54,4 +54,10 @@ TEST_CASE("compress: all true", "[compress]") {
     REQUIRE( v == ivec );
 }
 
+TEST_CASE("compress: all false", "[compress]") {
+    std::vector<int> ivec{1, 2, 3, 4, 5};
+    std::vector<bool> bvec(ivec.size(), false);
+    auto c = compress(ivec, bvec);
+    REQUIRE( std::begin(c) == std::end(c) );
+}
 
