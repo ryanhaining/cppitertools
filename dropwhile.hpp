@@ -1,5 +1,5 @@
-#ifndef DROPWHILE__H__
-#define DROPWHILE__H__
+#ifndef ITER_DROPWHILE_H_
+#define ITER_DROPWHILE_H_
 
 #include <iterbase.hpp>
 
@@ -43,7 +43,10 @@ namespace iter {
 
         public:
             DropWhile(const DropWhile&) = default;
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<Container>>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
@@ -111,4 +114,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef DROPWHILE__H__
+#endif
