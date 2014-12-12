@@ -107,3 +107,10 @@ TEST_CASE("compress: terminates on shorter data", "[compress]") {
     auto c = compress(ivec, bvec);
     REQUIRE( std::distance(std::begin(c), std::end(c)) == 1 );
 }
+
+TEST_CASE("compress: nothing on empty selectors", "[compress]") {
+    std::vector<int> ivec{1,2,3};
+    std::vector<bool> bvec{};
+    auto c = compress(ivec, bvec);
+    REQUIRE( std::begin(c) == std::end(c) );
+}
