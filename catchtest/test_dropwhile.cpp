@@ -74,3 +74,12 @@ TEST_CASE("dropwhile: binds to lvalues, moves rvalues", "[dropwhile]") {
         REQUIRE( bi.was_moved_from() );
     }
 }
+
+TEST_CASE("dropwhile: doesn't move or copy elements of iterable",
+        "[dropwhile]") {
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : dropwhile(
+                [](const itertest::SolidInt&){return false;} , arr)) {
+        (void)i;
+    }
+}
