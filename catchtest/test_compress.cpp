@@ -61,3 +61,15 @@ TEST_CASE("compress: all false", "[compress]") {
     REQUIRE( std::begin(c) == std::end(c) );
 }
 
+TEST_CASE("compress: binds to lvalues, moves rvalues", "[compress]") {
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    std::vector<bool> bl{true, true, true};
+    SECTION("binds to lvalues") {
+        compress(bi, bl);
+        REQUIRE_FALSE( bi.was_moved_from() );
+    }
+    SECTION("moves rvalues") {
+        compress(std::move(bi), bl);
+        REQUIRE( bi.was_moved_from() );
+    }
+}
