@@ -1,5 +1,5 @@
-#ifndef CYCLE__H__
-#define CYCLE__H__
+#ifndef ITER_CYCLE_H_
+#define ITER_CYCLE_H_
 
 #include "iterbase.hpp"
 
@@ -100,4 +100,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef CYCLE__H__
+#endif
