@@ -11,6 +11,7 @@
 
 using iter::combinations;
 using itertest::BasicIterable;
+using itertest::SolidInt;
 using CharCombSet = std::multiset<std::vector<char>>;
 
 TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
@@ -50,3 +51,10 @@ TEST_CASE("combinations: binds to lvalues, moves rvalues", "[combinations]") {
     }
 }
 
+TEST_CASE("combinations: doesn't move or copy elements of iterable",
+        "[combinations]") {
+    constexpr SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : combinations(arr, 1)) {
+        (void)i;
+    }
+}
