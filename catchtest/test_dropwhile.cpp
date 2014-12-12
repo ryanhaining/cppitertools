@@ -40,3 +40,11 @@ TEST_CASE("dropwhile: empty case is empty", "[dropwhile]") {
     auto d = dropwhile([](int i){return i != 0; }, ns);
     REQUIRE( std::begin(d) == std::end(d) );
 }
+
+TEST_CASE("dropwhile: only drops from beginning", "[dropwhile]") {
+    Vec ns {1,2,3,4,5,6,5,4,3,2,1};
+    auto d = dropwhile([](int i){return i < 5; }, ns);
+    Vec v(std::begin(d), std::end(d));
+    Vec vc = {5,6,5,4,3,2,1};
+    REQUIRE( v == vc );
+}
