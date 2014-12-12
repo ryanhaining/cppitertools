@@ -13,7 +13,7 @@
 using iter::compress;
 using itertest::SolidInt;
 using itertest::BasicIterable;
-using Vec = const std::vector<char>;
+using Vec = const std::vector<int>;
 
 TEST_CASE("compress: alternating", "[compress]") {
     std::vector<int> ivec{1, 2, 3, 4, 5, 6};
@@ -40,7 +40,18 @@ TEST_CASE("compress: consecutive trues", "[compress]") {
     std::vector<bool> bvec{false, true, true, true, false};
     auto c = compress(ivec, bvec);
     Vec v(std::begin(c), std::end(c));
-    Vec vc = {2,3,4}
+    Vec vc = {2,3,4};
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("compress: all true", "[compress]") {
+    std::vector<int> ivec{1, 2, 3, 4, 5};
+    std::vector<bool> bvec(ivec.size(), true);
+    auto c = compress(ivec, bvec);
+    Vec v(std::begin(c), std::end(c));
+
+    REQUIRE( v == ivec );
+}
+
+
