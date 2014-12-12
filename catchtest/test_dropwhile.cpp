@@ -19,3 +19,11 @@ TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
     Vec vc = {5,6,7,8};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("dropwhile: doesn't skip anything if it shouldn't", "[dropwhile]") {
+    Vec ns {3,4,5,6};
+    auto d = dropwhile([](int i){return i < 3; }, ns);
+    Vec v(std::begin(d), std::end(d));
+    Vec vc = {3,4,5,6};
+    REQUIRE( v == vc );
+}
