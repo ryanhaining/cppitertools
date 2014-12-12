@@ -76,8 +76,8 @@ namespace iter {
                         return ret;
                     }
 
-                    constexpr bool operator!=(const Iterator&) const {
-                        return true;
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
                     }
 
                     bool operator==(const Iterator& other) const {
