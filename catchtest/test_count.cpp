@@ -27,6 +27,17 @@ TEST_CASE("count: start at 10", "[count]") {
         if (i == 14) break;
     }
 
-    const std::vector<int> vc{10,11,12,13,14,15};
+    const std::vector<int> vc{10,11,12,13,14};
     REQUIRE( v == vc );
+}
+
+TEST_CASE("count with step", "[count]") {
+    std::vector<int> v{};
+    for (auto i : count(2, -1)) {
+        v.push_back(i);
+        if (i == -3) break;
+    }
+
+    const std::vector<int> vc{2,1,0,-1,-2,-3};
+    REQUIRE( v == vc);
 }
