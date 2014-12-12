@@ -22,6 +22,7 @@ progs = Split(
     chain
     combinations
     combinations_with_replacement
+    compress
     '''
 )
 
