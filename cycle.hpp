@@ -70,6 +70,12 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     constexpr bool operator!=(const Iterator&) const {
                         return true;
                     }
