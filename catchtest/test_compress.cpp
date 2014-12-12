@@ -2,7 +2,6 @@
 #include <compress.hpp>
 
 #include <vector>
-#include <list>
 #include <string>
 #include <vector>
 #include <iterator>
