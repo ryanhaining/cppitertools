@@ -43,8 +43,8 @@ namespace iter {
                 private:
                     using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> begin;
-                    const iterator_type<Container> end;
+                    iterator_type<Container> begin;
+                    iterator_type<Container> end;
                 public:
                     Iterator (iterator_type<Container> iter,
                             iterator_type<Container> end)
