@@ -25,6 +25,7 @@ progs = Split(
     compress
     count
     cycle
+    dropwhile
     '''
 )
 
