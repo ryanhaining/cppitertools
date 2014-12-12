@@ -117,6 +117,10 @@ namespace iter {
                         return this->sub_iter != other.sub_iter &&
                             this->selector_iter != other.selector_iter;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
             };
 
             Iterator begin() {
