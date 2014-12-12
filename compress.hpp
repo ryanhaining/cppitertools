@@ -1,9 +1,10 @@
-#ifndef COMPRESS__H__
-#define COMPRESS__H__
+#ifndef ITER_COMPRESS_H_
+#define ITER_COMPRESS_H_
 
 #include "iterbase.hpp"
 
 #include <utility>
+#include <iterator>
 #include <initializer_list>
 
 namespace iter {
@@ -65,7 +66,10 @@ namespace iter {
         public:
             Compressed(const Compressed&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                        iterator_traits_deref<Container>>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
@@ -87,10 +91,10 @@ namespace iter {
                     }
 
                 public:
-                    Iterator (iterator_type<Container> cont_iter,
-                              iterator_type<Container> cont_end,
-                              selector_iter_type sel_iter,
-                              selector_iter_type sel_end)
+                    Iterator(iterator_type<Container> cont_iter,
+                            iterator_type<Container> cont_end,
+                            selector_iter_type sel_iter,
+                            selector_iter_type sel_end)
                         : sub_iter{cont_iter},
                         sub_end{cont_end},
                         selector_iter{sel_iter},
@@ -158,4 +162,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef COMPRESS__H__
+#endif
