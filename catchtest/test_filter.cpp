@@ -60,3 +60,27 @@ TEST_CASE("filter: using identity", "[filter]") {
     Vec v(std::begin(f), std::end(f));
     REQUIRE( v == vc );
 }
+
+TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
+    itertest::BasicIterable<int> bi{1,2,3,4};
+
+    SECTION("one-arg binds to lvalues") {
+        filter(bi);
+        REQUIRE_FALSE(bi.was_moved_from());
+    }
+
+    SECTION("two-arg binds to lvalues") {
+        filter(less_than_five, bi);
+        REQUIRE_FALSE(bi.was_moved_from());
+    }
+
+    SECTION("one-arg moves rvalues") {
+        filter(std::move(bi));
+        REQUIRE(bi.was_moved_from());
+    }
+
+    SECTION("two-arg moves rvalues") {
+        filter(less_than_five, std::move(bi));
+        REQUIRE(bi.was_moved_from());
+    }
+}
