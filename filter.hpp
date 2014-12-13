@@ -45,7 +45,10 @@ namespace iter {
         public:
             Filter(const Filter&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                        iterator_traits_deref<Container>>
+            {
                 protected:
                     iterator_type<Container> sub_iter;
                     const iterator_type<Container> sub_end;
