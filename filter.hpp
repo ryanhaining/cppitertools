@@ -167,4 +167,4 @@ namespace iter {
 
 }
 
-#endif // #ifndef ITER_FILTER_H_
+#endif
