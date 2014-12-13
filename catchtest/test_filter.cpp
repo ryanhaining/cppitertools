@@ -84,3 +84,11 @@ TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
         REQUIRE(bi.was_moved_from());
     }
 }
+
+TEST_CASE("filter: doesn't move or copy elements of iterable", "[filter]") {
+    constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
+    for (auto&& i : filter(
+                [](const itertest::SolidInt& si) {return si.getint();},arr)) {
+        (void)i;
+    }
+}
