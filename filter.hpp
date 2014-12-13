@@ -93,6 +93,10 @@ namespace iter {
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
             };
 
             Iterator begin() {
