@@ -39,11 +39,8 @@ namespace iter {
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
-            Filter() = delete;
-            Filter& operator=(const Filter&) = delete;
 
         public:
-            Filter(const Filter&) = default;
 
             class Iterator 
                 : public std::iterator<std::input_iterator_tag,
