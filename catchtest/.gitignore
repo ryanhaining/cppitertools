@@ -1,4 +1,5 @@
 *.o
+*.swp
 test_*
 !test_*.cpp
 .sconsign.dblite
