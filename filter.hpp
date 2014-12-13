@@ -51,7 +51,7 @@ namespace iter {
             {
                 protected:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // increment until the iterator points to is true on the 
