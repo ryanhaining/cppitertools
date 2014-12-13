@@ -15,7 +15,6 @@ env['ENV']['TERM'] = os.environ['TERM']
 
 progs = Split(
     '''
-    enumerate
     zip
     range
     accumulate
@@ -26,6 +25,8 @@ progs = Split(
     count
     cycle
     dropwhile
+    enumerate
+    filter
     '''
 )
 
