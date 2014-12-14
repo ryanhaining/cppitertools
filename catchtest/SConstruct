@@ -28,6 +28,7 @@ progs = Split(
     enumerate
     filter
     filterfalse
+    groupby
     '''
 )
 
