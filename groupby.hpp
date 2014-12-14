@@ -151,7 +151,10 @@ namespace iter {
                         other.completed = true;
                     }
 
-                    class GroupIterator {
+                    class GroupIterator 
+                        : public std::iterator<std::input_iterator_tag,
+                                iterator_traits_deref<Container>>
+                    {
                         private:
                             const key_func_ret key;
                             const Group& group;
