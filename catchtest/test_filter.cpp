@@ -55,9 +55,10 @@ TEST_CASE("filter: handles different functor types", "[filter]") {
 
 TEST_CASE("filter: using identity", "[filter]") {
     Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
-    Vec vc = {1,2,3,4,5};
     auto f = filter(ns);
     Vec v(std::begin(f), std::end(f));
+
+    Vec vc = {1,2,3,4,5};
     REQUIRE( v == vc );
 }
 
@@ -83,6 +84,14 @@ TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
         filter(less_than_five, std::move(bi));
         REQUIRE(bi.was_moved_from());
     }
+}
+
+
+TEST_CASE("filter: all elements fail predicate", "[filter]") {
+    Vec ns{10,20,30,40,50};
+    auto f = filter(less_than_five, ns);
+
+    REQUIRE( std::begin(f) == std::end(f) );
 }
 
 TEST_CASE("filter: doesn't move or copy elements of iterable", "[filter]") {
