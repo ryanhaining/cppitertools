@@ -85,3 +85,10 @@ TEST_CASE("filterfalse: binds to lvalues, moves rvales", "[filterfalse]") {
         REQUIRE(bi.was_moved_from());
     }
 }
+
+TEST_CASE("filterfalse: all elements pass predicate", "[filterfalse]") {
+    Vec ns{0,1,2,3,4};
+    auto f = filterfalse(less_than_five, ns);
+
+    REQUIRE( std::begin(f) == std::end(f) );
+}
