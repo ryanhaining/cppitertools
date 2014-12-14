@@ -27,6 +27,7 @@ progs = Split(
     dropwhile
     enumerate
     filter
+    filterfalse
     '''
 )
 
