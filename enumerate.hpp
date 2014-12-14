@@ -77,7 +77,7 @@ namespace iter {
                     { } 
 
                     IterYield operator*() {
-                        return IterYield(this->index, *this->sub_iter);
+                        return {this->index, *this->sub_iter};
                     }
 
                     Iterator& operator++() { 
