@@ -182,9 +182,19 @@ namespace iter {
                                 }
                             }
 
+                            bool operator==(const GroupIterator& other) const {
+                                return !(*this != other);
+                            }
+
                             GroupIterator& operator++() {
                                 this->group.owner.increment_iterator();
                                 return *this;
+                            }
+
+                            GroupIterator operator++(int) {
+                                auto ret = *this;
+                                ++*this;
+                                return ret;
                             }
 
                             iterator_deref<Container> operator*() {
