@@ -52,3 +52,12 @@ TEST_CASE("filterfalse: handles different functor types", "[filterfalse]") {
         REQUIRE( v == vc );
     }
 }
+
+TEST_CASE("filterfalse: using identity", "[filterfalse]") {
+    Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
+    auto f = filterfalse(ns);
+    Vec v(std::begin(f), std::end(f));
+
+    Vec vc = {0, 0, 0, 0, 0, 0};
+    REQUIRE( v == vc );
+}
