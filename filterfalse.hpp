@@ -29,6 +29,11 @@ namespace iter {
                 bool operator() (const iterator_deref<Container> item) const {
                     return !bool(filter_func(item));
                 }
+
+                // with non-const incase FilterFunc::operator() is non-const
+                bool operator() (const iterator_deref<Container> item) {
+                    return !bool(filter_func(item));
+                }
         };
 
         // Reverses the bool() conversion result of anything that supports a
