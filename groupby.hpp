@@ -90,6 +90,10 @@ namespace iter {
                         return !this->exhausted();
                     }
 
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
                     void increment_iterator() {
                         if (this->sub_iter != this->sub_end) {
                             ++this->sub_iter;
