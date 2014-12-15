@@ -51,15 +51,19 @@ namespace iter {
             class Iterator;
             class Group;
 
-            class Iterator {
+        private:
+            using KeyGroupPair =
+                std::pair<key_func_ret, Group>;
+        public:
+
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, KeyGroupPair>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_iter_peek;
                     const iterator_type<Container> sub_end;
                     KeyFunc key_func;
-
-                    using KeyGroupPair =
-                        std::pair<key_func_ret, Group>;
 
                 public:
                     Iterator (iterator_type<Container> si,
