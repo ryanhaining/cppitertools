@@ -113,3 +113,9 @@ TEST_CASE("groupby: single argument uses elements as keys", "[groupby]") {
 
     REQUIRE( groups == gc );
 }
+
+TEST_CASE("groupby: empty iterable yields nothing", "[groupby]") {
+    std::vector<int> ivec{};
+    auto g = groupby(ivec);
+    REQUIRE( std::begin(g) == std::end(g) );
+}
