@@ -89,3 +89,27 @@ TEST_CASE("groupby: groups can be skipped partially", "[groupby]") {
 
     REQUIRE( groups == gc );
 }
+
+TEST_CASE("groupby: single argument uses elements as keys", "[groupby]") {
+    std::vector<int> ivec = {5, 5, 6, 6, 19, 19, 19, 19, 69, 0, 10, 10};
+    std::vector<int> keys;
+    std::vector<std::vector<int>> groups;
+    for (auto gb : groupby(ivec)) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+
+    const std::vector<int> kc = {5, 6, 19, 69, 0, 10};
+    REQUIRE( keys == kc );
+
+    std::vector<std::vector<int>> gc = {
+        {5, 5},
+        {6, 6},
+        {19, 19, 19, 19},
+        {69},
+        {0},
+        {10, 10},
+    };
+
+    REQUIRE( groups == gc );
+}
