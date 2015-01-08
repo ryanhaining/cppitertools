@@ -29,6 +29,7 @@ progs = Split(
     filter
     filterfalse
     groupby
+    imap
     '''
 )
 
