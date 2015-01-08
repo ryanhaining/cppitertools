@@ -67,3 +67,19 @@ TEST_CASE("imap: works with multiple sequences", "[imap]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("imap: terminates on shortest squence", "[imap]") {
+    Vec ns1 = {1, 2, 3, 4};
+    Vec ns2 = {2, 4, 6, 8, 10};
+    Vec vc = {3, 6, 9, 12};
+    SECTION("shortest sequence first") {
+        auto im = imap([](int a, int b){ return a + b; }, ns1, ns2);
+        Vec v(std::begin(im), std::end(im));
+        REQUIRE( v == vc );
+    }
+    SECTION("shortest sequence second") {
+        auto im = imap([](int a, int b){ return a + b; }, ns2, ns1);
+        Vec v(std::begin(im), std::end(im));
+        REQUIRE( v == vc );
+    }
+}
