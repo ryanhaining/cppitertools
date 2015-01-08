@@ -78,6 +78,9 @@ namespace iter {
         private:
             MapFunc map_func;
             ZippedType zipped;
+
+            using IMapIterDeref = decltype(detail::call_with_tuple(
+                        map_func, *std::begin(zipped)));
             
             // Value constructor for use only in the imap function
             IMap(MapFunc map_func, Containers&& ... containers) :
@@ -91,7 +94,9 @@ namespace iter {
             IMap(const IMap&) = default;
             IMap(IMap&&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, IMapIterDeref>
+            {
                 private:
                     MapFunc map_func;
                     ZippedIterType zipiter;
@@ -102,10 +107,7 @@ namespace iter {
                         zipiter(zipiter)
                     { } 
 
-                    auto operator*() -> 
-                        decltype(detail::call_with_tuple(
-                                    this->map_func, *(this->zipiter)))
-                    {
+                    IMapIterDeref operator*() {
                         return detail::call_with_tuple(
                                 this->map_func, *(this->zipiter));
                     }
