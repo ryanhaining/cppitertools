@@ -67,6 +67,12 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     iterator_deref<CombinatorType> operator*() {
                         return *(inner_iters[list_size]);
                     }
