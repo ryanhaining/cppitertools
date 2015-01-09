@@ -47,3 +47,17 @@ TEST_CASE("permutations: binds to lvalues, moves rvalues", "[permutations]") {
         REQUIRE(bi.was_moved_from());
     }
 }
+
+namespace itertest {
+    bool operator<(const SolidInt& lhs, const SolidInt& rhs) {
+        return lhs.getint() < rhs.getint();
+    }
+}
+
+TEST_CASE("permutations doesn't move or copy elements of iterable",
+        "[permutations]") {
+    constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
+    for (auto&& st : permutations(arr)) {
+        (void)st;
+    }
+}
