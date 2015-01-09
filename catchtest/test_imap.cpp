@@ -84,6 +84,12 @@ TEST_CASE("imap: terminates on shortest squence", "[imap]") {
     }
 }
 
+TEST_CASE("imap: empty sequence gives nothing", "[imap]") {
+    Vec v{};
+    auto im = imap(plusone, v);
+    REQUIRE( std::begin(im) == std::end(im) );
+}
+
 TEST_CASE("imap: binds to lvalues, moves rvalues", "[imap]") {
     itertest::BasicIterable<int> bi{1, 2};
     SECTION("binds to lvalues") {
@@ -114,3 +120,4 @@ TEST_CASE("imap: postfix ++", "[imap]") {
     it++;
     REQUIRE( it == std::end(im) );
 }
+
