@@ -116,9 +116,19 @@ namespace iter {
                         ++this->zipiter;
                         return *this;
                     }
+ 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
 
                     bool operator!=(const Iterator& other) const {
                         return this->zipiter != other.zipiter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
