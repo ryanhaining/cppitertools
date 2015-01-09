@@ -30,6 +30,7 @@ progs = Split(
     filterfalse
     groupby
     imap
+    permutations
     '''
 )
 
