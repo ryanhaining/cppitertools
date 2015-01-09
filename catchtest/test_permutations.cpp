@@ -34,3 +34,16 @@ TEST_CASE("permutations: empty sequence has one empy permutation",
     it++;
     REQUIRE( it == std::end(p) );
 }
+
+TEST_CASE("permutations: binds to lvalues, moves rvalues", "[permutations]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    SECTION("binds to lvalues") {
+        permutations(bi);
+        REQUIRE_FALSE(bi.was_moved_from());
+    }
+
+    SECTION("moves rvalues") {
+        permutations(std::move(bi));
+        REQUIRE(bi.was_moved_from());
+    }
+}
