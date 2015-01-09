@@ -12,12 +12,12 @@
 #include <iterator>
 
 namespace iter {
-    template <typename Container,
-              typename CombinatorType=
-                  decltype(combinations(std::declval<Container&>(), 0))>
+    template <typename Container>
     class Powersetter {
         private:
             Container container;
+            using CombinatorType =
+                decltype(combinations(std::declval<Container&>(), 0));
 
             std::vector<CombinatorType> combinators;
         public:
