@@ -24,3 +24,13 @@ TEST_CASE("permutations: basic test, 3 element sequence", "[permutations]") {
         {{1, 7, 9}, {1, 9, 7}, {7, 1, 9}, {7, 9, 1}, {9, 1, 7}, {9, 7, 1}};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("permutations: empty sequence has one empy permutation",
+        "[permutations]") {
+    const std::vector<int> ns{};
+    auto p = permutations(ns);
+    auto it = std::begin(p);
+    REQUIRE( (*it).empty() );
+    it++;
+    REQUIRE( it == std::end(p) );
+}
