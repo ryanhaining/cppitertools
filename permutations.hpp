@@ -20,7 +20,7 @@ namespace iter {
 
         public:
             Permuter(Container in_container)
-                : container(in_container)
+                : container(std::forward<Container>(in_container))
             { }
 
             class Iterator 
@@ -93,5 +93,4 @@ namespace iter {
 
 }
 
-#endif // ITER_PERMUTATIONS_HPP_
-
+#endif
