@@ -33,7 +33,7 @@ namespace {
 }
 
 TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
-    std::vector<int> ns = {10, 20, 30};
+    Vec ns = {10, 20, 30};
     SECTION("with lambda") {
         auto im = imap([](int i) { return i + 1; }, ns);
         Vec v(std::begin(im), std::end(im));
@@ -82,4 +82,35 @@ TEST_CASE("imap: terminates on shortest squence", "[imap]") {
         Vec v(std::begin(im), std::end(im));
         REQUIRE( v == vc );
     }
+}
+
+TEST_CASE("imap: binds to lvalues, moves rvalues", "[imap]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    SECTION("binds to lvalues") {
+        imap(plusone, bi);
+        REQUIRE_FALSE(bi.was_moved_from());
+    }
+
+    SECTION("moves rvalues") {
+        imap(plusone, std::move(bi));
+        REQUIRE(bi.was_moved_from());
+    }
+}
+
+TEST_CASE("imap: doesn't move or copy elements of iterable", "[imap]") {
+    constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
+    for (auto&& i : imap([](const itertest::SolidInt& si){return si.getint();},
+                arr)) {
+        (void)i;
+    }
+}
+
+TEST_CASE("imap: postfix ++", "[imap]") {
+    Vec ns = {10, 20};
+    auto im = imap(plusone, ns);
+    auto it = std::begin(im);
+    it++;
+    REQUIRE( (*it) == 21 );
+    it++;
+    REQUIRE( it == std::end(im) );
 }
