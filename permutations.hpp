@@ -6,7 +6,7 @@
 #include <initializer_list>
 #include <vector>
 #include <utility>
-
+#include <iterator>
 
 namespace iter {
 
@@ -15,15 +15,18 @@ namespace iter {
         private:
             Container container;
 
+            using Permutable =
+                std::vector<collection_item_type<Container>>;
+
         public:
             Permuter(Container in_container)
                 : container(in_container)
             { }
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, Permutable>
+            {
                 private:
-                    using Permutable =
-                        std::vector<collection_item_type<Container>>;
                     Permutable working_set;
                     bool is_not_last = true;
 
