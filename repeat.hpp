@@ -6,7 +6,7 @@
 
 namespace iter {
 
-    // must me negative
+    // must be negative
     constexpr int INFINITE_REPEAT = -1;
 
     template <typename T>
