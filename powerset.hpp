@@ -80,6 +80,10 @@ namespace iter {
                     bool operator != (const Iterator&) {
                         return not_done;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
             }; 
 
             Iterator begin() {
