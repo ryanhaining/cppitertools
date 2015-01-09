@@ -34,7 +34,10 @@ namespace iter {
                 }
             }
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<
+                      std::input_iterator_tag, iterator_deref<CombinatorType>>
+            {
                 private:
                     std::size_t container_size;
                     std::size_t list_size = 0;
@@ -64,7 +67,7 @@ namespace iter {
                         return *this;
                     }
 
-                    auto operator*() -> decltype(*inner_iters[0]) {
+                    iterator_deref<CombinatorType> operator*() {
                         return *(inner_iters[list_size]);
                     }
 
