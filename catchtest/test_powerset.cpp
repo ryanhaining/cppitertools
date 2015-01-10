@@ -21,3 +21,12 @@ TEST_CASE("powerset: basic test, [1, 2, 3]", "[powerset]") {
     const IntPermSet vc = { {}, {1}, {2}, {3,}, {1,2}, {1,3}, {2,3}, {1,2,3} };
     REQUIRE( v == vc );
 }
+
+TEST_CASE("powerset: empty sequence gives only empty set", "[powerset]") {
+    const std::vector<int> ns = {};
+    auto ps = powerset(ns);
+    auto it = std::begin(ps);
+    REQUIRE( std::begin(*it) == std::end(*it) ); // it's empty
+    ++it;
+    REQUIRE( it == std::end(ps) );
+}
