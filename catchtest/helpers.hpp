@@ -100,6 +100,7 @@ class BasicIterable {
 
                 Iterator& operator++() {
                     ++this->p;
+                    return *this;
                 }
 
                 T& operator*() {
