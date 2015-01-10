@@ -30,3 +30,24 @@ TEST_CASE("powerset: empty sequence gives only empty set", "[powerset]") {
     ++it;
     REQUIRE( it == std::end(ps) );
 }
+
+TEST_CASE("powerset: binds to lvalues, moves rvalues", "[powerset]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    SECTION("binds to lvalues") {
+        powerset(bi);
+        REQUIRE_FALSE(bi.was_moved_from());
+    }
+    SECTION("moves rvalues") {
+        powerset(std::move(bi));
+        REQUIRE(bi.was_moved_from());
+    }
+}
+
+TEST_CASE("powerset: doesn't move or copy elements of iterable", "[powerset]"){
+    constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
+    for (auto&& st : powerset(arr)) {
+        for (auto&& i : st) {
+            (void)i;
+        }
+    }
+}
