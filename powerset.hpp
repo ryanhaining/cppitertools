@@ -77,7 +77,7 @@ namespace iter {
                         return *(inner_iters[list_size]);
                     }
 
-                    bool operator != (const Iterator&) {
+                    bool operator != (const Iterator&) const {
                         return not_done;
                     }
 
