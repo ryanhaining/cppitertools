@@ -45,6 +45,17 @@ namespace iter {
         return it;
     }
 
+    template <typename Container, typename Distance =std::size_t>
+    Distance dumb_size(Container&& container) {
+        Distance d{0};
+        for (auto it = std::begin(container), end = std::end(container);
+                it != end;
+                ++it) {
+            ++d;
+        }
+        return d;
+    }
+
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
     using iterator_type =

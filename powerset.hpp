@@ -1,12 +1,11 @@
-#ifndef POWERSET_HPP_
-#define POWERSET_HPP_
+#ifndef ITER_POWERSET_HPP_
+#define ITER_POWERSET_HPP_
 
 #include "iterbase.hpp"
 #include "combinations.hpp"
-#include "enumerate.hpp"
 
 #include <cassert>
-#include <vector>
+#include <memory>
 #include <initializer_list>
 #include <utility>
 #include <iterator>
@@ -19,51 +18,40 @@ namespace iter {
             using CombinatorType =
                 decltype(combinations(std::declval<Container&>(), 0));
 
-            std::vector<CombinatorType> combinators;
         public:
             Powersetter(Container in_container)
                 : container(std::forward<Container>(in_container))
-            {
-                combinators.push_back(combinations(this->container, 0));
-                std::size_t i = 1;
-                for (auto iter = std::begin(this->container),
-                            end = std::end(this->container);
-                        iter != end;
-                        ++iter, ++i) {
-                    combinators.push_back(combinations(this->container, i));
-                }
-            }
+            { }
 
-            class Iterator 
+            class Iterator
                 : public std::iterator<
-                      std::input_iterator_tag, iterator_deref<CombinatorType>>
+                      std::input_iterator_tag, CombinatorType>
             {
                 private:
-                    std::size_t container_size;
-                    std::size_t list_size = 0;
-                    bool not_done = true;
+                    Container& container;
+                    std::size_t set_size;
+                    std::unique_ptr<CombinatorType> comb;
+                    iterator_type<CombinatorType> comb_iter;
+                    iterator_type<CombinatorType> comb_end;
 
-                    std::vector<CombinatorType>& combinators;
-                    std::vector<iterator_type<CombinatorType>> inner_iters;
                 public:
-                    Iterator(std::vector<CombinatorType>& combs)
-                        : container_size{combs.size() - 1},
-                        combinators(combs)
-                    {
-                        for (auto& comb : combinators) {
-                            inner_iters.push_back(std::begin(comb));
-                        }
-                    }
+                    Iterator(Container& in_container, std::size_t sz)
+                        : container{in_container},
+                        set_size{sz},
+                        comb{new CombinatorType(combinations(in_container, sz))},
+                        comb_iter{std::begin(*comb)},
+                        comb_end{std::end(*comb)}
+                    { }
 
                     Iterator& operator++() {
-                        ++inner_iters[list_size];
-                        if (!(inner_iters[list_size] != inner_iters[list_size])) {
-                            ++list_size;
+                        ++this->comb_iter;
+                        if (this->comb_iter == this->comb_end) {
+                            ++this->set_size;
+                            this->comb.reset(new CombinatorType(combinations(
+                                            this->container, this->set_size)));
+                            this->comb_iter = std::begin(*this->comb);
+                            this->comb_end = std::end(*this->comb);
                         }
-                        if (container_size < list_size) {
-                            not_done = false;
-                        }
-
                         return *this;
                     }
 
@@ -74,24 +62,24 @@ namespace iter {
                     }
 
                     iterator_deref<CombinatorType> operator*() {
-                        return *(inner_iters[list_size]);
+                        return *this->comb_iter;
                     }
 
-                    bool operator != (const Iterator&) const {
-                        return not_done;
+                    bool operator != (const Iterator& other) const {
+                        return !(*this == other);
                     }
 
                     bool operator==(const Iterator& other) const {
-                        return !(*this != other);
+                        return this->set_size == other.set_size;
                     }
-            }; 
+            };
 
             Iterator begin() {
-                return {this->combinators};
+                return {this->container, 0};
             }
 
             Iterator end() {
-                return {this->combinators};
+                return {this->container, dumb_size(this->container) + 1};
             }
     };
 
@@ -106,4 +94,4 @@ namespace iter {
         return {il};
     }
 }
-#endif // #ifndef POWERSET_HPP_
+#endif
