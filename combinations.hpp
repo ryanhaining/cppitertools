@@ -43,14 +43,14 @@ namespace iter {
             public std::iterator<std::input_iterator_tag, CombIteratorDeref>
         {
             private:
-                Container& items;
+                typename std::remove_reference<Container>::type *container_p;
                 std::vector<iterator_type<Container>> indicies;
                 bool not_done = true;
 
             public:
-                Iterator(Container& i, std::size_t n)
-                    : items(i),
-                    indicies(n)
+                Iterator(Container& in_container, std::size_t n)
+                    : container_p{&in_container},
+                    indicies{n}
                 {
                     if (n == 0) {
                         not_done = false;
@@ -58,9 +58,9 @@ namespace iter {
                     }
                     size_t inc = 0;
                     for (auto& iter : this->indicies) {
-                        auto it = std::begin(this->items);
-                        dumb_advance(it, std::end(this->items), inc);
-                        if (it != std::end(this->items)) {
+                        auto it = std::begin(*this->container_p);
+                        dumb_advance(it, std::end(*this->container_p), inc);
+                        if (it != std::end(*this->container_p)) {
                             iter = it;
                             ++inc;
                         } else {
@@ -92,7 +92,7 @@ namespace iter {
                                 this->indicies.rbegin(),iter);
 
                         if (!(dumb_next(*iter, dist) !=
-                                std::end(this->items))) {
+                                std::end(*this->container_p))) {
                             if ( (iter + 1) != indicies.rend()) {
                                 size_t inc = 1;
                                 for (auto down = iter;
