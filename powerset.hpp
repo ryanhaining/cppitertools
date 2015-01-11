@@ -9,6 +9,7 @@
 #include <initializer_list>
 #include <utility>
 #include <iterator>
+#include <type_traits>
 
 namespace iter {
     template <typename Container>
@@ -28,7 +29,7 @@ namespace iter {
                       std::input_iterator_tag, CombinatorType>
             {
                 private:
-                    Container& container;
+                    typename std::remove_reference<Container>::type *container_p;
                     std::size_t set_size;
                     std::unique_ptr<CombinatorType> comb;
                     iterator_type<CombinatorType> comb_iter;
@@ -36,7 +37,7 @@ namespace iter {
 
                 public:
                     Iterator(Container& in_container, std::size_t sz)
-                        : container{in_container},
+                        : container_p{&in_container},
                         set_size{sz},
                         comb{new CombinatorType(combinations(in_container, sz))},
                         comb_iter{std::begin(*comb)},
@@ -48,7 +49,7 @@ namespace iter {
                         if (this->comb_iter == this->comb_end) {
                             ++this->set_size;
                             this->comb.reset(new CombinatorType(combinations(
-                                            this->container, this->set_size)));
+                                            *this->container_p, this->set_size)));
                             this->comb_iter = std::begin(*this->comb);
                             this->comb_end = std::end(*this->comb);
                         }
