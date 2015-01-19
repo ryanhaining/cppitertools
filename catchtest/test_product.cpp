@@ -26,6 +26,28 @@ TEST_CASE("product: basic test, two sequences", "[product]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("product: three sequences", "[product]") {
+    using TP = std::tuple <int, char, int>;
+    using ResType = const std::vector<TP>;
+
+    Vec n1 = {0, 1};
+    const std::string s{"ab"};
+    Vec n2 = {2};
+
+    auto p = product(n1, s, n2);
+    ResType v(std::begin(p), std::end(p));
+
+    ResType vc = {
+        TP{0, 'a', 2},
+        TP{0, 'b', 2},
+        TP{1, 'a', 2},
+        TP{1, 'b', 2}
+    };
+
+    REQUIRE( v == vc );
+}
+
+
 TEST_CASE("product: empty when any iterable is empty", "[product]") {
     Vec n1 = {0, 1};
     Vec n2 = {0, 1, 2};
