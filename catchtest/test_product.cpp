@@ -80,3 +80,10 @@ TEST_CASE("product: single iterable", "[product]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("product: doesn't move or copy elements of iterable", "[product]") {
+    constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
+    for (auto&& t : product(arr)) {
+        (void)std::get<0>(t);
+    }
+}
