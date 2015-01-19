@@ -7,7 +7,6 @@
 #include <tuple>
 #include <utility>
 
-
 namespace iter {
     template <typename... RestContainers>
     class Productor;
@@ -27,6 +26,9 @@ namespace iter {
         template <typename... RC>
         friend class Productor;
 
+        using ProdIterDeref = std::tuple<
+            iterator_deref<Container>, iterator_deref<RestContainers>...>;
+
         private:
             Container container;
             Productor<RestContainers...> rest_products;
@@ -36,7 +38,9 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, ProdIterDeref>
+            {
                 private:
                     using RestIter =
                         typename Productor<RestContainers...>::Iterator;
@@ -76,12 +80,7 @@ namespace iter {
                                 this->rest_iter != other.rest_iter);
                     }
 
-                    auto operator*() ->
-                        decltype(std::tuple_cat(
-                                    std::tuple<iterator_deref<Container>>{
-                                        *this->iter},
-                                    *this->rest_iter))
-                    {
+                    ProdIterDeref operator*() {
                         return std::tuple_cat(
                                 std::tuple<iterator_deref<Container>>{
                                     *this->iter},
@@ -106,7 +105,9 @@ namespace iter {
     template <>
     class Productor<> {
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, std::tuple<>>
+            {
                 public:
                     constexpr static const bool is_base_iter = true;
 
