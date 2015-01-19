@@ -74,11 +74,22 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->iter != other.iter &&
                             (RestIter::is_base_iter ||
                                 this->rest_iter != other.rest_iter);
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
 
                     ProdIterDeref operator*() {
                         return std::tuple_cat(
@@ -121,9 +132,19 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     // see note in zip about base case operator!=
                     bool operator!=(const Iterator&) const {
                         return false;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     std::tuple<> operator*() const {
