@@ -25,3 +25,23 @@ TEST_CASE("product: basic test, two vectors", "[product]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("product: empty when any iterable is empty", "[product]") {
+    Vec n1 = {0, 1};
+    Vec n2 = {0, 1, 2};
+    Vec emp = {};
+
+    SECTION("first iterable is empty") {
+        auto p = product(emp, n1, n2);
+        REQUIRE( std::begin(p) == std::end(p) );
+    }
+
+    SECTION("middle iterable is empty") {
+        auto p = product(n1, emp, n2);
+        REQUIRE( std::begin(p) == std::end(p) );
+    }
+
+    SECTION("last iterable is empty") {
+        auto p = product(n1, n2, emp);
+        REQUIRE( std::begin(p) == std::end(p) );
+    }
+}
