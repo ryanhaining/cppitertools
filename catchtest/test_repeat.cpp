@@ -29,3 +29,8 @@ TEST_CASE("repeat: two argument repeats a number of times", "[repeat]") {
     std::string s(std::begin(r), std::end(r));
     REQUIRE( s == "aaa" );
 }
+
+TEST_CASE("repeat: 0 count gives empty sequence", "[repeat]") {
+    auto r = repeat('a', 0);
+    REQUIRE( std::begin(r) == std::end(r) );
+}
