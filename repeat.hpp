@@ -30,10 +30,10 @@ namespace iter {
 
             class Iterator : public std::iterator<std::input_iterator_tag, T> {
                 private:
-                    T& elem;
+                    T* elem;
                     int count;
                 public:
-                    Iterator(T& e, int c)
+                    Iterator(T* e, int c)
                         : elem{e},
                         count{c}
                     { }
@@ -57,7 +57,7 @@ namespace iter {
 
                     bool operator!=(const Iterator& other) const {
                         return this->count != other.count ||
-                            &this->elem != &other.elem;
+                            this->elem != other.elem;
                     }
 
                     bool operator==(const Iterator& other) const {
@@ -65,16 +65,16 @@ namespace iter {
                     }
 
                     T& operator*() {
-                        return this->elem;
+                        return *this->elem;
                     }
             };
 
             Iterator begin() {
-                return {this->elem, this->count};
+                return {&this->elem, this->count};
             }
 
             Iterator end() {
-                return {this->elem, 0};
+                return {&this->elem, 0};
             }
 
     };
