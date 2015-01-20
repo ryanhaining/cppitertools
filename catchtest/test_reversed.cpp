@@ -1,6 +1,7 @@
 #include <reversed.hpp>
 
 #include <vector>
+#include <array>
 #include <string>
 #include <utility>
 
@@ -44,4 +45,18 @@ TEST_CASE("reversed: moves rvalues and binds to lvalues", "[reversed]") {
 
     reversed(std::move(bi2));
     REQUIRE( bi2.was_moved_from() );
+}
+
+TEST_CASE("reversed: doesn't move or copy elements of array", "[reversed]") {
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : reversed(arr)) {
+        (void)i;
+    }
+}
+
+TEST_CASE("reversed: with iterable doesn't move or copy elems", "[reversed]") {
+    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    for (auto&& i : reversed(arr)) {
+        (void)i;
+    }
 }
