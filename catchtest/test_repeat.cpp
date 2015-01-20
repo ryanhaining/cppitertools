@@ -27,5 +27,5 @@ TEST_CASE("repeat: one argument keeps giving value back", "[repeat]") {
 TEST_CASE("repeat: two argument repeats a number of times", "[repeat]") {
     auto r = repeat('a', 3);
     std::string s(std::begin(r), std::end(r));
+    REQUIRE( s == "aaa" );
 }
-
