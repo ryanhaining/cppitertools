@@ -81,6 +81,15 @@ TEST_CASE("product: single iterable", "[product]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("product: no arguments gives one empty tuple", "[product") {
+    auto p = product();
+    auto it = std::begin(p);
+    REQUIRE( it != std::end(p) );
+    REQUIRE( *it == std::make_tuple() );
+    ++it;
+    REQUIRE( it == std::end(p) );
+}
+
 TEST_CASE("product: binds to lvalues and moves rvalues", "[product]") {
     itertest::BasicIterable<char> bi{'x', 'y'};
     itertest::BasicIterable<int> bi2{0, 1};
