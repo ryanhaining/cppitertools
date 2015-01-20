@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <utility>
 
 #include "helpers.hpp"
 #include "catch.hpp"
@@ -35,3 +36,12 @@ TEST_CASE("reversed: empty when iterable is empty", "[reversed]") {
     REQUIRE( std::begin(r) == std::end(r) );
 }
 
+TEST_CASE("reversed: moves rvalues and binds to lvalues", "[reversed]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    itertest::BasicIterable<int> bi2{1, 2};
+    reversed(bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+
+    reversed(std::move(bi2));
+    REQUIRE( bi2.was_moved_from() );
+}
