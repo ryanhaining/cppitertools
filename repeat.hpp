@@ -64,12 +64,11 @@ namespace iter {
                     }
 
                     bool operator!=(const Iterator& other) const {
-                        return this->count != other.count ||
-                            this->elem != other.elem;
+                        return !(*this == other);
                     }
 
                     bool operator==(const Iterator& other) const {
-                        return !(*this != other);
+                        return this->count == other.count;
                     }
 
                     T& operator*() {
