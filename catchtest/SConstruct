@@ -33,6 +33,7 @@ progs = Split(
     permutations
     powerset
     product
+    repeat
     '''
 )
 
