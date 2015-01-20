@@ -6,6 +6,7 @@
 #include <iterator>
 #include <tuple>
 #include <utility>
+#include <array>
 
 namespace iter {
     template <typename... RestContainers>
@@ -121,11 +122,10 @@ namespace iter {
             {
                 public:
                     constexpr static const bool is_base_iter = true;
-
-                    Iterator() { }
                     Iterator(const Iterator&) { }
                     Iterator& operator=(const Iterator&) { return *this; }
 
+                    Iterator() { }
                     void reset() { }
 
                     Iterator& operator++() {
@@ -165,6 +165,10 @@ namespace iter {
     Productor<Containers...> product(Containers&&... containers) {
         return {std::forward<Containers>(containers)...};
     }
+
+    constexpr std::array<std::tuple<>, 1> product() {
+        return {{}};
+    }
 }
 
-#endif // #ifndef ITER_PRODUCT_HPP_
+#endif
