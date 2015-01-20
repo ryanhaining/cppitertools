@@ -1,5 +1,5 @@
-#ifndef REPEAT_HPP__
-#define REPEAT_HPP__
+#ifndef ITER_REPEAT_HPP_
+#define ITER_REPEAT_HPP_
 
 #include <iterator>
 #include <utility>
@@ -28,7 +28,7 @@ namespace iter {
             { }
         public:
 
-            class Iterator {
+            class Iterator : public std::iterator<std::input_iterator_tag, T> {
                 private:
                     T& elem;
                     int count;
@@ -49,9 +49,19 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->count != other.count ||
                             &this->elem != &other.elem;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     T& operator*() {
@@ -76,4 +86,4 @@ namespace iter {
         
 }
 
-#endif //REPEAT_HPP__
+#endif
