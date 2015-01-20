@@ -34,3 +34,18 @@ TEST_CASE("repeat: 0 count gives empty sequence", "[repeat]") {
     auto r = repeat('a', 0);
     REQUIRE( std::begin(r) == std::end(r) );
 }
+
+TEST_CASE("repeat: negative count gives empty sequence", "[repeat]") {
+    auto r = repeat('a', -2);
+    REQUIRE( std::begin(r) == std::end(r) );
+    auto r2 = repeat('a', -1);
+    REQUIRE( std::begin(r2) == std::end(r2) );
+}
+
+TEST_CASE("repeat: doesn't duplicate item", "[repeat]") {
+    itertest::SolidInt si{2};
+    auto r = repeat(si);
+    auto it = std::begin(r);
+    (void)*it;
+}
+
