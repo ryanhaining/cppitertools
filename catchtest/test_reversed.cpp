@@ -28,3 +28,10 @@ TEST_CASE("reversed: can reverse an array", "[reversed]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("reversed: empty when iterable is empty", "[reversed]") {
+    Vec emp{};
+    auto r = reversed(emp);
+    REQUIRE( std::begin(r) == std::end(r) );
+}
+
