@@ -81,6 +81,23 @@ TEST_CASE("product: single iterable", "[product]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("product: binds to lvalues and moves rvalues", "[product]") {
+    itertest::BasicIterable<char> bi{'x', 'y'};
+    itertest::BasicIterable<int> bi2{0, 1};
+    
+    SECTION("First ref'd, second moved") {
+        product(bi, std::move(bi2));
+        REQUIRE_FALSE( bi.was_moved_from() );
+        REQUIRE( bi2.was_moved_from() );
+    }
+
+    SECTION("First moved, second ref'd") {
+        product(std::move(bi), bi2);
+        REQUIRE( bi.was_moved_from() );
+        REQUIRE_FALSE( bi2.was_moved_from() );
+    }
+}
+
 TEST_CASE("product: doesn't move or copy elements of iterable", "[product]") {
     constexpr itertest::SolidInt arr[] = {{1}, {0}, {2}};
     for (auto&& t : product(arr)) {
