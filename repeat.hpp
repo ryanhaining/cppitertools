@@ -2,6 +2,7 @@
 #define ITER_REPEAT_HPP_
 
 #include <iterator>
+#include <type_traits>
 #include <utility>
 
 namespace iter {
@@ -13,12 +14,17 @@ namespace iter {
     class Repeater;
 
     template <typename T>
-    Repeater<T> repeat(T&&, int count =INFINITE_REPEAT);
+    Repeater<T> repeat(T&&);
+
+    template <typename T>
+    Repeater<T> repeat(T&&, int);
 
     template <typename T>
     class Repeater {
+        friend Repeater repeat<T>(T&&);
         friend Repeater repeat<T>(T&&, int);
         private:
+            using TPlain = typename std::remove_reference<T>::type;
             T elem;
             int count;
 
@@ -28,12 +34,14 @@ namespace iter {
             { }
         public:
 
-            class Iterator : public std::iterator<std::input_iterator_tag, T> {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, TPlain>
+            {
                 private:
-                    T* elem;
+                    TPlain* elem;
                     int count;
                 public:
-                    Iterator(T* e, int c)
+                    Iterator(TPlain* e, int c)
                         : elem{e},
                         count{c}
                     { }
@@ -80,10 +88,15 @@ namespace iter {
     };
 
     template <typename T>
-    Repeater<T> repeat(T&& e, int count) {
-        return {std::forward<T>(e), count};
+    Repeater<T> repeat(T&& e) {
+        return {std::forward<T>(e), INFINITE_REPEAT};
     }
         
+    template <typename T>
+    Repeater<T> repeat(T&& e, int count) {
+        // if count is negative, pass 0 instead
+        return {std::forward<T>(e), count < 0 ? 0 : count};
+    }
 }
 
 #endif
