@@ -28,7 +28,10 @@ namespace iter {
 
         public:
             Reverser(const Reverser&) = default;
-            class Iterator {
+            class Iterator : public std::iterator<
+                         std::input_iterator_tag,
+                         iterator_traits_deref<Container>>
+            {
                 private:
                     reverse_iterator_type<Container> sub_iter;
                 public:
@@ -60,7 +63,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a Reverser
     template <typename Container>
     Reverser<Container> reversed(Container&& container) {
         return {std::forward<Container>(container)};
@@ -76,8 +78,6 @@ namespace iter {
     class Reverser<T[N]> {
         private:
             T *array;
-            // The reversed function is the only thing allowed to create a
-            // Reverser
             friend Reverser reversed<T, N>(T (&)[N]);
             
             // Value constructor for use only in the reversed function
@@ -89,7 +89,8 @@ namespace iter {
 
         public:
             Reverser(const Reverser&) = default;
-            class Iterator {
+            class Iterator : public std::iterator<std::input_iterator_tag, T>
+            {
                 private:
                     T *sub_iter;
                 public:
