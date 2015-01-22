@@ -39,3 +39,9 @@ TEST_CASE("sliding_window: window of size 3", "[sliding_window]") {
     ++it;
     REQUIRE( !(it != std::end(sw)) );
 }
+
+TEST_CASE("sliding window: oversized window is empty", "[sliding_window]") {
+    Vec ns = {10, 20, 30};
+    auto sw = sliding_window(ns, 5);
+    REQUIRE( !(std::begin(sw) != std::end(sw)) );
+}
