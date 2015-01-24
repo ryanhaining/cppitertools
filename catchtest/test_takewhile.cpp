@@ -70,4 +70,11 @@ TEST_CASE("takewhile: when first element fails predicate, it's empty"
     }
 }
 
-        
+TEST_CASE("takewhile: moves rvalues, binds to lvalues", "[takewhile]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    takewhile(under_ten, bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+
+    takewhile(under_ten, std::move(bi));
+    REQUIRE( bi.was_moved_from() );
+}
