@@ -48,3 +48,9 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
         REQUIRE( v == vc );
     }
 }
+
+TEST_CASE("takewhile: empty iterable is empty", "[takewhile]") {
+    Vec ns{};
+    auto tw = takewhile(under_ten, ns);
+    REQUIRE( std::begin(tw) == std::end(tw) );
+}
