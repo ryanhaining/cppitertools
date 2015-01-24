@@ -92,3 +92,10 @@ TEST_CASE("sliding window: moves rvalues and binds to lvalues",
     sliding_window(std::move(bi), 1);
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("sliding window: doesn't copy elements", "[sliding_window]") {
+    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    for (auto&& i : sliding_window(arr, 1)) {
+        (void)*std::begin(i);
+    }
+}
