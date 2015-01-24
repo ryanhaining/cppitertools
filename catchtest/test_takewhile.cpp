@@ -54,3 +54,20 @@ TEST_CASE("takewhile: empty iterable is empty", "[takewhile]") {
     auto tw = takewhile(under_ten, ns);
     REQUIRE( std::begin(tw) == std::end(tw) );
 }
+
+TEST_CASE("takewhile: when first element fails predicate, it's empty"
+        "[takewhile]") {
+    SECTION("First element is only element") {
+        Vec ns = {20};
+        auto tw = takewhile(under_ten, ns);
+        REQUIRE( std::begin(tw) == std::end(tw) );
+    }
+
+    SECTION("First element followed by elements that pass") {
+        Vec ns = {20, 1, 1};
+        auto tw = takewhile(under_ten, ns);
+        REQUIRE( std::begin(tw) == std::end(tw) );
+    }
+}
+
+        
