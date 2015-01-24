@@ -37,6 +37,8 @@ progs = Split(
     reversed
 
     sliding_window
+    
+    takewhile
     '''
 )
 
