@@ -58,3 +58,22 @@ TEST_CASE("sliding window: window size == len(iterable)", "[sliding_window]") {
     ++it;
     REQUIRE_FALSE( it != std::end(sw) );
 }
+
+TEST_CASE("sliding window: empty iterable is empty", "[sliding_window]") {
+    Vec ns{};
+    auto sw = sliding_window(ns, 1);
+    REQUIRE_FALSE( std::begin(sw) != std::end(sw) );
+}
+
+TEST_CASE("sliding window: window size of 1", "[sliding_window]") {
+    Vec ns = {10, 20, 30};
+    auto sw = sliding_window(ns, 1);
+    auto it = std::begin(sw);
+    REQUIRE( *std::begin(*it) == 10 );
+    ++it;
+    REQUIRE( *std::begin(*it) == 20 );
+    ++it;
+    REQUIRE( *std::begin(*it) == 30 );
+    ++it;
+    REQUIRE_FALSE( it != std::end(sw) );
+}
