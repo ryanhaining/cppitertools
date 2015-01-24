@@ -45,3 +45,16 @@ TEST_CASE("sliding window: oversized window is empty", "[sliding_window]") {
     auto sw = sliding_window(ns, 5);
     REQUIRE( !(std::begin(sw) != std::end(sw)) );
 }
+
+TEST_CASE("sliding window: window size == len(iterable)", "[sliding_window]") {
+    Vec ns = {10, 20, 30};
+    auto sw = sliding_window(ns, 3);
+    auto it = std::begin(sw);
+    REQUIRE( it != std::end(sw) );
+
+    Vec v(std::begin(*it), std::end(*it));
+
+    REQUIRE( ns == v );
+    ++it;
+    REQUIRE_FALSE( it != std::end(sw) );
+}
