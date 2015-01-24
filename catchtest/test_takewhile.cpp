@@ -78,3 +78,13 @@ TEST_CASE("takewhile: moves rvalues, binds to lvalues", "[takewhile]") {
     takewhile(under_ten, std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("takewhile: with iterable doesn't move or copy elements",
+        "[takewhile]") {
+    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    auto func =
+        [](const itertest::SolidInt& si){return si.getint() < 10;};
+    for (auto&& i : takewhile(func, arr)) {
+        (void)i;
+    }
+}
