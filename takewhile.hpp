@@ -49,18 +49,12 @@ namespace iter {
                 private:
                     using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
-                    // check if the current value is true under the predicate
-                    // if it is not, set the sub_iter to the end using
-                    // placement new to avoid the requirement of the iterator
-                    // having an operator=
                     void check_current() {
                         if (!this->filter_func(*this->sub_iter)) {
-                            this->sub_iter.~iter_type();
-                            new(&this->sub_iter) iterator_type<Container>(
-                                    this->sub_end);
+                            this->sub_iter = this->sub_end;
                         }
                     }
 
@@ -78,7 +72,7 @@ namespace iter {
                         }
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
