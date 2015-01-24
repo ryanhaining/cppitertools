@@ -73,6 +73,12 @@ namespace iter {
                         this->window.push_back(*this->sub_iter);
                         return *this;
                     }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
             };
 
             Iterator begin() {
