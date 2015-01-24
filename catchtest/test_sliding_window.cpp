@@ -83,3 +83,12 @@ TEST_CASE("sliding window: window size of 0", "[sliding_window]") {
     auto sw = sliding_window(ns, 0);
     REQUIRE( std::begin(sw) == std::end(sw) );
 }
+
+TEST_CASE("sliding window: moves rvalues and binds to lvalues",
+        "[sliding_window]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    sliding_window(bi, 1);
+    REQUIRE_FALSE( bi.was_moved_from() );
+    sliding_window(std::move(bi), 1);
+    REQUIRE( bi.was_moved_from() );
+}
