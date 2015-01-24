@@ -35,6 +35,8 @@ progs = Split(
     product
     repeat
     reversed
+
+    sliding_window
     '''
 )
 
