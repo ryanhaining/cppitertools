@@ -1,5 +1,5 @@
-#ifndef TAKEWHILE__H__
-#define TAKEWHILE__H__
+#ifndef ITER_TAKEWHILE_H_
+#define ITER_TAKEWHILE_H_
 
 #include "iterbase.hpp"
 
@@ -39,13 +39,13 @@ namespace iter {
                 filter_func(filter_func)
             { }
 
-            TakeWhile () = delete;
-            TakeWhile& operator=(const TakeWhile&) = delete;
 
         public:
-            TakeWhile(const TakeWhile&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<Container>>
+            {
                 private:
                     using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
@@ -123,4 +123,4 @@ namespace iter {
 
 }
 
-#endif //ifndef TAKEWHILE__H__
+#endif
