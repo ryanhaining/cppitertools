@@ -33,4 +33,18 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
         Vec vc = {1, 3, 5};
         REQUIRE( v == vc );
     }
+
+    SECTION("callable object") {
+        auto tw = takewhile(UnderTen{}, ns);
+        Vec v(std::begin(tw), std::end(tw));
+        Vec vc = {1, 3, 5};
+        REQUIRE( v == vc );
+    }
+
+    SECTION("lambda") {
+        auto tw = takewhile([](int i){ return i < 10; }, ns);
+        Vec v(std::begin(tw), std::end(tw));
+        Vec vc = {1, 3, 5};
+        REQUIRE( v == vc );
+    }
 }
