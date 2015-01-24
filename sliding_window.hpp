@@ -1,12 +1,9 @@
-#ifndef SLIDING_WINDOW_HPP_
-#define SLIDING_WINDOW_HPP_
+#ifndef ITER_SLIDING_WINDOW_HPP_
+#define ITER_SLIDING_WINDOW_HPP_
 
 #include "iterbase.hpp"
 
-#include <vector>
-#include <algorithm>
-#include <functional>
-#include <type_traits>
+#include <deque>
 #include <utility>
 #include <iterator>
 
@@ -23,8 +20,7 @@ namespace iter {
 
     template <typename Container>
     class SlidingWindow {
-        private:
-            Container container;
+        private: Container container;
             std::size_t window_size;
 
             friend SlidingWindow sliding_window<Container>(
@@ -43,62 +39,53 @@ namespace iter {
 
             class Iterator {
                 private:
-                    // confusing, but, just makes the type of the vector
-                    // returned by operator*()
-                    using OpDerefElemType =
-                        std::reference_wrapper<
-                            typename std::remove_reference<
-                                iterator_deref<Container>>::type>;
-                    using DerefVec = std::vector<OpDerefElemType>;
-
-                    std::vector<iterator_type<Container>> section;
-                    std::size_t section_size = 0;
+                    // TODO move defs outside and subclass std::iterator
+                    using OpDerefElemType = collection_item_type<Container>;
+                    using DerefVec = std::deque<OpDerefElemType>;
+                    
+                    iterator_type<Container> sub_iter;
+                    DerefVec window;
 
                 public:
-                    Iterator(Container& container, std::size_t s)
-                        : section_size{s}
+                    Iterator(const iterator_type<Container>& in_iter,
+                            const iterator_type<Container>& in_end,
+                             std::size_t window_sz)
+                        : sub_iter(in_iter)
                     {
-                        auto iter = std::begin(container);
-                        auto end = std::end(container);
-                        for (std::size_t i = 0;
-                                i < section_size && iter != end;
-                                ++iter, ++i) {
-                            section.push_back(iter);
+                        std::size_t i{0};
+                        while (i < window_sz && this->sub_iter != in_end) {
+                            this->window.push_back(*this->sub_iter);
+                            ++i;
+                            if (i != window_sz) ++this->sub_iter;
                         }
                     }
 
-                    // for the end iter
-                    Iterator(Container& container)
-                        : section{std::end(container)},
-                        section_size{0}
-                    { }
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
+                    }
+
+                    DerefVec& operator*() {
+                        return this->window;
+                    }
 
                     Iterator& operator++() {
-                        for (auto&& iter : this->section) {
-                            ++iter;
-                        }
+                        ++this->sub_iter;
+                        this->window.pop_front();
+                        this->window.push_back(*this->sub_iter);
                         return *this;
-                    }
-
-                    bool operator!=(const Iterator& rhs) const {
-                       return this->section.back() != rhs.section.back();
-                    }
-
-                    DerefVec operator*() {
-                        DerefVec vec;
-                        for (auto&& iter : this->section) {
-                            vec.push_back(*iter);
-                        }
-                        return vec;
                     }
             };
 
             Iterator begin() {
-                return {container, window_size};
+                return {std::begin(container),
+                    std::end(container),
+                    window_size};
             }
 
             Iterator end() {
-                return {container};
+                return {std::end(container),
+                    std::end(container),
+                    window_size};
             }
     };
 
@@ -115,4 +102,4 @@ namespace iter {
     }
 }
 
-#endif //SLIDING_WINDOW_HPP_
+#endif
