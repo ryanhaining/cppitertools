@@ -37,13 +37,13 @@ TEST_CASE("sliding_window: window of size 3", "[sliding_window]") {
         REQUIRE( v == vc );
     }
     ++it;
-    REQUIRE( !(it != std::end(sw)) );
+    REQUIRE( it == std::end(sw) );
 }
 
 TEST_CASE("sliding window: oversized window is empty", "[sliding_window]") {
     Vec ns = {10, 20, 30};
     auto sw = sliding_window(ns, 5);
-    REQUIRE( !(std::begin(sw) != std::end(sw)) );
+    REQUIRE( std::begin(sw) == std::end(sw) );
 }
 
 TEST_CASE("sliding window: window size == len(iterable)", "[sliding_window]") {
@@ -56,13 +56,13 @@ TEST_CASE("sliding window: window size == len(iterable)", "[sliding_window]") {
 
     REQUIRE( ns == v );
     ++it;
-    REQUIRE_FALSE( it != std::end(sw) );
+    REQUIRE( it == std::end(sw) );
 }
 
 TEST_CASE("sliding window: empty iterable is empty", "[sliding_window]") {
     Vec ns{};
     auto sw = sliding_window(ns, 1);
-    REQUIRE_FALSE( std::begin(sw) != std::end(sw) );
+    REQUIRE( std::begin(sw) == std::end(sw) );
 }
 
 TEST_CASE("sliding window: window size of 1", "[sliding_window]") {
@@ -75,5 +75,11 @@ TEST_CASE("sliding window: window size of 1", "[sliding_window]") {
     ++it;
     REQUIRE( *std::begin(*it) == 30 );
     ++it;
-    REQUIRE_FALSE( it != std::end(sw) );
+    REQUIRE( it == std::end(sw) );
+}
+
+TEST_CASE("sliding window: window size of 0", "[sliding_window]") {
+    Vec ns = {10, 20, 30};
+    auto sw = sliding_window(ns, 0);
+    REQUIRE( std::begin(sw) == std::end(sw) );
 }
