@@ -86,15 +86,18 @@ namespace iter {
             };
 
             Iterator begin() {
-                return {std::begin(container),
-                    std::end(container),
-                    window_size};
+                return {
+                    (this->window_size != 0 ?
+                     std::begin(this->container)
+                     : std::end(this->container)),
+                    std::end(this->container),
+                    this->window_size};
             }
 
             Iterator end() {
-                return {std::end(container),
-                    std::end(container),
-                    window_size};
+                return {std::end(this->container),
+                    std::end(this->container),
+                    this->window_size};
             }
     };
 
