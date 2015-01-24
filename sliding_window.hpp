@@ -35,14 +35,13 @@ namespace iter {
                 window_size{win_sz}
             { }
 
+            using DerefVec = std::deque<collection_item_type<Container>>;
         public:
 
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, DerefVec>
+            {
                 private:
-                    // TODO move defs outside and subclass std::iterator
-                    using OpDerefElemType = collection_item_type<Container>;
-                    using DerefVec = std::deque<OpDerefElemType>;
-                    
                     iterator_type<Container> sub_iter;
                     DerefVec window;
 
