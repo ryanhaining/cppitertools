@@ -33,7 +33,6 @@ namespace iter {
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
                     FF, std::initializer_list<T>);
 
-            // Value constructor for use only in the takewhile function
             TakeWhile(FilterFunc filter_func, Container container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
@@ -47,7 +46,6 @@ namespace iter {
                     iterator_traits_deref<Container>>
             {
                 private:
-                    using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
                     FilterFunc filter_func;
@@ -59,7 +57,7 @@ namespace iter {
                     }
 
                 public:
-                    Iterator (iterator_type<Container> iter,
+                    Iterator(iterator_type<Container> iter,
                             iterator_type<Container> end,
                             FilterFunc filter_func)
                         : sub_iter{iter},
@@ -82,9 +80,20 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+                
             };
 
             Iterator begin() {
@@ -101,7 +110,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a TakeWhile
     template <typename FilterFunc, typename Container>
     TakeWhile<FilterFunc, Container> takewhile(
             FilterFunc filter_func, Container&& container) {
