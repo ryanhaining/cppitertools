@@ -28,3 +28,13 @@ TEST_CASE("unique everseen: nonadjacent repeating values",
     Vec vc = {1,2,3,4,5,6};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("unique everseen: moves rvalues, binds to lvalues",
+        "[unique_everseen]") {
+    itertest::BasicIterable<int> bi{1, 2};
+    unique_everseen(bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+
+    unique_everseen(std::move(bi));
+    REQUIRE( bi.was_moved_from() );
+}
