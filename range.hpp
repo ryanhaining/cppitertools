@@ -23,27 +23,27 @@ namespace iter {
 
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
-        virtual const char *what() const noexcept { 
+        const char *what() const noexcept override {
             return "range step must be non-zero";
         }
     };
 
-    //Forward declarations of Enumerable and enumerate
-    template <typename T>
+    template <typename T, bool IsFloat>
     class Range;
 
-    template <typename T>
-    Range<T> range(T);
-    template <typename T>
-    Range<T> range(T, T);
-    template <typename T>
-    Range<T> range(T, T, T);
+    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
+    Range<T, IsFloat> range(T);
+    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
+    Range<T, IsFloat> range(T, T);
+    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
+    Range<T, IsFloat> range(T, T, T);
 
+    // General version for everything not a float
     template <typename T>
-    class Range {
-        friend Range range<T>(T);
-        friend Range range<T>(T, T);
-        friend Range range<T>(T, T, T);
+    class Range<T, false> {
+        friend Range range<T, false>(T);
+        friend Range range<T, false>(T, T);
+        friend Range range<T, false>(T, T, T);
         private:
             const T start; 
             const T stop;
@@ -62,8 +62,6 @@ namespace iter {
             { }
 
         public:
-            Range() = delete;
-            Range(const Range&) = default;
             class Iterator
                 : public std::iterator<std::input_iterator_tag, T>
             {
@@ -140,19 +138,96 @@ namespace iter {
             }
     };
 
-
+    // This specialization is used for floating point types.  Instead of
+    // adding one "step" each time ++ is called on the iterator, the value
+    // is recalculated as start + (steps_taken + step_size) to avoid
+    // accumulating floating point inaccuracies 
     template <typename T>
-    Range<T> range(T stop) {
+    class Range<T, true> {
+        friend Range range<T, true>(T);
+        friend Range range<T, true>(T, T);
+        friend Range range<T, true>(T, T, T);
+        private:
+            const T start; 
+            const T stop;
+            const T step;
+
+            Range(T stop)
+                : start{0},
+                stop{stop},
+                step{1}
+            { }
+
+            Range(T start, T stop, T step =1)
+                : start{start},
+                stop{stop},
+                step{step}
+            { }
+        public:
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, T>
+            {
+                private:
+                    T start;
+                    T value;
+                    T step;
+                    unsigned long steps_taken =0;
+
+                public:
+                    Iterator(T start, T step)
+                        : start{start},
+                        value{start},
+                        step{step}
+                    { }
+
+                    bool operator!=(const Iterator& other) const {
+                        return !(this->step > 0 && this->value >= other.value) 
+                            && !(this->step < 0 && this->value <= other.value);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
+                    T operator*() const {
+                        return this->value;
+                    }
+
+                    Iterator& operator++() {
+                        ++this->steps_taken;
+                        this->value = this->start +
+                            (this->step * this->steps_taken);
+                        return *this;
+                    }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+            };
+
+            Iterator begin() const {
+                return {start, step};
+            }
+
+            Iterator end() const { 
+                return {stop, step};
+            }
+    };
+
+    template <typename T, bool IsFloat>
+    Range<T, IsFloat> range(T stop) {
         return {stop};
     }
 
-    template <typename T>
-    Range<T> range(T start, T stop) {
+    template <typename T, bool IsFloat>
+    Range<T, IsFloat> range(T start, T stop) {
         return {start, stop};
     }
 
-    template <typename T>
-    Range<T> range(T start, T stop, T step) {
+    template <typename T, bool IsFloat>
+    Range<T, IsFloat> range(T start, T stop, T step) {
         if (step == 0) {
             throw RangeException{};
         }
