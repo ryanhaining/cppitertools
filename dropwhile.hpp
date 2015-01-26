@@ -9,7 +9,6 @@
 
 namespace iter {
 
-    //Forward declarations of DropWhile and dropwhile
     template <typename FilterFunc, typename Container>
     class DropWhile;
 
@@ -33,16 +32,12 @@ namespace iter {
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
                     FF, std::initializer_list<T>);
             
-            // Value constructor for use only in the dropwhile function
             DropWhile(FilterFunc filter_func, Container container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
-            DropWhile() = delete;
-            DropWhile& operator=(const DropWhile&) = delete;
 
         public:
-            DropWhile(const DropWhile&) = default;
             class Iterator 
                 : public std::iterator<std::input_iterator_tag,
                     iterator_traits_deref<Container>>
@@ -109,7 +104,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a DropWhile
     template <typename FilterFunc, typename Container>
     DropWhile<FilterFunc, Container> dropwhile(
             FilterFunc filter_func, Container&& container) {
