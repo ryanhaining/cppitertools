@@ -87,15 +87,11 @@ namespace iter {
                 map_func(map_func),
                 zipped(zip(std::forward<Containers>(containers)...))
             { }
-            IMap() = delete;
-            IMap& operator=(const IMap&) = delete;
 
         public:
-            IMap(const IMap&) = default;
-            IMap(IMap&&) = default;
-
             class Iterator 
-                : public std::iterator<std::input_iterator_tag, IMapIterDeref>
+                : public std::iterator<std::input_iterator_tag,
+                    typename std::remove_reference<IMapIterDeref>::type >
             {
                 private:
                     MapFunc map_func;
