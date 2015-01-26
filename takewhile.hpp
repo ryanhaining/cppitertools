@@ -51,7 +51,8 @@ namespace iter {
                     FilterFunc filter_func;
 
                     void check_current() {
-                        if (!this->filter_func(*this->sub_iter)) {
+                        if (this->sub_iter != this->sub_end
+                                && !this->filter_func(*this->sub_iter)) {
                             this->sub_iter = this->sub_end;
                         }
                     }
