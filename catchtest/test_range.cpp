@@ -144,3 +144,12 @@ TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
     }
 
 }
+
+using FVec = const std::vector<double>;
+
+TEST_CASE("range: using doubles", "[range]") {
+    auto r = range(5.0);
+    FVec fv(std::begin(r), std::end(r));
+    FVec fvc = {0.0, 1.0, 2.0, 3.0, 4.0};
+    REQUIRE( fv == fvc );
+}
