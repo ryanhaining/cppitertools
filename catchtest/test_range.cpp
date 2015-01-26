@@ -153,3 +153,40 @@ TEST_CASE("range: using doubles", "[range]") {
     FVec fvc = {0.0, 1.0, 2.0, 3.0, 4.0};
     REQUIRE( fv == fvc );
 }
+
+TEST_CASE("range: using doubles with start and stop", "[range]") {
+    auto r = range(5.0, 10.0);
+    FVec fv(std::begin(r), std::end(r));
+    FVec fvc = {5.0, 6.0, 7.0, 8.0, 9.0};
+    REQUIRE( fv == fvc );
+}
+
+TEST_CASE("range: using doubles with start, stop and step", "[range]") {
+    auto r = range(1.0, 4.0, 0.5);
+    FVec fv(std::begin(r), std::end(r));
+    FVec fvc = {1.0, 1.5, 2.0, 2.5, 3.0, 3.5};
+    REQUIRE( fv == fvc );
+}
+
+TEST_CASE("range: using doubles with negative", "[range]") {
+    auto r = range(0.5, -2.0, -0.5);
+    FVec fv(std::begin(r), std::end(r));
+    FVec fvc = {0.5, 0.0, -0.5, -1.0, -1.5};
+    REQUIRE( fv == fvc );
+}
+
+TEST_CASE("range: using doubles with uneven step", "[range]") {
+    auto r = range(0.0, 1.75, 0.5);
+    FVec fv(std::begin(r), std::end(r));
+    FVec fvc = {0.0, 0.5, 1.0, 1.5};
+    REQUIRE( fv == fvc );
+}
+
+TEST_CASE("range: using doubles detects empty ranges", "[range]") {
+    auto r1 = range(0.0, -1.0);
+    REQUIRE(std::begin(r1) == std::end(r1));
+
+    auto r2 = range(0.0, 1.0, -1.0);
+    REQUIRE(std::begin(r2) == std::end(r2));
+}
+    
