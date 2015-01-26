@@ -19,7 +19,7 @@ namespace iter
         -> Filter<std::function<bool(iterator_deref<Container>)>,Container>
     {
         using elem_t = iterator_deref<Container>;
-        std::unordered_set<typename std::remove_reference<elem_t>::type> elem_seen;
+        std::unordered_set<typename std::decay<elem_t>::type> elem_seen;
 
         std::function<bool(elem_t)> func =
         //has to be captured by value because it goes out of scope when the 
