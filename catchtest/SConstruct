@@ -39,6 +39,7 @@ progs = Split(
     sliding_window
     
     takewhile
+    unique_everseen
     '''
 )
 
