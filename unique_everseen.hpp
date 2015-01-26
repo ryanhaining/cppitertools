@@ -1,5 +1,5 @@
-#ifndef UNIQUE_EVERSEEN_HPP
-#define UNIQUE_EVERSEEN_HPP
+#ifndef ITER_UNIQUE_EVERSEEN_HPP_
+#define ITER_UNIQUE_EVERSEEN_HPP_
 
 #include "iterbase.hpp"
 #include "filter.hpp"
@@ -54,4 +54,4 @@ namespace iter
     }
 }
 
-#endif //UNIQUE_EVERSEEN_HPP
+#endif
