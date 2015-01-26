@@ -28,7 +28,7 @@ namespace iter {
         }
     };
 
-    template <typename T, bool IsFloat>
+    template <typename T, bool IsFloat =false>
     class Range;
 
     template <typename T, bool IsFloat =std::is_floating_point<T>::value>
@@ -39,8 +39,8 @@ namespace iter {
     Range<T, IsFloat> range(T, T, T);
 
     // General version for everything not a float
-    template <typename T>
-    class Range<T, false> {
+    template <typename T, bool>
+    class Range {
         friend Range range<T, false>(T);
         friend Range range<T, false>(T, T);
         friend Range range<T, false>(T, T, T);
