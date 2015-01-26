@@ -49,6 +49,13 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
     }
 }
 
+TEST_CASE("takewhile: everything passes predicate", "[takewhile]") {
+    Vec ns{1, 2, 3};
+    auto tw = takewhile(under_ten, ns);
+    Vec v(std::begin(tw), std::end(tw));
+    Vec vc = {1, 2, 3};
+}
+
 TEST_CASE("takewhile: empty iterable is empty", "[takewhile]") {
     Vec ns{};
     auto tw = takewhile(under_ten, ns);
@@ -81,7 +88,7 @@ TEST_CASE("takewhile: moves rvalues, binds to lvalues", "[takewhile]") {
 
 TEST_CASE("takewhile: with iterable doesn't move or copy elements",
         "[takewhile]") {
-    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    constexpr std::array<itertest::SolidInt, 3> arr{{{8}, {9}, {10}}};
     auto func =
         [](const itertest::SolidInt& si){return si.getint() < 10;};
     for (auto&& i : takewhile(func, arr)) {
