@@ -74,3 +74,13 @@ TEST_CASE("slice: invalid ranges give 0 size slices", "[slice]") {
         REQUIRE( std::begin(sl) == std::end(sl) );
     }
 }
+
+// TODO test with BasicIterable can't currently be done because of
+// range checking using std::distance.  (also screws up infinite ranges)
+
+TEST_CASE("slice: with iterable doesn't move or copy elems", "[slice]") {
+    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    for (auto&& i : slice(arr, 2)) {
+        (void)i;
+    }
+}
