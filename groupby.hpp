@@ -107,14 +107,14 @@ namespace iter {
                     }
 
                     bool exhausted() const {
-                        return this->sub_iter == this->sub_end;
+                        return !(this->sub_iter != this->sub_end);
                     }
 
                     iterator_deref<Container> current() {
                         return *this->sub_iter;
                     }
 
-                    key_func_ret next_key() const {
+                    key_func_ret next_key() {
                         return this->key_func(*this->sub_iter);
                     }
             };
@@ -173,7 +173,7 @@ namespace iter {
                             const key_func_ret key;
                             const Group& group;
 
-                            bool not_at_end() const {
+                            bool not_at_end() {
                                 return !this->group.owner.exhausted()&&
                                     this->group.owner.next_key() == this->key;
                             }
@@ -188,12 +188,15 @@ namespace iter {
                             GroupIterator(const GroupIterator&) = default;
 
                             bool operator!=(const GroupIterator&) const {
+                                return !this->group.completed;
+#if 0
                                 if (this->not_at_end()) {
                                     return true;
                                 } else {
                                     this->group.completed = true;
                                     return false;
                                 }
+#endif
                             }
 
                             bool operator==(const GroupIterator& other) const {
@@ -202,6 +205,9 @@ namespace iter {
 
                             GroupIterator& operator++() {
                                 this->group.owner.increment_iterator();
+                                if (!this->not_at_end()) {
+                                    this->group.completed = true;
+                                }
                                 return *this;
                             }
 
@@ -246,7 +252,6 @@ namespace iter {
     template <typename Container>
     class ItemReturner {
         public:
-            ItemReturner() = default;
             iterator_deref<Container> operator() (
                     iterator_deref<Container> item) const {
                 return item;
