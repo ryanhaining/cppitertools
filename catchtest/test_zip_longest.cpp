@@ -128,3 +128,10 @@ TEST_CASE("zip_longest: binds to lvalues, moves rvalues", "[zip_longest]") {
     REQUIRE_FALSE( b1.was_moved_from() );
     REQUIRE( b2.was_moved_from() );
 }
+
+TEST_CASE("zip_longest: doesn't move or copy elements", "[zip_longest]") {
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& t : zip_longest(arr, arr)) {
+        (void)std::get<0>(t);
+    }
+}
