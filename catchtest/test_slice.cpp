@@ -62,3 +62,15 @@ TEST_CASE("slice: (stop - start) % step != 0", "[slice]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("slice: invalid ranges give 0 size slices", "[slice]") {
+    Vec ns = {1, 2, 3};
+    SECTION("stop > start, step < 0") {
+        auto sl = slice(ns, 1, 10,-1);
+        REQUIRE( std::begin(sl) == std::end(sl) );
+    }
+    SECTION("stop < start, step > 0") {
+        auto sl = slice(ns, 2, 0, 3);
+        REQUIRE( std::begin(sl) == std::end(sl) );
+    }
+}
