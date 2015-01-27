@@ -28,9 +28,8 @@ TEST_CASE("zip longest: correctly detects longest at any position",
     ResVec rc;
 
     SECTION("longest first") {
-        for (auto&& t : zip_longest(ivec, svec, str)) {
-            results.push_back(t);
-        }
+        auto zl = zip_longest(ivec, svec, str);
+        results = ResVec(std::begin(zl), std::end(zl));
         rc = ResVec {
             TP{ivec[0], svec[0], str[0]},
             TP{ivec[1], svec[1], str[1]},
@@ -40,7 +39,6 @@ TEST_CASE("zip longest: correctly detects longest at any position",
             TP{ivec[5], {},      {}    }
         };
     }
-
 
     REQUIRE( results == rc );
 }
