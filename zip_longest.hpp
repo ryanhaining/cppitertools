@@ -4,7 +4,6 @@
 #include "iterbase.hpp"
 
 #include <boost/optional.hpp>
-#include <iostream> // TODO remove
 #include <iterator>
 #include <tuple>
 #include <utility>
