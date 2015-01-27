@@ -108,7 +108,7 @@ namespace iter {
                         : sub_iter{iter}
                     { } 
 
-                    auto operator*() -> decltype(*array) {
+                    iterator_deref<T[N]> operator*() {
                         return *(this->sub_iter - 1);
                     }
 
