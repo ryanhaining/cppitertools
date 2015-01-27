@@ -28,6 +28,10 @@ namespace iter {
         friend class ZippedLongest;
 
         private:
+            using OptType = boost::optional<iterator_deref<Container>>;
+            using ZipIterDeref =
+                std::tuple<OptType,
+                    boost::optional<iterator_deref<RestContainers>>...>;
             Container container;
             ZippedLongest<RestContainers...> rest_zipped;
             ZippedLongest(Container container, RestContainers&&... rest)
@@ -36,11 +40,12 @@ namespace iter {
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, ZipIterDeref>
+            {
                 private:
                     using RestIter =
                         typename ZippedLongest<RestContainers...>::Iterator;
-                    using OptType = boost::optional<iterator_deref<Container>>;
 
                     iterator_type<Container> iter;
                     iterator_type<Container> end;
@@ -69,11 +74,7 @@ namespace iter {
                             this->rest_iter != other.rest_iter;
                     }
 
-                    auto operator*() ->
-                        decltype(std::tuple_cat(
-                                    std::tuple<OptType>{OptType{*this->iter}},
-                                    *this->rest_iter))
-                    {
+                    ZipIterDeref operator*() {
                         if (this->iter != this->end) {
                             return std::tuple_cat(
                                     std::tuple<OptType>{OptType{*this->iter}},
@@ -111,6 +112,8 @@ namespace iter {
         friend class ZippedLongest;
 
         private:
+            using OptType = boost::optional<iterator_deref<Container>>;
+
             Container container;
             ZippedLongest(Container container)
                 : container(std::forward<Container>(container))
@@ -118,9 +121,11 @@ namespace iter {
 
         public:
 
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag,
+                    std::tuple<OptType>> 
+            {
                 private:
-                    using OptType = boost::optional<iterator_deref<Container>>;
                     iterator_type<Container> iter;
                     iterator_type<Container> end;
                 public:
