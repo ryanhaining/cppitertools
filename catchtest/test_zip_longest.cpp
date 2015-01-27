@@ -92,3 +92,26 @@ TEST_CASE("zip longest: correctly detects longest at any position",
         REQUIRE( results == rc );
     }
 }
+
+TEST_CASE("zip longest: when all are empty, terminates right away",
+        "[zip_longest]") {
+    const std::vector<int> ivec{};
+    const std::vector<std::string> svec{};
+    const std::string str{};
+
+    auto zl = zip_longest(ivec, svec, str);
+    REQUIRE( std::begin(zl) == std::end(zl) );
+}
+
+TEST_CASE("zip longest: can modify zipped sequences", "[zip_longest]") {
+    std::vector<int> ns1 = {1, 2, 3};
+    std::vector<int> ns2 = {10, 11, 12};
+    for (auto&& t : zip_longest(ns1, ns2)) {
+        *std::get<0>(t) = -1;
+        *std::get<1>(t) = -1;
+    }
+
+    std::vector<int> vc = {-1, -1, -1};
+    REQUIRE( ns1 == vc );
+    REQUIRE( ns2 == vc );
+}
