@@ -8,37 +8,75 @@
 #include <iterator>
 #include <utility>
 #include <iterator>
+#include <sstream>
+#include <iostream>
 
 #include "catch.hpp"
 
 using iter::zip_longest;
-template <typename T>
-using opt = boost::optional<T>;
+
+
+template <typename... Ts>
+using const_opt_tuple = std::tuple<boost::optional<const Ts&>...>;
 
 TEST_CASE("zip longest: correctly detects longest at any position",
         "[zip_longest]") {
-    using TP = std::tuple<opt<const int&>, opt<const std::string&>, opt<const char&>>;
-    using ResVec = std::vector<TP>;
 
     const std::vector<int> ivec{2, 4, 6, 8, 10, 12};
     const std::vector<std::string> svec{"abc", "def", "xyz"};
     const std::string str{"hello"};
 
-    ResVec results;
-    ResVec rc;
-
     SECTION("longest first") {
+        using TP = const_opt_tuple<int, std::string, char>;
+        using ResVec = std::vector<TP>;
+
         auto zl = zip_longest(ivec, svec, str);
-        results = ResVec(std::begin(zl), std::end(zl));
-        rc = ResVec {
-            TP{ivec[0], svec[0], str[0]},
-            TP{ivec[1], svec[1], str[1]},
-            TP{ivec[2], svec[2], str[2]},
-            TP{ivec[3], {},      str[3]},
-            TP{ivec[4], {},      str[4]},
-            TP{ivec[5], {},      {}    }
+        ResVec results(std::begin(zl), std::end(zl));
+        ResVec rc = {
+            TP{{ivec[0]},  {svec[0]},   {str[0]}},
+            TP{{ivec[1]},  {svec[1]},   {str[1]}},
+            TP{{ivec[2]},  {svec[2]},   {str[2]}},
+            TP{{ivec[3]},  {},          {str[3]}},
+            TP{{ivec[4]},  {},          {str[4]}},
+            TP{{ivec[5]},  {},          {}    }
         };
+
+        REQUIRE( results == rc );
     }
 
-    REQUIRE( results == rc );
+    SECTION("longest in middle") {
+        using TP = const_opt_tuple<std::string, int, char>;
+        using ResVec = std::vector<TP>;
+
+        auto zl = zip_longest(svec, ivec, str);
+        ResVec results(std::begin(zl), std::end(zl));
+        ResVec rc = {
+            TP{{svec[0]},   {ivec[0]},  {str[0]}},
+            TP{{svec[1]},   {ivec[1]},  {str[1]}},
+            TP{{svec[2]},   {ivec[2]},  {str[2]}},
+            TP{{},          {ivec[3]},  {str[3]}},
+            TP{{},          {ivec[4]},  {str[4]}},
+            TP{{},          {ivec[5]},  {}    }
+        };
+
+        REQUIRE( results == rc );
+    }
+
+    SECTION("longest at end") {
+        using TP = const_opt_tuple<std::string, char, int>;
+        using ResVec = std::vector<TP>;
+
+        auto zl = zip_longest(svec, str, ivec);
+        ResVec results(std::begin(zl), std::end(zl));
+        ResVec rc = {
+            TP{{svec[0]},   {str[0]},   {ivec[0]}},
+            TP{{svec[1]},   {str[1]},   {ivec[1]}},
+            TP{{svec[2]},   {str[2]},   {ivec[2]}},
+            TP{{},          {str[3]},   {ivec[3]}},
+            TP{{},          {str[4]},   {ivec[4]}},
+            TP{{},          {},         {ivec[5]}}
+        };
+
+        REQUIRE( results == rc );
+    }
 }
