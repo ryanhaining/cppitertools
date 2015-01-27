@@ -12,10 +12,12 @@
 #include "catch.hpp"
 
 using iter::zip_longest;
+template <typename T>
+using opt = boost::optional<T>;
 
 TEST_CASE("zip longest: correctly detects longest at any position",
         "[zip_longest]") {
-    using TP = std::tuple<int, std::string, char>;
+    using TP = std::tuple<opt<const int&>, opt<const std::string&>, opt<const char&>>;
     using ResVec = std::vector<TP>;
 
     const std::vector<int> ivec{2, 4, 6, 8, 10, 12};
@@ -27,19 +29,15 @@ TEST_CASE("zip longest: correctly detects longest at any position",
 
     SECTION("longest first") {
         for (auto&& t : zip_longest(ivec, svec, str)) {
-            results.emplace_back(
-                    std::get<0>(t).get_value_or(-1),
-                    std::get<1>(t).get_value_or(""),
-                    std::get<2>(t).get_value_or('\0')
-            );
+            results.push_back(t);
         }
         rc = ResVec {
-            TP{2, "abc", 'h'},
-                TP{4, "def", 'e'},
-                TP{6, "xyz", 'l'},
-                TP{8, "", 'l'},
-                TP{10, "", 'o'},
-                TP{12, "", '\0'}
+            TP{ivec[0], svec[0], str[0]},
+            TP{ivec[1], svec[1], str[1]},
+            TP{ivec[2], svec[2], str[2]},
+            TP{ivec[3], {},      str[3]},
+            TP{ivec[4], {},      str[4]},
+            TP{ivec[5], {},      {}    }
         };
     }
 
