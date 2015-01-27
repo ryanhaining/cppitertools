@@ -93,12 +93,15 @@ namespace iter {
             Slice(const Slice &) = default;
 
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<Container>>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     DifferenceType current;
-                    const DifferenceType stop;
-                    const DifferenceType step;
+                    DifferenceType stop;
+                    DifferenceType step;
 
                 public:
                     Iterator (iterator_type<Container> si, DifferenceType start,
