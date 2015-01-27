@@ -4,6 +4,7 @@
 #include "iterbase.hpp"
 
 #include <boost/optional.hpp>
+#include <iostream> // TODO remove
 #include <iterator>
 #include <tuple>
 #include <utility>
@@ -81,11 +82,11 @@ namespace iter {
                     ZipIterDeref operator*() {
                         if (this->iter != this->end) {
                             return std::tuple_cat(
-                                    std::tuple<OptType>{OptType{*this->iter}},
+                                    std::tuple<OptType>{{*this->iter}},
                                     *this->rest_iter);
                         } else {
                             return std::tuple_cat(
-                                    std::tuple<OptType>{OptType{}},
+                                    std::tuple<OptType>{{}},
                                     *this->rest_iter);
                         }
                     }
@@ -153,9 +154,9 @@ namespace iter {
 
                     std::tuple<OptType> operator*() {
                         if (this->iter != this->end) {
-                            return std::tuple<OptType>{OptType{*this->iter}};
+                            return std::tuple<OptType>{{*this->iter}};
                         }
-                        return std::tuple<OptType>{OptType{}};
+                        return std::tuple<OptType>{{}};
                     }
             };
 
