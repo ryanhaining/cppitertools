@@ -115,3 +115,16 @@ TEST_CASE("zip longest: can modify zipped sequences", "[zip_longest]") {
     REQUIRE( ns1 == vc );
     REQUIRE( ns2 == vc );
 }
+
+TEST_CASE("zip_longest: binds to lvalues, moves rvalues", "[zip_longest]") {
+    itertest::BasicIterable<char> b1{'x', 'y', 'z'};
+    itertest::BasicIterable<char> b2{'a', 'b'};
+    SECTION("bind to first, moves second") {
+        zip_longest(b1, std::move(b2));
+    }
+    SECTION("move first, bind to second") {
+        zip_longest(std::move(b2), b1);
+    }
+    REQUIRE_FALSE( b1.was_moved_from() );
+    REQUIRE( b2.was_moved_from() );
+}
