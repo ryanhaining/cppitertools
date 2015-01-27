@@ -1,5 +1,5 @@
-#ifndef SLICE_HPP
-#define SLICE_HPP
+#ifndef ITER_SLICE_HPP
+#define ITER_SLICE_HPP
 
 #include "iterbase.hpp"
 
@@ -179,4 +179,4 @@ namespace iter {
     }
 }
 
-#endif //SLICE_HPP
+#endif
