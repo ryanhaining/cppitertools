@@ -53,3 +53,12 @@ TEST_CASE("slice: start is beyond end of iterable", "[slice]") {
     auto sl = slice(ns, 5, 10);
     REQUIRE( std::begin(sl) == std::end(sl) );
 }
+
+TEST_CASE("slice: (stop - start) % step != 0", "[slice]") {
+    Vec ns = {1, 2, 3, 4};
+    auto sl = slice(ns, 0, 2, 3);
+    Vec v(std::begin(sl), std::end(sl));
+    Vec vc = {1}; 
+
+    REQUIRE( v == vc );
+}
