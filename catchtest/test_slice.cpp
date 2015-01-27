@@ -29,3 +29,13 @@ TEST_CASE("slice: start and stop", "[slice]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("slice: start, stop, step", "[slice]") {
+    Vec ns = {10,11,12,13,14,15,16,17,18,19};
+    auto sl = slice(ns, 2, 8, 2);
+
+    Vec v(std::begin(sl), std::end(sl));
+    Vec vc = {12,14,16};
+
+    REQUIRE( v == vc );
+}
