@@ -1,5 +1,5 @@
-#ifndef ZIP_LONGEST_HPP_
-#define ZIP_LONGEST_HPP_
+#ifndef ITER_ZIP_LONGEST_HPP_
+#define ITER_ZIP_LONGEST_HPP_
 
 #include "iterbase.hpp"
 
@@ -10,6 +10,10 @@
 
 
 namespace iter {
+
+    template <typename Container>
+    using OptIterDeref = boost::optional<iterator_deref<Container>>;
+
     template <typename Container, typename... RestContainers>
     class ZippedLongest;
 
@@ -28,10 +32,10 @@ namespace iter {
         friend class ZippedLongest;
 
         private:
-            using OptType = boost::optional<iterator_deref<Container>>;
+            using OptType = OptIterDeref<Container>;
             using ZipIterDeref =
-                std::tuple<OptType,
-                    boost::optional<iterator_deref<RestContainers>>...>;
+                std::tuple<OptType, OptIterDeref<RestContainers>...>;
+
             Container container;
             ZippedLongest<RestContainers...> rest_zipped;
             ZippedLongest(Container container, RestContainers&&... rest)
@@ -112,7 +116,7 @@ namespace iter {
         friend class ZippedLongest;
 
         private:
-            using OptType = boost::optional<iterator_deref<Container>>;
+            using OptType = OptIterDeref<Container>;
 
             Container container;
             ZippedLongest(Container container)
@@ -172,4 +176,4 @@ namespace iter {
     }
 }
 
-#endif // #ifndef ZIP_LONGEST_HPP_
+#endif
