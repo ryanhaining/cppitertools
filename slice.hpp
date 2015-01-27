@@ -122,9 +122,19 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator &) const {
-                        return (this->step > 0 && this->current < this->stop)||
-                            (this->step < 0 && this->current > this->stop);
+                        return (this->step > 0 && this->current < this->stop)
+                            || (this->step < 0 && this->current > this->stop);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
