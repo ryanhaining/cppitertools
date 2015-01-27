@@ -15,6 +15,18 @@
 
 using iter::zip_longest;
 
+// reopening boost is the only way I can find that gets this to print
+namespace boost {
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const optional<T>& opt) {
+    if (opt) {
+        out << "Just " << *opt;
+    } else {
+        out << "Nothing";
+    }
+    return out;
+}
+}
 
 template <typename... Ts>
 using const_opt_tuple = std::tuple<boost::optional<const Ts&>...>;
