@@ -38,7 +38,7 @@ namespace iter {
 
             Container container;
             ZippedLongest<RestContainers...> rest_zipped;
-            ZippedLongest(Container container, RestContainers&&... rest)
+            ZippedLongest(Container&& container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_zipped{std::forward<RestContainers>(rest)...}
             { }
