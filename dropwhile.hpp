@@ -32,7 +32,7 @@ namespace iter {
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
                     FF, std::initializer_list<T>);
             
-            DropWhile(FilterFunc filter_func, Container container)
+            DropWhile(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
@@ -44,7 +44,7 @@ namespace iter {
             {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // skip all values for which the predicate is true
@@ -66,7 +66,7 @@ namespace iter {
                         this->skip_passes();
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
