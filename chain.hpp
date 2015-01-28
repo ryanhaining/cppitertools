@@ -30,7 +30,7 @@ namespace iter {
         private:
             Container container;
             Chained<RestContainers...> rest_chained;
-            Chained(Container container, RestContainers&&... rest)
+            Chained(Container&& container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_chained{std::forward<RestContainers>(rest)...}
             { }
@@ -45,7 +45,7 @@ namespace iter {
                     using RestIter =
                         typename Chained<RestContainers...>::Iterator;
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     RestIter rest_iter;
                     bool at_end;
 
@@ -112,7 +112,7 @@ namespace iter {
 
         private:
             Container container;
-            Chained(Container container)
+            Chained(Container&& container)
                 : container(std::forward<Container>(container))
             { }
 
@@ -124,7 +124,7 @@ namespace iter {
             {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
 
                 public:
                     Iterator(const iterator_type<Container>& s_begin,
@@ -173,7 +173,7 @@ namespace iter {
         private:
             Container container;
             friend class ChainMaker;
-            ChainedFromIterable(Container container)
+            ChainedFromIterable(Container&& container)
                 : container(std::forward<Container>(container))
             { }
 
@@ -315,4 +315,4 @@ namespace iter {
 
 }
 
-#endif // #ifndef ITER_CHAIN_HPP_
+#endif
