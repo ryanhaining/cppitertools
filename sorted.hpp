@@ -1,5 +1,5 @@
-#ifndef SORTED__HPP__
-#define SORTED__HPP__
+#ifndef ITER_SORTED_HPP_
+#define ITER_SORTED_HPP_
 
 #include "iterbase.hpp"
 
@@ -29,7 +29,7 @@ namespace iter {
             Sorted() = delete;
             Sorted& operator=(const Sorted&) = delete;
 
-            Sorted(Container in_container, CompareFunc compare_func)
+            Sorted(Container&& in_container, CompareFunc compare_func)
                 : container(std::forward<Container>(in_container))
             {
                 // Fill the sorted_iters vector with an iterator to each
@@ -93,4 +93,4 @@ namespace iter {
 
 }
 
-#endif //#ifndef SORTED__HPP__
+#endif
