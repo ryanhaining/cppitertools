@@ -83,8 +83,8 @@ namespace iter {
 
                     bool operator!=(const Iterator& other) const {
                         return this->iter != other.iter &&
-                            (RestIter::is_base_iter ||
-                                this->rest_iter != other.rest_iter);
+                            (RestIter::is_base_iter
+                                || this->rest_iter != other.rest_iter);
                     }
 
                     bool operator==(const Iterator& other) const {
