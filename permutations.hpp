@@ -19,7 +19,7 @@ namespace iter {
                 std::vector<collection_item_type<Container>>;
 
         public:
-            Permuter(Container in_container)
+            Permuter(Container&& in_container)
                 : container(std::forward<Container>(in_container))
             { }
 
@@ -88,7 +88,7 @@ namespace iter {
     template <typename T>
     Permuter<std::initializer_list<T>> permutations(
             std::initializer_list<T> il) {
-        return {il};
+        return {std::move(il)};
     }
 
 }
