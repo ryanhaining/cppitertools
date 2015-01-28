@@ -27,6 +27,7 @@ progs = Split(
     filter
     filterfalse
     groupby
+    grouper
     imap
     permutations
     powerset
