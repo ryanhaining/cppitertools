@@ -1,5 +1,5 @@
-#ifndef ITER_SLICE_HPP
-#define ITER_SLICE_HPP
+#ifndef ITER_SLICE_HPP_
+#define ITER_SLICE_HPP_
 
 #include "iterbase.hpp"
 
@@ -65,7 +65,7 @@ namespace iter {
             //template <typename T>
             //friend Slice<std::initializer_list<T>> slice(std::initializer_list<T>);
         public:
-            Slice(Container in_container, DifferenceType start,
+            Slice(Container&& in_container, DifferenceType start,
                   DifferenceType stop, DifferenceType step)
                 : container(std::forward<Container>(in_container)),
                 start{start},
@@ -87,11 +87,6 @@ namespace iter {
                 }
             }
 
-            Slice() = delete;
-            Slice& operator=(const Slice&) = delete;
-
-            Slice(const Slice &) = default;
-
 
             class Iterator 
                 : public std::iterator<std::input_iterator_tag,
@@ -112,7 +107,7 @@ namespace iter {
                         step{step}
                     { }
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -169,13 +164,13 @@ namespace iter {
     Slice<std::initializer_list<T>, DifferenceType> slice(
             std::initializer_list<T> il, DifferenceType start,
             DifferenceType stop, DifferenceType step=1) {
-        return {il, start, stop, step};
+        return {std::move(il), start, stop, step};
     }
 
     template <typename T, typename DifferenceType>
     Slice<std::initializer_list<T>, DifferenceType> slice(
             std::initializer_list<T> il, DifferenceType stop) {
-        return {il, 0, stop, 1};
+        return {std::move(il), 0, stop, 1};
     }
 }
 
