@@ -30,7 +30,7 @@ namespace iter {
             friend Combinator<std::initializer_list<T>> combinations(
                     std::initializer_list<T>, std::size_t);
 
-            Combinator(Container in_container, std::size_t in_length)
+            Combinator(Container&& in_container, std::size_t in_length)
                 : container(std::forward<Container>(in_container)),
                 length{in_length}
             { }
