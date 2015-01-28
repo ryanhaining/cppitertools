@@ -135,7 +135,7 @@ namespace iter {
     CombinatorWithReplacement<std::initializer_list<T>> 
     combinations_with_replacement(
             std::initializer_list<T> il, std::size_t length) {
-        return {il, length};
+        return {std::move(il), length};
     }
 }
 
