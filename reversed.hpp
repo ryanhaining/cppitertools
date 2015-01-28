@@ -20,14 +20,11 @@ namespace iter {
             Container container;
             friend Reverser reversed<Container>(Container&&);
             
-            Reverser(Container container)
+            Reverser(Container&& container)
                 : container(std::forward<Container>(container))
             { }
-            Reverser() = delete;
-            Reverser& operator=(const Reverser&) = delete;
 
         public:
-            Reverser(const Reverser&) = default;
             class Iterator : public std::iterator<
                          std::input_iterator_tag,
                          iterator_traits_deref<Container>>
@@ -94,8 +91,6 @@ namespace iter {
             Reverser(T *array)
                 : array{array}
             { }
-            Reverser() = delete;
-            Reverser& operator=(const Reverser&) = delete;
 
         public:
             Reverser(const Reverser&) = default;
