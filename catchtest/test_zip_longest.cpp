@@ -116,6 +116,12 @@ TEST_CASE("zip longest: can modify zipped sequences", "[zip_longest]") {
     REQUIRE( ns2 == vc );
 }
 
+TEST_CASE("zip longest: empty zip_longest() is empty", "[zip_longest]") {
+    auto zl = zip_longest();
+    REQUIRE( std::begin(zl) == std::end(zl) );
+    REQUIRE_FALSE( std::begin(zl) != std::end(zl) );
+}
+
 TEST_CASE("zip_longest: binds to lvalues, moves rvalues", "[zip_longest]") {
     itertest::BasicIterable<char> b1{'x', 'y', 'z'};
     itertest::BasicIterable<char> b2{'a', 'b'};
