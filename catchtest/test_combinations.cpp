@@ -12,14 +12,13 @@
 using iter::combinations;
 using itertest::BasicIterable;
 using itertest::SolidInt;
-using CharCombSet = std::multiset<std::vector<char>>;
+using CharCombSet = std::vector<std::vector<char>>;
 
 TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
     std::string s{"ABCD"};
     CharCombSet sc;
     for (auto v : combinations(s, 2)) {
-        std::vector<char> vcopy(std::begin(v), std::end(v));
-        sc.insert(vcopy);
+        sc.emplace_back(std::begin(v), std::end(v));
     }
 
     CharCombSet ans = 
