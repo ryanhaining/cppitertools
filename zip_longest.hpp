@@ -14,21 +14,21 @@ namespace iter {
     template <typename Container>
     using OptIterDeref = boost::optional<iterator_deref<Container>>;
 
-    template <typename Container, typename... RestContainers>
+    template <typename... RestContainers>
     class ZippedLongest;
 
     template <typename... Containers>
     ZippedLongest<Containers...> zip_longest(Containers&&...);
 
     template <typename Container, typename... RestContainers>
-    class ZippedLongest {
+    class ZippedLongest <Container, RestContainers...> {
         static_assert(!std::is_rvalue_reference<Container>::value,
                 "Itertools cannot be templated with rvalue references");
 
         friend ZippedLongest zip_longest<Container, RestContainers...>(
                 Container&&, RestContainers&&...);
 
-        template <typename C, typename... RC>
+        template <typename... Cs>
         friend class ZippedLongest;
 
         private:
@@ -115,78 +115,40 @@ namespace iter {
     };
 
 
-    template <typename Container>
-    class ZippedLongest<Container> {
-        static_assert(!std::is_rvalue_reference<Container>::value,
-                "Itertools cannot be templated with rvalue references");
-
-        friend ZippedLongest zip_longest<Container>(Container&&);
-
-        template <typename C, typename... RC>
-        friend class ZippedLongest;
-
-        private:
-            using OptType = OptIterDeref<Container>;
-
-            Container container;
-            ZippedLongest(Container container)
-                : container(std::forward<Container>(container))
-            { }
-
+    template <>
+    class ZippedLongest<> {
         public:
-
             class Iterator
-                : public std::iterator<std::input_iterator_tag,
-                    std::tuple<OptType>> 
+                : public std::iterator<std::input_iterator_tag, std::tuple<>> 
             {
-                private:
-                    iterator_type<Container> iter;
-                    iterator_type<Container> end;
                 public:
-                    Iterator(
-                            iterator_type<Container> it,
-                            iterator_type<Container> in_end)
-                        : iter{it},
-                        end{in_end}
-                    { }
-
                     Iterator& operator++() {
-                        if (this->iter != this->end) {
-                            ++this->iter;
-                        }
                         return *this;
                     }
 
-                    Iterator operator++(int) {
-                        auto ret = *this;
-                        ++*this;
-                        return ret;
+                    constexpr Iterator operator++(int) {
+                        return *this;
                     }
 
-                    bool operator!=(const Iterator& other) const {
-                        return this->iter != other.iter;
+                    constexpr bool operator!=(const Iterator&) const {
+                        return false;
                     }
 
-                    bool operator==(const Iterator& other) const {
-                        return !(*this != other);
+                    constexpr bool operator==(const Iterator&) const {
+                        return true;
                     }
 
-                    std::tuple<OptType> operator*() {
-                        if (this->iter != this->end) {
-                            return std::tuple<OptType>{{*this->iter}};
-                        }
-                        return std::tuple<OptType>{{}};
+                    constexpr std::tuple<> operator*() {
+                        return {};
                     }
             };
 
-            Iterator begin() {
-                return {std::begin(this->container),
-                    std::end(this->container)};
+            constexpr Iterator begin() {
+                return {};
             }
 
-            Iterator end() {
-                return {std::end(this->container),
-                    std::end(this->container)};
+            constexpr Iterator end() {
+                return {};
             }
     };
 
