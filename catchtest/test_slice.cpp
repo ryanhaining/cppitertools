@@ -65,18 +65,29 @@ TEST_CASE("slice: (stop - start) % step != 0", "[slice]") {
 
 TEST_CASE("slice: invalid ranges give 0 size slices", "[slice]") {
     Vec ns = {1, 2, 3};
-    SECTION("stop > start, step < 0") {
-        auto sl = slice(ns, 1, 10,-1);
+    SECTION("negative step") {
+        auto sl = slice(ns, 1, 10, -1);
         REQUIRE( std::begin(sl) == std::end(sl) );
     }
-    SECTION("stop < start, step > 0") {
+    SECTION("stop < start") {
         auto sl = slice(ns, 2, 0, 3);
         REQUIRE( std::begin(sl) == std::end(sl) );
     }
 }
 
-// TODO test with BasicIterable can't currently be done because of
-// range checking using std::distance.  (also screws up infinite ranges)
+TEST_CASE("slice: moves rvalues and binds to lvalues", "[slice]") {
+    itertest::BasicIterable<int> bi{1, 2, 3, 4};
+    slice(bi, 1, 3);
+    REQUIRE_FALSE( bi.was_moved_from() );
+    auto sl = slice(std::move(bi), 1, 3);
+    REQUIRE( bi.was_moved_from() );
+
+    Vec v(std::begin(sl), std::end(sl));
+    Vec vc = {2, 3};
+
+    REQUIRE( v == vc );
+}
+
 
 TEST_CASE("slice: with iterable doesn't move or copy elems", "[slice]") {
     constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
