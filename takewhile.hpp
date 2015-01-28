@@ -33,7 +33,7 @@ namespace iter {
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
                     FF, std::initializer_list<T>);
 
-            TakeWhile(FilterFunc filter_func, Container container)
+            TakeWhile(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
