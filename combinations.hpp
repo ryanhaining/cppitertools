@@ -151,7 +151,7 @@ namespace iter {
     template <typename T>
     Combinator<std::initializer_list<T>> combinations(
             std::initializer_list<T> il, std::size_t length) {
-        return {il, length};
+        return {std::move(il), length};
     }
 }
 #endif
