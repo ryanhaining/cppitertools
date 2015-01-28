@@ -1,5 +1,5 @@
-#ifndef GROUP__BY__HPP
-#define GROUP__BY__HPP
+#ifndef ITER_GROUP_BY_HPP_
+#define ITER_GROUP_BY_HPP_
 
 #include "iterbase.hpp"
 
@@ -294,4 +294,4 @@ namespace iter {
 }
 
 
-#endif //#ifndef GROUP__BY__HPP
+#endif
