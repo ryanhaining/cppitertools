@@ -33,7 +33,7 @@ namespace iter {
         private:
             Container container;
             Productor<RestContainers...> rest_products;
-            Productor(Container container, RestContainers&&... rest)
+            Productor(Container&& container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_products{std::forward<RestContainers>(rest)...}
             { }
