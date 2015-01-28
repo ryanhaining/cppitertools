@@ -19,38 +19,6 @@ namespace iter {
 
     //template <typename Container, typename DifferenceType>
     //Slice<Container> slice(Container &&);
-    template <typename T>
-    class has_size
-    {
-        typedef char one;
-        typedef long two;
-
-        template <typename C> static one test( decltype(&C::size) ) ;
-        template <typename C> static two test(...);
-
-
-        public:
-        enum { value = sizeof(test<T>(0)) == sizeof(char) };
-    };
-    template <typename Container>
-    typename std::enable_if<has_size<Container>::value, std::size_t>::type 
-    size(const Container& container) {
-        return container.size();
-    }
-
-    template <typename Container>
-    typename std::enable_if<!has_size<Container>::value, std::size_t>::type 
-    size(const Container& container) {
-        return std::distance(std::begin(container), std::end(container));
-    }
-
-    template <typename T, std::size_t N>
-    std::size_t size(const T (&)[N]) {
-        return N;
-    }
-
-
-
     template <typename Container, typename DifferenceType>
     class Slice {
         private:
@@ -68,24 +36,10 @@ namespace iter {
             Slice(Container&& in_container, DifferenceType start,
                   DifferenceType stop, DifferenceType step)
                 : container(std::forward<Container>(in_container)),
-                start{start},
+                start{start < stop && step > 0 ? start : stop},
                 stop{stop},
                 step{step}
-            { 
-                // sets stop = start if the range is empty
-                if ((start < stop && step <=0) ||
-                        (start > stop && step >=0)){
-                    this->stop = start;
-                } 
-                if (this->stop > static_cast<DifferenceType>(
-                            size(this->container))) {
-                    this->stop = static_cast<DifferenceType>(size(
-                                this->container));
-                }
-                if (this->start < 0) {
-                    this->start = 0; 
-                }
-            }
+            { }
 
 
             class Iterator 
@@ -94,14 +48,19 @@ namespace iter {
             {
                 private:
                     iterator_type<Container> sub_iter;
+                    iterator_type<Container> sub_end;
                     DifferenceType current;
                     DifferenceType stop;
                     DifferenceType step;
 
                 public:
-                    Iterator (iterator_type<Container> si, DifferenceType start,
-                            DifferenceType stop, DifferenceType step)
-                        : sub_iter{si},
+                    Iterator (iterator_type<Container> si,
+                            iterator_type<Container> se,
+                            DifferenceType start,
+                            DifferenceType stop,
+                            DifferenceType step)
+                        : sub_iter{std::move(si)},
+                        sub_end{std::move(se)},
                         current{start},
                         stop{stop},
                         step{step}
@@ -112,8 +71,11 @@ namespace iter {
                     }
 
                     Iterator& operator++() { 
-                        std::advance(this->sub_iter, this->step);
+                        dumb_advance(this->sub_iter, this->sub_end,this->step);
                         this->current += this->step;
+                        if (this->stop < this->current ) {
+                            this->current = this->stop;
+                        }
                         return *this;
                     }
 
@@ -123,9 +85,9 @@ namespace iter {
                         return ret;
                     }
 
-                    bool operator!=(const Iterator &) const {
-                        return (this->step > 0 && this->current < this->stop)
-                            || (this->step < 0 && this->current > this->stop);
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter
+                            && this->current != other.current;
                     }
 
                     bool operator==(const Iterator& other) const {
@@ -134,12 +96,14 @@ namespace iter {
             };
 
             Iterator begin() {
-                return {std::next(std::begin(this->container), this->start),
+                auto it = std::begin(this->container);
+                dumb_advance(it, std::end(this->container), this->start);
+                return {std::move(it), std::end(this->container),
                         this->start, this->stop, this->step};
             }
 
             Iterator end() {
-                return {std::next(std::begin(this->container), this->stop),
+                return {std::end(this->container), std::end(this->container),
                         this->stop, this->stop, this->step};
             }
 
