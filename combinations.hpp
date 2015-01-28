@@ -43,10 +43,14 @@ namespace iter {
             public std::iterator<std::input_iterator_tag, CombIteratorDeref>
         {
             private:
+                constexpr static const int COMPLETE = -1;
                 typename std::remove_reference<Container>::type *container_p;
                 std::vector<iterator_type<Container>> indicies;
-                int steps = 0;
-                bool done = false;
+                int steps{};
+
+                bool done() const {
+                    return this->steps == COMPLETE;
+                }
 
             public:
                 Iterator(Container& in_container, std::size_t n)
@@ -54,8 +58,7 @@ namespace iter {
                     indicies{n}
                 {
                     if (n == 0) {
-                        this->done = true;
-                        this->steps = -1;
+                        this->steps = COMPLETE;
                         return;
                     }
                     size_t inc = 0;
@@ -66,7 +69,7 @@ namespace iter {
                             iter = it;
                             ++inc;
                         } else {
-                            done = true;
+                            this->steps = COMPLETE;
                             break;
                         }
                     }
@@ -104,7 +107,7 @@ namespace iter {
                                     ++inc;
                                 }
                             } else {
-                                done = true;
+                                this->steps = COMPLETE;
                                 break;
                             }
                         } else {
@@ -113,7 +116,7 @@ namespace iter {
                         //we break because none of the rest of the items need
                         //to be incremented
                     }
-                    ++this->steps;
+                    if (!this->done()) ++this->steps;
                     return *this;
                 }
 
@@ -128,7 +131,7 @@ namespace iter {
                 }
 
                 bool operator==(const Iterator& other) const {
-                    return (this->done && (this->done == other.done))
+                    return (this->done() && other.done())
                         || this->steps == other.steps;
                 }
         };
