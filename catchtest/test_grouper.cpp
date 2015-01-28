@@ -35,3 +35,15 @@ TEST_CASE("grouper: len(iterable) % groupsize != 0", "[grouper]") {
 
     REQUIRE( results == rc );
 }
+
+TEST_CASE("grouper: iterators can be compared", "[grouper]") {
+    Vec ns = {1,2,3,4,5,6,7};
+    auto g = grouper(ns, 3);
+    auto it = std::begin(g);
+    REQUIRE( it == std::begin(g) );
+    REQUIRE_FALSE( it != std::begin(g) );
+    ++it;
+    REQUIRE( it != std::begin(g) );
+    REQUIRE_FALSE( it == std::begin(g) );
+}
+
