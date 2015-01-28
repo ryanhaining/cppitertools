@@ -35,7 +35,7 @@ namespace iter {
                 decltype(std::declval<KeyFunc>()(
                             std::declval<iterator_deref<Container>>()));
 
-            GroupBy(Container container, KeyFunc key_func)
+            GroupBy(Container&& container, KeyFunc key_func)
                 : container(std::forward<Container>(container)),
                 key_func(key_func)
             { }
@@ -62,7 +62,7 @@ namespace iter {
                 private:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_iter_peek;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     KeyFunc key_func;
 
                 public:
