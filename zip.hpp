@@ -31,7 +31,7 @@ namespace iter {
         private:
             Container container;
             Zipped<RestContainers...> rest_zipped;
-            Zipped(Container container, RestContainers&&... rest)
+            Zipped(Container&& container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_zipped{std::forward<RestContainers>(rest)...}
             { }
@@ -154,4 +154,4 @@ namespace iter {
     }
 }
 
-#endif // #ifndef ITER_ZIP_HPP_
+#endif
