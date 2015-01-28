@@ -26,6 +26,17 @@ TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
     REQUIRE( ans == sc );
 }
 
+TEST_CASE("combinations: iterators can be compared", "[combinations]") {
+    std::string s{"ABCD"};
+    auto c = combinations(s, 2);
+    auto it = std::begin(c);
+    REQUIRE( it == std::begin(c) );
+    REQUIRE_FALSE( it != std::begin(c) );
+    ++it;
+    REQUIRE( it != std::begin(c) );
+    REQUIRE_FALSE( it == std::begin(c) );
+}
+
 TEST_CASE("combinations: size too large gives no results", "[combinations]") {
     std::string s{"ABCD"};
     auto c = combinations(s, 5);
