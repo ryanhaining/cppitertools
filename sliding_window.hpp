@@ -30,7 +30,7 @@ namespace iter {
             friend SlidingWindow<std::initializer_list<T>> sliding_window(
                     std::initializer_list<T>, std::size_t);
 
-            SlidingWindow(Container container, std::size_t win_sz)
+            SlidingWindow(Container&& container, std::size_t win_sz)
                 : container(std::forward<Container>(container)),
                 window_size{win_sz}
             { }
@@ -110,7 +110,7 @@ namespace iter {
     template <typename T>
     SlidingWindow<std::initializer_list<T>> sliding_window(
             std::initializer_list<T> il, std::size_t window_size) {
-        return {il, window_size};
+        return {std::move(il), window_size};
     }
 }
 
