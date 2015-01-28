@@ -9,7 +9,6 @@
 
 namespace iter {
 
-    //Forward declarations of Cycle and cycle
     template <typename Container>
     class Cycle;
 
@@ -22,7 +21,6 @@ namespace iter {
     template <typename Container>
     class Cycle {
         private:
-            // The cycle function is the only thing allowed to create a Cycle
             friend Cycle cycle<Container>(Container&&);
             template <typename T>
             friend Cycle<std::initializer_list<T>> cycle(
@@ -30,8 +28,7 @@ namespace iter {
 
             Container container;
             
-            // Value constructor for use only in the cycle function
-            Cycle(Container container)
+            Cycle(Container&& container)
                 : container(std::forward<Container>(container))
             { }
 
@@ -53,7 +50,7 @@ namespace iter {
                         end{end}
                     { } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -93,7 +90,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a Cycle
     template <typename Container>
     Cycle<Container> cycle(Container&& container) {
         return {std::forward<Container>(container)};
