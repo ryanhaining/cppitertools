@@ -47,7 +47,7 @@ namespace iter {
             using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
 
             // Value constructor for use only in the enumerate function
-            Enumerable(Container container)
+            Enumerable(Container&& container)
                 : container(std::forward<Container>(container))
             { }
             
@@ -71,7 +71,7 @@ namespace iter {
                     iterator_type<Container> sub_iter;
                     std::size_t index;
                 public:
-                    Iterator (iterator_type<Container> si)
+                    Iterator(const iterator_type<Container>& si)
                         : sub_iter{si},
                         index{0}
                     { } 
@@ -121,8 +121,8 @@ namespace iter {
     Enumerable<std::initializer_list<T>> enumerate(
             std::initializer_list<T> il)
     {   
-        return {il};
+        return {std::move(il)};
     }
 }
 
-#endif //#ifndef ITER_ENUMERATE_H_
+#endif
