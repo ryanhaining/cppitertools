@@ -1,5 +1,5 @@
-#ifndef FILTER_FALSE__HPP__
-#define FILTER_FALSE__HPP__
+#ifndef ITER_FILTER_FALSE_HPP_
+#define ITER_FILTER_FALSE_HPP_
 
 #include "iterbase.hpp"
 #include "filter.hpp"
@@ -102,4 +102,4 @@ namespace iter {
     }
 }
 
-#endif //#ifndef FILTER_FALSE__HPP__
+#endif
