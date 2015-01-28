@@ -45,7 +45,8 @@ namespace iter {
             private:
                 typename std::remove_reference<Container>::type *container_p;
                 std::vector<iterator_type<Container>> indicies;
-                bool not_done = true;
+                int steps = 0;
+                bool done = false;
 
             public:
                 Iterator(Container& in_container, std::size_t n)
@@ -53,7 +54,8 @@ namespace iter {
                     indicies{n}
                 {
                     if (n == 0) {
-                        not_done = false;
+                        this->done = true;
+                        this->steps = -1;
                         return;
                     }
                     size_t inc = 0;
@@ -64,7 +66,7 @@ namespace iter {
                             iter = it;
                             ++inc;
                         } else {
-                            not_done = false;
+                            done = true;
                             break;
                         }
                     }
@@ -102,7 +104,7 @@ namespace iter {
                                     ++inc;
                                 }
                             } else {
-                                not_done = false;
+                                done = true;
                                 break;
                             }
                         } else {
@@ -111,6 +113,7 @@ namespace iter {
                         //we break because none of the rest of the items need
                         //to be incremented
                     }
+                    ++this->steps;
                     return *this;
                 }
 
@@ -120,16 +123,13 @@ namespace iter {
                     return ret;
                 }
 
-                bool operator!=(const Iterator&) const {
-                    //because of the way this is done you have to start from
-                    //the begining of the range and end at the end, you could
-                    //break in the middle of the loop though, it's not
-                    //different from the way that python's works
-                    return not_done;
+                bool operator!=(const Iterator& other) const {
+                    return !(*this == other);
                 }
 
                 bool operator==(const Iterator& other) const {
-                    return !(*this != other);
+                    return (this->done && (this->done == other.done))
+                        || this->steps == other.steps;
                 }
         };
 
@@ -138,7 +138,7 @@ namespace iter {
         }
         
         Iterator end() {
-            return {this->container, this->length};
+            return {this->container, 0};
         }
     };
 
