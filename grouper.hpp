@@ -1,5 +1,5 @@
-#ifndef GROUPER_HPP_
-#define GROUPER_HPP_
+#ifndef ITER_GROUPER_HPP_
+#define ITER_GROUPER_HPP_
 
 #include "iterbase.hpp"
 
@@ -28,7 +28,7 @@ namespace iter {
             Container container;
             std::size_t group_size;
 
-            Grouper(Container c, std::size_t sz)
+            Grouper(Container&& c, std::size_t sz)
                 : container(std::forward<Container>(c)),
                 group_size{sz}
             { }
@@ -127,7 +127,7 @@ namespace iter {
     template <typename T>
     Grouper<std::initializer_list<T>> grouper(
             std::initializer_list<T> il, std::size_t group_size) {
-        return {il, group_size};
+        return {std::move(il), group_size};
     }
 }
-#endif // #ifndef GROUPER_HPP_
+#endif
