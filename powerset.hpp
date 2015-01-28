@@ -20,7 +20,7 @@ namespace iter {
                 decltype(combinations(std::declval<Container&>(), 0));
 
         public:
-            Powersetter(Container in_container)
+            Powersetter(Container&& in_container)
                 : container(std::forward<Container>(in_container))
             { }
 
@@ -92,7 +92,7 @@ namespace iter {
     template <typename T>
     Powersetter<std::initializer_list<T>> powerset(
             std::initializer_list<T> il) {
-        return {il};
+        return {std::move(il)};
     }
 }
 #endif
