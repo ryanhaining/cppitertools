@@ -46,7 +46,7 @@ namespace iter {
                     std::is_default_constructible<AccumVal>::value,
                     "Cannot accumulate a non-default constructible type");
 
-            Accumulator(Container container, AccumulateFunc accumulate_func)
+            Accumulator(Container&& container, AccumulateFunc accumulate_func)
                 : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
             { }
@@ -57,7 +57,7 @@ namespace iter {
             {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     AccumulateFunc accumulate_func;
                     AccumVal acc_val;
                 public:
@@ -150,4 +150,4 @@ namespace iter {
 
 }
 
-#endif //ifndef ITER_ACCUMULATE_H_
+#endif
