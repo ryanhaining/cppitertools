@@ -23,3 +23,15 @@ TEST_CASE("grouper: basic test", "[grouper]") {
 
     REQUIRE( results == rc );
 }
+
+TEST_CASE("grouper: len(iterable) % groupsize != 0", "[grouper]") {
+    Vec ns = {1,2,3,4,5,6,7};
+    ResVec results;
+    for (auto&& g : grouper(ns, 3)) {
+        results.emplace_back(std::begin(g), std::end(g));
+    }
+
+    ResVec rc = { {1, 2, 3}, {4, 5, 6}, {7} };
+
+    REQUIRE( results == rc );
+}
