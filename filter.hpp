@@ -35,7 +35,7 @@ namespace iter {
                     FF, std::initializer_list<T>);
             
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container container)
+            Filter(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
