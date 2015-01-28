@@ -144,4 +144,4 @@ namespace iter {
 
 }
 
-#endif //ITER_REVERSE_HPP_
+#endif
