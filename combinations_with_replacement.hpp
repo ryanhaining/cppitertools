@@ -50,15 +50,19 @@ namespace iter {
                     CombIteratorDeref>
             {
                private:
+                   constexpr static const int COMPLETE = -1;
                    typename std::remove_reference<Container>::type *container_p;
                    std::vector<iterator_type<Container>> indicies;
-                   bool not_done;
+                   int steps;
 
                public:
                    Iterator(Container& in_container, std::size_t n)
                        : container_p{&in_container},
                        indicies(n, std::begin(in_container)),
-                       not_done{n != 0}
+                       steps{(std::begin(in_container)
+                               != std::end(in_container)
+                               && n)
+                           ? 0 : COMPLETE}
                    { }
 
                    CombIteratorDeref operator*() {
@@ -83,7 +87,7 @@ namespace iter {
                                        (*down) = dumb_next(*(iter + 1)); 
                                    }
                                } else {
-                                   not_done = false;
+                                   this->steps = COMPLETE;
                                    break;
                                }
                            } else {
@@ -91,6 +95,9 @@ namespace iter {
                                //need to be incremented
                                break; 
                            }
+                       }
+                       if (this->steps != COMPLETE) {
+                           ++this->steps;
                        }
                        return *this;
                    }
@@ -102,16 +109,12 @@ namespace iter {
                        return ret;
                    }
 
-                   bool operator!=(const Iterator&) const {
-                       //because of the way this is done you have to start from
-                       //the begining of the range and end at the end, you
-                       //could break in the middle of the loop though, it's not
-                       //different from the way that python's works
-                       return not_done;
+                   bool operator!=(const Iterator& other) const {
+                       return !(*this == other);
                    }
 
                    bool operator==(const Iterator& other) const {
-                       return !(*this != other);
+                       return this->steps == other.steps;
                    }
 
            };
