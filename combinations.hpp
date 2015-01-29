@@ -48,10 +48,6 @@ namespace iter {
                 std::vector<iterator_type<Container>> indicies;
                 int steps{};
 
-                bool done() const {
-                    return this->steps == COMPLETE;
-                }
-
             public:
                 Iterator(Container& in_container, std::size_t n)
                     : container_p{&in_container},
@@ -116,7 +112,7 @@ namespace iter {
                         //we break because none of the rest of the items need
                         //to be incremented
                     }
-                    if (!this->done()) ++this->steps;
+                    if (this->steps != COMPLETE) ++this->steps;
                     return *this;
                 }
 
@@ -131,8 +127,7 @@ namespace iter {
                 }
 
                 bool operator==(const Iterator& other) const {
-                    return (this->done() && other.done())
-                        || this->steps == other.steps;
+                    return this->steps == other.steps;
                 }
         };
 
