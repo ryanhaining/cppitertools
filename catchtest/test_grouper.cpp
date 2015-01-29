@@ -47,3 +47,8 @@ TEST_CASE("grouper: iterators can be compared", "[grouper]") {
     REQUIRE_FALSE( it == std::begin(g) );
 }
 
+TEST_CASE("grouper: size 0 is empty", "[grouper]") {
+    Vec ns{1, 2, 3};
+    auto g = grouper(ns, 0);
+    REQUIRE( std::begin(g) == std::end(g) );
+}
