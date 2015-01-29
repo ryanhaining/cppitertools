@@ -52,3 +52,9 @@ TEST_CASE("grouper: size 0 is empty", "[grouper]") {
     auto g = grouper(ns, 0);
     REQUIRE( std::begin(g) == std::end(g) );
 }
+
+TEST_CASE("grouper: empty iterable gives empty grouper", "[grouper]") {
+    Vec ns{};
+    auto g = grouper(ns, 1);
+    REQUIRE( std::begin(g) == std::end(g) );
+}
