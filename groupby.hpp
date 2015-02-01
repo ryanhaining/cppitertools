@@ -136,7 +136,7 @@ namespace iter {
                     // The move constructor sets the rvalue's completed
                     // attribute to true, so its destructor doesn't do anything
                     // when called.
-                    mutable bool completed = false;
+                    bool completed = false;
 
                     Group(Iterator& owner, key_func_ret key) :
                         owner(owner),
@@ -172,7 +172,7 @@ namespace iter {
                     {
                         private:
                             key_func_ret key;
-                            const Group *group_p;
+                            Group *group_p;
 
                             bool not_at_end() {
                                 return !this->group_p->owner.exhausted()&&
@@ -180,13 +180,11 @@ namespace iter {
                             }
 
                         public:
-                            GroupIterator(const Group *in_group_p,
+                            GroupIterator(Group *in_group_p,
                                           key_func_ret key)
                                 : key{key},
                                 group_p{in_group_p}
                             { }
-
-                            GroupIterator(const GroupIterator&) = default;
 
                             bool operator!=(const GroupIterator& other) const {
                                 return !(*this == other);
