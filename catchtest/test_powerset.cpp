@@ -31,6 +31,27 @@ TEST_CASE("powerset: empty sequence gives only empty set", "[powerset]") {
     REQUIRE( it == std::end(ps) );
 }
 
+TEST_CASE("powerset: iterators can be compared", "[powerset]") {
+    const std::vector<int> ns = {1, 2};
+    auto p = powerset(ns);
+    auto it = std::begin(p);
+    REQUIRE( it == std::begin(p) );
+    REQUIRE_FALSE( it != std::begin(p) );
+    REQUIRE( it != std::end(p) );
+    REQUIRE_FALSE( it == std::end(p) );
+    ++it;
+    REQUIRE_FALSE( it == std::begin(p) );
+    REQUIRE( it != std::begin(p) );
+    REQUIRE_FALSE( it == std::end(p) );
+    REQUIRE( it != std::end(p) );
+    ++it;
+    ++it;
+    ++it;
+    REQUIRE( it == std::end(p) );
+    REQUIRE_FALSE( it != std::end(p) );
+}
+
+
 TEST_CASE("powerset: binds to lvalues, moves rvalues", "[powerset]") {
     itertest::BasicIterable<int> bi{1, 2};
     SECTION("binds to lvalues") {
