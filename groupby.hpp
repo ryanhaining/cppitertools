@@ -189,14 +189,6 @@ namespace iter {
 
                             bool operator!=(const GroupIterator&) const {
                                 return !this->group.completed;
-#if 0
-                                if (this->not_at_end()) {
-                                    return true;
-                                } else {
-                                    this->group.completed = true;
-                                    return false;
-                                }
-#endif
                             }
 
                             bool operator==(const GroupIterator& other) const {
