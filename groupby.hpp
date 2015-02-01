@@ -171,24 +171,24 @@ namespace iter {
                     {
                         private:
                             const key_func_ret key;
-                            const Group& group;
+                            const Group* group_p;
 
                             bool not_at_end() {
-                                return !this->group.owner.exhausted()&&
-                                    this->group.owner.next_key() == this->key;
+                                return !this->group_p->owner.exhausted()&&
+                                    this->group_p->owner.next_key() == this->key;
                             }
 
                         public:
-                            GroupIterator(const Group& group,
+                            GroupIterator(const Group& in_group,
                                           key_func_ret key)
                                 : key{key},
-                                group{group}
+                                group_p{&in_group}
                             { }
 
                             GroupIterator(const GroupIterator&) = default;
 
                             bool operator!=(const GroupIterator&) const {
-                                return !this->group.completed;
+                                return !this->group_p->completed;
                             }
 
                             bool operator==(const GroupIterator& other) const {
@@ -196,9 +196,9 @@ namespace iter {
                             }
 
                             GroupIterator& operator++() {
-                                this->group.owner.increment_iterator();
+                                this->group_p->owner.increment_iterator();
                                 if (!this->not_at_end()) {
-                                    this->group.completed = true;
+                                    this->group_p->completed = true;
                                 }
                                 return *this;
                             }
@@ -210,7 +210,7 @@ namespace iter {
                             }
 
                             iterator_deref<Container> operator*() {
-                                return this->group.owner.current();
+                                return this->group_p->owner.current();
                             }
                     };
 
