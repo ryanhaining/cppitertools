@@ -171,7 +171,7 @@ namespace iter {
                                 iterator_traits_deref<Container>>
                     {
                         private:
-                            const key_func_ret key;
+                            key_func_ret key;
                             const Group *group_p;
 
                             bool not_at_end() {
