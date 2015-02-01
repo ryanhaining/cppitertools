@@ -35,6 +35,25 @@ TEST_CASE("permutations: empty sequence has one empy permutation",
     REQUIRE( it == std::end(p) );
 }
 
+TEST_CASE("permutations: iterators can be compared", "[permutations]") {
+    const std::vector<int> ns = {1, 2};
+    auto p = permutations(ns);
+    auto it = std::begin(p);
+    REQUIRE( it == std::begin(p) );
+    REQUIRE_FALSE( it != std::begin(p) );
+    REQUIRE( it != std::end(p) );
+    REQUIRE_FALSE( it == std::end(p) );
+    ++it;
+    REQUIRE_FALSE( it == std::begin(p) );
+    REQUIRE( it != std::begin(p) );
+    REQUIRE_FALSE( it == std::end(p) );
+    REQUIRE( it != std::end(p) );
+    ++it;
+    REQUIRE( it == std::end(p) );
+    REQUIRE_FALSE( it != std::end(p) );
+}
+
+
 TEST_CASE("permutations: binds to lvalues, moves rvalues", "[permutations]") {
     itertest::BasicIterable<int> bi{1, 2};
     SECTION("binds to lvalues") {
