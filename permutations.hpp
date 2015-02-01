@@ -27,17 +27,22 @@ namespace iter {
                 : public std::iterator<std::input_iterator_tag, Permutable>
             {
                 private:
+                    constexpr static const int COMPLETE = -1;
+
                     Permutable working_set;
-                    bool is_not_last = true;
+                    int steps{};
 
                 public:
-                    Iterator(Container& c)
+                    Iterator(iterator_type<Container> sub_iter,
+                            iterator_type<Container> sub_end)
+                        : steps{ sub_iter != sub_end ? 0 : COMPLETE }
                     {
                         // done like this instead of using vector ctor with
                         // two iterators because that causes a substitution
                         // failure when the iterator is minimal
-                        for (auto&& i : c) {
-                            working_set.emplace_back(i);
+                        while (sub_iter != sub_end) {
+                            this->working_set.emplace_back(*sub_iter);
+                            ++sub_iter;
                         }
                         std::sort(std::begin(working_set),
                                 std::end(working_set));
@@ -48,9 +53,11 @@ namespace iter {
                     }
 
                     Iterator& operator++() {
-                        is_not_last =
-                            std::next_permutation(std::begin(working_set),
-                                    std::end(working_set));
+                        ++this->steps;
+                        if (!std::next_permutation(std::begin(working_set),
+                                    std::end(working_set))) {
+                            this->steps = COMPLETE;
+                        }
                         return *this;
                     }
 
@@ -60,21 +67,23 @@ namespace iter {
                         return ret;
                     }
 
-                    bool operator!=(const Iterator&) const {
-                        return is_not_last;
+                    bool operator!=(const Iterator& other) const {
+                        return !(*this == other);
                     }
 
                     bool operator==(const Iterator& other) const {
-                        return !(*this != other);
+                        return this->steps == other.steps;
                     }
             };
 
             Iterator begin() {
-                return {this->container};
+                return {std::begin(this->container),
+                    std::end(this->container)};
             }
 
             Iterator end() {
-                return {this->container};
+                return {std::end(this->container),
+                    std::end(this->container)};
             }
 
 
