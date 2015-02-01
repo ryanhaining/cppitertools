@@ -3,6 +3,7 @@
 
 #include "iterbase.hpp"
 
+#include <type_traits>
 #include <utility>
 #include <iterator>
 #include <initializer_list>
@@ -31,9 +32,8 @@ namespace iter {
             friend GroupBy<std::initializer_list<T>, KF> groupby(
                     std::initializer_list<T>, KF);
 
-            using key_func_ret =
-                decltype(std::declval<KeyFunc>()(
-                            std::declval<iterator_deref<Container>>()));
+            using key_func_ret = typename
+                std::result_of<KeyFunc(iterator_deref<Container>)>::type;
 
             GroupBy(Container&& container, KeyFunc key_func)
                 : container(std::forward<Container>(container)),
