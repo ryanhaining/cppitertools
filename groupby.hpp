@@ -152,7 +152,8 @@ namespace iter {
                         }
                     }
                            
-                    // movable, non-copyable
+                    // move-constructible, non-copy-constructible,
+                    // non-assignable
                     Group() = delete;
                     Group(const Group&) = delete;
                     Group& operator=(const Group&) = delete;
@@ -171,7 +172,7 @@ namespace iter {
                     {
                         private:
                             const key_func_ret key;
-                            const Group* group_p;
+                            const Group *group_p;
 
                             bool not_at_end() {
                                 return !this->group_p->owner.exhausted()&&
@@ -179,26 +180,27 @@ namespace iter {
                             }
 
                         public:
-                            GroupIterator(const Group& in_group,
+                            GroupIterator(const Group *in_group_p,
                                           key_func_ret key)
                                 : key{key},
-                                group_p{&in_group}
+                                group_p{in_group_p}
                             { }
 
                             GroupIterator(const GroupIterator&) = default;
 
-                            bool operator!=(const GroupIterator&) const {
-                                return !this->group_p->completed;
+                            bool operator!=(const GroupIterator& other) const {
+                                return !(*this == other);
                             }
 
                             bool operator==(const GroupIterator& other) const {
-                                return !(*this != other);
+                                return this->group_p == other.group_p;
                             }
 
                             GroupIterator& operator++() {
                                 this->group_p->owner.increment_iterator();
                                 if (!this->not_at_end()) {
                                     this->group_p->completed = true;
+                                    this->group_p = nullptr;
                                 }
                                 return *this;
                             }
@@ -215,11 +217,11 @@ namespace iter {
                     };
 
                     GroupIterator begin() {
-                        return {*this, key};
+                        return {this, key};
                     }
 
                     GroupIterator end() {
-                        return {*this, key};
+                        return {nullptr, key};
                     }
 
             };
