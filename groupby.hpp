@@ -75,11 +75,10 @@ namespace iter {
                     { }
 
                     KeyGroupPair operator*() {
-                        return KeyGroupPair(
-                                this->key_func(*this->sub_iter),
-                                Group(
-                                    *this, 
-                                    this->key_func(*this->sub_iter)));
+                        return {
+                            this->key_func(*this->sub_iter),
+                            Group{*this, this->key_func(*this->sub_iter)}
+                        };
                     }
 
                     Iterator& operator++() { 
@@ -92,8 +91,8 @@ namespace iter {
                         return ret;
                     }
 
-                    bool operator!=(const Iterator&) const {
-                        return !this->exhausted();
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
                     }
 
                     bool operator==(const Iterator& other) const {
