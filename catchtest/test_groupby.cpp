@@ -15,20 +15,43 @@ namespace {
         return s.size();
     }
 
+    struct Sizer {
+        int operator()(const std::string& s) {
+            return s.size();
+        }
+    };
+
     const std::vector<std::string> vec = {
         "hi", "ab", "ho",
         "abc", "def",
         "abcde", "efghi"
     };
-
 }
 
-TEST_CASE("groupby: groups words by length") {
+TEST_CASE("groupby: works with lambda, callable, and function pointer") {
     std::vector<int> keys;
     std::vector<std::vector<std::string>> groups;
-    for (auto&& gb : groupby(vec, &length)) {
-        keys.push_back(gb.first);
-        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+
+    SECTION("Function pointer") {
+        for (auto&& gb : groupby(vec, length)) {
+            keys.push_back(gb.first);
+            groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+        }
+    }
+
+    SECTION("Callable object") {
+        for (auto&& gb : groupby(vec, Sizer{})) {
+            keys.push_back(gb.first);
+            groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+        }
+    }
+
+    SECTION("lambda function") {
+        for (auto&& gb : groupby(vec, 
+                    [](const std::string& s){return s.size();})) {
+            keys.push_back(gb.first);
+            groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+        }
     }
 
     const std::vector<int> kc = {2, 3, 5};
