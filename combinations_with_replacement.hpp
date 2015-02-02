@@ -53,7 +53,15 @@ namespace iter {
                    constexpr static const int COMPLETE = -1;
                    typename std::remove_reference<Container>::type *container_p;
                    std::vector<iterator_type<Container>> indicies;
+                   CombIteratorDeref working_set;
                    int steps;
+
+                   void compute_working_set() {
+                       this->working_set.clear();
+                       for (auto&& i : indicies) {
+                           this->working_set.emplace_back(*i);
+                       }
+                   }
 
                public:
                    Iterator(Container& in_container, std::size_t n)
@@ -63,14 +71,12 @@ namespace iter {
                                != std::end(in_container)
                                && n)
                            ? 0 : COMPLETE}
-                   { }
+                   {
+                       this->compute_working_set();
+                   }
 
-                   CombIteratorDeref operator*() {
-                       std::vector<collection_item_type<Container>> values;
-                       for (auto i : indicies) {
-                           values.push_back(*i);
-                       }
-                       return values;
+                   CombIteratorDeref& operator*() {
+                       return this->working_set;
                    }
 
 
@@ -98,6 +104,7 @@ namespace iter {
                        }
                        if (this->steps != COMPLETE) {
                            ++this->steps;
+                           this->compute_working_set();
                        }
                        return *this;
                    }
