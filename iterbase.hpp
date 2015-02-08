@@ -42,19 +42,6 @@ namespace iter {
     using reverse_iterator_deref = 
         decltype(*std::declval<reverse_iterator_type<Container>&>());
 
-    // For combinatoric functions, if the Containers iterator dereferences
-    // to a reference, then this is a std::reference_wrapper for that type
-    // otherwise it's a non-const of that type
-    template <typename Container>
-    using collection_item_type =
-        typename std::conditional<
-        std::is_reference<iterator_deref<Container>>::value,
-        std::reference_wrapper<
-            typename std::remove_reference<
-            iterator_deref<Container>>::type>,
-        typename std::remove_const<
-            iterator_deref<Container>>::type>::type;
-
     template <typename, typename =void>
     struct is_random_access_iter : std::false_type { };
 
