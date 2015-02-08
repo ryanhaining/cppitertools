@@ -2,6 +2,7 @@
 #define ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <iterator>
 #include <vector>
@@ -41,8 +42,8 @@ namespace iter {
                length{n}
            { }
 
-            using CombIteratorDeref =
-                std::vector<collection_item_type<Container>>;
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using CombIteratorDeref = IterIterWrapper<IndexVector>;
 
         public:
             class Iterator :
@@ -52,43 +53,33 @@ namespace iter {
                private:
                    constexpr static const int COMPLETE = -1;
                    typename std::remove_reference<Container>::type *container_p;
-                   std::vector<iterator_type<Container>> indicies;
-                   CombIteratorDeref working_set;
+                   CombIteratorDeref indices;
                    int steps;
-
-                   void compute_working_set() {
-                       this->working_set.clear();
-                       for (auto&& i : indicies) {
-                           this->working_set.emplace_back(*i);
-                       }
-                   }
 
                public:
                    Iterator(Container& in_container, std::size_t n)
                        : container_p{&in_container},
-                       indicies(n, std::begin(in_container)),
+                       indices(n, std::begin(in_container)),
                        steps{(std::begin(in_container)
                                != std::end(in_container)
                                && n)
                            ? 0 : COMPLETE}
-                   {
-                       this->compute_working_set();
-                   }
+                   { }
 
                    CombIteratorDeref& operator*() {
-                       return this->working_set;
+                       return this->indices;
                    }
 
 
                    Iterator& operator++() {
-                       for (auto iter = indicies.rbegin();
-                               iter != indicies.rend();
+                       for (auto iter = indices.get().rbegin();
+                               iter != indices.get().rend();
                                ++iter) {
                            ++(*iter);
                            if (!(*iter != std::end(*this->container_p))) {
-                               if ( (iter + 1) != indicies.rend()) {
+                               if ( (iter + 1) != indices.get().rend()) {
                                    for (auto down = iter;
-                                           down != indicies.rbegin()-1;
+                                           down != indices.get().rbegin()-1;
                                            --down) {
                                        (*down) = dumb_next(*(iter + 1)); 
                                    }
@@ -104,7 +95,6 @@ namespace iter {
                        }
                        if (this->steps != COMPLETE) {
                            ++this->steps;
-                           this->compute_working_set();
                        }
                        return *this;
                    }
