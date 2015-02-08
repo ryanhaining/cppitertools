@@ -2,6 +2,7 @@
 #define ITER_GROUPER_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -38,7 +39,8 @@ namespace iter {
             friend Grouper<std::initializer_list<T>> grouper(
                     std::initializer_list<T>, std::size_t);
 
-            using DerefVec = std::vector<collection_item_type<Container>>;
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using DerefVec = IterIterWrapper<IndexVector>;
         public:
             class Iterator :
                 public std::iterator<std::input_iterator_tag, DerefVec>
@@ -54,11 +56,11 @@ namespace iter {
                     }
 
                     void refill_group() {
-                        this->group.clear();
+                        this->group.get().clear();
                         std::size_t i{0};
                         while (i < group_size
                                     && this->sub_iter != this->sub_end) {
-                            group.emplace_back(*this->sub_iter);
+                            group.get().push_back(this->sub_iter);
                             ++this->sub_iter;
                             ++i;
                         }
@@ -72,7 +74,7 @@ namespace iter {
                         sub_end{std::move(in_end)},
                         group_size{s} 
                     {
-                        this->group.reserve(this->group_size);
+                        this->group.get().reserve(this->group_size);
                         this->refill_group();
                     }
 
