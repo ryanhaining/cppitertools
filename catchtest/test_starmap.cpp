@@ -74,3 +74,16 @@ TEST_CASE("starmap: tuple of tuples", "[starmap]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("starmap: tuple of pairs", "[starmap]") {
+    using Vec = const std::vector<int>;
+    auto p = std::make_pair(std::array<int, 3>{{15, 100, 2000}},
+                            std::make_tuple(16));
+    Callable c;
+    auto sm = starmap(c, p);
+
+    Vec v(std::begin(sm), std::end(sm));
+    Vec vc = {2115, 16};
+
+    REQUIRE( v == vc );
+}
