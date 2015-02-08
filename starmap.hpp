@@ -105,14 +105,16 @@ namespace iter {
             constexpr static std::array<CallerFunc, sizeof...(Is)> callers{{
                 get_and_call_with_tuple<Is>...}};
 
+            using TraitsValue = std::remove_reference_t<ResultType>;
         public:
             TupleStarMapper(Func f, TupType t)
                 : func(std::forward<Func>(f)),
                 tup(std::forward<TupType>(t))
             { }
 
-            // TODO inherit from std::iterator
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, TraitsValue> 
+            {
                 private:
                     Func& func;
                     TupType& tup;
