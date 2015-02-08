@@ -74,7 +74,7 @@ namespace iter {
             auto operator->() -> decltype(*sub_iter) {
                 return *this->sub_iter;
             }
-            
+
 
             IteratorIterator& operator+=(Diff n) {
                 this->sub_iter += n;
