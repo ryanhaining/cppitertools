@@ -2,6 +2,7 @@
 #define ITER_COMBINATIONS_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <vector>
 #include <type_traits>
@@ -35,8 +36,9 @@ namespace iter {
                 length{in_length}
             { }
 
-            using CombIteratorDeref =
-                std::vector<collection_item_type<Container>>;
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using CombIteratorDeref = IterIterWrapper<IndexVector>;
+
         public:
 
         class Iterator :
@@ -45,28 +47,20 @@ namespace iter {
             private:
                 constexpr static const int COMPLETE = -1;
                 typename std::remove_reference<Container>::type *container_p;
-                std::vector<iterator_type<Container>> indicies;
-                CombIteratorDeref working_set;
+                CombIteratorDeref indices;
                 int steps{};
-
-                void compute_working_set() {
-                    this->working_set.clear();
-                    for (auto&& i : this->indicies) {
-                        this->working_set.emplace_back(*i);
-                    }
-                }
 
             public:
                 Iterator(Container& in_container, std::size_t n)
                     : container_p{&in_container},
-                    indicies{n}
+                    indices{n}
                 {
                     if (n == 0) {
                         this->steps = COMPLETE;
                         return;
                     }
                     size_t inc = 0;
-                    for (auto& iter : this->indicies) {
+                    for (auto& iter : this->indices.get()) {
                         auto it = std::begin(*this->container_p);
                         dumb_advance(it, std::end(*this->container_p), inc);
                         if (it != std::end(*this->container_p)) {
@@ -77,34 +71,31 @@ namespace iter {
                             break;
                         }
                     }
-                    if (this->steps != COMPLETE) {
-                        this->compute_working_set();
-                    }
                 }
 
                 CombIteratorDeref& operator*() {
-                    return this->working_set;
+                    return this->indices;
                 }
 
 
                 Iterator& operator++() {
-                    for (auto iter = indicies.rbegin();
-                            iter != indicies.rend();
+                    for (auto iter = indices.get().rbegin();
+                            iter != indices.get().rend();
                             ++iter) {
                         ++(*iter);
 
                         //what we have to check here is if the distance between
-                        //the index and the end of indicies is >= the distance
+                        //the index and the end of indices is >= the distance
                         //between the item and end of item
                         auto dist = std::distance(
-                                this->indicies.rbegin(),iter);
+                                this->indices.get().rbegin(),iter);
 
                         if (!(dumb_next(*iter, dist) !=
                                 std::end(*this->container_p))) {
-                            if ( (iter + 1) != indicies.rend()) {
+                            if ( (iter + 1) != indices.get().rend()) {
                                 size_t inc = 1;
                                 for (auto down = iter;
-                                        down != indicies.rbegin()-1;
+                                        down != indices.get().rbegin()-1;
                                         --down) {
                                     (*down) = dumb_next(*(iter + 1), 1 + inc);
                                     ++inc;
@@ -121,7 +112,6 @@ namespace iter {
                     }
                     if (this->steps != COMPLETE) {
                         ++this->steps;
-                        this->compute_working_set();
                     }
                     return *this;
                 }
