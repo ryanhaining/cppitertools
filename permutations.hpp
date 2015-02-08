@@ -1,6 +1,8 @@
 #ifndef ITER_PERMUTATIONS_HPP_
 #define ITER_PERMUTATIONS_HPP_
+
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <algorithm>
 #include <initializer_list>
@@ -15,8 +17,8 @@ namespace iter {
         private:
             Container container;
 
-            using Permutable =
-                std::vector<collection_item_type<Container>>;
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using Permutable = IterIterWrapper<IndexVector>;
 
         public:
             Permuter(Container&& in_container)
@@ -27,7 +29,12 @@ namespace iter {
                 : public std::iterator<std::input_iterator_tag, Permutable>
             {
                 private:
-                    constexpr static const int COMPLETE = -1;
+                    static constexpr const int COMPLETE = -1;
+                    static bool cmp_iters(
+                            const iterator_type<Container>& lhs,
+                            const iterator_type<Container>& rhs) noexcept {
+                        return *lhs < *rhs;
+                    }
 
                     Permutable working_set;
                     int steps{};
@@ -41,11 +48,12 @@ namespace iter {
                         // two iterators because that causes a substitution
                         // failure when the iterator is minimal
                         while (sub_iter != sub_end) {
-                            this->working_set.emplace_back(*sub_iter);
+                            this->working_set.get().push_back(sub_iter);
                             ++sub_iter;
                         }
-                        std::sort(std::begin(working_set),
-                                std::end(working_set));
+                        std::sort(std::begin(working_set.get()),
+                                std::end(working_set.get()),
+                                cmp_iters);
                     }
 
                     Permutable& operator*() {
@@ -54,8 +62,8 @@ namespace iter {
 
                     Iterator& operator++() {
                         ++this->steps;
-                        if (!std::next_permutation(std::begin(working_set),
-                                    std::end(working_set))) {
+                        if (!std::next_permutation(std::begin(working_set.get()),
+                                    std::end(working_set.get()), cmp_iters)) {
                             this->steps = COMPLETE;
                         }
                         return *this;
