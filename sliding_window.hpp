@@ -2,6 +2,7 @@
 #define ITER_SLIDING_WINDOW_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <deque>
 #include <utility>
@@ -35,7 +36,8 @@ namespace iter {
                 window_size{win_sz}
             { }
 
-            using DerefVec = std::deque<collection_item_type<Container>>;
+            using IndexVector = std::deque<iterator_type<Container>>;
+            using DerefVec = IterIterWrapper<IndexVector>;
         public:
 
             class Iterator
@@ -53,7 +55,7 @@ namespace iter {
                     {
                         std::size_t i{0};
                         while (i < window_sz && this->sub_iter != in_end) {
-                            this->window.push_back(*this->sub_iter);
+                            this->window.get().push_back(this->sub_iter);
                             ++i;
                             if (i != window_sz) ++this->sub_iter;
                         }
@@ -73,8 +75,8 @@ namespace iter {
 
                     Iterator& operator++() {
                         ++this->sub_iter;
-                        this->window.pop_front();
-                        this->window.push_back(*this->sub_iter);
+                        this->window.get().pop_front();
+                        this->window.get().push_back(this->sub_iter);
                         return *this;
                     }
 
