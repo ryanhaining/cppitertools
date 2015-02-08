@@ -3,6 +3,7 @@
 #include "helpers.hpp"
 
 #include <vector>
+#include <list>
 #include <string>
 #include <iterator>
 
@@ -15,9 +16,9 @@ namespace {
         return d * i;
     }
 
-    std::string g(const std::string& s, int i, double d) {
+    std::string g(const std::string& s, int i, char c) {
         std::stringstream ss;
-        ss << s << ' ' << i << ' ' << d;
+        ss << s << ' ' << i << ' ' << c;
         return ss.str();
     }
 }
@@ -39,4 +40,17 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
         Vec v(std::begin(sm), std::end(sm));
         REQUIRE( v == vc );
     }
+}
+
+TEST_CASE("starmap: list of tuples", "[starmap]") {
+    using Vec = const std::vector<std::string>;
+    using T = std::tuple<std::string, int, double>;
+    std::list<T> li =
+        {T{"hey", 42, 'a'}, T{"there", 3, 'b'}, T{"yall", 5, 'c'}};
+
+    auto sm = starmap(g, li);
+    Vec v(std::begin(sm), std::end(sm));
+    Vec vc = {"hey 42 a", "there 3 b", "yall 5 c"};
+
+    REQUIRE( v == vc );
 }
