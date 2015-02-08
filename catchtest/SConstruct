@@ -4,7 +4,7 @@ env = Environment(
     ENV = os.environ,
     CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
-               '-pedantic', '-std=c++11',
+               '-pedantic', '-std=c++14',
                 '-fdiagnostics-color=always',
                '-I/usr/local/include'],
     CPPPATH='..',
