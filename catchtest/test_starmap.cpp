@@ -21,6 +21,16 @@ namespace {
         ss << s << ' ' << i << ' ' << c;
         return ss.str();
     }
+
+    struct Callable {
+        int operator()(int a, int b, int c) {
+            return a + b + c;
+        }
+
+        int operator()(int a) {
+            return a;
+        }
+    };
 }
 
 TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
@@ -51,6 +61,16 @@ TEST_CASE("starmap: list of tuples", "[starmap]") {
     auto sm = starmap(g, li);
     Vec v(std::begin(sm), std::end(sm));
     Vec vc = {"hey 42 a", "there 3 b", "yall 5 c"};
+
+    REQUIRE( v == vc );
+}
+
+TEST_CASE("starmap: tuple of tuples", "[starmap]") {
+    using Vec = const std::vector<int>;
+    auto tup = std::make_tuple(std::make_tuple(10, 19, 60),std::make_tuple(7));
+    auto sm = starmap(Callable{}, tup);
+    Vec v(std::begin(sm), std::end(sm));
+    Vec vc = {89, 7};
 
     REQUIRE( v == vc );
 }
