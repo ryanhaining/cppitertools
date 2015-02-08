@@ -43,6 +43,8 @@ progs = Split(
     unique_justseen
     zip
     zip_longest
+
+    iteratoriterator
     '''
 )
 
