@@ -4,30 +4,39 @@
 #include "iterbase.hpp"
 
 #include <utility>
+#include <iterator>
 #include <type_traits>
 #include <array>
 #include <cassert>
 #include <memory>
 
 namespace iter {
+
     // starmap with a container<T> where T is one of tuple, pair, array
     template <typename Func, typename Container>
     class StarMapper {
         private:
             Func func;
             Container container;
+
+            using StarIterDeref =
+                std::remove_reference_t<decltype(call_with_tuple(func,
+                            std::declval<iterator_deref<Container>>()))>;
+
         public:
-            StarMapper(Func f, Container c)
-                : func(f),
+            StarMapper(Func f, Container&& c)
+                : func(std::forward<Func>(f)),
                 container(std::forward<Container>(c))
             { }
 
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, StarIterDeref>
+            {
                 private:
                     Func func;
                     iterator_type<Container> sub_iter;
                 public:
-                    Iterator(Func f, iterator_type<Container> iter)
+                    Iterator(Func& f, iterator_type<Container> iter)
                         : func(f),
                         sub_iter(iter)
                     { }
@@ -36,9 +45,19 @@ namespace iter {
                         return this->sub_iter != other.sub_iter;
                     }
 
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
                     Iterator operator++() {
                         ++this->sub_iter;
                         return *this;
+                    }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
                     decltype(auto) operator*() {
@@ -59,7 +78,7 @@ namespace iter {
 
     template <typename Func, typename Container>
     StarMapper<Func, Container> starmap_helper(
-            Func&& func, Container&& container, std::false_type) {
+            Func func, Container&& container, std::false_type) {
         return {std::forward<Func>(func), std::forward<Container>(container)};
     }
 
@@ -92,6 +111,7 @@ namespace iter {
                 tup(std::forward<TupType>(t))
             { }
 
+            // TODO inherit from std::iterator
             class Iterator {
                 private:
                     Func& func;
@@ -137,14 +157,14 @@ namespace iter {
 
     template <typename Func, typename TupType, std::size_t... Is>
     TupleStarMapper<Func, TupType, Is...> starmap_helper_impl(
-            Func&& func, TupType&& tup, std::index_sequence<Is...>)
+            Func func, TupType&& tup, std::index_sequence<Is...>)
     {
         return {std::forward<Func>(func), std::forward<TupType>(tup)};
     }
 
     template <typename Func, typename TupType>
     auto starmap_helper(
-            Func&& func, TupType&& tup, std::true_type) {
+            Func func, TupType&& tup, std::true_type) {
         return starmap_helper_impl(
             std::forward<Func>(func),
             std::forward<TupType>(tup),
@@ -163,7 +183,7 @@ namespace iter {
         : public std::true_type { };
 
     template <typename Func, typename Seq>
-    auto starmap(Func&& func, Seq&& sequence) {
+    auto starmap(Func func, Seq&& sequence) {
         return starmap_helper(
                 std::forward<Func>(func),
                 std::forward<Seq>(sequence),
@@ -171,7 +191,4 @@ namespace iter {
     }
 }
 
-
-
-
-#endif // #ifndef ITER_STARMAP_H_
+#endif
