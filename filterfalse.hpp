@@ -1,5 +1,5 @@
-#ifndef FILTER_FALSE__HPP__
-#define FILTER_FALSE__HPP__
+#ifndef ITER_FILTER_FALSE_HPP_
+#define ITER_FILTER_FALSE_HPP_
 
 #include "iterbase.hpp"
 #include "filter.hpp"
@@ -27,6 +27,11 @@ namespace iter {
 
                 // Calls the filter_func 
                 bool operator() (const iterator_deref<Container> item) const {
+                    return !bool(filter_func(item));
+                }
+
+                // with non-const incase FilterFunc::operator() is non-const
+                bool operator() (const iterator_deref<Container> item) {
                     return !bool(filter_func(item));
                 }
         };
@@ -97,4 +102,4 @@ namespace iter {
     }
 }
 
-#endif //#ifndef FILTER_FALSE__HPP__
+#endif

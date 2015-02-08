@@ -23,12 +23,16 @@ namespace iter {
             friend Zipped zip_impl<TupleType, Is...>(
                     TupleType&&, std::index_sequence<Is...>);
 
+            using ZipIterDeref = iterator_deref_tuple<TupleType>;
+
             Zipped(TupleType&& in_containers)
                 : containers(std::move(in_containers))
             { }
         public:
 
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, ZipIterDeref>
+            {
                 private:
                     iterator_tuple_type<TupleType> iters;
 
@@ -40,6 +44,12 @@ namespace iter {
                     Iterator& operator++() {
                         absorb(++std::get<Is>(this->iters)...);
                         return *this;
+                    }
+
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
                     bool operator!=(const Iterator& other) const {
@@ -54,9 +64,12 @@ namespace iter {
                                 [](bool b){ return b; } );
                     }
 
-                    auto operator*() {
-                        return iterator_deref_tuple<TupleType>{
-                            (*std::get<Is>(this->iters))...};
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
+                    ZipIterDeref operator*() {
+                        return ZipIterDeref{(*std::get<Is>(this->iters))...};
                     }
             };
 
@@ -85,4 +98,4 @@ namespace iter {
     }
 }
 
-#endif // #ifndef ITER_ZIP_HPP_
+#endif

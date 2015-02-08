@@ -1,0 +1,57 @@
+import os
+
+env = Environment(
+    ENV = os.environ,
+    CXX='c++',
+    CXXFLAGS= ['-g', '-Wall', '-Wextra',
+               '-pedantic', '-std=c++11',
+                '-fdiagnostics-color=always',
+               '-I/usr/local/include'],
+    CPPPATH='..',
+    LINKFLAGS='-L/usr/local/lib')
+
+# allows highighting to print to terminal from compiler output
+env['ENV']['TERM'] = os.environ['TERM']
+
+progs = Split(
+    '''
+    accumulate
+    chain
+    combinations
+    combinations_with_replacement
+    compress
+    count
+    cycle
+    dropwhile
+    enumerate
+    filter
+    filterfalse
+    groupby
+    grouper
+    imap
+    permutations
+    powerset
+    product
+    range
+    repeat
+    reversed
+    slice
+    sliding_window
+    
+    takewhile
+    unique_everseen
+    unique_justseen
+    zip
+    zip_longest
+
+    iteratoriterator
+    '''
+)
+
+test_sources = ['test_{}.cpp'.format(p) for p in progs]
+
+for test_src in test_sources:
+    env.Program([test_src, 'test_main.cpp'])
+
+env.Program('test_all', ['test_main.cpp'] + test_sources)
+

@@ -8,9 +8,10 @@
 
 namespace iter {
     template <typename MapFunc, typename... Containers>
-    auto imap(MapFunc map_func, Containers&& ... containers) {
-        return starmap(map_func, zip(std::forward<Containers>(containers)...));
+    decltype(auto) imap(MapFunc map_func, Containers&& ... containers) {
+        return starmap(map_func,
+                zip(std::forward<Containers>(containers)...));
     }
 }
 
-#endif // #ifndef ITER_IMAP_H_
+#endif

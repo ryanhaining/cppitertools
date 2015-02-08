@@ -43,39 +43,41 @@ namespace iter {
             friend Enumerable<std::initializer_list<T>> enumerate(
                     std::initializer_list<T>);
 
+            // for IterYield
+            using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
+
             // Value constructor for use only in the enumerate function
-            Enumerable(Container container)
+            Enumerable(Container&& container)
                 : container(std::forward<Container>(container))
             { }
             
         public:
             // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
             // .element referencing the value yielded by the subiterator
-            class IterYield {
+            class IterYield : public BasePair {
                 public:
-                    std::size_t index;
-                    iterator_deref<Container> element;
-                    IterYield(std::size_t i, iterator_deref<Container> elem)
-                        : index{i},
-                        element{elem}
-                    { }
+                    using BasePair::BasePair;
+                    decltype(BasePair::first)& index = BasePair::first;
+                    decltype(BasePair::second)& element = BasePair::second;
             };
 
             //  Holds an iterator of the contained type and a size_t for the
             //  index.  Each call to ++ increments both of these data members.
             //  Each dereference returns an IterYield.
-            class Iterator {
+            class Iterator :
+                public std::iterator<std::input_iterator_tag, IterYield>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     std::size_t index;
                 public:
-                    Iterator (iterator_type<Container> si)
+                    Iterator(const iterator_type<Container>& si)
                         : sub_iter{si},
                         index{0}
                     { } 
 
                     IterYield operator*() {
-                        return IterYield(this->index, *this->sub_iter);
+                        return {this->index, *this->sub_iter};
                     }
 
                     Iterator& operator++() { 
@@ -84,8 +86,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -109,8 +121,8 @@ namespace iter {
     Enumerable<std::initializer_list<T>> enumerate(
             std::initializer_list<T> il)
     {   
-        return {il};
+        return {std::move(il)};
     }
 }
 
-#endif //#ifndef ITER_ENUMERATE_H_
+#endif

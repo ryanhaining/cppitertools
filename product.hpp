@@ -6,7 +6,7 @@
 #include <iterator>
 #include <tuple>
 #include <utility>
-
+#include <array>
 
 namespace iter {
     template <typename... RestContainers>
@@ -27,16 +27,21 @@ namespace iter {
         template <typename... RC>
         friend class Productor;
 
+        using ProdIterDeref = std::tuple<
+            iterator_deref<Container>, iterator_deref<RestContainers>...>;
+
         private:
             Container container;
             Productor<RestContainers...> rest_products;
-            Productor(Container container, RestContainers&&... rest)
+            Productor(Container&& container, RestContainers&&... rest)
                 : container(std::forward<Container>(container)),
                 rest_products{std::forward<RestContainers>(rest)...}
             { }
 
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, ProdIterDeref>
+            {
                 private:
                     using RestIter =
                         typename Productor<RestContainers...>::Iterator;
@@ -70,18 +75,24 @@ namespace iter {
                         return *this;
                     }
 
-                    bool operator!=(const Iterator& other) const {
-                        return this->iter != other.iter &&
-                            (RestIter::is_base_iter ||
-                                this->rest_iter != other.rest_iter);
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
-                    auto operator*() ->
-                        decltype(std::tuple_cat(
-                                    std::tuple<iterator_deref<Container>>{
-                                        *this->iter},
-                                    *this->rest_iter))
-                    {
+                    bool operator!=(const Iterator& other) const {
+                        return this->iter != other.iter &&
+                            (RestIter::is_base_iter
+                                || this->rest_iter != other.rest_iter);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+
+
+                    ProdIterDeref operator*() {
                         return std::tuple_cat(
                                 std::tuple<iterator_deref<Container>>{
                                     *this->iter},
@@ -106,13 +117,11 @@ namespace iter {
     template <>
     class Productor<> {
         public:
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, std::tuple<>>
+            {
                 public:
                     constexpr static const bool is_base_iter = true;
-
-                    Iterator() { }
-                    Iterator(const Iterator&) { }
-                    Iterator& operator=(const Iterator&) { return *this; }
 
                     void reset() { }
 
@@ -120,9 +129,19 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     // see note in zip about base case operator!=
                     bool operator!=(const Iterator&) const {
                         return false;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     std::tuple<> operator*() const {
@@ -143,6 +162,10 @@ namespace iter {
     Productor<Containers...> product(Containers&&... containers) {
         return {std::forward<Containers>(containers)...};
     }
+
+    constexpr std::array<std::tuple<>, 1> product() {
+        return {{}};
+    }
 }
 
-#endif // #ifndef ITER_PRODUCT_HPP_
+#endif

@@ -1,9 +1,10 @@
-#ifndef COMPRESS__H__
-#define COMPRESS__H__
+#ifndef ITER_COMPRESS_H_
+#define ITER_COMPRESS_H_
 
 #include "iterbase.hpp"
 
 #include <utility>
+#include <iterator>
 #include <initializer_list>
 
 namespace iter {
@@ -47,7 +48,8 @@ namespace iter {
                     Con&&, std::initializer_list<T>);
 
             template <typename T, typename U>
-            friend Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
+            friend Compressed<std::initializer_list<T>,
+                   std::initializer_list<U>> compress(
                     std::initializer_list<T>, std::initializer_list<U>);
 
             
@@ -55,23 +57,23 @@ namespace iter {
             using selector_iter_type = decltype(std::begin(selectors));
             
             // Value constructor for use only in the compress function
-            Compressed(Container container, Selector selectors)
+            Compressed(Container&& container, Selector&& selectors)
                 : container(std::forward<Container>(container)),
                 selectors(std::forward<Selector>(selectors))
             { }
-            Compressed() = delete;
-            Compressed& operator=(const Compressed&) = delete;
 
         public:
-            Compressed(const Compressed&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                        iterator_traits_deref<Container>>
+            {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
 
                     selector_iter_type selector_iter;
-                    const selector_iter_type selector_end;
+                    selector_iter_type selector_end;
 
                     void increment_iterators() {
                         ++this->sub_iter;
@@ -79,18 +81,18 @@ namespace iter {
                     }
 
                     void skip_failures() {
-                        while (this->sub_iter != this->sub_end &&
-                               this->selector_iter != this->selector_end &&
-                                !*this->selector_iter) {
+                        while (this->sub_iter != this->sub_end
+                               && this->selector_iter != this->selector_end
+                                && !*this->selector_iter) {
                             this->increment_iterators();
                         }
                     }
 
                 public:
-                    Iterator (iterator_type<Container> cont_iter,
-                              iterator_type<Container> cont_end,
-                              selector_iter_type sel_iter,
-                              selector_iter_type sel_end)
+                    Iterator(iterator_type<Container> cont_iter,
+                            iterator_type<Container> cont_end,
+                            selector_iter_type sel_iter,
+                            selector_iter_type sel_end)
                         : sub_iter{cont_iter},
                         sub_end{cont_end},
                         selector_iter{sel_iter},
@@ -99,7 +101,7 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -109,9 +111,19 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
-                        return this->sub_iter != other.sub_iter &&
-                            this->selector_iter != other.selector_iter;
+                        return this->sub_iter != other.sub_iter
+                            && this->selector_iter != other.selector_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -158,4 +170,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef COMPRESS__H__
+#endif

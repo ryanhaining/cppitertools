@@ -1,7 +1,8 @@
-#ifndef GROUPER_HPP_
-#define GROUPER_HPP_
+#ifndef ITER_GROUPER_HPP_
+#define ITER_GROUPER_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -28,7 +29,7 @@ namespace iter {
             Container container;
             std::size_t group_size;
 
-            Grouper(Container c, std::size_t sz)
+            Grouper(Container&& c, std::size_t sz)
                 : container(std::forward<Container>(c)),
                 group_size{sz}
             { }
@@ -38,84 +39,82 @@ namespace iter {
             friend Grouper<std::initializer_list<T>> grouper(
                     std::initializer_list<T>, std::size_t);
 
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using DerefVec = IterIterWrapper<IndexVector>;
         public:
-            class Iterator {
+            class Iterator :
+                public std::iterator<std::input_iterator_tag, DerefVec>
+            {
                 private:
-                    Container& container;
-                    std::vector<iterator_type<Container>> group;
+                    iterator_type<Container> sub_iter;
+                    iterator_type<Container> sub_end;
+                    DerefVec group;
                     std::size_t group_size = 0;
-                    bool not_done = true;
 
-                    using Deref_type =
-                        std::vector<
-                            std::reference_wrapper<
-                                typename std::remove_reference<
-                                    iterator_deref<Container>>::type>>;
+                    bool done() const {
+                        return this->group.empty();
+                    }
 
+                    void refill_group() {
+                        this->group.get().clear();
+                        std::size_t i{0};
+                        while (i < group_size
+                                    && this->sub_iter != this->sub_end) {
+                            group.get().push_back(this->sub_iter);
+                            ++this->sub_iter;
+                            ++i;
+                        }
+                    }
 
                 public: 
-                    Iterator(Container& c, std::size_t s)
-                        : container(c),
-                        group_size(s) 
+                    Iterator(iterator_type<Container> in_iter,
+                            iterator_type<Container> in_end,
+                            std::size_t s)
+                        : sub_iter{std::move(in_iter)},
+                        sub_end{std::move(in_end)},
+                        group_size{s} 
                     {
-                        // if the group size is 0 or the container is empty produce
-                        // nothing
-                        if (this->group_size == 0
-                                || (!(std::begin(this->container)
-                                        != std::end(this->container)))) {
-                            this->not_done = false;
-                            return;
-                        }
-                        std::size_t i = 0;
-                        for (auto iter = std::begin(container);
-                                i < group_size;
-                                ++i, ++iter) {
-                            group.push_back(iter);
-                        }
+                        this->group.get().reserve(this->group_size);
+                        this->refill_group();
                     }
 
-                    //seems like conclassor is same as sliding_window_iter
-                    Iterator(Container& c)
-                        : container(c)
-                    {
-                        //creates the end iterator
-                        group.push_back(std::end(container));
-                    }
-
-                    //plan to conditionally check for existence of +=
-                    Iterator & operator++() {
-                        for (auto & iter : this->group) {
-                            std::advance(iter,this->group_size);
-                        }
+                    Iterator& operator++() {
+                        this->refill_group();
                         return *this;
                     }
 
-                    bool operator!=(const Iterator &) const {
-                        return this->not_done;
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
-                    Deref_type operator*() {
-                        Deref_type vec;
-                        for (auto i : this->group) {
-                            if(!(i != std::end(this->container))) {
-                                this->not_done = false;
-                                break;
-                            } 
-                            //if the group is at the end the vector will be smaller 
-                            else { 
-                                vec.push_back(*i);
-                            }
-                        }
-                        return vec;
+                    bool operator!=(const Iterator& other) const {
+                        return !(*this == other);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return this->done() == other.done()
+                            && (this->done()
+                                    || !(this->sub_iter != other.sub_iter));
+                    }
+
+
+                    DerefVec& operator*() {
+                        return this->group;
                     }
             };
 
             Iterator begin() {
-                return {this->container, group_size};
+                return {std::begin(this->container),
+                    std::end(this->container),
+                    group_size};
             }
 
             Iterator end() {
-                return {this->container};
+                return {std::end(this->container),
+                    std::end(this->container),
+                    group_size};
             }
     };
 
@@ -127,7 +126,7 @@ namespace iter {
     template <typename T>
     Grouper<std::initializer_list<T>> grouper(
             std::initializer_list<T> il, std::size_t group_size) {
-        return {il, group_size};
+        return {std::move(il), group_size};
     }
 }
-#endif // #ifndef GROUPER_HPP_
+#endif

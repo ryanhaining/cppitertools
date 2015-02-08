@@ -1,5 +1,5 @@
-#ifndef ACCUMULATE__H__
-#define ACCUMULATE__H__
+#ifndef ITER_ACCUMULATE_H_
+#define ITER_ACCUMULATE_H_
 
 #include "iterbase.hpp"
 
@@ -36,31 +36,28 @@ namespace iter {
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
                     std::initializer_list<T>, AF);
             
-            // Value constructor for use only in the accumulate function
-            Accumulator(Container container, AccumulateFunc accumulate_func)
+            // AccumVal must be default constructible
+            using AccumVal =
+                typename std::remove_reference<
+                    typename std::result_of<AccumulateFunc(
+                            iterator_deref<Container>,
+                            iterator_deref<Container>)>::type>::type;
+            static_assert(
+                    std::is_default_constructible<AccumVal>::value,
+                    "Cannot accumulate a non-default constructible type");
+
+            Accumulator(Container&& container, AccumulateFunc accumulate_func)
                 : container(std::forward<Container>(container)),
                 accumulate_func(accumulate_func)
             { }
-            Accumulator() = delete;
-            Accumulator& operator=(const Accumulator&) = delete;
-
         public:
-            Accumulator(const Accumulator&) = default;
 
-            class Iterator {
-                // AccumVal must be default constructible
-                using AccumVal =
-                    typename std::remove_reference<
-                        typename std::result_of<AccumulateFunc(
-                                iterator_deref<Container>,
-                                iterator_deref<Container>)>::type>::type;
-                static_assert(
-                        std::is_default_constructible<AccumVal>::value,
-                        "Cannot accumulate a non-default constructible type");
-
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, AccumVal>
+            {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     AccumulateFunc accumulate_func;
                     AccumVal acc_val;
                 public:
@@ -74,7 +71,7 @@ namespace iter {
                         acc_val(!(iter != end) ? AccumVal{} : *iter)
                     { } 
 
-                    AccumVal operator*() const {
+                    const AccumVal& operator*() const {
                         return this->acc_val;
                     }
 
@@ -87,8 +84,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -143,4 +150,4 @@ namespace iter {
 
 }
 
-#endif //ifndef ACCUMULATE__H__
+#endif

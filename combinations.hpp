@@ -1,7 +1,8 @@
-#ifndef COMBINATIONS_HPP_
-#define COMBINATIONS_HPP_
+#ifndef ITER_COMBINATIONS_HPP_
+#define ITER_COMBINATIONS_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <vector>
 #include <type_traits>
@@ -30,75 +31,77 @@ namespace iter {
             friend Combinator<std::initializer_list<T>> combinations(
                     std::initializer_list<T>, std::size_t);
 
-            Combinator(Container in_container, std::size_t in_length)
+            Combinator(Container&& in_container, std::size_t in_length)
                 : container(std::forward<Container>(in_container)),
                 length{in_length}
             { }
 
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using CombIteratorDeref = IterIterWrapper<IndexVector>;
+
         public:
 
-        class Iterator {
+        class Iterator :
+            public std::iterator<std::input_iterator_tag, CombIteratorDeref>
+        {
             private:
-                Container& items;
-                std::vector<iterator_type<Container>> indicies;
-                bool not_done = true;
+                constexpr static const int COMPLETE = -1;
+                typename std::remove_reference<Container>::type *container_p;
+                CombIteratorDeref indices;
+                int steps{};
 
             public:
-                Iterator(Container& i, std::size_t n)
-                    : items(i),
-                    indicies(n)
+                Iterator(Container& in_container, std::size_t n)
+                    : container_p{&in_container},
+                    indices{n}
                 {
                     if (n == 0) {
-                        not_done = false;
+                        this->steps = COMPLETE;
                         return;
                     }
                     size_t inc = 0;
-                    for (auto& iter : this->indicies) {
-                        auto it = std::begin(this->items);
-                        dumb_advance(it, std::end(this->items), inc);
-                        if (it != std::end(this->items)) {
+                    for (auto& iter : this->indices.get()) {
+                        auto it = std::begin(*this->container_p);
+                        dumb_advance(it, std::end(*this->container_p), inc);
+                        if (it != std::end(*this->container_p)) {
                             iter = it;
                             ++inc;
                         } else {
-                            not_done = false;
+                            this->steps = COMPLETE;
                             break;
                         }
                     }
                 }
 
-                std::vector<collection_item_type<Container>> operator*() {
-                    std::vector<collection_item_type<Container>> values;
-                    for (auto i : indicies) {
-                        values.push_back(*i);
-                    }
-                    return values;
+                CombIteratorDeref& operator*() {
+                    return this->indices;
                 }
 
 
                 Iterator& operator++() {
-                    for (auto iter = indicies.rbegin();
-                            iter != indicies.rend();
+                    for (auto iter = indices.get().rbegin();
+                            iter != indices.get().rend();
                             ++iter) {
                         ++(*iter);
 
                         //what we have to check here is if the distance between
-                        //the index and the end of indicies is >= the distance
+                        //the index and the end of indices is >= the distance
                         //between the item and end of item
                         auto dist = std::distance(
-                                this->indicies.rbegin(),iter);
+                                this->indices.get().rbegin(),iter);
 
                         if (!(dumb_next(*iter, dist) !=
-                                std::end(this->items))) {
-                            if ( (iter + 1) != indicies.rend()) {
+                                std::end(*this->container_p))) {
+                            if ( (iter + 1) != indices.get().rend()) {
                                 size_t inc = 1;
                                 for (auto down = iter;
-                                        down != indicies.rbegin()-1;
+                                        down != indices.get().rbegin()-1;
                                         --down) {
                                     (*down) = dumb_next(*(iter + 1), 1 + inc);
                                     ++inc;
                                 }
                             } else {
-                                not_done = false;
+                                this->steps = COMPLETE;
                                 break;
                             }
                         } else {
@@ -107,16 +110,24 @@ namespace iter {
                         //we break because none of the rest of the items need
                         //to be incremented
                     }
+                    if (this->steps != COMPLETE) {
+                        ++this->steps;
+                    }
                     return *this;
                 }
 
-                bool operator !=(const Iterator&)
-                {
-                    //because of the way this is done you have to start from
-                    //the begining of the range and end at the end, you could
-                    //break in the middle of the loop though, it's not
-                    //different from the way that python's works
-                    return not_done;
+                Iterator operator++(int) {
+                    auto ret = *this;
+                    ++*this;
+                    return ret;
+                }
+
+                bool operator!=(const Iterator& other) const {
+                    return !(*this == other);
+                }
+
+                bool operator==(const Iterator& other) const {
+                    return this->steps == other.steps;
                 }
         };
 
@@ -125,7 +136,7 @@ namespace iter {
         }
         
         Iterator end() {
-            return {this->container, this->length};
+            return {this->container, 0};
         }
     };
 
@@ -138,7 +149,7 @@ namespace iter {
     template <typename T>
     Combinator<std::initializer_list<T>> combinations(
             std::initializer_list<T> il, std::size_t length) {
-        return {il, length};
+        return {std::move(il), length};
     }
 }
-#endif //#ifndef COMBINATIONS_HPP_
+#endif

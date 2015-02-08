@@ -1,5 +1,5 @@
-#ifndef DROPWHILE__H__
-#define DROPWHILE__H__
+#ifndef ITER_DROPWHILE_H_
+#define ITER_DROPWHILE_H_
 
 #include <iterbase.hpp>
 
@@ -9,7 +9,6 @@
 
 namespace iter {
 
-    //Forward declarations of DropWhile and dropwhile
     template <typename FilterFunc, typename Container>
     class DropWhile;
 
@@ -33,20 +32,19 @@ namespace iter {
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
                     FF, std::initializer_list<T>);
             
-            // Value constructor for use only in the dropwhile function
-            DropWhile(FilterFunc filter_func, Container container)
+            DropWhile(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
-            DropWhile() = delete;
-            DropWhile& operator=(const DropWhile&) = delete;
 
         public:
-            DropWhile(const DropWhile&) = default;
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<Container>>
+            {
                 private:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // skip all values for which the predicate is true
@@ -68,7 +66,7 @@ namespace iter {
                         this->skip_passes();
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -77,8 +75,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -96,7 +104,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a DropWhile
     template <typename FilterFunc, typename Container>
     DropWhile<FilterFunc, Container> dropwhile(
             FilterFunc filter_func, Container&& container) {
@@ -111,4 +118,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef DROPWHILE__H__
+#endif

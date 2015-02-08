@@ -13,9 +13,51 @@
 #include <iterator>
 #include <functional>
 #include <cstddef>
+#include <type_traits>
 
 namespace iter {
+
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using iterator_type =
+        decltype(std::begin(std::declval<Container&>()));
+
+    // iterator_deref<C> is the type obtained by dereferencing an iterator
+    // to an object of type C
+    template <typename Container>
+    using iterator_deref = 
+        decltype(*std::declval<iterator_type<Container>&>());
+
+    template <typename Container>
+    using iterator_traits_deref =
+        typename std::remove_reference<iterator_deref<Container>>::type;
+
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using reverse_iterator_type =
+        decltype(std::declval<Container&>().rbegin());
+
+    // iterator_deref<C> is the type obtained by dereferencing an iterator
+    // to an object of type C
+    template <typename Container>
+    using reverse_iterator_deref = 
+        decltype(*std::declval<reverse_iterator_type<Container>&>());
+
+    template <typename, typename =void>
+    struct is_random_access_iter : std::false_type { };
+
+    template <typename T>
+    struct is_random_access_iter<T,
+        typename std::enable_if<
+             std::is_same<
+                 typename std::iterator_traits<T>::iterator_category,
+              std::random_access_iterator_tag>::value,
+          void>::type> : std::true_type { };
+
+    template <typename T>
+    using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
     // because std::advance assumes a lot and is actually smart, I need a dumb
+
     // version that will work with most things
     template <typename InputIt, typename Distance =std::size_t>
     void dumb_advance(InputIt& iter, Distance distance=1) {
@@ -24,12 +66,28 @@ namespace iter {
         }
     }
 
-    // iter will not be incremented past end
-    template <typename InputIt, typename Distance =std::size_t>
-    void dumb_advance(InputIt& iter, const InputIt& end, Distance distance=1) {
+    template <typename Iter, typename Distance>
+    void dumb_advance_impl(Iter& iter, const Iter& end,
+            Distance distance, std::false_type) {
         for (Distance i(0); i < distance && iter != end; ++i) {
             ++iter;
         }
+    }
+
+    template <typename Iter, typename Distance>
+    void dumb_advance_impl(Iter& iter, const Iter& end,
+            Distance distance, std::true_type) {
+        if (static_cast<Distance>(end - iter) < distance) {
+            iter = end;
+        } else {
+            iter += distance;
+        }
+    }
+
+    // iter will not be incremented past end
+    template <typename Iter, typename Distance =std::size_t>
+    void dumb_advance(Iter& iter, const Iter& end, Distance distance=1) {
+        dumb_advance_impl(iter, end, distance, is_random_access_iter<Iter>{});
     }
 
     template <typename ForwardIt, typename Distance =std::size_t>
@@ -45,41 +103,25 @@ namespace iter {
         return it;
     }
 
-    // iterator_type<C> is the type of C's iterator
-    template <typename Container>
-    using iterator_type =
-        decltype(std::begin(std::declval<Container&>()));
+    template <typename Container, typename Distance =std::size_t>
+    Distance dumb_size(Container&& container) {
+        Distance d{0};
+        for (auto it = std::begin(container), end = std::end(container);
+                it != end;
+                ++it) {
+            ++d;
+        }
+        return d;
+    }
 
-    // iterator_deref<C> is the type obtained by dereferencing an iterator
-    // to an object of type C
-    template <typename Container>
-    using iterator_deref = 
-        decltype(*std::declval<iterator_type<Container>&>());
 
-    // iterator_type<C> is the type of C's iterator
-    template <typename Container>
-    using reverse_iterator_type =
-        decltype(std::declval<Container&>().rbegin());
+    template <typename... Ts>
+    struct are_same : std::true_type { };
 
-    // iterator_deref<C> is the type obtained by dereferencing an iterator
-    // to an object of type C
-    template <typename Container>
-    using reverse_iterator_deref = 
-        decltype(*std::declval<reverse_iterator_type<Container>&>());
-
-    // For combinatoric functions, if the Containers iterator dereferences
-    // to a reference, then this is a std::reference_wrapper for that type
-    // otherwise it's a non-const of that type
-    template <typename Container>
-    using collection_item_type =
-        typename std::conditional<
-        std::is_reference<iterator_deref<Container>>::value,
-        std::reference_wrapper<
-            typename std::remove_reference<
-            iterator_deref<Container>>::type>,
-        typename std::remove_const<
-            iterator_deref<Container>>::type>::type;
-
+    template <typename T, typename U, typename... Ts>
+    struct are_same<T, U, Ts...> 
+        : std::integral_constant<bool,
+            std::is_same<T, U>::value && are_same<T, Ts...>::value> { };
 
     namespace detail {
         template <typename... Ts>
@@ -133,7 +175,6 @@ namespace iter {
                 std::forward<TupleType>(tup),
                 std::make_index_sequence<TUP_SIZE>{});
     }
-
 }
 
-#endif // #ifndef ITERBASE_HPP_
+#endif

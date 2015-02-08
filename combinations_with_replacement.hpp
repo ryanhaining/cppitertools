@@ -1,7 +1,8 @@
-#ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
-#define COMBINATIONS_WITH_REPLACEMENT_HPP_
+#ifndef ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
+#define ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <iterator>
 #include <vector>
@@ -36,49 +37,54 @@ namespace iter {
             combinations_with_replacement(
                     std::initializer_list<T>, std::size_t);
 
-           CombinatorWithReplacement(Container container, std::size_t n)
+           CombinatorWithReplacement(Container&& container, std::size_t n)
                : container(std::forward<Container>(container)),
                length{n}
            { }
 
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using CombIteratorDeref = IterIterWrapper<IndexVector>;
+
         public:
-           class Iterator {
+            class Iterator :
+                public std::iterator<std::input_iterator_tag,
+                    CombIteratorDeref>
+            {
                private:
-                   Container& items;
-                   std::vector<iterator_type<Container>> indicies;
-                   bool not_done;
+                   constexpr static const int COMPLETE = -1;
+                   typename std::remove_reference<Container>::type *container_p;
+                   CombIteratorDeref indices;
+                   int steps;
 
                public:
-                   Iterator(
-                           Container& container, std::size_t n)
-                       : items(container),
-                       indicies(n, std::begin(items)),
-                       not_done{n != 0}
+                   Iterator(Container& in_container, std::size_t n)
+                       : container_p{&in_container},
+                       indices(n, std::begin(in_container)),
+                       steps{(std::begin(in_container)
+                               != std::end(in_container)
+                               && n)
+                           ? 0 : COMPLETE}
                    { }
 
-                   std::vector<collection_item_type<Container>> operator*() {
-                       std::vector<collection_item_type<Container>> values;
-                       for (auto i : indicies) {
-                           values.push_back(*i);
-                       }
-                       return values;
+                   CombIteratorDeref& operator*() {
+                       return this->indices;
                    }
 
 
                    Iterator& operator++() {
-                       for (auto iter = indicies.rbegin();
-                               iter != indicies.rend();
+                       for (auto iter = indices.get().rbegin();
+                               iter != indices.get().rend();
                                ++iter) {
                            ++(*iter);
-                           if (!(*iter != std::end(items))) {
-                               if ( (iter + 1) != indicies.rend()) {
+                           if (!(*iter != std::end(*this->container_p))) {
+                               if ( (iter + 1) != indices.get().rend()) {
                                    for (auto down = iter;
-                                           down != indicies.rbegin()-1;
+                                           down != indices.get().rbegin()-1;
                                            --down) {
                                        (*down) = dumb_next(*(iter + 1)); 
                                    }
                                } else {
-                                   not_done = false;
+                                   this->steps = COMPLETE;
                                    break;
                                }
                            } else {
@@ -87,16 +93,27 @@ namespace iter {
                                break; 
                            }
                        }
+                       if (this->steps != COMPLETE) {
+                           ++this->steps;
+                       }
                        return *this;
                    }
 
-                   bool operator !=(const Iterator&) const {
-                       //because of the way this is done you have to start from
-                       //the begining of the range and end at the end, you
-                       //could break in the middle of the loop though, it's not
-                       //different from the waythat python's works
-                       return not_done;
+
+                   Iterator operator++(int) {
+                       auto ret = *this;
+                       ++*this;
+                       return ret;
                    }
+
+                   bool operator!=(const Iterator& other) const {
+                       return !(*this == other);
+                   }
+
+                   bool operator==(const Iterator& other) const {
+                       return this->steps == other.steps;
+                   }
+
            };
 
            Iterator begin() {
@@ -118,8 +135,8 @@ namespace iter {
     CombinatorWithReplacement<std::initializer_list<T>> 
     combinations_with_replacement(
             std::initializer_list<T> il, std::size_t length) {
-        return {il, length};
+        return {std::move(il), length};
     }
 }
 
-#endif // #ifndef COMBINATIONS_WITH_REPLACEMENT_HPP_
+#endif

@@ -1,5 +1,5 @@
-#ifndef TAKEWHILE__H__
-#define TAKEWHILE__H__
+#ifndef ITER_TAKEWHILE_H_
+#define ITER_TAKEWHILE_H_
 
 #include "iterbase.hpp"
 
@@ -33,39 +33,32 @@ namespace iter {
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
                     FF, std::initializer_list<T>);
 
-            // Value constructor for use only in the takewhile function
-            TakeWhile(FilterFunc filter_func, Container container)
+            TakeWhile(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
 
-            TakeWhile () = delete;
-            TakeWhile& operator=(const TakeWhile&) = delete;
 
         public:
-            TakeWhile(const TakeWhile&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                    iterator_traits_deref<Container>>
+            {
                 private:
-                    using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
-                    // check if the current value is true under the predicate
-                    // if it is not, set the sub_iter to the end using
-                    // placement new to avoid the requirement of the iterator
-                    // having an operator=
                     void check_current() {
-                        if (!this->filter_func(*this->sub_iter)) {
-                            this->sub_iter.~iter_type();
-                            new(&this->sub_iter) iterator_type<Container>(
-                                    this->sub_end);
+                        if (this->sub_iter != this->sub_end
+                                && !this->filter_func(*this->sub_iter)) {
+                            this->sub_iter = this->sub_end;
                         }
                     }
 
                 public:
-                    Iterator (iterator_type<Container> iter,
+                    Iterator(iterator_type<Container> iter,
                             iterator_type<Container> end,
                             FilterFunc filter_func)
                         : sub_iter{iter},
@@ -78,7 +71,7 @@ namespace iter {
                         }
                     } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -88,9 +81,20 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
                     }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
+                    }
+                
             };
 
             Iterator begin() {
@@ -107,7 +111,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a TakeWhile
     template <typename FilterFunc, typename Container>
     TakeWhile<FilterFunc, Container> takewhile(
             FilterFunc filter_func, Container&& container) {
@@ -123,4 +126,4 @@ namespace iter {
 
 }
 
-#endif //ifndef TAKEWHILE__H__
+#endif

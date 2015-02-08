@@ -1,12 +1,14 @@
 #ifndef ITER_PERMUTATIONS_HPP_
 #define ITER_PERMUTATIONS_HPP_
+
 #include "iterbase.hpp"
+#include "iteratoriterator.hpp"
 
 #include <algorithm>
 #include <initializer_list>
 #include <vector>
 #include <utility>
-
+#include <iterator>
 
 namespace iter {
 
@@ -15,29 +17,43 @@ namespace iter {
         private:
             Container container;
 
+            using IndexVector = std::vector<iterator_type<Container>>;
+            using Permutable = IterIterWrapper<IndexVector>;
+
         public:
-            Permuter(Container in_container)
-                : container(in_container)
+            Permuter(Container&& in_container)
+                : container(std::forward<Container>(in_container))
             { }
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, Permutable>
+            {
                 private:
-                    using Permutable =
-                        std::vector<collection_item_type<Container>>;
+                    static constexpr const int COMPLETE = -1;
+                    static bool cmp_iters(
+                            const iterator_type<Container>& lhs,
+                            const iterator_type<Container>& rhs) noexcept {
+                        return *lhs < *rhs;
+                    }
+
                     Permutable working_set;
-                    bool is_not_last = true;
+                    int steps{};
 
                 public:
-                    Iterator(Container& c)
+                    Iterator(iterator_type<Container> sub_iter,
+                            iterator_type<Container> sub_end)
+                        : steps{ sub_iter != sub_end ? 0 : COMPLETE }
                     {
                         // done like this instead of using vector ctor with
                         // two iterators because that causes a substitution
                         // failure when the iterator is minimal
-                        for (auto&& i : c) {
-                            working_set.emplace_back(i);
+                        while (sub_iter != sub_end) {
+                            this->working_set.get().push_back(sub_iter);
+                            ++sub_iter;
                         }
-                        std::sort(std::begin(working_set),
-                                std::end(working_set));
+                        std::sort(std::begin(working_set.get()),
+                                std::end(working_set.get()),
+                                cmp_iters);
                     }
 
                     Permutable& operator*() {
@@ -45,23 +61,37 @@ namespace iter {
                     }
 
                     Iterator& operator++() {
-                        is_not_last =
-                            std::next_permutation(std::begin(working_set),
-                                    std::end(working_set));
+                        ++this->steps;
+                        if (!std::next_permutation(std::begin(working_set.get()),
+                                    std::end(working_set.get()), cmp_iters)) {
+                            this->steps = COMPLETE;
+                        }
                         return *this;
                     }
 
-                    bool operator!=(const Iterator&) const {
-                        return is_not_last;
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return !(*this == other);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return this->steps == other.steps;
                     }
             };
 
             Iterator begin() {
-                return {this->container};
+                return {std::begin(this->container),
+                    std::end(this->container)};
             }
 
             Iterator end() {
-                return {this->container};
+                return {std::end(this->container),
+                    std::end(this->container)};
             }
 
 
@@ -75,10 +105,9 @@ namespace iter {
     template <typename T>
     Permuter<std::initializer_list<T>> permutations(
             std::initializer_list<T> il) {
-        return {il};
+        return {std::move(il)};
     }
 
 }
 
-#endif // ITER_PERMUTATIONS_HPP_
-
+#endif

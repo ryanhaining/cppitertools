@@ -1,5 +1,5 @@
-#ifndef CYCLE__H__
-#define CYCLE__H__
+#ifndef ITER_CYCLE_H_
+#define ITER_CYCLE_H_
 
 #include "iterbase.hpp"
 
@@ -9,7 +9,6 @@
 
 namespace iter {
 
-    //Forward declarations of Cycle and cycle
     template <typename Container>
     class Cycle;
 
@@ -22,7 +21,6 @@ namespace iter {
     template <typename Container>
     class Cycle {
         private:
-            // The cycle function is the only thing allowed to create a Cycle
             friend Cycle cycle<Container>(Container&&);
             template <typename T>
             friend Cycle<std::initializer_list<T>> cycle(
@@ -30,21 +28,20 @@ namespace iter {
 
             Container container;
             
-            // Value constructor for use only in the cycle function
-            Cycle(Container container)
+            Cycle(Container&& container)
                 : container(std::forward<Container>(container))
             { }
-            Cycle() = delete;
-            Cycle& operator=(const Cycle&) = delete;
 
         public:
-            Cycle(const Cycle&) = default;
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                            iterator_traits_deref<Container>>
+            {
                 private:
                     using iter_type = iterator_type<Container>;
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> begin;
-                    const iterator_type<Container> end;
+                    iterator_type<Container> begin;
+                    iterator_type<Container> end;
                 public:
                     Iterator (iterator_type<Container> iter,
                             iterator_type<Container> end)
@@ -53,7 +50,7 @@ namespace iter {
                         end{end}
                     { } 
 
-                    iterator_deref<Container> operator*() const {
+                    iterator_deref<Container> operator*() {
                         return *this->sub_iter;
                     }
 
@@ -61,17 +58,23 @@ namespace iter {
                         ++this->sub_iter;
                         // reset to beginning upon reaching the end
                         if (!(this->sub_iter != this->end)) {
-                            // explicit destruction with placement new in order
-                            // to support iterators with no operator=
-                            this->sub_iter.~iter_type();
-                            new(&this->sub_iter) iterator_type<Container>(
-                                    this->begin);
+                            this->sub_iter = this->begin;
                         }
                         return *this;
                     }
 
-                    constexpr bool operator!=(const Iterator&) const {
-                        return true;
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -87,7 +90,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a Cycle
     template <typename Container>
     Cycle<Container> cycle(Container&& container) {
         return {std::forward<Container>(container)};
@@ -100,4 +102,4 @@ namespace iter {
     }
 }
 
-#endif //ifndef CYCLE__H__
+#endif

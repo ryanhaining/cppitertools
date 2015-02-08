@@ -20,15 +20,15 @@ namespace iter {
             Container container;
             friend Reverser reversed<Container>(Container&&);
             
-            Reverser(Container container)
+            Reverser(Container&& container)
                 : container(std::forward<Container>(container))
             { }
-            Reverser() = delete;
-            Reverser& operator=(const Reverser&) = delete;
 
         public:
-            Reverser(const Reverser&) = default;
-            class Iterator {
+            class Iterator : public std::iterator<
+                         std::input_iterator_tag,
+                         iterator_traits_deref<Container>>
+            {
                 private:
                     reverse_iterator_type<Container> sub_iter;
                 public:
@@ -45,8 +45,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -60,7 +70,6 @@ namespace iter {
 
     };
 
-    // Helper function to instantiate a Reverser
     template <typename Container>
     Reverser<Container> reversed(Container&& container) {
         return {std::forward<Container>(container)};
@@ -76,20 +85,17 @@ namespace iter {
     class Reverser<T[N]> {
         private:
             T *array;
-            // The reversed function is the only thing allowed to create a
-            // Reverser
             friend Reverser reversed<T, N>(T (&)[N]);
             
             // Value constructor for use only in the reversed function
             Reverser(T *array)
                 : array{array}
             { }
-            Reverser() = delete;
-            Reverser& operator=(const Reverser&) = delete;
 
         public:
             Reverser(const Reverser&) = default;
-            class Iterator {
+            class Iterator : public std::iterator<std::input_iterator_tag, T>
+            {
                 private:
                     T *sub_iter;
                 public:
@@ -97,7 +103,7 @@ namespace iter {
                         : sub_iter{iter}
                     { } 
 
-                    auto operator*() -> decltype(*array) {
+                    iterator_deref<T[N]> operator*() {
                         return *(this->sub_iter - 1);
                     }
 
@@ -106,8 +112,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -128,4 +144,4 @@ namespace iter {
 
 }
 
-#endif //ITER_REVERSE_HPP_
+#endif

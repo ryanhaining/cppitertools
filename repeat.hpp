@@ -1,24 +1,30 @@
-#ifndef REPEAT_HPP__
-#define REPEAT_HPP__
+#ifndef ITER_REPEAT_HPP_
+#define ITER_REPEAT_HPP_
 
 #include <iterator>
+#include <type_traits>
 #include <utility>
 
 namespace iter {
 
-    // must me negative
+    // must be negative
     constexpr int INFINITE_REPEAT = -1;
 
     template <typename T>
     class Repeater;
 
     template <typename T>
-    Repeater<T> repeat(T&&, int count =INFINITE_REPEAT);
+    Repeater<T> repeat(T&&);
+
+    template <typename T>
+    Repeater<T> repeat(T&&, int);
 
     template <typename T>
     class Repeater {
+        friend Repeater repeat<T>(T&&);
         friend Repeater repeat<T>(T&&, int);
         private:
+            using TPlain = typename std::remove_reference<T>::type;
             T elem;
             int count;
 
@@ -28,12 +34,14 @@ namespace iter {
             { }
         public:
 
-            class Iterator {
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, TPlain>
+            {
                 private:
-                    T& elem;
+                    TPlain* elem;
                     int count;
                 public:
-                    Iterator(T& e, int c)
+                    Iterator(TPlain* e, int c)
                         : elem{e},
                         count{c}
                     { }
@@ -49,31 +57,45 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
-                        return this->count != other.count ||
-                            &this->elem != &other.elem;
+                        return !(*this == other);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return this->count == other.count;
                     }
 
                     T& operator*() {
-                        return this->elem;
+                        return *this->elem;
                     }
             };
 
             Iterator begin() {
-                return {this->elem, this->count};
+                return {&this->elem, this->count};
             }
 
             Iterator end() {
-                return {this->elem, 0};
+                return {&this->elem, 0};
             }
 
     };
 
     template <typename T>
-    Repeater<T> repeat(T&& e, int count) {
-        return {std::forward<T>(e), count};
+    Repeater<T> repeat(T&& e) {
+        return {std::forward<T>(e), INFINITE_REPEAT};
     }
         
+    template <typename T>
+    Repeater<T> repeat(T&& e, int count) {
+        // if count is negative, pass 0 instead
+        return {std::forward<T>(e), count < 0 ? 0 : count};
+    }
 }
 
-#endif //REPEAT_HPP__
+#endif

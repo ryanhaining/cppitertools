@@ -1,5 +1,5 @@
-#ifndef COUNT__H__
-#define COUNT__H__
+#ifndef ITER_COUNT_H_
+#define ITER_COUNT_H_
 
 #include "range.hpp"
 
@@ -9,13 +9,13 @@ namespace iter {
 
     using DefaultRangeType = long;
 
-    Range<DefaultRangeType> count() {
+    auto count() -> decltype(range(DefaultRangeType(0), DefaultRangeType(0))) {
         return range(DefaultRangeType(0),
                 std::numeric_limits<DefaultRangeType>::max());
     }
 
     template <typename T>
-    Range<T> count(T start, T step) {
+    auto count(T start, T step) -> decltype(range(start, start, start)) {
         // if step is < 0, set the stop to numeric min, otherwise numeric max
         T stop = step < T(0) ? std::numeric_limits<T>::min() :
                             std::numeric_limits<T>::max();
@@ -23,11 +23,10 @@ namespace iter {
     }
 
     template <typename T>
-    Range<T> count(T start) {
-        return range(start, T(1));
+    auto count(T start) -> decltype(range(start, start)) {
+        return count(start, T(1));
     }
 }
 
 
-#endif //define COUNT__H__
-
+#endif

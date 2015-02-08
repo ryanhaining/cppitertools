@@ -1,8 +1,9 @@
-#ifndef GROUP__BY__HPP
-#define GROUP__BY__HPP
+#ifndef ITER_GROUP_BY_HPP_
+#define ITER_GROUP_BY_HPP_
 
 #include "iterbase.hpp"
 
+#include <type_traits>
 #include <utility>
 #include <iterator>
 #include <initializer_list>
@@ -31,11 +32,10 @@ namespace iter {
             friend GroupBy<std::initializer_list<T>, KF> groupby(
                     std::initializer_list<T>, KF);
 
-            using key_func_ret =
-                decltype(std::declval<KeyFunc>()(
-                            std::declval<iterator_deref<Container>>()));
+            using key_func_ret = typename
+                std::result_of<KeyFunc(iterator_deref<Container>)>::type;
 
-            GroupBy(Container container, KeyFunc key_func)
+            GroupBy(Container&& container, KeyFunc key_func)
                 : container(std::forward<Container>(container)),
                 key_func(key_func)
             { }
@@ -51,15 +51,19 @@ namespace iter {
             class Iterator;
             class Group;
 
-            class Iterator {
+        private:
+            using KeyGroupPair =
+                std::pair<key_func_ret, Group>;
+        public:
+
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag, KeyGroupPair>
+            {
                 private:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_iter_peek;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     KeyFunc key_func;
-
-                    using KeyGroupPair =
-                        std::pair<key_func_ret, Group>;
 
                 public:
                     Iterator (iterator_type<Container> si,
@@ -71,19 +75,28 @@ namespace iter {
                     { }
 
                     KeyGroupPair operator*() {
-                        return KeyGroupPair(
-                                this->key_func(*this->sub_iter),
-                                Group(
-                                    *this, 
-                                    this->key_func(*this->sub_iter)));
+                        return {
+                            this->key_func(*this->sub_iter),
+                            Group{*this, this->key_func(*this->sub_iter)}
+                        };
                     }
 
                     Iterator& operator++() { 
                         return *this;
                     }
 
-                    bool operator!=(const Iterator&) const {
-                        return !this->exhausted();
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
 
                     void increment_iterator() {
@@ -93,14 +106,14 @@ namespace iter {
                     }
 
                     bool exhausted() const {
-                        return this->sub_iter == this->sub_end;
+                        return !(this->sub_iter != this->sub_end);
                     }
 
                     iterator_deref<Container> current() {
                         return *this->sub_iter;
                     }
 
-                    key_func_ret next_key() const {
+                    key_func_ret next_key() {
                         return this->key_func(*this->sub_iter);
                     }
             };
@@ -122,7 +135,7 @@ namespace iter {
                     // The move constructor sets the rvalue's completed
                     // attribute to true, so its destructor doesn't do anything
                     // when called.
-                    mutable bool completed = false;
+                    bool completed = false;
 
                     Group(Iterator& owner, key_func_ret key) :
                         owner(owner),
@@ -138,7 +151,8 @@ namespace iter {
                         }
                     }
                            
-                    // movable, non-copyable
+                    // move-constructible, non-copy-constructible,
+                    // non-assignable
                     Group() = delete;
                     Group(const Group&) = delete;
                     Group& operator=(const Group&) = delete;
@@ -151,50 +165,60 @@ namespace iter {
                         other.completed = true;
                     }
 
-                    class GroupIterator {
+                    class GroupIterator 
+                        : public std::iterator<std::input_iterator_tag,
+                                iterator_traits_deref<Container>>
+                    {
                         private:
-                            const key_func_ret key;
-                            const Group& group;
+                            key_func_ret key;
+                            Group *group_p;
 
-                            bool not_at_end() const {
-                                return !this->group.owner.exhausted()&&
-                                    this->group.owner.next_key() == this->key;
+                            bool not_at_end() {
+                                return !this->group_p->owner.exhausted()&&
+                                    this->group_p->owner.next_key() == this->key;
                             }
 
                         public:
-                            GroupIterator(const Group& group,
+                            GroupIterator(Group *in_group_p,
                                           key_func_ret key)
                                 : key{key},
-                                group{group}
+                                group_p{in_group_p}
                             { }
 
-                            GroupIterator(const GroupIterator&) = default;
+                            bool operator!=(const GroupIterator& other) const {
+                                return !(*this == other);
+                            }
 
-                            bool operator!=(const GroupIterator&) const {
-                                if (this->not_at_end()) {
-                                    return true;
-                                } else {
-                                    this->group.completed = true;
-                                    return false;
-                                }
+                            bool operator==(const GroupIterator& other) const {
+                                return this->group_p == other.group_p;
                             }
 
                             GroupIterator& operator++() {
-                                this->group.owner.increment_iterator();
+                                this->group_p->owner.increment_iterator();
+                                if (!this->not_at_end()) {
+                                    this->group_p->completed = true;
+                                    this->group_p = nullptr;
+                                }
                                 return *this;
                             }
 
+                            GroupIterator operator++(int) {
+                                auto ret = *this;
+                                ++*this;
+                                return ret;
+                            }
+
                             iterator_deref<Container> operator*() {
-                                return this->group.owner.current();
+                                return this->group_p->owner.current();
                             }
                     };
 
                     GroupIterator begin() {
-                        return {*this, key};
+                        return {this, key};
                     }
 
                     GroupIterator end() {
-                        return {*this, key};
+                        return {nullptr, key};
                     }
 
             };
@@ -219,7 +243,6 @@ namespace iter {
     template <typename Container>
     class ItemReturner {
         public:
-            ItemReturner() = default;
             iterator_deref<Container> operator() (
                     iterator_deref<Container> item) const {
                 return item;
@@ -262,4 +285,4 @@ namespace iter {
 }
 
 
-#endif //#ifndef GROUP__BY__HPP
+#endif

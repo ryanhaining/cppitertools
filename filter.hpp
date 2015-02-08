@@ -35,20 +35,20 @@ namespace iter {
                     FF, std::initializer_list<T>);
             
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container container)
+            Filter(FilterFunc filter_func, Container&& container)
                 : container(std::forward<Container>(container)),
                 filter_func(filter_func)
             { }
-            Filter() = delete;
-            Filter& operator=(const Filter&) = delete;
 
         public:
-            Filter(const Filter&) = default;
 
-            class Iterator {
+            class Iterator 
+                : public std::iterator<std::input_iterator_tag,
+                        iterator_traits_deref<Container>>
+            {
                 protected:
                     iterator_type<Container> sub_iter;
-                    const iterator_type<Container> sub_end;
+                    iterator_type<Container> sub_end;
                     FilterFunc filter_func;
 
                     // increment until the iterator points to is true on the 
@@ -81,8 +81,18 @@ namespace iter {
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->sub_iter != other.sub_iter;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
@@ -154,4 +164,4 @@ namespace iter {
 
 }
 
-#endif // #ifndef ITER_FILTER_H_
+#endif

@@ -1,84 +1,86 @@
-#ifndef POWERSET_HPP_
-#define POWERSET_HPP_
+#ifndef ITER_POWERSET_HPP_
+#define ITER_POWERSET_HPP_
 
 #include "iterbase.hpp"
 #include "combinations.hpp"
-#include "enumerate.hpp"
 
 #include <cassert>
-#include <vector>
+#include <memory>
 #include <initializer_list>
 #include <utility>
 #include <iterator>
+#include <type_traits>
 
 namespace iter {
-    template <typename Container,
-              typename CombinatorType=
-                  decltype(combinations(std::declval<Container&>(), 0))>
+    template <typename Container>
     class Powersetter {
         private:
             Container container;
+            using CombinatorType =
+                decltype(combinations(std::declval<Container&>(), 0));
 
-            std::vector<CombinatorType> combinators;
         public:
-            Powersetter(Container in_container)
+            Powersetter(Container&& in_container)
                 : container(std::forward<Container>(in_container))
+            { }
+
+            class Iterator
+                : public std::iterator<
+                      std::input_iterator_tag, CombinatorType>
             {
-                combinators.push_back(combinations(this->container, 0));
-                std::size_t i = 1;
-                for (auto iter = std::begin(this->container),
-                            end = std::end(this->container);
-                        iter != end;
-                        ++iter, ++i) {
-                    combinators.push_back(combinations(this->container, i));
-                }
-            }
-
-            class Iterator {
                 private:
-                    std::size_t container_size;
-                    std::size_t list_size = 0;
-                    bool not_done = true;
+                    typename std::remove_reference<Container>::type *container_p;
+                    std::size_t set_size;
+                    std::unique_ptr<CombinatorType> comb;
+                    iterator_type<CombinatorType> comb_iter;
+                    iterator_type<CombinatorType> comb_end;
 
-                    std::vector<CombinatorType>& combinators;
-                    std::vector<iterator_type<CombinatorType>> inner_iters;
                 public:
-                    Iterator(std::vector<CombinatorType>& combs)
-                        : container_size{combs.size() - 1},
-                        combinators(combs)
-                    {
-                        for (auto& comb : combinators) {
-                            inner_iters.push_back(std::begin(comb));
-                        }
-                    }
+                    Iterator(Container& in_container, std::size_t sz)
+                        : container_p{&in_container},
+                        set_size{sz},
+                        comb{new CombinatorType(combinations(in_container, sz))},
+                        comb_iter{std::begin(*comb)},
+                        comb_end{std::end(*comb)}
+                    { }
 
                     Iterator& operator++() {
-                        ++inner_iters[list_size];
-                        if (!(inner_iters[list_size] != inner_iters[list_size])) {
-                            ++list_size;
+                        ++this->comb_iter;
+                        if (this->comb_iter == this->comb_end) {
+                            ++this->set_size;
+                            this->comb.reset(new CombinatorType(combinations(
+                                            *this->container_p, this->set_size)));
+                            this->comb_iter = std::begin(*this->comb);
+                            this->comb_end = std::end(*this->comb);
                         }
-                        if (container_size < list_size) {
-                            not_done = false;
-                        }
-
                         return *this;
                     }
 
-                    auto operator*() -> decltype(*inner_iters[0]) {
-                        return *(inner_iters[list_size]);
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
                     }
 
-                    bool operator != (const Iterator&) {
-                        return not_done;
+                    iterator_deref<CombinatorType> operator*() {
+                        return *this->comb_iter;
                     }
-            }; 
+
+                    bool operator != (const Iterator& other) const {
+                        return !(*this == other);
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return this->set_size == other.set_size;
+                    }
+            };
 
             Iterator begin() {
-                return {this->combinators};
+                return {this->container, 0};
             }
 
             Iterator end() {
-                return {this->combinators};
+                return {this->container, dumb_size(this->container) + 1};
             }
     };
 
@@ -90,7 +92,7 @@ namespace iter {
     template <typename T>
     Powersetter<std::initializer_list<T>> powerset(
             std::initializer_list<T> il) {
-        return {il};
+        return {std::move(il)};
     }
 }
-#endif // #ifndef POWERSET_HPP_
+#endif
