@@ -10,45 +10,26 @@
 #include <unordered_set>
 #include <iterator>
 
-namespace iter 
-{
-    //the container type must be usable in an unordered_map to achieve constant
-    //performance checking if it has ever been seen
+namespace iter {
     template <typename Container>
-    auto unique_everseen(Container&& container) 
-        -> Filter<std::function<bool(iterator_deref<Container>)>,Container>
-    {
-        using elem_t = iterator_deref<Container>;
-        std::unordered_set<typename std::decay<elem_t>::type> elem_seen;
-
-        std::function<bool(elem_t)> func =
-        //has to be captured by value because it goes out of scope when the 
-        //function returns
-            [elem_seen](elem_t e) mutable
-            {
-                if (elem_seen.find(e) == std::end(elem_seen)){
-                    elem_seen.insert(e);
-                    return true;
-                } else {
-                    return false;
-                }
+    auto unique_everseen(Container&& container) {
+        using elem_type = iterator_deref<Container>;
+        auto func =
+            [
+                elem_seen = std::unordered_set<std::decay_t<elem_type>>()
+            ] (const elem_type& e) mutable {
+                return elem_seen.insert(e).second;
             };
         return filter(func, std::forward<Container>(container));
     }
 
     template <typename T>
-    auto unique_everseen(std::initializer_list<T> il) 
-        -> Filter<std::function<bool(T)>, std::initializer_list<T>>
-    {
-        std::unordered_set<T> elem_seen;
-        std::function<bool(T)> func = [elem_seen](const T& e) mutable
-            {
-                if (elem_seen.find(e) == std::end(elem_seen)){
-                    elem_seen.insert(e);
-                    return true;
-                } else {
-                    return false;
-                }
+    auto unique_everseen(std::initializer_list<T> il) {
+        auto func =
+            [
+                elem_seen = std::unordered_set<T>()
+            ] (const T& e) mutable {
+                return elem_seen.insert(e).second;
             };
         return filter(func, il);
     }
