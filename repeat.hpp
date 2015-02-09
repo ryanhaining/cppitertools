@@ -24,7 +24,7 @@ namespace iter {
         friend Repeater repeat<T>(T&&);
         friend Repeater repeat<T>(T&&, int);
         private:
-            using TPlain = typename std::remove_reference<T>::type;
+            using TPlain = std::remove_reference_t<T>;
             T elem;
             int count;
 
