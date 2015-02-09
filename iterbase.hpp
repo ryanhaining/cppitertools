@@ -30,7 +30,7 @@ namespace iter {
 
     template <typename Container>
     using iterator_traits_deref =
-        typename std::remove_reference<iterator_deref<Container>>::type;
+        std::remove_reference_t<iterator_deref<Container>>;
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
@@ -48,11 +48,11 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        typename std::enable_if<
+        std::enable_if_t<
              std::is_same<
                  typename std::iterator_traits<T>::iterator_category,
-              std::random_access_iterator_tag>::value,
-          void>::type> : std::true_type { };
+              std::random_access_iterator_tag>::value
+          >> : std::true_type { };
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
