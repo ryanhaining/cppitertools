@@ -121,7 +121,7 @@ namespace iter {
                     // So, if an iterator is not equal to that, it is valid
                     bool operator!=(const Iterator& other) const { 
                         return not_equal_to(
-                                other, typename std::is_unsigned<T>::type());
+                                other, std::is_unsigned<T>{});
                     }
 
                     bool operator==(const Iterator& other) const {
