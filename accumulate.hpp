@@ -38,10 +38,10 @@ namespace iter {
             
             // AccumVal must be default constructible
             using AccumVal =
-                typename std::remove_reference<
-                    typename std::result_of<AccumulateFunc(
+                std::remove_reference_t<
+                    std::result_of_t<AccumulateFunc(
                             iterator_deref<Container>,
-                            iterator_deref<Container>)>::type>::type;
+                            iterator_deref<Container>)>>;
             static_assert(
                     std::is_default_constructible<AccumVal>::value,
                     "Cannot accumulate a non-default constructible type");
@@ -125,12 +125,12 @@ namespace iter {
     template <typename Container>
     auto accumulate(Container&& container) -> 
         decltype(accumulate(std::forward<Container>(container),
-                    std::plus<typename std::remove_reference<
-                        iterator_deref<Container>>::type>{}))
+                    std::plus<std::remove_reference_t<
+                        iterator_deref<Container>>>{}))
     {
         return accumulate(std::forward<Container>(container),
-                    std::plus<typename std::remove_reference<
-                        iterator_deref<Container>>::type>{});
+                    std::plus<std::remove_reference_t<
+                        iterator_deref<Container>>>{});
     }
 
     template <typename T, typename AccumulateFunc>
