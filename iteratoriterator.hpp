@@ -67,11 +67,11 @@ namespace iter {
                 return ret;
             }
 
-            auto operator*() -> decltype(**sub_iter) {
+            decltype(auto) operator*() {
                 return **this->sub_iter;
             }
 
-            auto operator->() -> decltype(*sub_iter) {
+            decltype(auto) operator->() {
                 return *this->sub_iter;
             }
 
@@ -112,7 +112,7 @@ namespace iter {
                 return this->sub_iter - rhs.sub_iter;
             }
 
-            auto operator[](Diff idx) -> decltype(*sub_iter[idx]) {
+            decltype(auto) operator[](Diff idx) {
                 return *sub_iter[idx];
             }
 
@@ -156,24 +156,22 @@ namespace iter {
                 : container(sz, val)
             { }
 
-            auto at(size_type pos) -> decltype(*container.at(pos)) {
+            decltype(auto) at(size_type pos) {
                 return *container.at(pos);
             }
 
-            auto at(size_type pos) const -> decltype(*container.at(pos)) {
+            decltype(auto) at(size_type pos) const {
                 return *container.at(pos);
             }
 
-            auto operator[](size_type pos) 
+            decltype(auto) operator[](size_type pos) 
                 noexcept(noexcept(*container[pos]))
-                -> decltype(*container[pos])
             {
                 return *container[pos];
             }
 
-            auto operator[](size_type pos) const
+            decltype(auto) operator[](size_type pos) const
                 noexcept(noexcept(*container[pos]))
-                -> decltype(*container[pos])
             {
                 return *container[pos];
             }
