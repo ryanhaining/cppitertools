@@ -52,7 +52,7 @@ namespace iter {
             {
                private:
                    constexpr static const int COMPLETE = -1;
-                   typename std::remove_reference<Container>::type *container_p;
+                   std::remove_reference_t<Container> *container_p;
                    CombIteratorDeref indices;
                    int steps;
 
