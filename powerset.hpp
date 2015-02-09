@@ -29,7 +29,7 @@ namespace iter {
                       std::input_iterator_tag, CombinatorType>
             {
                 private:
-                    typename std::remove_reference<Container>::type *container_p;
+                    std::remove_reference_t<Container> *container_p;
                     std::size_t set_size;
                     std::unique_ptr<CombinatorType> comb;
                     iterator_type<CombinatorType> comb_iter;
