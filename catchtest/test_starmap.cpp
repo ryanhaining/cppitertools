@@ -87,3 +87,11 @@ TEST_CASE("starmap: tuple of pairs", "[starmap]") {
 
     REQUIRE( v == vc );
 }
+
+TEST_CASE("starmap: moves rvalues, binds to lvalues", "[starmap]") {
+    itertest::BasicIterable<std::tuple<int>> bi{};
+    starmap(Callable{}, bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+    starmap(Callable{}, std::move(bi));
+    REQUIRE( bi.was_moved_from() );
+}
