@@ -11,65 +11,51 @@
 
 namespace iter {
 
-    template <typename Container>
-    using OptIterDeref = boost::optional<iterator_deref<Container>>;
-
-    template <typename... RestContainers>
+    template <typename TupleType, std::size_t... Is>
     class ZippedLongest;
 
-    template <typename... Containers>
-    ZippedLongest<Containers...> zip_longest(Containers&&...);
+    template <typename TupleType, std::size_t... Is>
+    ZippedLongest<TupleType, Is...>
+        zip_longest_impl(TupleType&&, std::index_sequence<Is...>);
 
-    template <typename Container, typename... RestContainers>
-    class ZippedLongest <Container, RestContainers...> {
-        static_assert(!std::is_rvalue_reference<Container>::value,
-                "Itertools cannot be templated with rvalue references");
-
-        friend ZippedLongest zip_longest<Container, RestContainers...>(
-                Container&&, RestContainers&&...);
-
-        template <typename... Cs>
-        friend class ZippedLongest;
-
+    template <typename TupleType, std::size_t... Is>
+    class ZippedLongest {
         private:
-            using OptType = OptIterDeref<Container>;
-            using ZipIterDeref =
-                std::tuple<OptType, OptIterDeref<RestContainers>...>;
+            TupleType containers;
+            friend ZippedLongest zip_longest_impl<TupleType, Is...>(
+                    TupleType&&, std::index_sequence<Is...>);
 
-            Container container;
-            ZippedLongest<RestContainers...> rest_zipped;
-            ZippedLongest(Container&& container, RestContainers&&... rest)
-                : container(std::forward<Container>(container)),
-                rest_zipped{std::forward<RestContainers>(rest)...}
+            template <std::size_t I>
+            using OptType = boost::optional<iterator_deref<
+                std::tuple_element_t<I, TupleType>>>;
+
+            using ZipIterDeref = std::tuple<OptType<Is>...>;
+
+            ZippedLongest(TupleType&& in_containers)
+                : containers(std::move(in_containers))
             { }
-
         public:
             class Iterator
                 : public std::iterator<std::input_iterator_tag, ZipIterDeref>
             {
                 private:
-                    using RestIter =
-                        typename ZippedLongest<RestContainers...>::Iterator;
-
-                    iterator_type<Container> iter;
-                    iterator_type<Container> end;
-                    RestIter rest_iter;
+                    iterator_tuple_type<TupleType> iters;
+                    iterator_tuple_type<TupleType> ends;
 
                 public:
-                    Iterator(
-                            iterator_type<Container> it,
-                            iterator_type<Container> in_end,
-                            const RestIter& rest)
-                        : iter{it},
-                        end{in_end},
-                        rest_iter{rest}
+                    Iterator(iterator_tuple_type<TupleType>&& in_iters,
+                            iterator_tuple_type<TupleType>&& in_ends)
+                        : iters(std::move(in_iters)),
+                        ends(std::move(in_ends))
                     { }
 
                     Iterator& operator++() {
-                        if (this->iter != this->end) {
-                            ++this->iter;
-                        }
-                        ++this->rest_iter;
+                        // increment every iterator that's not already at
+                        // the end
+                        absorb(
+                            ((std::get<Is>(this->iters) !=
+                              std::get<Is>(this->ends)) ?
+                                (++std::get<Is>(this->iters), 0) : 0)...);
                         return *this;
                     }
 
@@ -80,8 +66,15 @@ namespace iter {
                     }
 
                     bool operator!=(const Iterator& other) const {
-                        return this->iter != other.iter ||
-                            this->rest_iter != other.rest_iter;
+                        if (sizeof...(Is) == 0) return false;
+
+                        bool results[] = { false,
+                            (std::get<Is>(this->iters) !=
+                                 std::get<Is>(other.iters))...
+                        };
+                        return std::any_of(
+                                std::begin(results), std::end(results),
+                                [](bool b){ return b; } );
                     }
 
                     bool operator==(const Iterator& other) const {
@@ -89,72 +82,42 @@ namespace iter {
                     }
 
                     ZipIterDeref operator*() {
-                        if (this->iter != this->end) {
-                            return std::tuple_cat(
-                                    std::tuple<OptType>{{*this->iter}},
-                                    *this->rest_iter);
-                        } else {
-                            return std::tuple_cat(
-                                    std::tuple<OptType>{{}},
-                                    *this->rest_iter);
-                        }
+                        return ZipIterDeref{ 
+                            ((std::get<Is>(this->iters) !=
+                              std::get<Is>(this->ends))
+                             ? OptType<Is>{*std::get<Is>(this->iters)}
+                                : OptType<Is>{})...};
                     }
             };
 
             Iterator begin() {
-                return {std::begin(this->container),
-                    std::end(this->container),
-                    std::begin(this->rest_zipped)};
+                return {
+                    iterator_tuple_type<TupleType>{
+                        std::begin(std::get<Is>(this->containers))...},
+                    iterator_tuple_type<TupleType>{
+                        std::end(std::get<Is>(this->containers))...}};
             }
 
             Iterator end() {
-                return {std::end(this->container),
-                    std::end(this->container),
-                    std::end(this->rest_zipped)};
+                return {
+                    iterator_tuple_type<TupleType>{
+                        std::end(std::get<Is>(this->containers))...},
+                    iterator_tuple_type<TupleType>{
+                        std::end(std::get<Is>(this->containers))...}};
             }
-    };
+};
 
-
-    template <>
-    class ZippedLongest<> {
-        public:
-            class Iterator
-                : public std::iterator<std::input_iterator_tag, std::tuple<>> 
-            {
-                public:
-                    Iterator& operator++() {
-                        return *this;
-                    }
-
-                    constexpr Iterator operator++(int) {
-                        return *this;
-                    }
-
-                    constexpr bool operator!=(const Iterator&) const {
-                        return false;
-                    }
-
-                    constexpr bool operator==(const Iterator&) const {
-                        return true;
-                    }
-
-                    constexpr std::tuple<> operator*() {
-                        return {};
-                    }
-            };
-
-            constexpr Iterator begin() {
-                return {};
-            }
-
-            constexpr Iterator end() {
-                return {};
-            }
-    };
+    template <typename TupleType, std::size_t... Is>
+    ZippedLongest<TupleType, Is...> zip_longest_impl(
+            TupleType&& in_containers, std::index_sequence<Is...>) {
+        return {std::move(in_containers)};
+    }
 
     template <typename... Containers>
-    ZippedLongest<Containers...> zip_longest(Containers&&... containers) {
-        return {std::forward<Containers>(containers)...};
+    auto zip_longest(Containers&&... containers) {
+        return zip_longest_impl(std::tuple<Containers...>{
+            std::forward<Containers>(containers)...},
+            std::index_sequence_for<Containers...>{});
     }
 }
 
