@@ -53,11 +53,7 @@ namespace iter {
     // the bool result of the function.  The PredicateFlipper is then passed
     // to the normal filter() function
     template <typename FilterFunc, typename Container>
-    auto filterfalse(FilterFunc filter_func, Container&& container) ->
-            decltype(filter(
-                        detail::PredicateFlipper<FilterFunc, Container>(
-                            filter_func),
-                        std::forward<Container>(container))) {
+    auto filterfalse(FilterFunc filter_func, Container&& container) {
         return filter(
                 detail::PredicateFlipper<FilterFunc, Container>(filter_func),
                 std::forward<Container>(container));
@@ -66,10 +62,7 @@ namespace iter {
     // Single argument version, uses a BoolFlipper to reverse the truthiness
     // of an object
     template <typename Container>
-    auto filterfalse(Container&& container) ->
-            decltype(filter(
-                        detail::BoolFlipper<Container>(),
-                        std::forward<Container>(container))) {
+    auto filterfalse(Container&& container) {
         return filter(
                 detail::BoolFlipper<Container>(),
                 std::forward<Container>(container));
@@ -79,23 +72,18 @@ namespace iter {
 
     //specializations for initializer_lists
     template <typename FilterFunc, typename T>
-    auto filterfalse(FilterFunc filter_func, std::initializer_list<T> container) ->
-            decltype(filter(
-                        detail::PredicateFlipper<FilterFunc, std::initializer_list<T>>(
-                            filter_func),
-                        std::move(container))) {
+    auto filterfalse(FilterFunc filter_func,
+            std::initializer_list<T> container) {
         return filter(
-                detail::PredicateFlipper<FilterFunc, std::initializer_list<T>>(filter_func),
+                detail::PredicateFlipper<FilterFunc, std::initializer_list<T>>(
+                    filter_func),
                 std::move(container));
     }
 
     // Single argument version, uses a BoolFlipper to reverse the truthiness
     // of an object
     template <typename T>
-    auto filterfalse(std::initializer_list<T> container) ->
-            decltype(filter(
-                        detail::BoolFlipper<std::initializer_list<T>>(),
-                        std::move(container))) {
+    auto filterfalse(std::initializer_list<T> container) {
         return filter(
                 detail::BoolFlipper<std::initializer_list<T>>(),
                 std::move(container));
