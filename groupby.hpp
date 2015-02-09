@@ -258,9 +258,7 @@ namespace iter {
 
 
     template <typename Container>
-    auto groupby(Container&& container) ->
-            decltype(groupby(std::forward<Container>(container),
-                        ItemReturner<Container>())) {
+    auto groupby(Container&& container) {
         return groupby(std::forward<Container>(container),
                 ItemReturner<Container>());
     }
@@ -274,9 +272,7 @@ namespace iter {
 
 
     template <typename T>
-    auto groupby(std::initializer_list<T> il) ->
-            decltype(groupby(std::move(il),
-                        ItemReturner<std::initializer_list<T>>())) {
+    auto groupby(std::initializer_list<T> il) {
         return groupby(
                 std::move(il),
                 ItemReturner<std::initializer_list<T>>());
