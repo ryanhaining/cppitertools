@@ -123,11 +123,7 @@ namespace iter {
     }
 
     template <typename Container>
-    auto accumulate(Container&& container) -> 
-        decltype(accumulate(std::forward<Container>(container),
-                    std::plus<std::remove_reference_t<
-                        iterator_deref<Container>>>{}))
-    {
+    auto accumulate(Container&& container) {
         return accumulate(std::forward<Container>(container),
                     std::plus<std::remove_reference_t<
                         iterator_deref<Container>>>{});
@@ -142,9 +138,7 @@ namespace iter {
     }
 
     template <typename T>
-    auto accumulate(std::initializer_list<T> il) ->
-        decltype(accumulate(std::move(il), std::plus<T>{}))
-    {
+    auto accumulate(std::initializer_list<T> il) {
         return accumulate(std::move(il), std::plus<T>{});
     }
 
