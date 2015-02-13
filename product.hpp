@@ -145,7 +145,7 @@ namespace iter {
                     }
 
                     std::tuple<> operator*() const {
-                        return std::tuple<>{};
+                        return {};
                     }
             };
 
