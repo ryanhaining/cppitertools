@@ -49,14 +49,22 @@ namespace iter {
                 protected:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
+                    DerefHolder<iterator_deref<Container>> item;
                     FilterFunc filter_func;
+
+                    void inc_sub_iter() {
+                            ++this->sub_iter;
+                            if (this->sub_iter != this->sub_end) {
+                                this->item.reset(*this->sub_iter);
+                            }
+                    }
 
                     // increment until the iterator points to is true on the 
                     // predicate.  Called by constructor and operator++
                     void skip_failures() { 
                         while (this->sub_iter != this->sub_end
-                                && !this->filter_func(*this->sub_iter)) {
-                            ++this->sub_iter;
+                                && !this->filter_func(this->item.get())) {
+                            this->inc_sub_iter();
                         }
                     }
 
@@ -68,15 +76,18 @@ namespace iter {
                         sub_end{end},
                         filter_func(filter_func)
                     { 
+                        if (this->sub_iter != this->sub_end) {
+                            this->item.reset(*this->sub_iter);
+                        }
                         this->skip_failures();
                     } 
 
                     iterator_deref<Container> operator*() {
-                        return *this->sub_iter;
+                        return this->item.pull();
                     }
 
                     Iterator& operator++() { 
-                        ++this->sub_iter;
+                        this->inc_sub_iter();
                         this->skip_failures();
                         return *this;
                     }
