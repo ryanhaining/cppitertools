@@ -58,11 +58,11 @@ namespace iter {
                     }
 
                 public:
-                    Iterator(iterator_type<Container> iter,
-                            iterator_type<Container> end,
+                    Iterator(iterator_type<Container>&& iter,
+                            iterator_type<Container>&& end,
                             FilterFunc filter_func)
-                        : sub_iter{iter},
-                        sub_end{end},
+                        : sub_iter{std::move(iter)},
+                        sub_end{std::move(end)},
                         filter_func(filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
