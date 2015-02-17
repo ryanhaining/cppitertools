@@ -45,6 +45,7 @@ progs = Split(
     zip_longest
 
     iteratoriterator
+    mixed
     '''
 )
 
