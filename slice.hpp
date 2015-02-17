@@ -54,8 +54,8 @@ namespace iter {
                     DifferenceType step;
 
                 public:
-                    Iterator (iterator_type<Container> si,
-                            iterator_type<Container> se,
+                    Iterator (iterator_type<Container>&& si,
+                            iterator_type<Container>&& se,
                             DifferenceType start,
                             DifferenceType stop,
                             DifferenceType step)
