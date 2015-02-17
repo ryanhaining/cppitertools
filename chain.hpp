@@ -50,12 +50,12 @@ namespace iter {
                     bool at_end;
 
                 public:
-                    Iterator(const iterator_type<Container>& s_begin,
-                            const iterator_type<Container>& s_end,
-                            RestIter rest_iter)
-                        : sub_iter{s_begin},
-                        sub_end{s_end},
-                        rest_iter{rest_iter},
+                    Iterator(iterator_type<Container>&& s_begin,
+                            iterator_type<Container>&& s_end,
+                            RestIter&& rest_iter)
+                        : sub_iter{std::move(s_begin)},
+                        sub_end{std::move(s_end)},
+                        rest_iter{std::move(rest_iter)},
                         at_end{!(sub_iter != sub_end)}
                     { }
                     
@@ -211,10 +211,10 @@ namespace iter {
                    }
 
                 public:
-                   Iterator(iterator_type<Container> top_iter,
-                           iterator_type<Container> top_end)
-                       : top_level_iter{top_iter},
-                       top_level_end{top_end},
+                   Iterator(iterator_type<Container>&& top_iter,
+                           iterator_type<Container>&& top_end)
+                       : top_level_iter{std::move(top_iter)},
+                       top_level_end{std::move(top_end)},
                        sub_iter_p{!(top_iter != top_end) ?  // iter == end ?
                            nullptr : new SubIter{std::begin(*top_iter)}},
                        sub_end_p{!(top_iter != top_end) ?  // iter == end ?
