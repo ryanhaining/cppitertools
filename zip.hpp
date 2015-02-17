@@ -48,9 +48,9 @@ namespace iter {
                     RestIter rest_iter;
                 public:
                     constexpr static const bool is_base_iter = false;
-                    Iterator(iterator_type<Container> it, const RestIter& rest)
-                        : iter{it},
-                        rest_iter{rest}
+                    Iterator(iterator_type<Container>&& it, RestIter&& rest)
+                        : iter{std::move(it)},
+                        rest_iter{std::move(rest)}
                     { }
 
                     Iterator& operator++() {
