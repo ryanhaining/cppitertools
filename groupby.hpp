@@ -66,11 +66,11 @@ namespace iter {
                     KeyFunc key_func;
 
                 public:
-                    Iterator (iterator_type<Container> si,
-                              iterator_type<Container> end,
+                    Iterator(iterator_type<Container>&& si,
+                              iterator_type<Container>&& end,
                               KeyFunc key_func)
-                        : sub_iter{si},
-                        sub_end{end},
+                        : sub_iter{std::move(si)},
+                        sub_end{std::move(end)},
                         key_func(key_func)
                     { }
 
