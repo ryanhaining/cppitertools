@@ -35,7 +35,7 @@ namespace iter {
             template <typename T, typename AF>
             friend Accumulator<std::initializer_list<T>, AF> accumulate(
                     std::initializer_list<T>, AF);
-            
+
             // AccumVal must be default constructible
             using AccumVal =
                 typename std::remove_reference<
@@ -61,11 +61,11 @@ namespace iter {
                     AccumulateFunc accumulate_func;
                     AccumVal acc_val;
                 public:
-                    Iterator (iterator_type<Container> iter,
-                            iterator_type<Container> end,
+                    Iterator (iterator_type<Container>&& iter,
+                            iterator_type<Container>&& end,
                             AccumulateFunc accumulate_func)
-                        : sub_iter{iter},
-                        sub_end{end},
+                        : sub_iter{std::move(iter)},
+                        sub_end{std::move(end)},
                         accumulate_func(accumulate_func),
                         // only get first value if not an end iterator
                         acc_val(!(iter != end) ? AccumVal{} : *iter)
