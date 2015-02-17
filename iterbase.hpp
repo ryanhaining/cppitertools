@@ -11,8 +11,9 @@
 #include <utility>
 #include <iterator>
 #include <functional>
-#include <cstddef>
+#include <memory>
 #include <type_traits>
+#include <cstddef>
 
 namespace iter {
 
@@ -24,7 +25,7 @@ namespace iter {
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
     template <typename Container>
-    using iterator_deref = 
+    using iterator_deref =
         decltype(*std::declval<iterator_type<Container>&>());
 
     template <typename Container>
@@ -39,7 +40,7 @@ namespace iter {
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
     template <typename Container>
-    using reverse_iterator_deref = 
+    using reverse_iterator_deref =
         decltype(*std::declval<reverse_iterator_type<Container>&>());
 
     template <typename, typename =void>
@@ -118,9 +119,83 @@ namespace iter {
     struct are_same : std::true_type { };
 
     template <typename T, typename U, typename... Ts>
-    struct are_same<T, U, Ts...> 
+    struct are_same<T, U, Ts...>
         : std::integral_constant<bool,
             std::is_same<T, U>::value && are_same<T, Ts...>::value> { };
+
+    template <typename T, typename =void>
+    class DerefHolder {
+        private:
+            static_assert(!std::is_lvalue_reference<T>::value,
+                    "Non-lvalue-ref specialization used for lvalue ref type");
+            // it could still be an rvalue reference
+            using TPlain = typename std::remove_reference<T>::type;
+
+            std::unique_ptr<TPlain> item_p;
+
+        public:
+            explicit DerefHolder()
+                : item_p{nullptr}
+            { }
+
+            DerefHolder(const DerefHolder& other)
+                : item_p{new TPlain(*other.item_p)}
+            { }
+
+            DerefHolder& operator=(const DerefHolder& other) {
+                this->item_p.reset(new TPlain(*other.item_p));
+                return *this;
+            }
+
+            DerefHolder(DerefHolder&&) = default;
+            DerefHolder& operator=(DerefHolder&&) = default;
+            ~DerefHolder() = default;
+
+            TPlain& get() {
+                return *item_p;
+            }
+
+            T pull() {
+                return std::move(*item_p);
+                // NOTE should I reset the unique_ptr to nullptr here
+                // since its held item is now invalid anyway?
+            }
+
+            void reset(T&& item) {
+                item_p.reset(new TPlain(std::move(item)));
+            }
+    };
+
+
+    // Specialization for when T is an lvalue ref.  Keep this in mind
+    // wherever a T appears.
+    template <typename T>
+    class DerefHolder<T,
+        typename std::enable_if<std::is_lvalue_reference<T>::value>::type>
+    {
+        private:
+            static_assert(std::is_lvalue_reference<T>::value,
+                    "lvalue specialization handling non-lvalue-ref type");
+            typename std::remove_reference<T>::type *item_p;
+        public:
+            explicit DerefHolder()
+                : item_p{nullptr}
+            { }
+
+            T get() {
+                return *this->item_p;
+            }
+
+            T pull() {
+                return this->get();
+            }
+
+            void reset(T item) {
+                this->item_p = &item;
+            }
+    };
+
+
 }
 
 #endif
