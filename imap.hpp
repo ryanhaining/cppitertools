@@ -98,9 +98,9 @@ namespace iter {
                     ZippedIterType zipiter;
 
                 public:
-                    Iterator(MapFunc map_func, ZippedIterType zipiter) :
+                    Iterator(MapFunc map_func, ZippedIterType&& in_zipiter) :
                         map_func(map_func),
-                        zipiter(zipiter)
+                        zipiter(std::move(in_zipiter))
                     { } 
 
                     IMapIterDeref operator*() {
