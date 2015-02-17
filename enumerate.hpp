@@ -71,8 +71,8 @@ namespace iter {
                     iterator_type<Container> sub_iter;
                     std::size_t index;
                 public:
-                    Iterator(const iterator_type<Container>& si)
-                        : sub_iter{si},
+                    Iterator(iterator_type<Container>&& si)
+                        : sub_iter{std::move(si)},
                         index{0}
                     { } 
 
