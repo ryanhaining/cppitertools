@@ -40,8 +40,8 @@ namespace iter {
                     int steps{};
 
                 public:
-                    Iterator(iterator_type<Container> sub_iter,
-                            iterator_type<Container> sub_end)
+                    Iterator(iterator_type<Container>&& sub_iter,
+                            iterator_type<Container>&& sub_end)
                         : steps{ sub_iter != sub_end ? 0 : COMPLETE }
                     {
                         // done like this instead of using vector ctor with
