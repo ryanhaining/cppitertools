@@ -53,9 +53,9 @@ namespace iter {
                     RestIter rest_end;
                 public:
                     constexpr static const bool is_base_iter = false;
-                    Iterator(iterator_type<Container> it,
-                            const RestIter& rest,
-                            const RestIter& in_rest_end)
+                    Iterator(const iterator_type<Container>& it,
+                            RestIter&& rest,
+                            RestIter&& in_rest_end)
                         : iter{it},
                         begin{it},
                         rest_iter{rest},
