@@ -1,16 +1,12 @@
 // mixing different itertools, there is nothing called iter::mixed()
 
 
-#include "imap.hpp"
-#include "filter.hpp"
+#include "itertools.hpp"
 
 #include "catch.hpp"
 
 #include <iostream>
 #include <vector>
-
-using iter::filter;
-using iter::imap;
 
 class MyUnMovable {
     int val;
@@ -42,13 +38,7 @@ public:
     }
 };
 
-TEST_CASE("imap and filter where imap Functor modifies its sequence",
-    "[imap][filter]") {
-
-    // source data
-    std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
-
-    // some transformations
+namespace {
     auto inc_ten = [](MyUnMovable& el) -> MyUnMovable& {
         int va = el.get_val();
         el.set_val(va + 10);
@@ -59,6 +49,14 @@ TEST_CASE("imap and filter where imap Functor modifies its sequence",
         el.set_val(va - 10);
         return el;
     };
+}
+
+TEST_CASE("filtering doesn't dereference multiple times", "[imap][filter]") {
+    using iter::filter;
+    using iter::imap;
+
+    // source data
+    std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
 
     auto transformed1 = imap(inc_ten, arr);
     auto filtered = filter([](const MyUnMovable& el) {
@@ -78,5 +76,28 @@ TEST_CASE("imap and filter where imap Functor modifies its sequence",
     REQUIRE( v == vc);
 
     constexpr std::array<MyUnMovable, 3> arrc = {{{41}, {52}, {43}}};
+    REQUIRE( arr == arrc );
+}
+
+TEST_CASE("dropwhile doesn't dereference multiple times", "[imap][dropwhile]"){
+    using iter::imap;
+    using iter::dropwhile;
+    // source data
+    std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
+
+    auto transformed1 = imap(inc_ten, arr);
+    auto filtered = dropwhile([](const MyUnMovable& el) {
+        return 52 != el.get_val();
+    }, transformed1);
+    auto transformed2 = imap(dec_ten, filtered);
+
+    std::vector<int> v;
+    for (auto&& el : transformed2) {
+        v.push_back(el.get_val());
+    }
+
+    std::vector<int> vc = {42, 43};
+
+    constexpr std::array<MyUnMovable, 3> arrc = {{{51}, {42}, {43}}};
     REQUIRE( arr == arrc );
 }
