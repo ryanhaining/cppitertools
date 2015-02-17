@@ -57,12 +57,12 @@ namespace iter {
 
                 public:
                     Iterator(
-                            iterator_type<Container> it,
-                            iterator_type<Container> in_end,
-                            const RestIter& rest)
-                        : iter{it},
-                        end{in_end},
-                        rest_iter{rest}
+                            iterator_type<Container>&& it,
+                            iterator_type<Container>&& in_end,
+                            RestIter&& rest)
+                        : iter{std::move(it)},
+                        end{std::move(in_end)},
+                        rest_iter{std::move(rest)}
                     { }
 
                     Iterator& operator++() {
