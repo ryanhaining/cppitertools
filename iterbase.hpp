@@ -123,6 +123,16 @@ namespace iter {
         : std::integral_constant<bool,
             std::is_same<T, U>::value && are_same<T, Ts...>::value> { };
 
+    // DerefHolder holds the value gotten from an iterator dereference
+    // if the iterate dereferences to an lvalue references, a pointer to the
+    //     element is stored
+    // if it does not, a value is stored instead
+    // get() returns a reference to the held item in either case
+    // pull() should be used when the item is being "pulled out" of the
+    //     DerefHolder.  after pull() is called, neither it nor get() can be
+    //     safely called after
+    // reset() replaces the currently held item and may be called after pull()
+
     template <typename T, typename =void>
     class DerefHolder {
         private:
@@ -135,11 +145,12 @@ namespace iter {
 
         public:
             DerefHolder(const DerefHolder& other)
-                : item_p{new TPlain(*other.item_p)}
+                : item_p{other.item_p ? new TPlain(*other.item_p) : nullptr}
             { }
 
             DerefHolder& operator=(const DerefHolder& other) {
-                this->item_p.reset(new TPlain(*other.item_p));
+                this->item_p.reset(other.item_p
+                        ? new TPlain(*other.item_p) : nullptr);
                 return *this;
             }
 
@@ -152,13 +163,17 @@ namespace iter {
             }
 
             T pull() {
-                return std::move(*item_p);
                 // NOTE should I reset the unique_ptr to nullptr here
                 // since its held item is now invalid anyway?
+                return std::move(*item_p);
             }
 
             void reset(T&& item) {
                 item_p.reset(new TPlain(std::move(item)));
+            }
+
+            explicit operator bool() const {
+                return this->item_p;
             }
     };
 
@@ -185,6 +200,10 @@ namespace iter {
 
             void reset(T item) {
                 this->item_p = &item;
+            }
+
+            explicit operator bool() const {
+                return this->item_p != nullptr;
             }
     };
 
