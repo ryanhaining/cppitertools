@@ -33,11 +33,11 @@ namespace iter {
                 : public std::iterator<std::input_iterator_tag, StarIterDeref>
             {
                 private:
-                    Func func;
+                    Func *func;
                     iterator_type<Container> sub_iter;
                 public:
                     Iterator(Func& f, iterator_type<Container> iter)
-                        : func(f),
+                        : func(&f),
                         sub_iter(iter)
                     { }
 
@@ -61,7 +61,7 @@ namespace iter {
                     }
 
                     decltype(auto) operator*() {
-                        return call_with_tuple(this->func, *this->sub_iter);
+                        return call_with_tuple(*this->func, *this->sub_iter);
                     }
             };
 
