@@ -46,7 +46,7 @@ namespace iter {
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
                     DerefHolder<iterator_deref<Container>> item;
-                    FilterFunc filter_func;
+                    FilterFunc *filter_func;
 
                     void inc_sub_iter() {
                             ++this->sub_iter;
@@ -58,7 +58,7 @@ namespace iter {
                     // skip all values for which the predicate is true
                     void skip_passes() { 
                         while (this->sub_iter != this->sub_end
-                                && this->filter_func(this->item.get())) {
+                                && (*this->filter_func)(this->item.get())) {
                             this->inc_sub_iter();
                         }
                     }
@@ -66,10 +66,10 @@ namespace iter {
                 public:
                     Iterator(iterator_type<Container>&& iter,
                             iterator_type<Container>&& end,
-                            FilterFunc filter_func)
+                            FilterFunc& filter_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
-                        filter_func(filter_func)
+                        filter_func(&filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
                             this->item.reset(*this->sub_iter);
