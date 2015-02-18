@@ -28,7 +28,6 @@
 #include "takewhile.hpp"
 #include "unique_everseen.hpp"
 #include "unique_justseen.hpp"
-#include "wrap_iter.hpp"
 #include "zip.hpp"
 #include "zip_longest.hpp"
 

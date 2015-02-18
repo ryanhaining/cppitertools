@@ -12,8 +12,9 @@
 #include <tuple>
 #include <iterator>
 #include <functional>
-#include <cstddef>
+#include <memory>
 #include <type_traits>
+#include <cstddef>
 
 namespace iter {
 
@@ -25,7 +26,7 @@ namespace iter {
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
     template <typename Container>
-    using iterator_deref = 
+    using iterator_deref =
         decltype(*std::declval<iterator_type<Container>&>());
 
     template <typename Container>
@@ -40,7 +41,7 @@ namespace iter {
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
     template <typename Container>
-    using reverse_iterator_deref = 
+    using reverse_iterator_deref =
         decltype(*std::declval<reverse_iterator_type<Container>&>());
 
     template <typename, typename =void>
@@ -119,7 +120,7 @@ namespace iter {
     struct are_same : std::true_type { };
 
     template <typename T, typename U, typename... Ts>
-    struct are_same<T, U, Ts...> 
+    struct are_same<T, U, Ts...>
         : std::integral_constant<bool,
             std::is_same<T, U>::value && are_same<T, Ts...>::value> { };
 
@@ -175,6 +176,91 @@ namespace iter {
                 std::forward<TupleType>(tup),
                 std::make_index_sequence<TUP_SIZE>{});
     }
+
+    // DerefHolder holds the value gotten from an iterator dereference
+    // if the iterate dereferences to an lvalue references, a pointer to the
+    //     element is stored
+    // if it does not, a value is stored instead
+    // get() returns a reference to the held item in either case
+    // pull() should be used when the item is being "pulled out" of the
+    //     DerefHolder.  after pull() is called, neither it nor get() can be
+    //     safely called after
+    // reset() replaces the currently held item and may be called after pull()
+
+    template <typename T, typename =void>
+    class DerefHolder {
+        private:
+            static_assert(!std::is_lvalue_reference<T>::value,
+                    "Non-lvalue-ref specialization used for lvalue ref type");
+            // it could still be an rvalue reference
+            using TPlain = typename std::remove_reference<T>::type;
+
+            std::unique_ptr<TPlain> item_p;
+
+        public:
+            DerefHolder(const DerefHolder& other)
+                : item_p{other.item_p ? new TPlain(*other.item_p) : nullptr}
+            { }
+
+            DerefHolder& operator=(const DerefHolder& other) {
+                this->item_p.reset(other.item_p
+                        ? new TPlain(*other.item_p) : nullptr);
+                return *this;
+            }
+
+            DerefHolder(DerefHolder&&) = default;
+            DerefHolder& operator=(DerefHolder&&) = default;
+            ~DerefHolder() = default;
+
+            TPlain& get() {
+                return *item_p;
+            }
+
+            T pull() {
+                // NOTE should I reset the unique_ptr to nullptr here
+                // since its held item is now invalid anyway?
+                return std::move(*item_p);
+            }
+
+            void reset(T&& item) {
+                item_p.reset(new TPlain(std::move(item)));
+            }
+
+            explicit operator bool() const {
+                return this->item_p;
+            }
+    };
+
+
+    // Specialization for when T is an lvalue ref.  Keep this in mind
+    // wherever a T appears.
+    template <typename T>
+    class DerefHolder<T,
+        typename std::enable_if<std::is_lvalue_reference<T>::value>::type>
+    {
+        private:
+            static_assert(std::is_lvalue_reference<T>::value,
+                    "lvalue specialization handling non-lvalue-ref type");
+
+            typename std::remove_reference<T>::type *item_p =nullptr;
+        public:
+            T get() {
+                return *this->item_p;
+            }
+
+            T pull() {
+                return this->get();
+            }
+
+            void reset(T item) {
+                this->item_p = &item;
+            }
+
+            explicit operator bool() const {
+                return this->item_p != nullptr;
+            }
+    };
+
 }
 
 #endif

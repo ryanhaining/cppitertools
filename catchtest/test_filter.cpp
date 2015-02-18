@@ -53,6 +53,14 @@ TEST_CASE("filter: handles different functor types", "[filter]") {
     }
 }
 
+TEST_CASE("filter: iterator with lambda can be assigned", "[filter]") {
+    Vec ns{};
+    auto ltf = [](int i) {return i < 5;};
+    auto f = filter(ltf, ns);
+    auto it = std::begin(f);
+    it = std::begin(f);
+}
+
 TEST_CASE("filter: using identity", "[filter]") {
     Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
     auto f = filter(ns);

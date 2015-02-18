@@ -48,13 +48,14 @@ namespace iter {
                     DerefVec window;
 
                 public:
-                    Iterator(const iterator_type<Container>& in_iter,
+                    Iterator(iterator_type<Container>&& in_iter,
                             const iterator_type<Container>& in_end,
                              std::size_t window_sz)
-                        : sub_iter(in_iter)
+                        : sub_iter(std::move(in_iter))
                     {
                         std::size_t i{0};
-                        while (i < window_sz && this->sub_iter != in_end) {
+                        while (i < window_sz
+                                && this->sub_iter != in_end) {
                             this->window.get().push_back(this->sub_iter);
                             ++i;
                             if (i != window_sz) ++this->sub_iter;

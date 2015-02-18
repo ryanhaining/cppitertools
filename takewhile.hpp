@@ -48,35 +48,43 @@ namespace iter {
                 private:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
-                    FilterFunc filter_func;
+                    DerefHolder<iterator_deref<Container>> item;
+                    FilterFunc *filter_func;
+
+                    void inc_sub_iter() {
+                        ++this->sub_iter;
+                        if (this->sub_iter != this->sub_end) {
+                            this->item.reset(*this->sub_iter);
+                        }
+                    }
 
                     void check_current() {
                         if (this->sub_iter != this->sub_end
-                                && !this->filter_func(*this->sub_iter)) {
+                                && !(*this->filter_func)(this->item.get())) {
                             this->sub_iter = this->sub_end;
                         }
                     }
 
                 public:
-                    Iterator(iterator_type<Container> iter,
-                            iterator_type<Container> end,
-                            FilterFunc filter_func)
-                        : sub_iter{iter},
-                        sub_end{end},
-                        filter_func(filter_func)
+                    Iterator(iterator_type<Container>&& iter,
+                            iterator_type<Container>&& end,
+                            FilterFunc& filter_func)
+                        : sub_iter{std::move(iter)},
+                        sub_end{std::move(end)},
+                        filter_func(&filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
-                            // only do the check if not already at the end
-                            this->check_current();
+                            this->item.reset(*this->sub_iter);
                         }
+                        this->check_current();
                     } 
 
                     iterator_deref<Container> operator*() {
-                        return *this->sub_iter;
+                        return this->item.pull();
                     }
 
                     Iterator& operator++() { 
-                        ++this->sub_iter;
+                        this->inc_sub_iter();
                         this->check_current();
                         return *this;
                     }

@@ -89,14 +89,14 @@ namespace iter {
                     }
 
                 public:
-                    Iterator(iterator_type<Container> cont_iter,
-                            iterator_type<Container> cont_end,
-                            selector_iter_type sel_iter,
-                            selector_iter_type sel_end)
-                        : sub_iter{cont_iter},
-                        sub_end{cont_end},
-                        selector_iter{sel_iter},
-                        selector_end{sel_end}
+                    Iterator(iterator_type<Container>&& cont_iter,
+                            iterator_type<Container>&& cont_end,
+                            selector_iter_type&& sel_iter,
+                            selector_iter_type&& sel_end)
+                        : sub_iter{std::move(cont_iter)},
+                        sub_end{std::move(cont_end)},
+                        selector_iter{std::move(sel_iter)},
+                        selector_end{std::move(sel_end)}
                     { 
                         this->skip_failures();
                     } 

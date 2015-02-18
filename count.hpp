@@ -7,13 +7,6 @@
 
 namespace iter {
 
-    using DefaultRangeType = long;
-
-    auto count() {
-        return range(DefaultRangeType(0),
-                std::numeric_limits<DefaultRangeType>::max());
-    }
-
     template <typename T>
     auto count(T start, T step) {
         // if step is < 0, set the stop to numeric min, otherwise numeric max
@@ -22,8 +15,8 @@ namespace iter {
         return range(start, stop, step);
     }
 
-    template <typename T>
-    auto count(T start) {
+    template <typename T =long>
+    auto count(T start =T(0)) {
         return count(start, T(1));
     }
 }

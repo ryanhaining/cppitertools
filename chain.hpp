@@ -206,10 +206,10 @@ constexpr std::array<
                    }
 
                 public:
-                   Iterator(iterator_type<Container> top_iter,
-                           iterator_type<Container> top_end)
-                       : top_level_iter{top_iter},
-                       top_level_end{top_end},
+                   Iterator(iterator_type<Container>&& top_iter,
+                           iterator_type<Container>&& top_end)
+                       : top_level_iter{std::move(top_iter)},
+                       top_level_end{std::move(top_end)},
                        sub_iter_p{!(top_iter != top_end) ?  // iter == end ?
                            nullptr : new SubIter{std::begin(*top_iter)}},
                        sub_end_p{!(top_iter != top_end) ?  // iter == end ?

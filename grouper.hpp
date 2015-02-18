@@ -67,8 +67,8 @@ namespace iter {
                     }
 
                 public: 
-                    Iterator(iterator_type<Container> in_iter,
-                            iterator_type<Container> in_end,
+                    Iterator(iterator_type<Container>&& in_iter,
+                            iterator_type<Container>&& in_end,
                             std::size_t s)
                         : sub_iter{std::move(in_iter)},
                         sub_end{std::move(in_end)},

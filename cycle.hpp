@@ -43,11 +43,11 @@ namespace iter {
                     iterator_type<Container> begin;
                     iterator_type<Container> end;
                 public:
-                    Iterator (iterator_type<Container> iter,
-                            iterator_type<Container> end)
+                    Iterator (const iterator_type<Container>& iter,
+                            iterator_type<Container>&& end)
                         : sub_iter{iter},
                         begin{iter},
-                        end{end}
+                        end{std::move(end)}
                     { } 
 
                     iterator_deref<Container> operator*() {

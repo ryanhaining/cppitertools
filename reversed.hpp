@@ -32,8 +32,8 @@ namespace iter {
                 private:
                     reverse_iterator_type<Container> sub_iter;
                 public:
-                    Iterator (reverse_iterator_type<Container> iter)
-                        : sub_iter{iter}
+                    Iterator (reverse_iterator_type<Container>&& iter)
+                        : sub_iter{std::move(iter)}
                     { } 
 
                     reverse_iterator_deref<Container> operator*() {
