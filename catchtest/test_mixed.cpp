@@ -82,7 +82,7 @@ TEST_CASE("filtering doesn't dereference multiple times", "[imap][filter]") {
 TEST_CASE("dropwhile doesn't dereference multiple times", "[imap][dropwhile]"){
     using iter::imap;
     using iter::dropwhile;
-    // source data
+
     std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
 
     auto transformed1 = imap(inc_ten, arr);
@@ -99,6 +99,31 @@ TEST_CASE("dropwhile doesn't dereference multiple times", "[imap][dropwhile]"){
     std::vector<int> vc = {42, 43};
 
     std::vector<int> vsc = {51, 42, 43};
+    auto get_vals = imap([](const MyUnMovable& mv){return mv.get_val();}, arr);
+    std::vector<int> vs(std::begin(get_vals), std::end(get_vals));
+    REQUIRE( vs == vsc );
+}
+
+TEST_CASE("takewhile doesn't dereference multiple times", "[imap][takewhile]"){
+    using iter::imap;
+    using iter::takewhile;
+
+    std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
+
+    auto transformed1 = imap(inc_ten, arr);
+    auto filtered = takewhile([](const MyUnMovable& el) {
+        return 53 != el.get_val();
+    }, transformed1);
+    auto transformed2 = imap(dec_ten, filtered);
+
+    std::vector<int> v;
+    for (auto&& el : transformed2) {
+        v.push_back(el.get_val());
+    }
+
+    std::vector<int> vc = {41, 42};
+
+    std::vector<int> vsc = {41, 42, 53};
     auto get_vals = imap([](const MyUnMovable& mv){return mv.get_val();}, arr);
     std::vector<int> vs(std::begin(get_vals), std::end(get_vals));
     REQUIRE( vs == vsc );
