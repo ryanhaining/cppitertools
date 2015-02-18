@@ -49,7 +49,7 @@ namespace iter {
                         return !(*this != other);
                     }
 
-                    Iterator operator++() {
+                    Iterator& operator++() {
                         ++this->sub_iter;
                         return *this;
                     }
@@ -131,13 +131,23 @@ namespace iter {
                         return callers[this->index](this->func, this->tup);
                     }
 
-                    Iterator operator++() {
+                    Iterator& operator++() {
                         ++this->index;
                         return *this;
                     }
 
+                    Iterator operator++(int) {
+                        auto ret = *this;
+                        ++*this;
+                        return ret;
+                    }
+
                     bool operator!=(const Iterator& other) const {
                         return this->index != other.index;
+                    }
+
+                    bool operator==(const Iterator& other) const {
+                        return !(*this != other);
                     }
             };
 
