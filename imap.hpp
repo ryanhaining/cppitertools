@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <type_traits>
+#include <tuple>
 
 namespace iter {
 
@@ -17,14 +18,21 @@ namespace iter {
             -> decltype(Expander<Index-1, Functor, Tup>::call(
                     std::forward<Functor>(f),
                     std::forward<Tup>(tup),
-                    std::get<Index-1>(tup),
+                    std::forward<
+                        typename std::tuple_element<Index-1,
+                            typename std::remove_reference<Tup>::type>::type>(
+                        std::get<Index-1>(tup)),
                     std::forward<Ts>(args)...))
         {
             // recurse
             return Expander<Index-1, Functor, Tup>::call(
                     std::forward<Functor>(f),
                     std::forward<Tup>(tup),
-                    std::get<Index-1>(tup), // pull out one element
+                    // pull out one element
+                    std::forward<
+                        typename std::tuple_element<Index-1,
+                            typename std::remove_reference<Tup>::type>::type>(
+                        std::get<Index-1>(tup)),
                     std::forward<Ts>(args)...); // everything already expanded
         }
     };
