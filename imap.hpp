@@ -94,18 +94,18 @@ namespace iter {
                     typename std::remove_reference<IMapIterDeref>::type >
             {
                 private:
-                    MapFunc map_func;
+                    MapFunc *map_func;
                     ZippedIterType zipiter;
 
                 public:
-                    Iterator(MapFunc map_func, ZippedIterType&& in_zipiter) :
-                        map_func(map_func),
+                    Iterator(MapFunc& map_func, ZippedIterType&& in_zipiter) :
+                        map_func(&map_func),
                         zipiter(std::move(in_zipiter))
                     { } 
 
                     IMapIterDeref operator*() {
                         return detail::call_with_tuple(
-                                this->map_func, *(this->zipiter));
+                                *this->map_func, *(this->zipiter));
                     }
 
                     Iterator& operator++() { 
