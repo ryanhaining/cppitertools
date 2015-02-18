@@ -198,6 +198,7 @@ namespace iter {
             std::unique_ptr<TPlain> item_p;
 
         public:
+            DerefHolder() = default;
             DerefHolder(const DerefHolder& other)
                 : item_p{other.item_p ? new TPlain(*other.item_p) : nullptr}
             { }
@@ -244,6 +245,7 @@ namespace iter {
 
             typename std::remove_reference<T>::type *item_p =nullptr;
         public:
+            DerefHolder() = default;
             T get() {
                 return *this->item_p;
             }
