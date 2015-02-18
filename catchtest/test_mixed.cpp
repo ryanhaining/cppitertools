@@ -98,6 +98,8 @@ TEST_CASE("dropwhile doesn't dereference multiple times", "[imap][dropwhile]"){
 
     std::vector<int> vc = {42, 43};
 
-    constexpr std::array<MyUnMovable, 3> arrc = {{{51}, {42}, {43}}};
-    REQUIRE( arr == arrc );
+    std::vector<int> vsc = {51, 42, 43};
+    auto get_vals = imap([](const MyUnMovable& mv){return mv.get_val();}, arr);
+    std::vector<int> vs(std::begin(get_vals), std::end(get_vals));
+    REQUIRE( vs == vsc );
 }
