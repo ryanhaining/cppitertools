@@ -162,7 +162,10 @@ namespace iter {
         template <typename Func, typename TupleType, std::size_t... Is>
         decltype(auto) call_with_tuple_impl(Func&& mf, TupleType&& tup,
                 std::index_sequence<Is...>) {
-            return mf(std::get<Is>(tup)...);
+            return mf(std::forward<
+                        std::tuple_element_t<
+                            Is, std::remove_reference_t<TupleType>>
+                        >(std::get<Is>(tup))...);
         }
     }
 
