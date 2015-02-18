@@ -36,9 +36,9 @@ namespace iter {
                     Func *func;
                     iterator_type<Container> sub_iter;
                 public:
-                    Iterator(Func& f, iterator_type<Container> iter)
+                    Iterator(Func& f, iterator_type<Container>&& iter)
                         : func(&f),
-                        sub_iter(iter)
+                        sub_iter(std::move(iter))
                     { }
 
                     bool operator!=(const Iterator& other) const {
