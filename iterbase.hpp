@@ -134,10 +134,6 @@ namespace iter {
             std::unique_ptr<TPlain> item_p;
 
         public:
-            explicit DerefHolder()
-                : item_p{nullptr}
-            { }
-
             DerefHolder(const DerefHolder& other)
                 : item_p{new TPlain(*other.item_p)}
             { }
@@ -176,12 +172,9 @@ namespace iter {
         private:
             static_assert(std::is_lvalue_reference<T>::value,
                     "lvalue specialization handling non-lvalue-ref type");
-            typename std::remove_reference<T>::type *item_p;
-        public:
-            explicit DerefHolder()
-                : item_p{nullptr}
-            { }
 
+            typename std::remove_reference<T>::type *item_p =nullptr;
+        public:
             T get() {
                 return *this->item_p;
             }
