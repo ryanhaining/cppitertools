@@ -2,6 +2,8 @@
 #define TEST_HELPER_H_
 
 #include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 namespace itertest {
 
@@ -24,6 +26,57 @@ class SolidInt {
         SolidInt& operator=(SolidInt&&) = delete;
         SolidInt(SolidInt&&) = delete;
 };
+
+namespace {
+    struct DoubleDereferenceError : std::exception {
+        const char *what() const noexcept override {
+            return "Iterator dereferenced twice without increment";
+        }
+    };
+
+    // this class's iterator will throw if it's dereference twice without
+    // an increment in between
+    class InputIterable {
+        public:
+            class Iterator {
+                private:
+                    int i;
+                    bool was_incremented = true;
+
+                public:
+                    Iterator(int n)
+                        : i{n}
+                    { }
+
+                    Iterator& operator++() {
+                        ++this->i;
+                        this->was_incremented = true;
+                        return *this;
+                    }
+
+                    int operator*() {
+                        if (!this->was_incremented) {
+                            throw DoubleDereferenceError{};
+                        }
+                        this->was_incremented = false;
+                        return this->i;
+                    }
+
+                    bool operator!=(const Iterator& other) const {
+                        return this->i != other.i;
+                    }
+            };
+
+            Iterator begin() {
+                return {0};
+            }
+
+            Iterator end() {
+                return {3};
+            }
+    };
+}
+
 
 
 // BasicIterable provides a minimal forward iterator
@@ -116,6 +169,30 @@ class BasicIterable {
             return {this->data + this->size};
         }
 };
+
+
+// gcc CWG 1558
+template <typename...>
+struct void_t_help {
+    using type = void;
+};
+template <typename... Ts>
+
+using void_t = typename void_t_help<Ts...>::type;
+
+template <typename, typename =void>
+struct IsIterator : std::false_type { };
+
+template <typename T>
+struct IsIterator <T, void_t<
+        decltype(T(std::declval<const T&>())), // copyctor
+        decltype(std::declval<T&>() = std::declval<const T&>()), // copy =
+        decltype(*std::declval<T&>()), // operator*
+        decltype(++std::declval<T&>()), // prefix ++
+        decltype(std::declval<T&>()++), // postfix ++
+        decltype(std::declval<const T&>() != std::declval<const T&>()), //  !=
+        decltype(std::declval<const T&>() == std::declval<const T&>()) //  ==
+    >> : std::true_type { };
 
 }
 
