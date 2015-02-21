@@ -155,7 +155,7 @@ TEST_CASE("groupby: inner iterator (group) not used", "[groupby]") {
 
 TEST_CASE("groupby: doesn't double dereference", "[groupby]") {
     itertest::InputIterable seq;
-    for (auto&& kg : groupby(seq)) {
+    for (auto&& kg : groupby(seq, [](int i){return i < 3;})) {
         for (auto&& e : kg.second) {
             (void)e;
         }
