@@ -47,7 +47,7 @@ namespace iter {
                         typename Productor<RestContainers...>::Iterator;
 
                     iterator_type<Container> iter;
-                    const iterator_type<Container> begin;
+                    iterator_type<Container> begin;
 
                     RestIter rest_iter;
                     RestIter rest_end;
