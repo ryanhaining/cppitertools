@@ -152,3 +152,12 @@ TEST_CASE("groupby: inner iterator (group) not used", "[groupby]") {
     std::vector<int> kc = {2, 3, 5};
     REQUIRE( keys == kc );
 }
+
+TEST_CASE("groupby: doesn't double dereference", "[groupby]") {
+    itertest::InputIterable seq;
+    for (auto&& kg : groupby(seq)) {
+        for (auto&& e : kg.second) {
+            (void)e;
+        }
+    }
+}
