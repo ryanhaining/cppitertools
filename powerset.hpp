@@ -31,7 +31,7 @@ namespace iter {
                 private:
                     typename std::remove_reference<Container>::type *container_p;
                     std::size_t set_size;
-                    std::unique_ptr<CombinatorType> comb;
+                    std::shared_ptr<CombinatorType> comb;
                     iterator_type<CombinatorType> comb_iter;
                     iterator_type<CombinatorType> comb_end;
 
