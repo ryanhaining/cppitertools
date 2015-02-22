@@ -46,6 +46,7 @@ progs = Split(
 
     iteratoriterator
     mixed
+    helpers
     '''
 )
 
