@@ -71,7 +71,8 @@ namespace iter {
                     }
 
                     bool operator==(const Iterator& other) const {
-                        return this->set_size == other.set_size;
+                        return this->set_size == other.set_size
+                            && this->comb_iter == other.comb_iter;
                     }
             };
 
