@@ -161,3 +161,14 @@ TEST_CASE("groupby: doesn't double dereference", "[groupby]") {
         }
     }
 }
+
+TEST_CASE("groupby: iterator and groupiterator are correct", "[groupby]") {
+    std::string s{"abc"};
+    auto c = groupby(s);
+    auto it = std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(it)>::value );
+    auto&& gp = (*it).second;
+    auto it2 = std::begin(gp);
+    REQUIRE( itertest::IsIterator<decltype(it2)>::value );
+
+}
