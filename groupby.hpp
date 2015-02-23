@@ -179,7 +179,7 @@ namespace iter {
                                 iterator_traits_deref<Container>>
                     {
                         private:
-                            typename std::remove_reference<key_func_ret>::type  *key;
+                            std::remove_reference_t<key_func_ret> *key;
                             Group *group_p;
 
                             bool not_at_end() {
