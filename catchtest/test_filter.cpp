@@ -109,3 +109,9 @@ TEST_CASE("filter: doesn't move or copy elements of iterable", "[filter]") {
         (void)i;
     }
 }
+
+TEST_CASE("filter: iterator meets requirements", "[filter]") {
+    std::string s{};
+    auto c = filter([]{return true;}, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

@@ -114,3 +114,10 @@ TEST_CASE("Doesn't move or copy elements of iterable", "[enumerate]") {
         (void)i;
     }
 }
+
+
+TEST_CASE("enumerate: iterator meets requirements", "[enumerate]") {
+    std::string s{};
+    auto c = enumerate(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
