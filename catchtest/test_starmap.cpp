@@ -102,3 +102,10 @@ TEST_CASE("starmap: iterator meets requirements", "[starmap]") {
     auto sm = starmap([](long a, int b) { return a * b; }, v1);
     REQUIRE( itertest::IsIterator<decltype(std::begin(sm))>::value );
 }
+
+TEST_CASE("starmap:  tuple of tuples iterator meets requirements",
+        "[starmap]") {
+    auto tup = std::make_tuple(std::make_tuple(10, 19, 60),std::make_tuple(7));
+    auto sm = starmap(Callable{}, tup);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(sm))>::value );
+}
