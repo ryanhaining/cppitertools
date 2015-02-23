@@ -98,3 +98,11 @@ TEST_CASE("powerset: doesn't move or copy elements of iterable", "[powerset]"){
         }
     }
 }
+
+TEST_CASE("powerset: iterator meets requirements", "[powerset]") {
+    std::string s{"abc"};
+    auto c = powerset(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto&& row = *std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(row))>::value );
+}
