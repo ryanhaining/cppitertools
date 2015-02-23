@@ -141,3 +141,11 @@ TEST_CASE("zip_longest: doesn't move or copy elements", "[zip_longest]") {
         (void)std::get<0>(t);
     }
 }
+
+TEST_CASE("zip_longest: iterator meets requirements", "[zip_longest]") {
+    std::string s{};
+    auto c = zip_longest(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto c2 = zip_longest(s, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c2))>::value );
+}
