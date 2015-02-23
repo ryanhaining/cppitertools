@@ -95,3 +95,10 @@ TEST_CASE("starmap: moves rvalues, binds to lvalues", "[starmap]") {
     starmap(Callable{}, std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("starmap: iterator meets requirements", "[starmap]") {
+    std::string s{};
+    const std::vector<std::pair<double, int>> v1;
+    auto sm = starmap([](long a, int b) { return a * b; }, v1);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(sm))>::value );
+}
