@@ -143,6 +143,12 @@ TEST_CASE("chain: postfix ++", "[chain]") {
     REQUIRE( *it == 'b');
 }
 
+TEST_CASE("chain: iterator meets requirements", "[chain]") {
+    Vec ns{};
+    auto c = chain(ns, ns);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
+
 
 TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
     std::vector<std::string> sv{"abc", "xyz"};
@@ -194,8 +200,16 @@ TEST_CASE("chain.from_iterable: moves rvalues and binds ref to lvalues",
     }
 }
 
-TEST_CASE("chain.from_iterable: empty", "[empty]") {
+TEST_CASE("chain.from_iterable: empty", "[chain.from_iterable]") {
     const std::vector<std::string> v{};
     auto ch = chain.from_iterable(v);
     REQUIRE( std::begin(ch) == std::end(ch) );
+}
+
+
+TEST_CASE("chain.from_iterable: iterator meets requirements",
+        "[chain.from_iterable]") {
+    const std::vector<std::string> v{};
+    auto c = chain(v);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
 }
