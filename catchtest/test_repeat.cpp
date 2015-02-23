@@ -49,3 +49,7 @@ TEST_CASE("repeat: doesn't duplicate item", "[repeat]") {
     (void)*it;
 }
 
+TEST_CASE("repeat: iterator meets requirements", "[repeat]") {
+    auto r = repeat(1);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+}
