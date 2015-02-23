@@ -101,3 +101,9 @@ TEST_CASE("slice: with iterable doesn't move or copy elems", "[slice]") {
         (void)i;
     }
 }
+
+TEST_CASE("slice: iterator meets requirements", "[slice]") {
+    std::string s{"abcdef"};
+    auto c = slice(s, 1, 3);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
