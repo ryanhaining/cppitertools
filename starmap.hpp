@@ -116,19 +116,19 @@ namespace iter {
                 : public std::iterator<std::input_iterator_tag, TraitsValue> 
             {
                 private:
-                    Func& func;
-                    TupType& tup;
+                    Func *func;
+                    std::remove_reference_t<TupType> *tup;
                     std::size_t index;
 
                 public:
                     Iterator(Func& f, TupType& t, std::size_t i)
-                        : func{f},
-                        tup{t},
+                        : func{&f},
+                        tup{&t},
                         index{i}
                     { }
 
                     decltype(auto) operator*() {
-                        return callers[this->index](this->func, this->tup);
+                        return callers[this->index](*this->func, *this->tup);
                     }
 
                     Iterator& operator++() {
