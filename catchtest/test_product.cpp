@@ -113,3 +113,9 @@ TEST_CASE("product: doesn't move or copy elements of iterable", "[product]") {
         (void)std::get<0>(t);
     }
 }
+
+TEST_CASE("product: iterator meets requirements", "[product]") {
+    std::string s{"abc"};
+    auto c = product(s, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
