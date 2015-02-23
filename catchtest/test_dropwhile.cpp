@@ -83,3 +83,9 @@ TEST_CASE("dropwhile: doesn't move or copy elements of iterable",
         (void)i;
     }
 }
+
+TEST_CASE("dropwhile: iterator meets requirements", "[dropwhile]") {
+    std::string s{};
+    auto c = dropwhile([]{return true;}, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
