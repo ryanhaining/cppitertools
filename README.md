@@ -225,7 +225,7 @@ vector<string> vec = {
 for (auto&& gb : groupby(vec, [] (const string &s) {return s.length(); })) {
     cout << "key: " << gb.first << '\n';
     cout << "content: ";
-    for (auto s : gb.second) {
+    for (auto&& s : gb.second) {
         cout << s << "  ";
     }
     cout << '\n';
