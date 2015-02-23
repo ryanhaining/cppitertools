@@ -63,3 +63,9 @@ TEST_CASE("accumulate: postfix ++", "[accumulate]") {
     REQUIRE( *it == 5 );
 }
 
+
+TEST_CASE("accumulate: iterator meets requirements", "[accumulate]") {
+    Vec ns{};
+    auto a = accumulate(ns);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(a))>::value );
+}
