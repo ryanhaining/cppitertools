@@ -88,7 +88,7 @@ appears as:
 
 ```c++
 vector<int> vec{2, 4, 6, 8};
-for (auto e : enumerate(vec)) { 
+for (auto&& e : enumerate(vec)) { 
     cout << e.index
          << ": "
          << e.element
@@ -104,7 +104,7 @@ Called as `filter(predicate, iterable)`.  The predicate can be any callable.
 Prints values greater than 4:  `5 6 7 8`
 ```c++
 vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
-for (auto i : filter([] (int i) { return i > 4; }, vec)) {
+for (auto&& i : filter([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
@@ -114,7 +114,7 @@ If no predicate is passed, the elements themselves are tested for truth
 
 Prints only non-zero values.
 ```c++
-for(auto i : filter(vec)) {
+for(auto&& i : filter(vec)) {
     cout << i << '\n';
 }
 ```
@@ -126,7 +126,7 @@ Similar to filter, but only prints values that are false under the predicate.
 Prints values not greater than 4: `1 4 3 2 3 2 1 `
 ```c++
 vector<int> vec{1, 5, 4, 0, 6, 7, 3, 0, 2, 8, 3, 2, 1};
-for (auto i : filterfalse([] (int i) { return i > 4; }, vec)) {
+for (auto&& i : filterfalse([] (int i) { return i > 4; }, vec)) {
     cout << i <<'\n';
 }
 
@@ -136,7 +136,7 @@ If no predicate is passed, the elements themselves are tested for truth.
 
 Prints only zero values.
 ```c++
-for(auto i : filterfalse(vec)) {
+for(auto&& i : filterfalse(vec)) {
     cout << i << '\n';
 }
 ```
@@ -149,7 +149,7 @@ otherwise it will not be very efficient
 Example Usage:
 ```c++
 std::vector<int> v {1,2,3,4,3,2,1,5,6,7,7,8,9,8,9,6};                      
-for (auto i : unique_everseen(v)) {                                        
+for (auto&& i : unique_everseen(v)) {                                        
     std::cout << i << " ";                                                 
 }std::cout << std::endl; 
 ```
@@ -163,7 +163,7 @@ case it will be better and more efficient to use.
 Example Usage:
 ```c++
 std::vector<int> v {1,1,1,2,2,4,4,5,6,7,8,8,8,8,9,9};                          
-for (auto i : unique_justseen(v)) {                                            
+for (auto&& i : unique_justseen(v)) {                                            
     std::cout << i << " ";                                                     
 }std::cout << std::endl; 
 ```
@@ -176,7 +176,7 @@ the predicate is encountered.
 Prints `1 2 3 4`.  (5 is false under the predicate)
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1};
-for (auto i : takewhile([] (int i) {return i < 5;}, ivec)) {
+for (auto&& i : takewhile([] (int i) {return i < 5;}, ivec)) {
     cout << i << '\n';
 }
 ```
@@ -189,7 +189,7 @@ the predicate.
 Prints `5 6 7 1 2`
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6, 7, 1, 2};
-for (auto i : dropwhile([] (int i) {return i < 5;}, ivec)) {
+for (auto&& i : dropwhile([] (int i) {return i < 5;}, ivec)) {
     cout << i << '\n';
 }
 ```
@@ -203,7 +203,7 @@ Repeatedly produce all values of an iterable.  The loop will be infinite, so a
 Prints `1 2 3` repeatedly until `some_condition` is true
 ```c++
 vector<int> vec{1, 2, 3};
-for (auto i : cycle(vec)) {
+for (auto&& i : cycle(vec)) {
     cout << i << '\n';
     if (some_condition) {
         break;
@@ -222,7 +222,7 @@ vector<string> vec = {
     "abcde", "efghi"
 };
 
-for (auto gb : groupby(vec, [] (const string &s) {return s.length(); })) {
+for (auto&& gb : groupby(vec, [] (const string &s) {return s.length(); })) {
     cout << "key: " << gb.first << '\n';
     cout << "content: ";
     for (auto s : gb.second) {
@@ -242,7 +242,7 @@ Differs from `std::accumulate` (which in my humble opinion should be named
 can see all of the intermediate results.  By default, it keeps a running sum.
 Prints: `1 3 6 10 15`
 ```c++
-for (auto i : accumulate(range(1, 6))) {
+for (auto&& i : accumulate(range(1, 6))) {
     cout << i << '\n';
 }
 ```
@@ -252,7 +252,7 @@ than adding them.
 Prints: `1 2 6 24 120`
 
 ```c++
-for (auto i : accumulate(range(1, 6), std::multiplies<int>{})) {
+for (auto&& i : accumulate(range(1, 6), std::multiplies<int>{})) {
     cout << i << '\n';
 }
 ```
@@ -275,7 +275,7 @@ vector<float> f{1.2,1.4,12.3,4.5,9.9};
 vector<string> s{"i","like","apples","alot","dude"};             
 array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
 
-for (auto e : zip(i,f,s,d)) {                                        
+for (auto&& e : zip(i,f,s,d)) {                                        
     cout << std::get<0>(e) << ' '                                
          << std::get<1>(e) << ' '                                      
          << std::get<2>(e) << ' '                                      
@@ -302,7 +302,7 @@ sequence.
 Prints the squares of the numbers in vec: `1 4 9 16 25`
 ```c++
 vector<int> vec{1, 2, 3, 4, 5};
-for (auto i : imap([] (int x) {return x * x;}, vec)) {
+for (auto&& i : imap([] (int x) {return x * x;}, vec)) {
     cout << i << '\n';
 }
 ```
@@ -312,7 +312,7 @@ each vector together, printing `11 23 35 47 59 71`
 ```c++
 vector<int> vec1{1, 3, 5, 7, 9, 11};
 vector<int> vec2{10, 20, 30, 40, 50, 60};
-for (auto i : imap([] (int x, int y) { return x + y; }, vec1, vec2)) {
+for (auto&& i : imap([] (int x, int y) { return x + y; }, vec1, vec2)) {
     cout << i << '\n';
 }
 ```
@@ -332,7 +332,7 @@ Prints `2 6`
 ```c++
 vector<int> ivec{1, 2, 3, 4, 5, 6};
 vector<bool> bvec{false, true, false, false, false, true};
-for (auto i : compress(ivec, bvec) {
+for (auto&& i : compress(ivec, bvec) {
     cout << i << '\n';
 }
 ```
@@ -348,7 +348,7 @@ vector<int> empty{};
 vector<int> vec1{1,2,3,4,5,6};                                       
 array<int,4> arr1{{7,8,9,10}};                                       
 
-for (auto i : chain(empty,vec1,arr1)) {                             
+for (auto&& i : chain(empty,vec1,arr1)) {                             
     cout << i << '\n';                                          
 }
 ```
@@ -367,7 +367,7 @@ vector<vector<int>> matrix = {
     {6, 8, 9, 10, 11, 12}
 };
 
-for (auto i : chain.from_iterable(matrix)) {
+for (auto&& i : chain.from_iterable(matrix)) {
     cout << i << '\n';
 }
 ```
@@ -378,7 +378,7 @@ reversed
 Iterates over elements of a sequence in reverse order.
 
 ```c++
-for (auto i : reversed(a)) {                                          
+for (auto&& i : reversed(a)) {                                          
     cout << i << '\n';                                           
 }
 ```
@@ -392,7 +392,7 @@ the range returned is [start,stop) where you only take every step element
 This outputs `0 3 6 9 12`
 ```c++
 vector<int> a{0,1,2,3,4,5,6,7,8,9,10,11,12,13};
-for (auto i : slice(a,0,15,3)) {
+for (auto&& i : slice(a,0,15,3)) {
     cout << i << '\n';
 }
 ```
@@ -418,8 +418,8 @@ take a section of size 4, output is:
 Example Usage:
 ```c++
 std::vector<int> v = {1,2,3,4,5,6,7,8,9};                                      
-for (auto sec : sliding_window(v,4)) {                                         
-    for (auto i : sec) {                                                       
+for (auto&& sec : sliding_window(v,4)) {                                         
+    for (auto&& i : sec) {                                                       
         std::cout << i << " ";                                                 
         i.get() = 90; 
         //has to be accessed with get if you want to store references
@@ -438,11 +438,11 @@ section sliding by only 1 it goes the length of the full section.
 Example usage:
 ```c++
 std::vector<int> v {1,2,3,4,5,6,7,8,9};                                        
-for (auto sec : grouper(v,4)) 
+for (auto&& sec : grouper(v,4)) 
 //each section will have 4 elements
 //except the last one may be cut short
 {
-    for (auto i : sec) {                                                       
+    for (auto&& i : sec) {                                                       
         std::cout << i << " ";                                                 
         i.get() *= 2;                                                          
     }                                                                          
@@ -461,7 +461,7 @@ std::vector<int> v1{1,2,3};
 std::vector<int> v2{7,8};                                                      
 std::vector<std::string> v3{"the","cat"};                                      
 std::vector<std::string> v4{"hi","what","up","dude"}; 
-for (auto t : product(v1,v2,v3,v4)) {                                          
+for (auto&& t : product(v1,v2,v3,v4)) {                                          
     std::cout << std::get<0>(t) << ", "                                        
         << std::get<1>(t) << ", "                                              
         << std::get<2>(t) << ", "                                              
@@ -478,9 +478,9 @@ combinations_with_replacement
 Example usage:
 ```c++
 std::vector<int> v = {1,2,3,4,5};                                              
-for (auto i : combinations(v,3)) {                                             
+for (auto&& i : combinations(v,3)) {                                             
     //std::cout << i << std::endl;                                             
-    for (auto j : i ) std::cout << j << " ";                                   
+    for (auto&& j : i ) std::cout << j << " ";                                   
     std::cout<<std::endl;                                                      
 }
 ```
@@ -494,8 +494,8 @@ Generates all the permutations of a range using `std::next_permutation`
 Example usage:
 ```c++
 std::vector<int> v = {1,2,3,4,5};                                              
-for (auto vec : permutations(v)) {                                             
-    for (auto i : vec) {                                                       
+for (auto&& vec : permutations(v)) {                                             
+    for (auto&& i : vec) {                                                       
         std::cout << i << " ";                                                 
     }                                                                       
     std::cout << std::endl;                                                 
@@ -510,8 +510,8 @@ Generates every possible subset of a set, never run it since it runs in 𝚯(2^n
 Example usage:
 ```c++
 std::vector<int> vec {1,2,3,4,5,6,7,8,9};                                      
-for (auto v : powerset(vec)) {                                                 
-    for (auto i : v) std::cout << i << " ";                                    
+for (auto&& v : powerset(vec)) {                                                 
+    for (auto&& i : v) std::cout << i << " ";                                    
     std::cout << std::endl;                                                    
 }
 ```
