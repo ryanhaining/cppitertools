@@ -196,7 +196,7 @@ namespace iter {
             static_assert(!std::is_lvalue_reference<T>::value,
                     "Non-lvalue-ref specialization used for lvalue ref type");
             // it could still be an rvalue reference
-            using TPlain = typename std::remove_reference<T>::type;
+            using TPlain = std::remove_reference_t<T>;
 
             std::unique_ptr<TPlain> item_p;
 
@@ -247,7 +247,7 @@ namespace iter {
             static_assert(std::is_lvalue_reference<T>::value,
                     "lvalue specialization handling non-lvalue-ref type");
 
-            typename std::remove_reference<T>::type *item_p =nullptr;
+            std::remove_reference_t<T> *item_p =nullptr;
         public:
             DerefHolder() = default;
 
