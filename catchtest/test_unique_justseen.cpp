@@ -44,3 +44,9 @@ TEST_CASE("unique justseen: moves and binds correctly", "[unique_justseen]") {
     unique_justseen(std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("unique_justseen: iterator meets requirements", "[unique_justseen]") {
+    std::string s{};
+    auto c = unique_justseen(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
