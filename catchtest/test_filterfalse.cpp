@@ -92,3 +92,9 @@ TEST_CASE("filterfalse: all elements pass predicate", "[filterfalse]") {
 
     REQUIRE( std::begin(f) == std::end(f) );
 }
+
+TEST_CASE("filterfalse: iterator meets requirements", "[filterfalse]") {
+    std::string s{};
+    auto c = filterfalse([]{return true;}, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

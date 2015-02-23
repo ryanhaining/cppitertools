@@ -38,3 +38,9 @@ TEST_CASE("unique everseen: moves rvalues, binds to lvalues",
     unique_everseen(std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("unique_everseen: iterator meets requirements", "[unique_everseen]") {
+    std::string s{};
+    auto c = unique_everseen(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

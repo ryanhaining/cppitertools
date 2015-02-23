@@ -68,3 +68,11 @@ TEST_CASE("combinations: doesn't move or copy elements of iterable",
         (void)i;
     }
 }
+
+TEST_CASE("combinations: iterator meets requirements", "[combinations]") {
+    std::string s{"abc"};
+    auto c = combinations(s, 1);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto&& row = *std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(row))>::value );
+}

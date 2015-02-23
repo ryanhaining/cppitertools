@@ -32,24 +32,50 @@ TEST_CASE("powerset: empty sequence gives only empty set", "[powerset]") {
 }
 
 TEST_CASE("powerset: iterators can be compared", "[powerset]") {
-    const std::vector<int> ns = {1, 2};
+    std::vector<int> ns = {1, 2};
+    auto p = powerset(ns);
+    {
+        auto it = std::begin(p);
+        REQUIRE( it == std::begin(p) );
+        REQUIRE_FALSE( it != std::begin(p) );
+        REQUIRE( it != std::end(p) );
+        REQUIRE_FALSE( it == std::end(p) );
+        ++it;
+        REQUIRE_FALSE( it == std::begin(p) );
+        REQUIRE( it != std::begin(p) );
+        REQUIRE_FALSE( it == std::end(p) );
+        REQUIRE( it != std::end(p) );
+        ++it;
+        ++it;
+        ++it;
+        REQUIRE( it == std::end(p) );
+    }
+
+    ns.push_back(3);
+    {
+        auto it = std::begin(p);
+        auto it2 = std::begin(p);
+        std::advance(it, 4);
+        std::advance(it2, 4);
+        REQUIRE( it == it2 );
+        ++it2;
+        REQUIRE( it != it2 );
+    }
+
+}
+
+TEST_CASE("powerset: iterator copy ctor is correct", "[powerset]") {
+    // { {}, {1}, {2}, {1, 2} }
+    std::vector<int> ns = {1, 2};
     auto p = powerset(ns);
     auto it = std::begin(p);
-    REQUIRE( it == std::begin(p) );
-    REQUIRE_FALSE( it != std::begin(p) );
-    REQUIRE( it != std::end(p) );
-    REQUIRE_FALSE( it == std::end(p) );
-    ++it;
-    REQUIRE_FALSE( it == std::begin(p) );
-    REQUIRE( it != std::begin(p) );
-    REQUIRE_FALSE( it == std::end(p) );
-    REQUIRE( it != std::end(p) );
-    ++it;
-    ++it;
-    ++it;
-    REQUIRE( it == std::end(p) );
-    REQUIRE_FALSE( it != std::end(p) );
+    auto it2(it);
+    REQUIRE( it == it2 );
+    ++it2;
+    REQUIRE( it != it2 );
+    REQUIRE( std::begin(*it) == std::end(*it) );
 }
+
 
 
 TEST_CASE("powerset: binds to lvalues, moves rvalues", "[powerset]") {
@@ -71,4 +97,12 @@ TEST_CASE("powerset: doesn't move or copy elements of iterable", "[powerset]"){
             (void)i;
         }
     }
+}
+
+TEST_CASE("powerset: iterator meets requirements", "[powerset]") {
+    std::string s{"abc"};
+    auto c = powerset(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto&& row = *std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(row))>::value );
 }

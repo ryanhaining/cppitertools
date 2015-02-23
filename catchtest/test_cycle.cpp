@@ -50,3 +50,9 @@ TEST_CASE("cycle: doesn't move or copy elements of iterable",
     auto c = cycle(arr);
     *std::begin(c);
 }
+
+TEST_CASE("cycle: iterator meets requirements", "[cycle]") {
+    std::string s{};
+    auto c = cycle(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

@@ -4,6 +4,7 @@
 #include <iterator>
 #include <algorithm>
 
+#include "helpers.hpp"
 #include "catch.hpp"
 
 using Vec = const std::vector<int>;
@@ -189,4 +190,8 @@ TEST_CASE("range: using doubles detects empty ranges", "[range]") {
     auto r2 = range(0.0, 1.0, -1.0);
     REQUIRE(std::begin(r2) == std::end(r2));
 }
-    
+
+TEST_CASE("range: iterator meets requirements", "[range]") {
+    auto r = range(5);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+}

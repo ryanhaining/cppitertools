@@ -52,3 +52,8 @@ TEST_CASE("count: with step > 1", "[count]") {
     const std::vector<int> vc{10, 12, 14, 16};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("count: iterator meets requirements", "[count]") {
+    auto c = count();
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

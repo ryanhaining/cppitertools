@@ -95,3 +95,9 @@ TEST_CASE("takewhile: with iterable doesn't move or copy elements",
         (void)i;
     }
 }
+
+TEST_CASE("takewhile: iterator meets requirements", "[takewhile]") {
+    std::string s{};
+    auto c = takewhile([]{return true;}, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

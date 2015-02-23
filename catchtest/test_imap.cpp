@@ -121,3 +121,8 @@ TEST_CASE("imap: postfix ++", "[imap]") {
     REQUIRE( it == std::end(im) );
 }
 
+TEST_CASE("imap: iterator meets requirements", "[imap]") {
+    std::string s{};
+    auto c = imap([](char){return 1;}, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

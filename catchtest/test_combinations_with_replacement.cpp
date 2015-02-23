@@ -76,3 +76,12 @@ TEST_CASE("combinations_with_replacement: "
         (void)i;
     }
 }
+
+TEST_CASE("combinations_with_replacement: iterator meets requirements",
+        "[combinations_with_replacement]") {
+    std::string s{"abc"};
+    auto c = combinations_with_replacement(s, 1);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto&& row = *std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(row))>::value );
+}

@@ -80,3 +80,11 @@ TEST_CASE("permutations doesn't move or copy elements of iterable",
         (void)st;
     }
 }
+
+TEST_CASE("permutations: iterator meets requirements", "[permutations]") {
+    std::string s{"abc"};
+    auto c = permutations(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto&& row = *std::begin(c);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(row))>::value );
+}

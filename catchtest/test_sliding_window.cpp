@@ -99,3 +99,9 @@ TEST_CASE("sliding window: doesn't copy elements", "[sliding_window]") {
         (void)*std::begin(i);
     }
 }
+
+TEST_CASE("sliding_window: iterator meets requirements", "[sliding_window]") {
+    std::string s{"abcdef"};
+    auto c = sliding_window(s, 2);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

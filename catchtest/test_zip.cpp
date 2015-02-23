@@ -99,3 +99,11 @@ TEST_CASE("zip: postfix ++", "[zip]") {
     it++;
     REQUIRE( it == std::end(z) );
 }
+
+TEST_CASE("zip: iterator meets requirements", "[zip]") {
+    std::string s{};
+    auto c = zip(s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+    auto c2 = zip(s, s);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c2))>::value );
+}

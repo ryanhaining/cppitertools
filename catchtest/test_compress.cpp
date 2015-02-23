@@ -120,3 +120,10 @@ TEST_CASE("compress: nothing on empty data", "[compress]") {
     auto c = compress(ivec, bvec);
     REQUIRE( std::begin(c) == std::end(c) );
 }
+
+TEST_CASE("compress: iterator meets requirements", "[compress]") {
+    std::string s{};
+    std::vector<bool> bv;
+    auto c = compress(s, bv);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}

@@ -61,23 +61,28 @@ namespace iter {
             {
                 private:
                     iterator_type<Container> sub_iter;
-                    iterator_type<Container> sub_iter_peek;
                     iterator_type<Container> sub_end;
-                    KeyFunc key_func;
+                    DerefHolder<iterator_deref<Container>> item;
+                    KeyFunc *key_func;
 
                 public:
                     Iterator(iterator_type<Container>&& si,
                               iterator_type<Container>&& end,
-                              KeyFunc key_func)
+                              KeyFunc& key_func)
                         : sub_iter{std::move(si)},
                         sub_end{std::move(end)},
-                        key_func(key_func)
-                    { }
+                        key_func(&key_func)
+                    {
+                        if (this->sub_iter != this->sub_end) {
+                            this->item.reset(*this->sub_iter);
+                        }
+                    }
 
                     KeyGroupPair operator*() {
+                        // FIXME double deref
                         return {
-                            this->key_func(*this->sub_iter),
-                            Group{*this, this->key_func(*this->sub_iter)}
+                            (*this->key_func)(this->item.get()),
+                            Group{*this, (*this->key_func)(this->item.get())}
                         };
                     }
 
@@ -102,6 +107,9 @@ namespace iter {
                     void increment_iterator() {
                         if (this->sub_iter != this->sub_end) {
                             ++this->sub_iter;
+                            if (this->sub_iter != this->sub_end) {
+                                this->item.reset(*this->sub_iter);
+                            }
                         }
                     }
 
@@ -109,12 +117,13 @@ namespace iter {
                         return !(this->sub_iter != this->sub_end);
                     }
 
-                    iterator_deref<Container> current() {
-                        return *this->sub_iter;
+                    iterator_deref<Container> pull() {
+                        return this->item.pull();
                     }
 
+                    // FIXME double deref. Two deref holders?
                     key_func_ret next_key() {
-                        return this->key_func(*this->sub_iter);
+                        return (*this->key_func)(this->item.get());
                     }
             };
 
@@ -170,18 +179,18 @@ namespace iter {
                                 iterator_traits_deref<Container>>
                     {
                         private:
-                            key_func_ret key;
+                            typename std::remove_reference<key_func_ret>::type  *key;
                             Group *group_p;
 
                             bool not_at_end() {
                                 return !this->group_p->owner.exhausted()&&
-                                    this->group_p->owner.next_key() == this->key;
+                                    this->group_p->owner.next_key() == *this->key;
                             }
 
                         public:
                             GroupIterator(Group *in_group_p,
-                                          key_func_ret key)
-                                : key{key},
+                                          key_func_ret& key)
+                                : key{&key},
                                 group_p{in_group_p}
                             { }
 
@@ -209,7 +218,7 @@ namespace iter {
                             }
 
                             iterator_deref<Container> operator*() {
-                                return this->group_p->owner.current();
+                                return this->group_p->owner.pull();
                             }
                     };
 

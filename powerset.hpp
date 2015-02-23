@@ -31,7 +31,7 @@ namespace iter {
                 private:
                     std::remove_reference_t<Container> *container_p;
                     std::size_t set_size;
-                    std::unique_ptr<CombinatorType> comb;
+                    std::shared_ptr<CombinatorType> comb;
                     iterator_type<CombinatorType> comb_iter;
                     iterator_type<CombinatorType> comb_end;
 
@@ -71,7 +71,8 @@ namespace iter {
                     }
 
                     bool operator==(const Iterator& other) const {
-                        return this->set_size == other.set_size;
+                        return this->set_size == other.set_size
+                            && this->comb_iter == other.comb_iter;
                     }
             };
 

@@ -58,3 +58,9 @@ TEST_CASE("grouper: empty iterable gives empty grouper", "[grouper]") {
     auto g = grouper(ns, 1);
     REQUIRE( std::begin(g) == std::end(g) );
 }
+
+TEST_CASE("grouper: iterator meets requirements", "[grouper]") {
+    std::string s{};
+    auto c = grouper(s, 1);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
+}
