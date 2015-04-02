@@ -47,8 +47,8 @@ namespace iter {
             using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
 
             // Value constructor for use only in the enumerate function
-            Enumerable(Container&& container)
-                : container(std::forward<Container>(container))
+            Enumerable(Container&& in_container)
+                : container(std::forward<Container>(in_container))
             { }
             
         public:
