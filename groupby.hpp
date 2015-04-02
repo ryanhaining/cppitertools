@@ -35,9 +35,9 @@ namespace iter {
             using key_func_ret = typename
                 std::result_of<KeyFunc(iterator_deref<Container>)>::type;
 
-            GroupBy(Container&& container, KeyFunc key_func)
-                : container(std::forward<Container>(container)),
-                key_func(key_func)
+            GroupBy(Container&& in_container, KeyFunc in_key_func)
+                : container(std::forward<Container>(in_container)),
+                key_func(in_key_func)
             { }
 
         public:
@@ -68,10 +68,10 @@ namespace iter {
                 public:
                     Iterator(iterator_type<Container>&& si,
                               iterator_type<Container>&& end,
-                              KeyFunc& key_func)
+                              KeyFunc& in_key_func)
                         : sub_iter{std::move(si)},
                         sub_end{std::move(end)},
-                        key_func(&key_func)
+                        key_func(&in_key_func)
                     {
                         if (this->sub_iter != this->sub_end) {
                             this->item.reset(*this->sub_iter);
@@ -146,9 +146,9 @@ namespace iter {
                     // when called.
                     bool completed = false;
 
-                    Group(Iterator& owner, key_func_ret key) :
-                        owner(owner),
-                        key(key)
+                    Group(Iterator& in_owner, key_func_ret in_key) :
+                        owner(in_owner),
+                        key(in_key)
                     { }
 
                 public:
@@ -189,8 +189,8 @@ namespace iter {
 
                         public:
                             GroupIterator(Group *in_group_p,
-                                          key_func_ret& key)
-                                : key{&key},
+                                          key_func_ret& in_key)
+                                : key{&in_key},
                                 group_p{in_group_p}
                             { }
 
