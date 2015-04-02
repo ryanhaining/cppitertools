@@ -49,16 +49,16 @@ namespace iter {
             const T stop;
             const T step;
 
-            Range(T stop)
+            Range(T in_stop)
                 : start{0},
-                stop{stop},
+                stop{in_stop},
                 step{1}
             { }
 
-            Range(T start, T stop, T step =1)
-                : start{start},
-                stop{stop},
-                step{step}
+            Range(T in_start, T in_stop, T in_step =1)
+                : start{in_start},
+                stop{in_stop},
+                step{in_step}
             { }
 
         public:
@@ -82,9 +82,9 @@ namespace iter {
                             && !(this->step < 0 && this->value <= other.value);
                     }
                 public:
-                    Iterator(T val, T step)
+                    Iterator(T val, T in_step)
                         : value{val},
-                        step{step}
+                        step{in_step}
                     { }
 
                     T operator*() const {
@@ -152,16 +152,16 @@ namespace iter {
             const T stop;
             const T step;
 
-            Range(T stop)
+            Range(T in_stop)
                 : start{0},
-                stop{stop},
+                stop{in_stop},
                 step{1}
             { }
 
-            Range(T start, T stop, T step =1)
-                : start{start},
-                stop{stop},
-                step{step}
+            Range(T in_start, T in_stop, T in_step =1)
+                : start{in_start},
+                stop{in_stop},
+                step{in_step}
             { }
         public:
             class Iterator
@@ -174,10 +174,10 @@ namespace iter {
                     unsigned long steps_taken =0;
 
                 public:
-                    Iterator(T start, T step)
-                        : start{start},
-                        value{start},
-                        step{step}
+                    Iterator(T in_start, T in_step)
+                        : start{in_start},
+                        value{in_start},
+                        step{in_step}
                     { }
 
                     bool operator!=(const Iterator& other) const {
