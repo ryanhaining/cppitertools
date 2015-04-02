@@ -126,7 +126,7 @@ namespace iter {
                         return *this;
                     }
 
-                    constexpr Iterator operator++(int) {
+                    constexpr Iterator operator++(int) const {
                         return *this;
                     }
 
@@ -138,16 +138,16 @@ namespace iter {
                         return true;
                     }
 
-                    constexpr std::tuple<> operator*() {
+                    constexpr std::tuple<> operator*() const {
                         return {};
                     }
             };
 
-            constexpr Iterator begin() {
+            constexpr Iterator begin() const {
                 return {};
             }
 
-            constexpr Iterator end() {
+            constexpr Iterator end() const {
                 return {};
             }
     };
