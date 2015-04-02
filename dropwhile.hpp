@@ -32,9 +32,9 @@ namespace iter {
             friend DropWhile<FF, std::initializer_list<T>> dropwhile(
                     FF, std::initializer_list<T>);
             
-            DropWhile(FilterFunc filter_func, Container&& container)
-                : container(std::forward<Container>(container)),
-                filter_func(filter_func)
+            DropWhile(FilterFunc in_filter_func, Container&& in_container)
+                : container(std::forward<Container>(in_container)),
+                filter_func(in_filter_func)
             { }
 
         public:
@@ -66,10 +66,10 @@ namespace iter {
                 public:
                     Iterator(iterator_type<Container>&& iter,
                             iterator_type<Container>&& end,
-                            FilterFunc& filter_func)
+                            FilterFunc& in_filter_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
-                        filter_func(&filter_func)
+                        filter_func(&in_filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
                             this->item.reset(*this->sub_iter);
