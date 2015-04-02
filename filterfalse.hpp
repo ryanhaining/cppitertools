@@ -18,8 +18,8 @@ namespace iter {
                 FilterFunc filter_func;
 
             public:
-                PredicateFlipper(FilterFunc filter_func) :
-                    filter_func(filter_func)
+                PredicateFlipper(FilterFunc in_filter_func) :
+                    filter_func(in_filter_func)
                 { }
 
                 PredicateFlipper() = delete;
