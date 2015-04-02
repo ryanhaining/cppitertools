@@ -20,8 +20,8 @@ namespace iter {
             Container container;
             friend Reverser reversed<Container>(Container&&);
             
-            Reverser(Container&& container)
-                : container(std::forward<Container>(container))
+            Reverser(Container&& in_container)
+                : container(std::forward<Container>(in_container))
             { }
 
         public:
@@ -88,8 +88,8 @@ namespace iter {
             friend Reverser reversed<T, N>(T (&)[N]);
             
             // Value constructor for use only in the reversed function
-            Reverser(T *array)
-                : array{array}
+            Reverser(T *in_array)
+                : array{in_array}
             { }
 
         public:
