@@ -31,8 +31,8 @@ namespace iter {
         private:
             Container container;
             Zipped<RestContainers...> rest_zipped;
-            Zipped(Container&& container, RestContainers&&... rest)
-                : container(std::forward<Container>(container)),
+            Zipped(Container&& in_container, RestContainers&&... rest)
+                : container(std::forward<Container>(in_container)),
                 rest_zipped{std::forward<RestContainers>(rest)...}
             { }
 
