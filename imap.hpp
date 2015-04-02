@@ -91,9 +91,9 @@ namespace iter {
                         map_func, *std::begin(zipped)));
             
             // Value constructor for use only in the imap function
-            IMap(MapFunc map_func, Containers&& ... containers) :
-                map_func(map_func),
-                zipped(zip(std::forward<Containers>(containers)...))
+            IMap(MapFunc in_map_func, Containers&&... in_containers) :
+                map_func(in_map_func),
+                zipped(zip(std::forward<Containers>(in_containers)...))
             { }
 
         public:
@@ -106,8 +106,8 @@ namespace iter {
                     ZippedIterType zipiter;
 
                 public:
-                    Iterator(MapFunc& map_func, ZippedIterType&& in_zipiter) :
-                        map_func(&map_func),
+                    Iterator(MapFunc& in_map_func, ZippedIterType&& in_zipiter) :
+                        map_func(&in_map_func),
                         zipiter(std::move(in_zipiter))
                     { } 
 
