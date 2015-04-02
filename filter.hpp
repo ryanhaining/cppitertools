@@ -35,9 +35,9 @@ namespace iter {
                     FF, std::initializer_list<T>);
             
             // Value constructor for use only in the filter function
-            Filter(FilterFunc filter_func, Container&& container)
-                : container(std::forward<Container>(container)),
-                filter_func(filter_func)
+            Filter(FilterFunc in_filter_func, Container&& in_container)
+                : container(std::forward<Container>(in_container)),
+                filter_func(in_filter_func)
             { }
 
         public:
@@ -71,10 +71,10 @@ namespace iter {
                 public:
                     Iterator (iterator_type<Container> iter,
                             iterator_type<Container> end,
-                            FilterFunc& filter_func)
+                            FilterFunc& in_filter_func)
                         : sub_iter{iter},
                         sub_end{end},
-                        filter_func(&filter_func)
+                        filter_func(&in_filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
                             this->item.reset(*this->sub_iter);
