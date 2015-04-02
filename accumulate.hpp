@@ -46,9 +46,10 @@ namespace iter {
                     std::is_default_constructible<AccumVal>::value,
                     "Cannot accumulate a non-default constructible type");
 
-            Accumulator(Container&& container, AccumulateFunc accumulate_func)
-                : container(std::forward<Container>(container)),
-                accumulate_func(accumulate_func)
+            Accumulator(Container&& in_container,
+                    AccumulateFunc in_accumulate_func)
+                : container(std::forward<Container>(in_container)),
+                accumulate_func(in_accumulate_func)
             { }
         public:
 
@@ -63,10 +64,10 @@ namespace iter {
                 public:
                     Iterator (iterator_type<Container>&& iter,
                             iterator_type<Container>&& end,
-                            AccumulateFunc accumulate_func)
+                            AccumulateFunc in_accumulate_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
-                        accumulate_func(accumulate_func),
+                        accumulate_func(in_accumulate_func),
                         // only get first value if not an end iterator
                         acc_val(!(iter != end) ? AccumVal{} : *iter)
                     { } 
