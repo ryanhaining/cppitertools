@@ -33,9 +33,9 @@ namespace iter {
             friend TakeWhile<FF, std::initializer_list<T>> takewhile(
                     FF, std::initializer_list<T>);
 
-            TakeWhile(FilterFunc filter_func, Container&& container)
-                : container(std::forward<Container>(container)),
-                filter_func(filter_func)
+            TakeWhile(FilterFunc in_filter_func, Container&& in_container)
+                : container(std::forward<Container>(in_container)),
+                filter_func(in_filter_func)
             { }
 
 
@@ -68,10 +68,10 @@ namespace iter {
                 public:
                     Iterator(iterator_type<Container>&& iter,
                             iterator_type<Container>&& end,
-                            FilterFunc& filter_func)
+                            FilterFunc& in_filter_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
-                        filter_func(&filter_func)
+                        filter_func(&in_filter_func)
                     { 
                         if (this->sub_iter != this->sub_end) {
                             this->item.reset(*this->sub_iter);

@@ -57,9 +57,9 @@ namespace iter {
             using selector_iter_type = decltype(std::begin(selectors));
             
             // Value constructor for use only in the compress function
-            Compressed(Container&& container, Selector&& selectors)
-                : container(std::forward<Container>(container)),
-                selectors(std::forward<Selector>(selectors))
+            Compressed(Container&& in_container, Selector&& in_selectors)
+                : container(std::forward<Container>(in_container)),
+                selectors(std::forward<Selector>(in_selectors))
             { }
 
         public:

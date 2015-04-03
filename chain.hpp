@@ -168,8 +168,8 @@ constexpr std::array<
         private:
             Container container;
             friend class ChainMaker;
-            ChainedFromIterable(Container&& container)
-                : container(std::forward<Container>(container))
+            ChainedFromIterable(Container&& in_container)
+                : container(std::forward<Container>(in_container))
             { }
 
         public:

@@ -28,8 +28,8 @@ namespace iter {
 
             Container container;
             
-            Cycle(Container&& container)
-                : container(std::forward<Container>(container))
+            Cycle(Container&& in_container)
+                : container(std::forward<Container>(in_container))
             { }
 
         public:
@@ -44,10 +44,10 @@ namespace iter {
                     iterator_type<Container> end;
                 public:
                     Iterator (const iterator_type<Container>& iter,
-                            iterator_type<Container>&& end)
+                            iterator_type<Container>&& in_end)
                         : sub_iter{iter},
                         begin{iter},
-                        end{std::move(end)}
+                        end{std::move(in_end)}
                     { } 
 
                     iterator_deref<Container> operator*() {

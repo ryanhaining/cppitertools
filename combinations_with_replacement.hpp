@@ -37,8 +37,8 @@ namespace iter {
             combinations_with_replacement(
                     std::initializer_list<T>, std::size_t);
 
-           CombinatorWithReplacement(Container&& container, std::size_t n)
-               : container(std::forward<Container>(container)),
+           CombinatorWithReplacement(Container&& in_container, std::size_t n)
+               : container(std::forward<Container>(in_container)),
                length{n}
            { }
 

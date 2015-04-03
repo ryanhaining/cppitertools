@@ -31,8 +31,8 @@ namespace iter {
             friend SlidingWindow<std::initializer_list<T>> sliding_window(
                     std::initializer_list<T>, std::size_t);
 
-            SlidingWindow(Container&& container, std::size_t win_sz)
-                : container(std::forward<Container>(container)),
+            SlidingWindow(Container&& in_container, std::size_t win_sz)
+                : container(std::forward<Container>(in_container)),
                 window_size{win_sz}
             { }
 

@@ -33,12 +33,12 @@ namespace iter {
             //template <typename T>
             //friend Slice<std::initializer_list<T>> slice(std::initializer_list<T>);
         public:
-            Slice(Container&& in_container, DifferenceType start,
-                  DifferenceType stop, DifferenceType step)
+            Slice(Container&& in_container, DifferenceType in_start,
+                  DifferenceType in_stop, DifferenceType in_step)
                 : container(std::forward<Container>(in_container)),
-                start{start < stop && step > 0 ? start : stop},
-                stop{stop},
-                step{step}
+                start{in_start < in_stop && in_step > 0 ? in_start : in_stop},
+                stop{in_stop},
+                step{in_step}
             { }
 
 
@@ -56,14 +56,14 @@ namespace iter {
                 public:
                     Iterator (iterator_type<Container>&& si,
                             iterator_type<Container>&& se,
-                            DifferenceType start,
-                            DifferenceType stop,
-                            DifferenceType step)
+                            DifferenceType in_start,
+                            DifferenceType in_stop,
+                            DifferenceType in_step)
                         : sub_iter{std::move(si)},
                         sub_end{std::move(se)},
-                        current{start},
-                        stop{stop},
-                        step{step}
+                        current{in_start},
+                        stop{in_stop},
+                        step{in_step}
                     { }
 
                     iterator_deref<Container> operator*() {
