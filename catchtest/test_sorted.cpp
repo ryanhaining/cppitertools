@@ -45,3 +45,37 @@ TEST_CASE("sorted: empty when iterable is empty", "[sorted]") {
     auto s = sorted(ns);
     REQUIRE( std::begin(s) == std::end(s) );
 }
+
+namespace {
+    bool int_greater_than(int lhs, int rhs) {
+        return lhs > rhs;
+    }
+
+    struct IntGreaterThan {
+        bool operator() (int lhs, int rhs) const {
+            return lhs > rhs;
+        }
+    };
+}
+
+TEST_CASE("sorted: works with different functor types", "[sorted]") {
+    Vec ns = {4, 1, 3, 2, 0};
+    std::vector<int> v;
+    SECTION("with function pointer") {
+        auto s = sorted(ns, int_greater_than);
+        v.insert(v.begin(), std::begin(s), std::end(s));
+    }
+
+    SECTION("with callable object") {
+        auto s = sorted(ns, IntGreaterThan{});
+        v.insert(v.begin(), std::begin(s), std::end(s));
+    }
+
+    SECTION("with lambda") {
+        auto s = sorted(ns, [](int lhs, int rhs){return lhs > rhs;});
+        v.insert(v.begin(), std::begin(s), std::end(s));
+    }
+
+    Vec vc = {4, 3, 2, 1, 0};
+    REQUIRE( v == vc );
+}
