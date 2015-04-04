@@ -22,6 +22,7 @@ evaluation wherever possible.
 [groupby](#groupby)<br />
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
+[sorted](#sorted)<br />
 [chain](#chain)<br />
 [chain.from\_iterable](#chainfrom_iterable)<br />
 [reversed](#reversed)<br />
@@ -333,6 +334,20 @@ Prints `2 6`
 vector<int> ivec{1, 2, 3, 4, 5, 6};
 vector<bool> bvec{false, true, false, false, false, true};
 for (auto&& i : compress(ivec, bvec) {
+    cout << i << '\n';
+}
+```
+
+sorted
+------
+Allows iteration over a sequence in sorted order. `sorted()` does
+**not** produce a new sequence, copy elements, or modify the original
+sequence.  It only provides a way to iterate over existing elements.
+The below outputs `0 1 2 3 4`.
+
+```c++
+unordered_set<int> nums{4, 0, 2, 1, 3};
+for (auto&& i : sorted(nums)) {
     cout << i << '\n';
 }
 ```
