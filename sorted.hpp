@@ -68,10 +68,10 @@ namespace iter {
     template <typename Container>
     auto sorted(Container&& container) ->
              decltype(sorted(std::forward<Container>(container),
-                         std::less<iterator_deref<Container>>()))
+                         std::less<const_iterator_deref<Container>>()))
      {
          return sorted(std::forward<Container>(container),
-                 std::less<iterator_deref<Container>>());
+                 std::less<const_iterator_deref<Container>>());
      }
 
 }
