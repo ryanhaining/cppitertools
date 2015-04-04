@@ -79,3 +79,86 @@ TEST_CASE("sorted: works with different functor types", "[sorted]") {
     Vec vc = {4, 3, 2, 1, 0};
     REQUIRE( v == vc );
 }
+
+namespace {
+template <typename T>
+class BasicIterableWithConstDeref {
+    private:
+        T *data;
+        std::size_t size;
+        bool was_moved_from_ = false;
+    public:
+        BasicIterableWithConstDeref(std::initializer_list<T> il)
+            : data{new T[il.size()]},
+            size{il.size()}
+        {
+            // would like to use enumerate, can't because it's for unit
+            // testing enumerate
+            std::size_t i = 0;
+            for (auto&& e : il) {
+                data[i] = e;
+                ++i;
+            }
+        }
+
+        BasicIterableWithConstDeref& operator=(BasicIterableWithConstDeref&&) = delete;
+        BasicIterableWithConstDeref& operator=(const BasicIterableWithConstDeref&) = delete;
+        BasicIterableWithConstDeref(const BasicIterableWithConstDeref&) = delete;
+
+        BasicIterableWithConstDeref(BasicIterableWithConstDeref&& other)
+            : data{other.data},
+            size{other.size}
+        {
+            other.data = nullptr;
+            other.was_moved_from_ = true;
+        }
+
+        bool was_moved_from() const {
+            return this->was_moved_from_;
+        }
+
+        ~BasicIterableWithConstDeref() {
+            delete [] this->data;
+        }
+
+        class Iterator {
+            private:
+                T *p;
+            public:
+                Iterator(T *b) : p{b} { }
+                bool operator!=(const Iterator& other) const {
+                    return this->p != other.p;
+                }
+
+                Iterator& operator++() {
+                    ++this->p;
+                    return *this;
+                }
+
+                T& operator*() {
+                    return *this->p;
+                }
+
+                const T& operator*() const {
+                    return *this->p;
+                }
+        };
+
+        Iterator begin() {
+            return {this->data};
+        }
+
+        Iterator end() {
+            return {this->data + this->size};
+        }
+};
+}
+
+TEST_CASE("sorted: moves rvalues and binds to lvalues", "[sorted]") {
+    BasicIterableWithConstDeref<int> bi{1, 2};
+    sorted(bi);
+    REQUIRE_FALSE( bi.was_moved_from() );
+
+    sorted(std::move(bi));
+    REQUIRE( bi.was_moved_from() );
+}
