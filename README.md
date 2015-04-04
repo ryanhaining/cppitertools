@@ -17,6 +17,7 @@ evaluation wherever possible.
 [range](#range)<br />
 [enumerate](#enumerate)<br />
 [zip](#zip)<br />
+[zip_longest](#zip)<br />
 [imap](#imap)<br />
 [filter](#filter)<br />
 [filterfalse](#filterfalse)<br />
@@ -25,9 +26,12 @@ evaluation wherever possible.
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
+[repeat](#repeat)<br />
+[count](#count)<br />
 [groupby](#groupby)<br />
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
+[sorted](#sorted)<br />
 [chain](#chain)<br />
 [chain.from\_iterable](#chainfrom_iterable)<br />
 [reversed](#reversed)<br />
@@ -38,6 +42,7 @@ evaluation wherever possible.
 ##### Combinatoric fuctions
 [product](#product)<br />
 [combinations](#combinations)<br />
+[combinations_with_replacement](#combinations_with_replacement)<br />
 [permutations](#permutations)<br />
 [powerset](#powerset)<br />
 
@@ -217,6 +222,47 @@ for (auto&& i : cycle(vec)) {
 }
 ```
 
+repeat
+------
+Repeatedly produces a single argument forever, or a given number of times.
+`repeat` will bind a reference when passed an lvalue and move when given
+an rvalue.  It will then yield a reference to the same item until completion.
+
+The below prints `1` five times.
+```c++
+for (auto&& e : repeat(1, 5)) {
+    cout << e << '\n';
+}
+```
+The below prints `2` forever
+```c++
+for (auto&& e : repeat(2)) {
+    cout << e << '\n';
+}
+```
+
+count
+-----
+Effectively a `range` without a stopping point.<br />
+`count()` with no arguments will start counting from 0 with a positive 
+step of 1.<br />
+`count(i)` will start counting from `i` with a positive step of 1.<br />
+`count(i, st)` will start counting from `i` with a step of `st`.
+
+*Technical limitations*: Unlike Python which can use its long integer
+types when needed, count() will eventually exceed the 
+maximum possible value for its type (or minimum with a negative step).
+When using a signed type it is up to the API user to ensure this does
+not happen.  If the limit is exceeded for signed types, the result is
+undefined (as per the C++ standard).
+
+The below will print `0 1 2` ... etc
+```c++
+for (auto&& i : count()) {
+    cout << i << '\n';
+}
+```
+
 groupby
 -------
 Separate an iterable into groups sharing a common key.  The following example
@@ -290,12 +336,43 @@ for (auto&& e : zip(i,f,s,d)) {
 }
 ```
 
+zip_longest
+-----------
+Terminates on the longest sequence instead of the shortest.
+Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type 
+yielded by the sequences' respective iterators.  Because of its boost
+dependency, `zip_longest` is not in `itertools.hpp` and must be included
+separately.
+The following loop prints either "Just <item>" or "Nothing" for each
+element in each tuple yielded.
 
-a `zip_longest` also exists where the range terminates on the longest
-range instead of the shortest. because of that you have to return a
-`boost::optional<T>` where `T` is whatever type the iterator dereferenced
-to (`std::optional` when it is released, if ever)
+```c++
+vector<int> v1 = {0, 1, 2, 3};
+vector<int> v2 = {10, 11};
+for (auto&& t : zip_longest(v1, v2)) {
+    cout << '{';
+    if (std::get<0>(t)) {
+        cout << "Just " << *std::get<0>(t);
+    } else {
+        cout << "Nothing";
+    }
+    cout << ", ";
+    if (std::get<1>(t)) {
+        cout << "Just " << *std::get<1>(t);
+    } else {
+        cout << "Nothing";
+    }
+    cout << "}\n";
+}
+```
 
+The output is:
+```
+{Just 0, Just 10}
+{Just 1, Just 11}
+{Just 2, Nothing}
+{Just 3, Nothing}
+```
 
 imap
 ----
@@ -339,6 +416,26 @@ Prints `2 6`
 vector<int> ivec{1, 2, 3, 4, 5, 6};
 vector<bool> bvec{false, true, false, false, false, true};
 for (auto&& i : compress(ivec, bvec) {
+    cout << i << '\n';
+}
+```
+
+sorted
+------
+Allows iteration over a sequence in sorted order. `sorted` does
+**not** produce a new sequence, copy elements, or modify the original
+sequence.  It only provides a way to iterate over existing elements.
+`sorted` also takes an optional second 
+[comparator](http://en.cppreference.com/w/cpp/concept/Compare)
+argument.  If not provided, defaults to `std::less`. <br />
+Iterables passed to sorted are required to have an iterator with
+an `operator*() const` member.
+
+The below outputs `0 1 2 3 4`.
+
+```c++
+unordered_set<int> nums{4, 0, 2, 1, 3};
+for (auto&& i : sorted(nums)) {
     cout << i << '\n';
 }
 ```
@@ -478,16 +575,33 @@ for (auto&& t : product(v1,v2,v3,v4)) {
 combinations
 -----------
 
-Generates n length unique sequences of the input range, there is also a
-combinations_with_replacement
+Generates n length unique sequences of the input range.
 
 Example usage:
 ```c++
-std::vector<int> v = {1,2,3,4,5};                                              
+vector<int> v = {1,2,3,4,5};                                              
 for (auto&& i : combinations(v,3)) {                                             
-    //std::cout << i << std::endl;                                             
-    for (auto&& j : i ) std::cout << j << " ";                                   
-    std::cout<<std::endl;                                                      
+    //cout << i << std::endl;                                             
+    for (auto&& j : i ) cout << j << " ";                                   
+    cout << '\n';                                                      
+}
+```
+
+combinations_with_replacement
+-----------------------------
+Like combinations, but with replacment of each element.  The
+below is printed by the loop that follows:
+```
+{A, A}
+{A, B}
+{A, C}
+{B, B}
+{B, C}
+{C, C}
+```
+```c++
+for (auto&& v : combinations_with_replacement(s, 2)) {
+    cout << '{' << v[0] << ", " << v[1] << "}\n";
 }
 ```
 

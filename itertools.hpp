@@ -1,5 +1,5 @@
-#ifndef ITERTOOLS_HPP_
-#define ITERTOOLS_HPP_
+#ifndef ITERTOOLS_ALL_HPP_
+#define ITERTOOLS_ALL_HPP_
 
 #include "accumulate.hpp"
 #include "chain.hpp"
@@ -29,7 +29,9 @@
 #include "unique_everseen.hpp"
 #include "unique_justseen.hpp"
 #include "zip.hpp"
-#include "zip_longest.hpp"
+
+// zip_longest is the only itertool with a boost depedency, so it must be
+// included explicitly
 
 #endif
 
