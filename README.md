@@ -19,6 +19,7 @@ evaluation wherever possible.
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
+[repeat](#repeat)<br />
 [groupby](#groupby)<br />
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
@@ -209,6 +210,25 @@ for (auto&& i : cycle(vec)) {
     if (some_condition) {
         break;
     }
+}
+```
+
+repeat
+------
+Repeatedly produces a single argument forever, or a given number of times.
+`repeat` will bind a reference when passed an lvalue and move when given
+an rvalue.  It will then yield a reference to the same item until completion.
+
+The below prints `1` five times.
+```c++
+for (auto&& e : repeat(1, 5)) {
+    cout << e << '\n';
+}
+```
+The below prints `2` forever
+```c++
+for (auto&& e : repeat(2)) {
+    cout << e << '\n';
 }
 ```
 
