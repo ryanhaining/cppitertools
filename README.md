@@ -20,6 +20,7 @@ evaluation wherever possible.
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
 [repeat](#repeat)<br />
+[count](#count)<br />
 [groupby](#groupby)<br />
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
@@ -229,6 +230,28 @@ The below prints `2` forever
 ```c++
 for (auto&& e : repeat(2)) {
     cout << e << '\n';
+}
+```
+
+count
+-----
+Effectively a `range` without a stopping point.<br />
+`count()` with no arguments will start counting from 0 with a positive 
+step of 1.<br />
+`count(i)` will start counting from `i` with a positive step of 1.<br />
+`count(i, st)` will start counting from `i` with a step of `st`.
+
+*Technical limitations*: Unlike Python which can use its long integer
+types when needed, count() will eventually exceed the 
+maximum possible value for its type (or minimum with a negative step).
+When using a signed type it is up to the API user to ensure this does
+not happen.  If the limit is exceeded for signed types, the result is
+undefined (as per the C++ standard).
+
+The below will print `0 1 2` ... etc
+```c++
+for (auto&& i : count()) {
+    cout << i << '\n';
 }
 ```
 
