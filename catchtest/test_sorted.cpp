@@ -30,3 +30,12 @@ TEST_CASE("sorted: can modify elements through sorted", "[sorted]") {
     Vec vc(3, -1);
     REQUIRE( ns == vc );
 }
+
+TEST_CASE("sorted: can iterate over unordered container", "[sorted]") {
+    std::unordered_set<int> ns = {1, 3, 2, 0, 4};
+    auto s = sorted(ns);
+
+    Vec v(std::begin(s), std::end(s));
+    Vec vc = {0, 1, 2, 3, 4};
+    REQUIRE( v == vc );
+}
