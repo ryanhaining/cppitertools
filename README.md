@@ -340,9 +340,15 @@ for (auto&& i : compress(ivec, bvec) {
 
 sorted
 ------
-Allows iteration over a sequence in sorted order. `sorted()` does
+Allows iteration over a sequence in sorted order. `sorted` does
 **not** produce a new sequence, copy elements, or modify the original
 sequence.  It only provides a way to iterate over existing elements.
+`sorted` also takes an optional second 
+[comparator](http://en.cppreference.com/w/cpp/concept/Compare)
+argument.  If not provided, defaults to `std::less`. <br />
+Iterables passed to sorted are required to have an iterator with
+an `operator*() const` member.
+
 The below outputs `0 1 2 3 4`.
 
 ```c++
