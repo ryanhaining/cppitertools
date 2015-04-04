@@ -9,25 +9,26 @@
 #include <vector>
 
 namespace iter {
-    template <typename Container, typename CompareFunc>
+    template <typename Container>
     class Sorted;
 
     template <typename Container, typename CompareFunc>
-    Sorted<Container, CompareFunc> sorted(Container&&, CompareFunc);
+    Sorted<Container> sorted(Container&&, CompareFunc);
 
-    template <typename Container, typename CompareFunc>
+    template <typename Container>
     class Sorted  {
         private:
             using IterIterWrap =
                 IterIterWrapper<std::vector<iterator_type<Container>>>;
             using ItIt = iterator_type<IterIterWrap>;
-            friend Sorted
-                sorted<Container, CompareFunc>(Container&&, CompareFunc);
+
+            template <typename C, typename F>
+            friend Sorted<C> sorted(C&&, F);
 
             Container container;
             IterIterWrap sorted_iters;
 
-
+            template <typename CompareFunc>
             Sorted(Container&& in_container, CompareFunc compare_func)
                 : container(std::forward<Container>(in_container))
             {
@@ -51,7 +52,6 @@ namespace iter {
 
             ItIt begin() {
                 return std::begin(sorted_iters);
-                
             }
 
             ItIt end() {
@@ -60,16 +60,16 @@ namespace iter {
     };
 
     template <typename Container, typename CompareFunc>
-    Sorted<Container, CompareFunc> sorted(
+    Sorted<Container> sorted(
             Container&& container, CompareFunc compare_func) {
         return {std::forward<Container>(container), compare_func};
     }
 
     template <typename Container>
     auto sorted(Container&& container) {
-        return sorted(std::forward<Container>(container),
-                std::less<iterator_deref<Container>>());
-    }
+         return sorted(std::forward<Container>(container),
+                 std::less<const_iterator_deref<Container>>());
+     }
 
 }
 
