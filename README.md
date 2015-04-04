@@ -35,6 +35,7 @@ evaluation wherever possible.
 ##### Combinatoric fuctions
 [product](#product)<br />
 [combinations](#combinations)<br />
+[combinations_with_replacement](#combinations_with_replacement)
 [permutations](#permutations)<br />
 [powerset](#powerset)<br />
 
@@ -536,16 +537,33 @@ for (auto&& t : product(v1,v2,v3,v4)) {
 combinations
 -----------
 
-Generates n length unique sequences of the input range, there is also a
-combinations_with_replacement
+Generates n length unique sequences of the input range.
 
 Example usage:
 ```c++
-std::vector<int> v = {1,2,3,4,5};                                              
+vector<int> v = {1,2,3,4,5};                                              
 for (auto&& i : combinations(v,3)) {                                             
-    //std::cout << i << std::endl;                                             
-    for (auto&& j : i ) std::cout << j << " ";                                   
-    std::cout<<std::endl;                                                      
+    //cout << i << std::endl;                                             
+    for (auto&& j : i ) cout << j << " ";                                   
+    cout << '\n';                                                      
+}
+```
+
+combinations_with_replacement
+-----------------------------
+Like combinations, but with replacment of each element.  The
+below is printed by the loop that follows:
+```
+{A, A}
+{A, B}
+{A, C}
+{B, B}
+{B, C}
+{C, C}
+```
+```c++
+for (auto&& v : combinations_with_replacement(s, 2)) {
+    cout << '{' << v[0] << ", " << v[1] << "}\n";
 }
 ```
 
