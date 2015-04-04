@@ -162,3 +162,12 @@ TEST_CASE("sorted: moves rvalues and binds to lvalues", "[sorted]") {
     sorted(std::move(bi));
     REQUIRE( bi.was_moved_from() );
 }
+
+TEST_CASE("sorted: doesn't move or copy elements of iterable", "[sorted]") {
+    using itertest::SolidInt;
+    constexpr SolidInt arr[] = {{6}, {7}, {8}};
+    for (auto&& i : sorted(arr, [](const SolidInt& lhs, const SolidInt& rhs){
+                return lhs.getint() < rhs.getint();})) {
+        (void)i;
+    }
+}
