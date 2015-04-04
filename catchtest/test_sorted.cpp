@@ -39,3 +39,9 @@ TEST_CASE("sorted: can iterate over unordered container", "[sorted]") {
     Vec vc = {0, 1, 2, 3, 4};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("sorted: empty when iterable is empty", "[sorted]") {
+    Vec ns{};
+    auto s = sorted(ns);
+    REQUIRE( std::begin(s) == std::end(s) );
+}
