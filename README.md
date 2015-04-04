@@ -11,6 +11,7 @@ evaluation wherever possible.
 [range](#range)<br />
 [enumerate](#enumerate)<br />
 [zip](#zip)<br />
+[zip_longest](#zip)<br />
 [imap](#imap)<br />
 [filter](#filter)<br />
 [filterfalse](#filterfalse)<br />
@@ -329,12 +330,43 @@ for (auto&& e : zip(i,f,s,d)) {
 }
 ```
 
+zip_longest
+-----------
+Terminates on the longest sequence instead of the shortest.
+Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type 
+yielded by the sequences' respective iterators.  Because of its boost
+dependency, `zip_longest` is not in `itertools.hpp` and must be included
+separately.
+The following loop prints either "Just <item>" or "Nothing" for each
+element in each tuple yielded.
 
-a `zip_longest` also exists where the range terminates on the longest
-range instead of the shortest. because of that you have to return a
-`boost::optional<T>` where `T` is whatever type the iterator dereferenced
-to (`std::optional` when it is released, if ever)
+```c++
+vector<int> v1 = {0, 1, 2, 3};
+vector<int> v2 = {10, 11};
+for (auto&& t : zip_longest(v1, v2)) {
+    cout << '{';
+    if (std::get<0>(t)) {
+        cout << "Just " << *std::get<0>(t);
+    } else {
+        cout << "Nothing";
+    }
+    cout << ", ";
+    if (std::get<1>(t)) {
+        cout << "Just " << *std::get<1>(t);
+    } else {
+        cout << "Nothing";
+    }
+    cout << "}\n";
+}
+```
 
+The output is:
+```
+{Just 0, Just 10}
+{Just 1, Just 11}
+{Just 2, Nothing}
+{Just 3, Nothing}
+```
 
 imap
 ----
