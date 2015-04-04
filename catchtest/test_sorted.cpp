@@ -21,3 +21,12 @@ TEST_CASE("sorted: iterates through a vector in sorted order", "[sorted]" ){
     Vec vc = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     REQUIRE( v == vc );
 }
+
+TEST_CASE("sorted: can modify elements through sorted", "[sorted]") {
+    std::vector<int> ns(3, 9);
+    for (auto&& n : sorted(ns)) {
+        n = -1;
+    }
+    Vec vc(3, -1);
+    REQUIRE( ns == vc );
+}
