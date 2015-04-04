@@ -36,7 +36,7 @@ evaluation wherever possible.
 ##### Combinatoric fuctions
 [product](#product)<br />
 [combinations](#combinations)<br />
-[combinations_with_replacement](#combinations_with_replacement)
+[combinations_with_replacement](#combinations_with_replacement)<br />
 [permutations](#permutations)<br />
 [powerset](#powerset)<br />
 
