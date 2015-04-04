@@ -28,6 +28,14 @@ namespace iter {
     using iterator_deref =
         decltype(*std::declval<iterator_type<Container>&>());
 
+    // const_iteator_deref is the type obtained through dereferencing
+    // a const iterator& (note: not a const_iterator).  ie: the result
+    // of Container::iterator::operator*() const
+    template <typename Container>
+    using const_iterator_deref =
+        decltype(*std::declval<const iterator_type<Container>&>());
+
+
     template <typename Container>
     using iterator_traits_deref =
         typename std::remove_reference<iterator_deref<Container>>::type;
