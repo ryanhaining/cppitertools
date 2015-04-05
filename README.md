@@ -29,6 +29,7 @@ evaluation wherever possible.
 [repeat](#repeat)<br />
 [count](#count)<br />
 [groupby](#groupby)<br />
+[starmap](#starmap)<br />
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [sorted](#sorted)<br />
@@ -286,6 +287,48 @@ for (auto&& gb : groupby(vec, [] (const string &s) {return s.length(); })) {
 *Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
 It just iterates through, making a new group each time there is a key change.
 Thus, if the the group is unsorted, the same key may appear multiple times.
+
+starmap
+-------
+
+Takes a sequence of tuple-like objects (anything that works with `std::get`)
+and unpacks each object into individual arguments for each function call.
+The below example takes a `vector` of `pairs` of ints, and passes them
+to a function expecting two ints, with the elements of the `pair` being
+the first and second arguments to the function.
+
+```c++
+vector<pair<int, int>> v = {{2, 3}, {5, 2}, {3, 4}}; // {base, exponent}
+for (auto&& i : starmap([](int b, int e){return pow(b, e);}, v)) {
+    // ...
+}
+```
+
+`starmap` can also work over a tuple-like object of tuple-like objects even
+when the contained objects are different as long as the functor works with
+multiple types of calls.  For example, a `Callable` struct with overloads
+for its `operator()` will work as long as all overloads have the same
+return type
+
+```c++
+struct Callable {
+    int operator()(int i) const;
+    int operator()(int i, char c) const;
+    int operator()(double d, int i, char c) const;
+};
+```
+
+This will work with a tuple of mixed types
+
+```c++
+auto t = make_tuple(
+        make_tuple(5), // first form
+        make_pair(3, 'c'), // second
+        make_tuple(1.0, 1, '1')); // third
+for (auto&& i : starmap(Callable{}, t)) {
+    // ...
+}
+```
 
 accumulate
 -------
