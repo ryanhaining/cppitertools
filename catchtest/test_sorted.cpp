@@ -171,3 +171,9 @@ TEST_CASE("sorted: doesn't move or copy elements of iterable", "[sorted]") {
         (void)i;
     }
 }
+
+TEST_CASE("sorted: iterator meets requirements", "[sorted]") {
+    Vec v;
+    auto r = sorted(v);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+}
