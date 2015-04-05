@@ -60,3 +60,9 @@ TEST_CASE("reversed: with iterable doesn't move or copy elems", "[reversed]") {
         (void)i;
     }
 }
+
+TEST_CASE("reversed: iterator meets requirements", "[reversed]") {
+    Vec v;
+    auto r = reversed(v);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+}
