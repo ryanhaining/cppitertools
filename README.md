@@ -7,7 +7,15 @@ evaluation wherever possible.
 
 *Note*: Everthing is inside the `iter` namespace.
 
-##### Table of Contents
+#### Requirements
+This library is **header-only** and relies only on the C++ standard
+library. The only exception is `zip_longest` which uses `boost::optional`.
+`#include <cppitertools/itertools.hpp>` will include all of the provided
+tools except for `zip_longest` which must be included separately.  You may
+also include individual pieces with the relevant header
+(`#include <cppitertools/enumerate.hpp>` for example).
+
+#### Table of Contents
 [range](#range)<br />
 [enumerate](#enumerate)<br />
 [zip](#zip)<br />
