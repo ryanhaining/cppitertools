@@ -219,6 +219,18 @@ namespace iter {
             }
     };
 
+    template <typename T>
+    struct type_is {
+        using type = T;
+    };
+
+    // gcc CWG 1558
+    template <typename...>
+    struct void_t_help {
+        using type = void;
+    };
+    template <typename... Ts>
+    using void_t = typename void_t_help<Ts...>::type;
 
 }
 
