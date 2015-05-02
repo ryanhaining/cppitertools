@@ -5,9 +5,10 @@
 #include <iostream>
 
 int main() {
+    size_t count = 0;
+
     std::cout << "cycle({2, 4, 6}) run 20 times:\n";
     std::vector<int> vec = {2, 4, 6};
-    size_t count = 0;
     for (auto&& i : iter::cycle(vec)) {
         std::cout << i << '\n';
         if (count == 20) {
