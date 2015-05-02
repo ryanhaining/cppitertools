@@ -2,60 +2,82 @@
 
 #include <iostream>
 
-int main() {
-    std::cout << "range(10): { ";
-    for (auto i : iter::range(10)) {
-        std::cout << i << ' ';
-    }
-    std::cout << "}\n";
+using iter::range;
 
-    // range works with a start and exclusive stop
-    std::cout << "range(20, 30): { ";
-    for (auto i : iter::range(20, 30)) {
-        std::cout << i << ' ';
+int main()
+{
+    for (auto i : range(10)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
+    for (auto i : range(20, 30)) {
+        std::cout << i << std::endl;
+    }
+    for (auto i : range(50, 60, 2)) {
+        std::cout << i << std::endl;
+    }
 
-    // range supports a step size (prints 50, 52 ... 58)
-    std::cout << "range(50, 60, 2): { ";
-    for (auto i : iter::range(50, 60, 2)) {
-        std::cout << i << ' ';
+    std::cout << "Negative Tests\n";
+    for (auto i: range(-10, 0)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
 
-    // ranges can cover negative values
-    std::cout << "range(-10, 10, 2): { ";
-    for (auto i : iter::range(-10, 10, 2)) {
-        std::cout << i << ' ';
+    for (auto i : range(-10, 10, 2)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
 
-    // the step size doesn't need to evenly divide the distance
-    std::cout << "range(0, 5, 4): { ";
-    for (auto i : iter::range(0, 5, 4)) {
-        std::cout << i << ' ';
+    std::cout << "Tests where (stop - start)%step != 0" << std::endl;
+    for (auto i : range(1, 10, 2)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
 
-    // ranges can go down with a negative step
-    std::cout << "range(-1, -10, -2): { ";
-    for (auto i : iter::range(-1, -10, -2)) {
-        std::cout << i << ' ';
+    for (auto i : range(-1, -10, -2)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
+    
+    std::cout << "Tests with different types" << std::endl;
+    for(auto i : range(5.0, 10.0, 0.5)) {
+        std::cout << i << std::endl;
+    }
+	std::cout << "test unsigned" << std::endl;
+	std::cout << "empty range: " << std::endl;
+	size_t len = 0;
+	for(auto i : range(len)){
+	  std::cout << i << std::endl;
+	}
+	std::cout << "stop only" << std::endl;
+	len = 3;
+	for(auto i : range(len)){
+	  std::cout << i << std::endl;
+	}
+	std::cout << "start stop" << std::endl;
+	size_t start = 1;
+	for(auto i : range(start, len)){
+	  std::cout << i << std::endl;
+	}
 
-    // ranges can work with floats and other types that act like numbers
-    // the normal concerns with comparing floats still hold here
-    std::cout << "range(5.0, 9.9, 0.5): { ";
-    for (auto i : iter::range(5.0, 9.9, 0.5)) {
-        std::cout << i << ' ';
-    }
-    std::cout << "}\n";
+	std::cout << "start stop skip" << std::endl;
+	len = 10;
+	size_t skip = 3;
+	for(auto i : range(start, len, skip)){
+	  std::cout << i << std::endl;
+	}
+	
 
-    // ranges of course support unsigned values
-    std::cout << "range(10u): { ";
-    for (auto i : iter::range(10u)) {
-        std::cout << i << ' ';
+
+    // invalid ranges:
+    std::cout << "Should not print anything after this line until exception\n";
+    for (auto i : range(-10, 0, -1)) {
+        std::cout << i << std::endl;
     }
-    std::cout << "}\n";
+
+    for (auto i : range(0, 1, -1)) {
+        std::cout << i << std::endl;
+    }
+
+    std::cout << "Should see exception now\n";
+    for (auto i : range(0, 10, 0) ) {
+        std::cout << i << std::endl;
+    }
+
+    return 0;
 }
