@@ -60,7 +60,7 @@ namespace itertest {
 
                     // for testing, iterator derefences to an int instead of
                     // an int&
-                    int operator*() /*const*/ {
+                    int operator*() const {
                         return *this->current;
                     }
 
