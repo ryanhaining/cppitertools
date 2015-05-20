@@ -5,8 +5,11 @@
 #include <string>
 #include <utility>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+
+#define DECLARE_REVERSE_ITERATOR
+#include "helpers.hpp"
+#undef DECLARE_REVERSE_ITERATOR
 
 using iter::reversed;
 using Vec = const std::vector<int>;

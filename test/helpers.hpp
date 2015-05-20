@@ -110,19 +110,6 @@ class BasicIterable {
         BasicIterable& operator=(const BasicIterable&) = delete;
 
         BasicIterable(const BasicIterable&) = delete;
-#if 0
-        BasicIterable(const BasicIterable& other)
-            : data{new T[other.size()]},
-            size{other.size}
-        { 
-            for (auto it = this->begin(), o_it = other.begin();
-                    o_it != other.end();
-                    ++it, ++o_it) {
-                *it = *o_it;
-            }
-        }
-#endif
-
 
         BasicIterable(BasicIterable&& other)
             : data{other.data},
@@ -170,6 +157,11 @@ class BasicIterable {
         Iterator end() {
             return {this->data + this->size};
         }
+
+#ifdef DECLARE_REVERSE_ITERATOR
+        Iterator rbegin();
+        Iterator rend();
+#endif // ifdef DECLARE_REVERSE_ITERATOR
 };
 
 using iter::void_t;
