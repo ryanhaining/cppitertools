@@ -3,3 +3,5 @@
 test_*
 !test_*.cpp
 .sconsign.dblite
+config.log
+.sconf_temp/

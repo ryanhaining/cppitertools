@@ -43,13 +43,14 @@ progs = Split(
     unique_everseen
     unique_justseen
     zip
-    zip_longest
 
     iteratoriterator
     mixed
     helpers
     '''
 )
+if Configure(env).CheckCXXHeader('boost/optional.hpp'):
+    progs.append('zip_longest')
 
 test_sources = ['test_{}.cpp'.format(p) for p in progs]
 

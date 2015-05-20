@@ -2,3 +2,5 @@
 *.swp
 *_examples
 .sconsign.dblite
+config.log
+.sconf_temp/
