@@ -36,25 +36,9 @@ namespace iter {
     using const_iterator_deref =
         decltype(*std::declval<const iterator_type<Container>&>());
 
-
     template <typename Container>
     using iterator_traits_deref =
         std::remove_reference_t<iterator_deref<Container>>;
-
-    // iterator_type<C> is the type of C's iterator
-    template <typename Container>
-    using reverse_iterator_type =
-        decltype(std::rbegin(std::declval<Container&>()));
-
-    // iterator_deref<C> is the type obtained by dereferencing an iterator
-    // to an object of type C
-    template <typename Container>
-    using reverse_iterator_deref =
-        decltype(*std::declval<reverse_iterator_type<Container>&>());
-
-    template <typename Container>
-    using reverse_iterator_traits_deref =
-        std::remove_reference_t<reverse_iterator_deref<Container>>;
 
     template <typename, typename =void>
     struct is_random_access_iter : std::false_type { };

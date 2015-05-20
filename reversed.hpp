@@ -23,19 +23,28 @@ namespace iter {
                 : container(std::forward<Container>(in_container))
             { }
 
+            using reverse_iterator_type =
+                decltype(std::rbegin(std::declval<Container&>()));
+
+            using reverse_iterator_deref =
+                decltype(*std::declval<reverse_iterator_type&>());
+
+            using reverse_iterator_traits_deref =
+                std::remove_reference_t<reverse_iterator_deref>;
+
         public:
             class Iterator : public std::iterator<
                          std::input_iterator_tag,
-                         reverse_iterator_traits_deref<Container>>
+                         reverse_iterator_traits_deref>
             {
                 private:
-                    reverse_iterator_type<Container> sub_iter;
+                    reverse_iterator_type sub_iter;
                 public:
-                    Iterator(reverse_iterator_type<Container>&& iter)
+                    Iterator(reverse_iterator_type&& iter)
                         : sub_iter{std::move(iter)}
                     { }
 
-                    reverse_iterator_deref<Container> operator*() {
+                    reverse_iterator_deref operator*() {
                         return *this->sub_iter;
                     }
 
