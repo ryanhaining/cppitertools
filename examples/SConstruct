@@ -38,10 +38,11 @@ progs = Split(
     unique_justseen
     unique_everseen
     zip
-    zip_longest
-    mixed
     ''')
 
+if Configure(env).CheckCXXHeader('boost/optional.hpp'):
+    progs.append('zip_longest')
+    progs.append('mixed')
 
 for p in progs:
     env.Program('{0}_examples.cpp'.format(p))
