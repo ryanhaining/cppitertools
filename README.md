@@ -660,7 +660,8 @@ for (auto&& v : combinations_with_replacement(s, 2)) {
 permutations
 -----------
 
-Generates all the permutations of a range using `std::next_permutation`  
+Generates all the permutations of a range using `std::next_permutation`.  The
+iterators of the sequence passed must have an `operator*() const`
 
 Example usage:
 ```c++

@@ -1,6 +1,8 @@
 #ifndef TEST_HELPER_H_
 #define TEST_HELPER_H_
 
+#include <iterbase.hpp>
+
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -170,15 +172,7 @@ class BasicIterable {
         }
 };
 
-
-// gcc CWG 1558
-template <typename...>
-struct void_t_help {
-    using type = void;
-};
-template <typename... Ts>
-
-using void_t = typename void_t_help<Ts...>::type;
+using iter::void_t;
 
 template <typename, typename =void>
 struct IsIterator : std::false_type { };
