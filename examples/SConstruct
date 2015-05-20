@@ -13,39 +13,35 @@ env = Environment(
 # allows highighting to print to terminal from compiler output
 env['ENV']['TERM'] = os.environ['TERM']
 
-progs = Split('''
-              accumulate
-              cycle 
-              enumerate 
-              range 
-              zip 
-              slice 
-              reversed 
-              filter 
-              repeat 
-              takewhile 
-              dropwhile 
-              zip_longest 
-              product 
-              permutations 
-              compress 
-              combinations_with_replacement 
-              combinations 
-              powerset
-              sliding_window
-              imap
-              count
-              filterfalse
-              grouper
-              chain
-              chainfromiterable
-              groupby
-              sorted
-              unique_justseen
-              unique_everseen
-              command_chains
-              ''')
+progs = Split(
+    '''
+    accumulate
+    chain
+    combinatoric
+    compress
+    count
+    cycle
+    dropwhile
+    enumerate
+    filter
+    filterfalse
+    groupby
+    grouper
+    imap
+    range
+    repeat
+    reversed
+    slice
+    sliding_window
+    sorted
+    takewhile
+    unique_justseen
+    unique_everseen
+    zip
+    zip_longest
+    mixed
+    ''')
 
 
 for p in progs:
-    env.Program('test{0}.cpp'.format(p))
+    env.Program('{0}_examples.cpp'.format(p))
