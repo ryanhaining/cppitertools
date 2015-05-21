@@ -368,7 +368,7 @@ zip
 Takes an arbitrary number of ranges of different types and efficiently iterates
 over them in parallel (so an iterator to each container is incremented
 simultaneously).  When you dereference an iterator to "zipped" range you get a
-tuple of the elements the iterators were holding. 
+tuple of the elements the iterators were holding.
 
 Example usage:
 ```c++
