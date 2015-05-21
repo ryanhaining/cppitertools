@@ -101,7 +101,7 @@ appears as:
 
 ```c++
 vector<int> vec{2, 4, 6, 8};
-for (auto&& e : enumerate(vec)) { 
+for (auto&& e : enumerate(vec)) {
     cout << e.index
          << ": "
          << e.element
@@ -152,33 +152,32 @@ Prints only zero values.
 for(auto&& i : filterfalse(vec)) {
     cout << i << '\n';
 }
+
 ```
 unique_everseen
 ---------------
-This is a filter adaptor that only generates values that have never been seen 
-before. For this algo to work your object must be specialized for `std::hash`
-otherwise it will not be very efficient
+This is a filter adaptor that only generates values that have never been seen
+before. For this to work your object must be specialized for `std::hash`.
 
-Example Usage:
+Prints `1 2 3 4 5 6 7 8 9`
 ```c++
-std::vector<int> v {1,2,3,4,3,2,1,5,6,7,7,8,9,8,9,6};                      
-for (auto&& i : unique_everseen(v)) {                                        
-    std::cout << i << " ";                                                 
-}std::cout << std::endl; 
+vector<int> v {1,2,3,4,3,2,1,5,6,7,7,8,9,8,9,6};
+for (auto&& i : unique_everseen(v)) {
+    cout << i << ' ';
+}
 ```
 
 unique_justseen
 --------------
-Another filter adaptor that only prevents duplicates that are in a row, if the 
-sequence is sorted it will work exactly the same as `unique_justseen`, in that 
-case it will be better and more efficient to use.
+Another filter adaptor that only omits consecutive duplicates.
 
+Prints `1 2 3 4 3 2 1`
 Example Usage:
 ```c++
-std::vector<int> v {1,1,1,2,2,4,4,5,6,7,8,8,8,8,9,9};                          
-for (auto&& i : unique_justseen(v)) {                                            
-    std::cout << i << " ";                                                     
-}std::cout << std::endl; 
+vector<int> v {1,1,1,2,2,3,3,3,4,3,2,1,1,1};
+for (auto&& i : unique_justseen(v)) {
+    cout << i << ' ';
+}
 ```
 
 takewhile
@@ -196,7 +195,7 @@ for (auto&& i : takewhile([] (int i) {return i < 5;}, ivec)) {
 
 dropwhile
 ---------
-Yields all elements after and including the first element that is false under
+Yields all elements after and including the first element that is true under
 the predicate.
 
 Prints `5 6 7 1 2`
@@ -210,8 +209,8 @@ for (auto&& i : dropwhile([] (int i) {return i < 5;}, ivec)) {
 cycle
 -----
 
-Repeatedly produce all values of an iterable.  The loop will be infinite, so a
-`break` is necessary to exit.
+Repeatedly produces all values of an iterable.  The loop will be infinite, so a
+`break` or other control flow structure is necessary to exit.
 
 Prints `1 2 3` repeatedly until `some_condition` is true
 ```c++
@@ -236,6 +235,7 @@ for (auto&& e : repeat(1, 5)) {
     cout << e << '\n';
 }
 ```
+
 The below prints `2` forever
 ```c++
 for (auto&& e : repeat(2)) {
@@ -246,13 +246,13 @@ for (auto&& e : repeat(2)) {
 count
 -----
 Effectively a `range` without a stopping point.<br />
-`count()` with no arguments will start counting from 0 with a positive 
+`count()` with no arguments will start counting from 0 with a positive
 step of 1.<br />
 `count(i)` will start counting from `i` with a positive step of 1.<br />
 `count(i, st)` will start counting from `i` with a step of `st`.
 
 *Technical limitations*: Unlike Python which can use its long integer
-types when needed, count() will eventually exceed the 
+types when needed, count() will eventually exceed the
 maximum possible value for its type (or minimum with a negative step).
 When using a signed type it is up to the API user to ensure this does
 not happen.  If the limit is exceeded for signed types, the result is
@@ -287,12 +287,12 @@ for (auto&& gb : groupby(vec, [] (const string &s) {return s.length(); })) {
 ```
 *Note*: Just like Python's `itertools.groupby`, this doesn't do any sorting.
 It just iterates through, making a new group each time there is a key change.
-Thus, if the the group is unsorted, the same key may appear multiple times.
+Thus, if the group is unsorted, the same key may appear multiple times.
 
 accumulate
 -------
-Differs from `std::accumulate` (which in my humble opinion should be named 
-`std::reduce` or `std::foldl`).  It is similar to a functional reduce where one 
+Differs from `std::accumulate` (which in my humble opinion should be named
+`std::reduce` or `std::foldl`).  It is similar to a functional reduce where one
 can see all of the intermediate results.  By default, it keeps a running sum.
 Prints: `1 3 6 10 15`
 ```c++
@@ -300,7 +300,7 @@ for (auto&& i : accumulate(range(1, 6))) {
     cout << i << '\n';
 }
 ```
-A second, optional argument may provide an alternative binary function 
+A second, optional argument may provide an alternative binary function
 to compute results.  The following example multiplies the numbers, rather
 than adding them.
 Prints: `1 2 6 24 120`
@@ -316,32 +316,31 @@ and assignment.
 
 zip
 ---
-
-Takes an arbitrary number of ranges of different types and efficiently iterates over 
-them in parallel (so an iterator to each container is incremented simultaneously). 
-When you dereference an iterator to "zipped" range you get a tuple of whatever elements 
-the iterators were holding.
+Takes an arbitrary number of ranges of different types and efficiently iterates
+over them in parallel (so an iterator to each container is incremented
+simultaneously).  When you dereference an iterator to "zipped" range you get a
+tuple of the elements the iterators were holding. 
 
 Example usage:
 ```c++
-array<int,4> i{{1,2,3,4}};                                            
-vector<float> f{1.2,1.4,12.3,4.5,9.9};                                
-vector<string> s{"i","like","apples","alot","dude"};             
-array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};                             
+array<int,4> i{{1,2,3,4}};
+vector<float> f{1.2,1.4,12.3,4.5,9.9};
+vector<string> s{"i","like","apples","alot","dude"};
+array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};
 
-for (auto&& e : zip(i,f,s,d)) {                                        
-    cout << std::get<0>(e) << ' '                                
-         << std::get<1>(e) << ' '                                      
-         << std::get<2>(e) << ' '                                      
-         << std::get<3>(e) << '\n';                               
-    std::get<1>(e)=2.2f; // modify the float array                     
+for (auto&& e : zip(i,f,s,d)) {
+    cout << std::get<0>(e) << ' '
+         << std::get<1>(e) << ' '
+         << std::get<2>(e) << ' '
+         << std::get<3>(e) << '\n';
+    std::get<1>(e)=2.2f; // modifies the underlying 'f' array
 }
 ```
 
 zip_longest
 -----------
 Terminates on the longest sequence instead of the shortest.
-Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type 
+Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type
 yielded by the sequences' respective iterators.  Because of its boost
 dependency, `zip_longest` is not in `itertools.hpp` and must be included
 separately.
@@ -402,7 +401,7 @@ for (auto&& i : imap([] (int x, int y) { return x + y; }, vec1, vec2)) {
 }
 ```
 
-*Note*: The name `imap` is chosen to prevent confusion/collision with 
+*Note*: The name `imap` is chosen to prevent confusion/collision with
 `std::map`, and because it is more related to `itertools.imap` than
 the python builtin `map`.
 
@@ -427,7 +426,7 @@ sorted
 Allows iteration over a sequence in sorted order. `sorted` does
 **not** produce a new sequence, copy elements, or modify the original
 sequence.  It only provides a way to iterate over existing elements.
-`sorted` also takes an optional second 
+`sorted` also takes an optional second
 [comparator](http://en.cppreference.com/w/cpp/concept/Compare)
 argument.  If not provided, defaults to `std::less`. <br />
 Iterables passed to sorted are required to have an iterator with
@@ -449,12 +448,12 @@ This can chain any set of ranges together as long as their iterators
 dereference to the same type.
 
 ```c++
-vector<int> empty{};                                                 
-vector<int> vec1{1,2,3,4,5,6};                                       
-array<int,4> arr1{{7,8,9,10}};                                       
+vector<int> empty{};
+vector<int> vec1{1,2,3,4,5,6};
+array<int,4> arr1{{7,8,9,10}};
 
-for (auto&& i : chain(empty,vec1,arr1)) {                             
-    cout << i << '\n';                                          
+for (auto&& i : chain(empty,vec1,arr1)) {
+    cout << i << '\n';
 }
 ```
 
@@ -483,8 +482,8 @@ reversed
 Iterates over elements of a sequence in reverse order.
 
 ```c++
-for (auto&& i : reversed(a)) {                                          
-    cout << i << '\n';                                           
+for (auto&& i : reversed(a)) {
+    cout << i << '\n';
 }
 ```
 
@@ -504,74 +503,70 @@ for (auto&& i : slice(a,0,15,3)) {
 
 sliding_window
 -------------
-
-Takes a section from a range and increments the whole section.  
+Takes a section from a range and increments the whole section.
 
 Example:
-`[1, 2, 3, 4, 5, 6, 7, 8, 9]`  
+`[1, 2, 3, 4, 5, 6, 7, 8, 9]`
 
 take a section of size 4, output is:
 ```
-1 2 3 4 
-2 3 4 5 
-3 4 5 6 
-4 5 6 7 
-5 6 7 8 
-6 7 8 9 
+1 2 3 4
+2 3 4 5
+3 4 5 6
+4 5 6 7
+5 6 7 8
+6 7 8 9
 ```
 
 Example Usage:
 ```c++
-std::vector<int> v = {1,2,3,4,5,6,7,8,9};                                      
-for (auto&& sec : sliding_window(v,4)) {                                         
-    for (auto&& i : sec) {                                                       
-        std::cout << i << " ";                                                 
-        i.get() = 90; 
-        //has to be accessed with get if you want to store references
-        //because it is stored in a reference_wrapper (std::vector 
-        //cannot hold references)
-    }                                                                          
-    std::cout << std::endl;                                                    
+vector<int> v = {1,2,3,4,5,6,7,8,9};
+for (auto&& sec : sliding_window(v,4)) {
+    for (auto&& i : sec) {
+        cout << i << ' ';
+        i.get() = 90;
+    }
+    cout << '\n';
 }
-```  
+```
 grouper
 ------
 
-grouper is very similar to sliding window, except instead of the 
+grouper is very similar to sliding window, except instead of the
 section sliding by only 1 it goes the length of the full section.
 
 Example usage:
 ```c++
-std::vector<int> v {1,2,3,4,5,6,7,8,9};                                        
-for (auto&& sec : grouper(v,4)) 
+vector<int> v {1,2,3,4,5,6,7,8,9};
+for (auto&& sec : grouper(v,4))
 //each section will have 4 elements
 //except the last one may be cut short
 {
-    for (auto&& i : sec) {                                                       
-        std::cout << i << " ";                                                 
-        i.get() *= 2;                                                          
-    }                                                                          
-    std::cout << std::endl;                                                    
-}  
+    for (auto&& i : sec) {
+        cout << i << " ";
+        i.get() *= 2;
+    }
+    cout << '\n';
+}
 ```
 
 product
 ------
 
-Generates the cartesian project of the given ranges put together  
+Generates the cartesian project of the given ranges put together
 
-Example usage: 
+Example usage:
 ```c++
-std::vector<int> v1{1,2,3};                                                    
-std::vector<int> v2{7,8};                                                      
-std::vector<std::string> v3{"the","cat"};                                      
-std::vector<std::string> v4{"hi","what","up","dude"}; 
-for (auto&& t : product(v1,v2,v3,v4)) {                                          
-    std::cout << std::get<0>(t) << ", "                                        
-        << std::get<1>(t) << ", "                                              
-        << std::get<2>(t) << ", "                                              
-        << std::get<3>(t) << std::endl;                                        
-} 
+vector<int> v1{1,2,3};
+vector<int> v2{7,8};
+vector<string> v3{"the","cat"};
+vector<string> v4{"hi","what","up","dude"};
+for (auto&& t : product(v1,v2,v3,v4)) {
+    cout << std::get<0>(t) << ", "
+        << std::get<1>(t) << ", "
+        << std::get<2>(t) << ", "
+        << std::get<3>(t) << '\n';
+}
 ```
 
 combinations
@@ -581,17 +576,16 @@ Generates n length unique sequences of the input range.
 
 Example usage:
 ```c++
-vector<int> v = {1,2,3,4,5};                                              
-for (auto&& i : combinations(v,3)) {                                             
-    //cout << i << std::endl;                                             
-    for (auto&& j : i ) cout << j << " ";                                   
-    cout << '\n';                                                      
+vector<int> v = {1,2,3,4,5};
+for (auto&& i : combinations(v,3)) {
+    for (auto&& j : i ) cout << j << " ";
+    cout << '\n';
 }
 ```
 
 combinations_with_replacement
 -----------------------------
-Like combinations, but with replacment of each element.  The
+Like combinations, but with replacement of each element.  The
 below is printed by the loop that follows:
 ```
 {A, A}
@@ -616,27 +610,27 @@ iterators of the sequence passed must have an `operator*() const`
 
 Example usage:
 ```c++
-std::vector<int> v = {1,2,3,4,5};                                              
-for (auto&& vec : permutations(v)) {                                             
-    for (auto&& i : vec) {                                                       
-        std::cout << i << " ";                                                 
-    }                                                                       
-    std::cout << std::endl;                                                 
-} 
+vector<int> v = {1,2,3,4,5};
+for (auto&& vec : permutations(v)) {
+    for (auto&& i : vec) {
+        cout << i << ' ';
+    }
+    cout << '\n';
+}
 ```
 
 powerset
 -------
 
-Generates every possible subset of a set, never run it since it runs in 𝚯(2^n).
+Generates every possible subset of a set, runs in O(2^n).
 
 Example usage:
 ```c++
-std::vector<int> vec {1,2,3,4,5,6,7,8,9};                                      
-for (auto&& v : powerset(vec)) {                                                 
-    for (auto&& i : v) std::cout << i << " ";                                    
-    std::cout << std::endl;                                                    
+vector<int> vec {1,2,3,4,5,6,7,8,9};
+for (auto&& v : powerset(vec)) {
+    for (auto&& i : v) {
+        cout << i << " ";
+    }
+    cout << '\n';
 }
 ```
-
-  
