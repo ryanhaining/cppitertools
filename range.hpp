@@ -18,6 +18,7 @@
 #include <exception>
 #include <type_traits>
 #include <iterator>
+#include <cassert>
 
 namespace iter {
 
@@ -68,25 +69,45 @@ namespace iter {
                 private:
                     T value;
                     T step;
+                    bool is_end;
 
                     // compare unsigned values
-                    bool not_equal_to(
-                            const Iterator& other, std::true_type ) const {
-                        return this->value < other.value;
+                    static bool not_equal_to_impl(
+                            const Iterator& iter, const Iterator& end_iter,
+                            std::true_type ) {
+                        assert(!iter.is_end);
+                        assert(end_iter.is_end);
+                        return iter.value < end_iter.value;
                     }
 
                     // compare signed values
-                    bool not_equal_to(
-                            const Iterator& other, std::false_type) const {
-                        return !(this->step > 0 && this->value >= other.value) 
-                            && !(this->step < 0 && this->value <= other.value);
+                    static bool not_equal_to_impl(
+                            const Iterator& iter, const Iterator& end_iter,
+                            std::false_type) {
+                        assert(!iter.is_end);
+                        assert(end_iter.is_end);
+                        return !(iter.step > 0 && iter.value >= end_iter.value)
+                            && !(iter.step < 0 && iter.value <= end_iter.value);
                     }
+
+                    static bool not_equal_to_end(
+                            const Iterator& lhs, const Iterator& rhs) {
+                        if (rhs.is_end) {
+                            return not_equal_to_impl(
+                                    lhs, rhs, std::is_unsigned<T>{});
+                        } else {
+                            return not_equal_to_impl(
+                                    rhs, lhs, std::is_unsigned<T>{});
+                        }
+                    }
+
                 public:
                     Iterator() =default;
 
-                    Iterator(T val, T in_step)
+                    Iterator(T val, T in_step, bool in_is_end)
                         : value{val},
-                        step{in_step}
+                        step{in_step},
+                        is_end{in_is_end}
                     { }
 
                     T operator*() const {
@@ -121,9 +142,15 @@ namespace iter {
                     // Another way to think about it is that the "end"
                     // iterator represents the range of values that are invalid
                     // So, if an iterator is not equal to that, it is valid
-                    bool operator!=(const Iterator& other) const { 
-                        return not_equal_to(
-                                other, typename std::is_unsigned<T>::type());
+                    bool operator!=(const Iterator& other) const {
+                        if (this->is_end && other.is_end) {
+                            return false;
+                        }
+
+                        if (!this->is_end && !other.is_end) {
+                            return this->value != other.value;
+                        }
+                        return not_equal_to_end(*this, other);
                     }
 
                     bool operator==(const Iterator& other) const {
@@ -132,25 +159,25 @@ namespace iter {
             };
 
             Iterator begin() const {
-                return {start, step};
+                return {start, step, false};
             }
 
-            Iterator end() const { 
-                return {stop, step};
+            Iterator end() const {
+                return {stop, step, true};
             }
     };
 
     // This specialization is used for floating point types.  Instead of
     // adding one "step" each time ++ is called on the iterator, the value
     // is recalculated as start + (steps_taken + step_size) to avoid
-    // accumulating floating point inaccuracies 
+    // accumulating floating point inaccuracies
     template <typename T>
     class Range<T, true> {
         friend Range range<T, true>(T);
         friend Range range<T, true>(T, T);
         friend Range range<T, true>(T, T, T);
         private:
-            const T start; 
+            const T start;
             const T stop;
             const T step;
 
