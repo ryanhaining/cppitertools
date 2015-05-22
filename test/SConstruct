@@ -6,7 +6,7 @@ env = Environment(
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                 '-fdiagnostics-color=always',
-               '-I/usr/local/include'],
+               '-I/usr/local/include', '-I.'],
     CPPPATH='..',
     LINKFLAGS='-L/usr/local/lib')
 
@@ -48,8 +48,18 @@ progs = Split(
     helpers
     '''
 )
-if Configure(env).CheckCXXHeader('boost/optional.hpp'):
+
+conf = Configure(env)
+
+# if catch isn't available, exit
+if not conf.CheckCXXHeader('catch.hpp'):
+    print("WARNING: catch.hpp not found, run ./download_catch.sh first")
+    Exit(1)
+
+if conf.CheckCXXHeader('boost/optional.hpp'):
     progs.append('zip_longest')
+
+env = conf.Finish()
 
 test_sources = ['test_{}.cpp'.format(p) for p in progs]
 
@@ -57,4 +67,3 @@ for test_src in test_sources:
     env.Program([test_src, 'test_main.cpp'])
 
 env.Program('test_all', ['test_main.cpp'] + test_sources)
-
