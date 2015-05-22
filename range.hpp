@@ -45,7 +45,7 @@ namespace iter {
         friend Range range<T, false>(T, T);
         friend Range range<T, false>(T, T, T);
         private:
-            const T start; 
+            const T start;
             const T stop;
             const T step;
 
@@ -63,7 +63,7 @@ namespace iter {
 
         public:
             class Iterator
-                : public std::iterator<std::input_iterator_tag, T>
+                : public std::iterator<std::forward_iterator_tag, T>
             {
                 private:
                     T value;
@@ -82,6 +82,8 @@ namespace iter {
                             && !(this->step < 0 && this->value <= other.value);
                     }
                 public:
+                    Iterator() =default;
+
                     Iterator(T val, T in_step)
                         : value{val},
                         step{in_step}
@@ -165,7 +167,7 @@ namespace iter {
             { }
         public:
             class Iterator
-                : public std::iterator<std::input_iterator_tag, T>
+                : public std::iterator<std::forward_iterator_tag, T>
             {
                 private:
                     T start;
@@ -174,6 +176,8 @@ namespace iter {
                     unsigned long steps_taken =0;
 
                 public:
+                    Iterator() =default;
+
                     Iterator(T in_start, T in_step)
                         : start{in_start},
                         value{in_start},
