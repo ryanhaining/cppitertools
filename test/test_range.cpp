@@ -191,7 +191,9 @@ TEST_CASE("range: using doubles detects empty ranges", "[range]") {
     REQUIRE(std::begin(r2) == std::end(r2));
 }
 
-TEST_CASE("range: iterator meets requirements", "[range]") {
+TEST_CASE("range: iterator meets forward iterator requirements", "[range]") {
     auto r = range(5);
-    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+    auto r2 = range(5.0);
+    REQUIRE( itertest::IsForwardIterator<decltype(std::begin(r))>::value );
+    REQUIRE( itertest::IsForwardIterator<decltype(std::begin(r2))>::value );
 }
