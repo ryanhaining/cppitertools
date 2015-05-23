@@ -22,6 +22,87 @@
 
 namespace iter {
 
+    template <typename T, bool IsFloat=std::is_floating_point<T>::value>
+    class RangeIterData;
+
+    // everything except floats
+    template <typename T>
+    class RangeIterData<T, false> {
+        private:
+            T value_{};
+            T step_{};
+        public:
+            RangeIterData() =default;
+            RangeIterData(T in_value, T in_step)
+                : value_{in_value},
+                step_{in_step}
+            { }
+
+            T value() const {
+                return this->value_;
+            }
+
+            T step() const {
+                return this->step_;
+            }
+
+            void inc() {
+                this->value_ += step_;
+            }
+
+            bool operator==(const RangeIterData& other) const {
+              return this->value_ == other.value_;
+            }
+
+            bool operator!=(const RangeIterData& other) const {
+              return !(*this == other);
+            }
+    };
+
+    // float data
+    template <typename T>
+    class RangeIterData<T, true> {
+        private:
+            T start_{};
+            T value_{};
+            T step_{};
+            unsigned long steps_taken{};
+        public:
+            RangeIterData() =default;
+            RangeIterData(T in_start, T in_step)
+                : start_{in_start},
+                value_{in_start},
+                step_{in_step}
+            { }
+
+            T value() const {
+                return this->value_;
+            }
+
+            T step() const {
+                return this->step_;
+            }
+
+            void inc() {
+                ++this->steps_taken;
+                value_ = this->start_ +
+                        (this->step_ * this->steps_taken);
+            }
+
+            bool operator==(const RangeIterData& other) const {
+                // if the difference between the two values is less than the
+                // step size, they are considered equal
+                T diff = this->value_ < other.value_ ?
+                    other.value_ - this->value_ : this->value_ - other.value_;
+                return diff < step_;
+            }
+
+            bool operator!=(const RangeIterData& other) const {
+              return !(*this == other);
+            }
+    };
+
+
     // Thrown when step 0 occurs
     class RangeException : public std::exception {
         const char *what() const noexcept override {
@@ -29,22 +110,22 @@ namespace iter {
         }
     };
 
-    template <typename T, bool IsFloat =false>
+    template <typename T>
     class Range;
 
-    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
-    Range<T, IsFloat> range(T);
-    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
-    Range<T, IsFloat> range(T, T);
-    template <typename T, bool IsFloat =std::is_floating_point<T>::value>
-    Range<T, IsFloat> range(T, T, T);
+    template <typename T>
+    Range<T> range(T);
+    template <typename T>
+    Range<T> range(T, T);
+    template <typename T>
+    Range<T> range(T, T, T);
 
     // General version for everything not a float
-    template <typename T, bool>
+    template <typename T>
     class Range {
-        friend Range range<T, false>(T);
-        friend Range range<T, false>(T, T);
-        friend Range range<T, false>(T, T, T);
+        friend Range range<T>(T);
+        friend Range range<T>(T, T);
+        friend Range range<T>(T, T, T);
         private:
             const T start;
             const T stop;
@@ -67,8 +148,7 @@ namespace iter {
                 : public std::iterator<std::forward_iterator_tag, T>
             {
                 private:
-                    T value;
-                    T step;
+                    RangeIterData<T> data;
                     bool is_end;
 
                     // compare unsigned values
@@ -77,7 +157,7 @@ namespace iter {
                             std::true_type ) {
                         assert(!iter.is_end);
                         assert(end_iter.is_end);
-                        return iter.value < end_iter.value;
+                        return iter.data.value() < end_iter.data.value();
                     }
 
                     // compare signed values
@@ -86,8 +166,10 @@ namespace iter {
                             std::false_type) {
                         assert(!iter.is_end);
                         assert(end_iter.is_end);
-                        return !(iter.step > 0 && iter.value >= end_iter.value)
-                            && !(iter.step < 0 && iter.value <= end_iter.value);
+                        return !(iter.data.step() > 0 && iter.data.value()
+                                 >= end_iter.data.value())
+                            && !(iter.data.step() < 0 && iter.data.value()
+                                 <= end_iter.data.value());
                     }
 
                     static bool not_equal_to_end(
@@ -104,18 +186,17 @@ namespace iter {
                 public:
                     Iterator() =default;
 
-                    Iterator(T val, T in_step, bool in_is_end)
-                        : value{val},
-                        step{in_step},
+                    Iterator(T in_value, T in_step, bool in_is_end)
+                        : data(in_value, in_step),
                         is_end{in_is_end}
                     { }
 
                     T operator*() const {
-                        return this->value;
+                        return this->data.value();
                     }
 
                     Iterator& operator++() {
-                        this->value += this->step;
+                        this->data.inc();
                         return *this;
                     }
 
@@ -142,13 +223,17 @@ namespace iter {
                     // Another way to think about it is that the "end"
                     // iterator represents the range of values that are invalid
                     // So, if an iterator is not equal to that, it is valid
+                    //
+                    // Two end iterators will compare equal
+                    //
+                    // Two non-end iterators will compare by their stored values
                     bool operator!=(const Iterator& other) const {
                         if (this->is_end && other.is_end) {
                             return false;
                         }
 
                         if (!this->is_end && !other.is_end) {
-                            return this->value != other.value;
+                            return this->data != other.data;
                         }
                         return not_equal_to_end(*this, other);
                     }
@@ -167,98 +252,18 @@ namespace iter {
             }
     };
 
-    // This specialization is used for floating point types.  Instead of
-    // adding one "step" each time ++ is called on the iterator, the value
-    // is recalculated as start + (steps_taken + step_size) to avoid
-    // accumulating floating point inaccuracies
     template <typename T>
-    class Range<T, true> {
-        friend Range range<T, true>(T);
-        friend Range range<T, true>(T, T);
-        friend Range range<T, true>(T, T, T);
-        private:
-            const T start;
-            const T stop;
-            const T step;
-
-            Range(T in_stop)
-                : start{0},
-                stop{in_stop},
-                step{1}
-            { }
-
-            Range(T in_start, T in_stop, T in_step =1)
-                : start{in_start},
-                stop{in_stop},
-                step{in_step}
-            { }
-        public:
-            class Iterator
-                : public std::iterator<std::forward_iterator_tag, T>
-            {
-                private:
-                    T start;
-                    T value;
-                    T step;
-                    unsigned long steps_taken =0;
-
-                public:
-                    Iterator() =default;
-
-                    Iterator(T in_start, T in_step)
-                        : start{in_start},
-                        value{in_start},
-                        step{in_step}
-                    { }
-
-                    bool operator!=(const Iterator& other) const {
-                        return !(this->step > 0 && this->value >= other.value) 
-                            && !(this->step < 0 && this->value <= other.value);
-                    }
-
-                    bool operator==(const Iterator& other) const {
-                        return !(*this != other);
-                    }
-
-                    T operator*() const {
-                        return this->value;
-                    }
-
-                    Iterator& operator++() {
-                        ++this->steps_taken;
-                        this->value = this->start +
-                            (this->step * this->steps_taken);
-                        return *this;
-                    }
-
-                    Iterator operator++(int) {
-                        auto ret = *this;
-                        ++*this;
-                        return ret;
-                    }
-            };
-
-            Iterator begin() const {
-                return {start, step};
-            }
-
-            Iterator end() const { 
-                return {stop, step};
-            }
-    };
-
-    template <typename T, bool IsFloat>
-    Range<T, IsFloat> range(T stop) {
+    Range<T> range(T stop) {
         return {stop};
     }
 
-    template <typename T, bool IsFloat>
-    Range<T, IsFloat> range(T start, T stop) {
+    template <typename T>
+    Range<T> range(T start, T stop) {
         return {start, stop};
     }
 
-    template <typename T, bool IsFloat>
-    Range<T, IsFloat> range(T start, T stop, T step) {
+    template <typename T>
+    Range<T> range(T start, T stop, T step) {
         if (step == 0) {
             throw RangeException{};
         }
