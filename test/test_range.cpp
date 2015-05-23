@@ -146,6 +146,40 @@ TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
 
 }
 
+TEST_CASE("range: forward iterator checks", "[range]") {
+  auto r = range(10);
+  REQUIRE( std::end(r) == std::end(r) );
+  auto it1 = std::begin(r);
+  auto it2 = std::begin(r);
+  REQUIRE_FALSE( it1 != it2 );
+  REQUIRE( it1 == it2 );
+  ++it1;
+  REQUIRE( it1 != it2 );
+  ++it2;
+  REQUIRE( it1 == it2 );
+  auto it3 = it1++;
+  REQUIRE( it3 == it2 );
+  auto it4 = ++it3;
+  REQUIRE( it4 == it3 );
+}
+
+TEST_CASE("range: forward iterator with double, checks", "[range]") {
+  auto r = range(10.0);
+  REQUIRE( std::end(r) == std::end(r) );
+  auto it1 = std::begin(r);
+  auto it2 = std::begin(r);
+  REQUIRE_FALSE( it1 != it2 );
+  REQUIRE( it1 == it2 );
+  ++it1;
+  REQUIRE( it1 != it2 );
+  ++it2;
+  REQUIRE( it1 == it2 );
+  auto it3 = it1++;
+  REQUIRE( it3 == it2 );
+  auto it4 = ++it3;
+  REQUIRE( it4 == it3 );
+}
+
 using FVec = const std::vector<double>;
 
 TEST_CASE("range: using doubles", "[range]") {
@@ -191,7 +225,9 @@ TEST_CASE("range: using doubles detects empty ranges", "[range]") {
     REQUIRE(std::begin(r2) == std::end(r2));
 }
 
-TEST_CASE("range: iterator meets requirements", "[range]") {
+TEST_CASE("range: iterator meets forward iterator requirements", "[range]") {
     auto r = range(5);
-    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+    auto r2 = range(5.0);
+    REQUIRE( itertest::IsForwardIterator<decltype(std::begin(r))>::value );
+    REQUIRE( itertest::IsForwardIterator<decltype(std::begin(r2))>::value );
 }

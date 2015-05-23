@@ -180,6 +180,10 @@ struct IsIterator <T, void_t<
         decltype(std::declval<const T&>() == std::declval<const T&>()) //  ==
     >> : std::true_type { };
 
+template <typename T>
+struct IsForwardIterator : std::integral_constant<bool,
+  IsIterator<T>::value && std::is_default_constructible<T>::value> { };
+
 }
 
 #endif
