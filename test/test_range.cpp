@@ -148,6 +148,24 @@ TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
 
 TEST_CASE("range: forward iterator checks", "[range]") {
   auto r = range(10);
+  REQUIRE( std::end(r) == std::end(r) );
+  auto it1 = std::begin(r);
+  auto it2 = std::begin(r);
+  REQUIRE_FALSE( it1 != it2 );
+  REQUIRE( it1 == it2 );
+  ++it1;
+  REQUIRE( it1 != it2 );
+  ++it2;
+  REQUIRE( it1 == it2 );
+  auto it3 = it1++;
+  REQUIRE( it3 == it2 );
+  auto it4 = ++it3;
+  REQUIRE( it4 == it3 );
+}
+
+TEST_CASE("range: forward iterator with double, checks", "[range]") {
+  auto r = range(10.0);
+  REQUIRE( std::end(r) == std::end(r) );
   auto it1 = std::begin(r);
   auto it2 = std::begin(r);
   REQUIRE_FALSE( it1 != it2 );
