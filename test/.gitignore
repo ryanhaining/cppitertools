@@ -5,3 +5,4 @@ test_*
 .sconsign.dblite
 config.log
 .sconf_temp/
+catch.hpp
