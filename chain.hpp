@@ -60,7 +60,7 @@ class Chained {
 
         constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{{
             get_and_deref<Is>...}};
-        
+
         constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{{
             get_and_increment<Is>...}};
 
@@ -68,7 +68,7 @@ class Chained {
             get_and_check_not_equal<Is>...}};
 
 
-        using TraitsValue = 
+        using TraitsValue =
             iterator_traits_deref<std::tuple_element_t<0, TupType>>;
     private:
         TupType tup;
@@ -188,8 +188,8 @@ constexpr std::array<
 
                    static std::unique_ptr<SubIter> clone_sub_pointer(
                            const SubIter* sub_iter) {
-                       return std::unique_ptr<SubIter>{ sub_iter ?
-                           new SubIter{*sub_iter} : nullptr};
+                     return sub_iter ?
+                         std::make_unique<SubIter>(*sub_iter) : nullptr;
                    }
 
                    bool sub_iters_differ(const Iterator& other) const {
@@ -211,9 +211,11 @@ constexpr std::array<
                        : top_level_iter{std::move(top_iter)},
                        top_level_end{std::move(top_end)},
                        sub_iter_p{!(top_iter != top_end) ?  // iter == end ?
-                           nullptr : new SubIter{std::begin(*top_iter)}},
+                           nullptr :
+                             std::make_unique<SubIter>(std::begin(*top_iter))},
                        sub_end_p{!(top_iter != top_end) ?  // iter == end ?
-                           nullptr : new SubIter{std::end(*top_iter)}}
+                           nullptr :
+                             std::make_unique<SubIter>(std::end(*top_iter))}
                    { }
 
                    Iterator(const Iterator& other)
@@ -245,13 +247,15 @@ constexpr std::array<
                        if (!(*this->sub_iter_p != *this->sub_end_p)) {
                            ++this->top_level_iter;
                            if (this->top_level_iter != this->top_level_end) {
-                               sub_iter_p.reset(
-                                       new SubIter{std::begin(*this->top_level_iter)});
-                               sub_end_p.reset(
-                                       new SubIter{std::end(*this->top_level_iter)});
+                               sub_iter_p =
+                                       std::make_unique<SubIter>(
+                                           std::begin(*this->top_level_iter));
+                               sub_end_p =
+                                       std::make_unique<SubIter>(
+                                           std::end(*this->top_level_iter));
                            } else {
-                               sub_iter_p.reset(nullptr);
-                               sub_end_p.reset(nullptr);
+                               sub_iter_p.reset();
+                               sub_end_p.reset();
                            }
                        }
                        return *this;
