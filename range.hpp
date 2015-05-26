@@ -38,7 +38,7 @@ namespace iter {
                 step_{in_step}
             { }
 
-            T value() const {
+            const T& value() const {
                 return this->value_;
             }
 
@@ -75,7 +75,7 @@ namespace iter {
                 step_{in_step}
             { }
 
-            T value() const {
+            const T& value() const {
                 return this->value_;
             }
 
@@ -145,7 +145,8 @@ namespace iter {
 
         public:
             class Iterator
-                : public std::iterator<std::forward_iterator_tag, T>
+                : public std::iterator<
+                  std::forward_iterator_tag, const T>
             {
                 private:
                     RangeIterData<T> data;
@@ -191,7 +192,7 @@ namespace iter {
                         is_end{in_is_end}
                     { }
 
-                    T operator*() const {
+                    const T& operator*() const {
                         return this->data.value();
                     }
 
