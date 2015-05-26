@@ -200,12 +200,13 @@ namespace iter {
             DerefHolder() = default;
 
             DerefHolder(const DerefHolder& other)
-                : item_p{other.item_p ? new TPlain(*other.item_p) : nullptr}
+                : item_p{other.item_p ?
+                  std::make_unique<TPlain>(*other.item_p) : nullptr}
             { }
 
             DerefHolder& operator=(const DerefHolder& other) {
-                this->item_p.reset(other.item_p
-                        ? new TPlain(*other.item_p) : nullptr);
+                this->item_p = other.item_p ?
+                        std::make_unique<TPlain>(*other.item_p) : nullptr;
                 return *this;
             }
 
@@ -224,7 +225,7 @@ namespace iter {
             }
 
             void reset(T&& item) {
-                item_p.reset(new TPlain(std::move(item)));
+                item_p = std::make_unique<TPlain>(std::move(item));
             }
 
             explicit operator bool() const {
@@ -236,8 +237,7 @@ namespace iter {
     // Specialization for when T is an lvalue ref.  Keep this in mind
     // wherever a T appears.
     template <typename T>
-    class DerefHolder<T,
-        typename std::enable_if<std::is_lvalue_reference<T>::value>::type>
+    class DerefHolder<T, std::enable_if_t<std::is_lvalue_reference<T>::value>>
     {
         private:
             static_assert(std::is_lvalue_reference<T>::value,
