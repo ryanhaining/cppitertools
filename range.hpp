@@ -38,7 +38,7 @@ namespace iter {
                 step_{in_step}
             { }
 
-            const T& value() const {
+            T value() const {
                 return this->value_;
             }
 
@@ -75,7 +75,7 @@ namespace iter {
                 step_{in_step}
             { }
 
-            const T& value() const {
+            T value() const {
                 return this->value_;
             }
 
@@ -144,9 +144,17 @@ namespace iter {
             { }
 
         public:
+            // the reference type here is T, which doesn't strictly follow all
+            // of the rules, but std::vector<bool>::iterator::reference isn't
+            // a reference type either, this isn't any worse
+
             class Iterator
                 : public std::iterator<
-                  std::forward_iterator_tag, const T>
+                  std::forward_iterator_tag,
+                  T,
+                  std::ptrdiff_t,
+                  T*,
+                  T>
             {
                 private:
                     RangeIterData<T> data;
@@ -192,7 +200,7 @@ namespace iter {
                         is_end{in_is_end}
                     { }
 
-                    const T& operator*() const {
+                    T operator*() const {
                         return this->data.value();
                     }
 
