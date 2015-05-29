@@ -161,6 +161,11 @@ TEST_CASE("range: forward iterator checks", "[range]") {
   REQUIRE( it3 == it2 );
   auto it4 = ++it3;
   REQUIRE( it4 == it3 );
+
+  auto it5 = std::begin(r);
+  const auto& v = *it5;
+  ++it5;
+  REQUIRE( v != *it5 );
 }
 
 TEST_CASE("range: forward iterator with double, checks", "[range]") {
