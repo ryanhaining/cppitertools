@@ -1,5 +1,5 @@
-#ifndef UNIQUE_JUSTSEEN_HPP
-#define UNIQUE_JUSTSEEN_HPP
+#ifndef ITER_UNIQUE_JUSTSEEN_HPP
+#define ITER_UNIQUE_JUSTSEEN_HPP
 
 #include "iterbase.hpp"
 #include "groupby.hpp"
@@ -9,7 +9,7 @@
 #include <iterator>
 #include <initializer_list>
 
-namespace iter 
+namespace iter
 {
     template <typename GroupByType>
     struct GroupFrontGetter{
@@ -48,5 +48,4 @@ namespace iter
     }
 }
 
-#endif //UNIQUE_JUSTSEEN_HPP
-    
+#endif
