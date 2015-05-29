@@ -1,30 +1,22 @@
 CPPItertools
 ============
 
-range-based for loop add-ons inspired by the Python builtins and itertools
+Range-based for loop add-ons inspired by the Python builtins and itertools
 library.  Like itertools and the Python3 builtins, this library uses lazy
 evaluation wherever possible.
 
 *Note*: Everthing is inside the `iter` namespace.
 
-#### Requirements
-This library is **header-only** and relies only on the C++ standard
-library. The only exception is `zip_longest` which uses `boost::optional`.
-`#include <cppitertools/itertools.hpp>` will include all of the provided
-tools except for `zip_longest` which must be included separately.  You may
-also include individual pieces with the relevant header
-(`#include <cppitertools/enumerate.hpp>` for example).
-
 #### Table of Contents
 [range](#range)<br />
 [enumerate](#enumerate)<br />
 [zip](#zip)<br />
-[zip_longest](#zip)<br />
+[zip\_longest](#zip)<br />
 [imap](#imap)<br />
 [filter](#filter)<br />
 [filterfalse](#filterfalse)<br />
-[unique_everseen](#unique_everseen)<br />
-[unique_justseen](#unique_justseen)<br />
+[unique\_everseen](#unique_everseen)<br />
+[unique\_justseen](#unique_justseen)<br />
 [takewhile](#takewhile)<br />
 [dropwhile](#dropwhile)<br />
 [cycle](#cycle)<br />
@@ -38,20 +30,87 @@ also include individual pieces with the relevant header
 [chain.from\_iterable](#chainfrom_iterable)<br />
 [reversed](#reversed)<br />
 [slice](#slice)<br />
-[sliding_window](#sliding_window)<br />
+[sliding\_window](#sliding_window)<br />
 [grouper](#grouper)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
 [combinations](#combinations)<br />
-[combinations_with_replacement](#combinations_with_replacement)<br />
+[combinations\_with\_replacement](#combinations_with_replacement)<br />
 [permutations](#permutations)<br />
 [powerset](#powerset)<br />
+
+#### Requirements
+This library is **header-only** and relies only on the C++ standard
+library. The only exception is `zip_longest` which uses `boost::optional`.
+`#include <cppitertools/itertools.hpp>` will include all of the provided
+tools except for `zip_longest` which must be included separately.  You may
+also include individual pieces with the relevant header
+(`#include <cppitertools/enumerate.hpp>` for example).
+
+#### Requirements of passed objects
+Most itertools will work with iterables using InputIterators and not copy
+or move any underlying elements.  The itertools that need ForwardIterators or
+have additional requirements are noted in this document. However, the cases
+should be fairly obvious: any time an element needs to appear multiple times
+(as in `combinations` or `cycle`) or be looked at more than once (specifically,
+`sorted`).
+This library takes every effort to rely on as little as possible from the
+underlying iterables, but if anything noteworthy is needed it is described
+in this document.
+
+#### Feedback
+If you find anything not working as you expect, not compiling when you believe
+it should, a divergence from the python itertools behavior, or any sort of
+error, please let me know. The preferable means would be to open an issue on
+github. If you want to talk about an issue that you don't feel would be
+appropriate as a github issue (or you just don't want to open one),
+You can email me directly with whatever code you have that describes the
+problem, I've been pretty responsive in the past. If I believe you are
+"misusing" the library I'll try to put the blame on myself for being unclear
+in this document and take the steps to clarify it.  So please, contact me with
+any concerns, I'm open to feedback.
+
+#### How (not) to use this library
+The library functions create and return objects that are properly templated on
+the iterable they are passed. These exact names of these types or
+precisely how they are templated is unspecified, you should rely on the
+functions described in this document.
+If you plan to use these functions in very simple, straight forward means as in
+the examples on this page, then you will be fine. If you feel like you need to
+open the header files, then I've probably under-described something, let me
+know.
+
+#### Handling of rvalues vs lvalues
+The rules are pretty simple, and the library can be largely used without
+knowledge of them.
+Let's take an example
+```c++
+std::vector<int> vec{2,4,6,8};
+for (auto&& p : enumerate(vec)) { /* ... */ }
+```
+In this case, `enumerate` will return an object that has bound a reference to
+`vec`. No copies are produced here, neither of `vec` nor of the elements it
+holds.
+
+If an rvalue was passed to enumerate, binding a reference would be unsafe.
+Consider:
+```c++
+for (auto&& p : enumerate(std::vector<int>{2,4,6,8})) { /* ... */ }
+```
+Instead, `enumerate` will return an object that has the temporary *moved* into
+it.  That is, the returned object will contain a `std::vector<int>` rather than
+just a reference to one. This may seem like a contrived example, but it matters
+when `enumerate` is passed the result of a function call like `enumerate(f())`,
+or, more obviously, something like `enumerate(zip(a, b))`.  The object returned
+from `zip` must be moved into the `enumerate` object. As a more specific
+result, itertools can be mixed and nested.
+
 
 range
 -----
 
-Uses an underlying iterator to acheive the same effect of the python range
+Uses an underlying iterator to achieve the same effect of the python range
 function.  `range` can be used in three different ways:
 
 Only the stopping point is provided.  Prints `0 1 2 3 4 5 6 7 8 9`
@@ -92,12 +151,17 @@ for(auto i : range(5.0, 10.0, 0.5)) {
 }
 ```
 
+*Implementation Note*: Typical ranges have their current value incremented by
+the step size repeatedly (`value += step`). Floating point range value are
+recomputed at each step to avoid accumulating floating point inaccuracies
+(`value = start + (step * steps_taken`). The result of the latter is a bit
+slower but more accurate.
+
 enumerate
 ---------
 
-Can be used with any class with an iterator.  Continually "yields" containers
-similar to pairs.  They are basic structs with a .index and a .element.  Usage
-appears as:
+Continually "yields" containers similar to pairs.  They are basic structs with a
+.index and a .element.  Usage appears as:
 
 ```c++
 vector<int> vec{2, 4, 6, 8};
@@ -154,7 +218,7 @@ for(auto&& i : filterfalse(vec)) {
 }
 
 ```
-unique_everseen
+unique\_everseen
 ---------------
 This is a filter adaptor that only generates values that have never been seen
 before. For this to work your object must be specialized for `std::hash`.
@@ -167,7 +231,7 @@ for (auto&& i : unique_everseen(v)) {
 }
 ```
 
-unique_justseen
+unique\_justseen
 --------------
 Another filter adaptor that only omits consecutive duplicates.
 
@@ -319,7 +383,7 @@ zip
 Takes an arbitrary number of ranges of different types and efficiently iterates
 over them in parallel (so an iterator to each container is incremented
 simultaneously).  When you dereference an iterator to "zipped" range you get a
-tuple of the elements the iterators were holding. 
+tuple of the elements the iterators were holding.
 
 Example usage:
 ```c++
@@ -337,7 +401,7 @@ for (auto&& e : zip(i,f,s,d)) {
 }
 ```
 
-zip_longest
+zip\_longest
 -----------
 Terminates on the longest sequence instead of the shortest.
 Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type
@@ -457,7 +521,7 @@ for (auto&& i : chain(empty,vec1,arr1)) {
 }
 ```
 
-chain.from_iterable
+chain.from\_iterable
 -------------------
 
 Similar to chain, but rather than taking a variadic number of iterables,
@@ -501,7 +565,7 @@ for (auto&& i : slice(a,0,15,3)) {
 }
 ```
 
-sliding_window
+sliding\_window
 -------------
 Takes a section from a range and increments the whole section.
 
@@ -583,7 +647,7 @@ for (auto&& i : combinations(v,3)) {
 }
 ```
 
-combinations_with_replacement
+combinations\_with\_replacement
 -----------------------------
 Like combinations, but with replacement of each element.  The
 below is printed by the loop that follows:
