@@ -16,6 +16,19 @@
 #include <cstddef>
 
 namespace iter {
+    template <typename T>
+    struct type_is {
+        using type = T;
+    };
+
+    // gcc CWG 1558
+    template <typename...>
+    struct void_t_help {
+        using type = void;
+    };
+    template <typename... Ts>
+    using void_t = typename void_t_help<Ts...>::type;
+
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
@@ -50,6 +63,46 @@ namespace iter {
     template <typename Container>
     using reverse_iterator_deref =
         decltype(*std::declval<reverse_iterator_type<Container>&>());
+
+    namespace detail {
+    template <typename T, typename =void>
+    struct ArrowHelper {
+        using type = void;
+    };
+
+    template <typename T>
+    struct ArrowHelper<T*, void> {
+        using type = T*;
+        constexpr type operator()(T* t) const noexcept {
+            return t;
+        }
+    };
+
+
+    template <typename T>
+    struct ArrowHelper<T, void_t<decltype(std::declval<T&>().operator->())>> {
+        using type = decltype(std::declval<T&>().operator->());
+        type operator()(T& t) const {
+            return t.operator->();
+        }
+    };
+
+    template <typename T>
+    using arrow = typename detail::ArrowHelper<T>::type;
+
+    }
+
+    // type of C::iterator::operator->, also works with pointers
+    // void if the iterator has no operator->
+    template <typename C>
+    using iterator_arrow = arrow<iterator_type<C>>;
+
+    // applys the -> operator to an object, if the object is a pointer,
+    // it returns the pointer
+    template <typename T>
+    arrow<T> apply_arrow(T& t) {
+        return detail::ArrowHelper<T>{}(t);
+    }
 
     template <typename, typename =void>
     struct is_random_access_iter : std::false_type { };
@@ -218,19 +271,6 @@ namespace iter {
                 return this->item_p != nullptr;
             }
     };
-
-    template <typename T>
-    struct type_is {
-        using type = T;
-    };
-
-    // gcc CWG 1558
-    template <typename...>
-    struct void_t_help {
-        using type = void;
-    };
-    template <typename... Ts>
-    using void_t = typename void_t_help<Ts...>::type;
 
 }
 
