@@ -135,11 +135,9 @@ namespace iter {
     // if the iterate dereferences to an lvalue references, a pointer to the
     //     element is stored
     // if it does not, a value is stored instead
-    // get() returns a reference to the held item in either case
-    // pull() should be used when the item is being "pulled out" of the
-    //     DerefHolder.  after pull() is called, neither it nor get() can be
-    //     safely called after
-    // reset() replaces the currently held item and may be called after pull()
+    // get() returns a reference to the held item
+    // get_ptr() returns a pointer to the held item
+    // reset() replaces the currently held item
 
     template <typename T, typename =void>
     class DerefHolder {
