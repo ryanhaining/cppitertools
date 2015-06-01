@@ -70,6 +70,9 @@ namespace iter {
                        return this->indices;
                    }
 
+                   CombIteratorDeref *operator->() {
+                       return &this->indices;
+                   }
 
                    Iterator& operator++() {
                        for (auto iter = indices.get().rbegin();

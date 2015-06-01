@@ -77,7 +77,7 @@ namespace iter {
                     return this->indices;
                 }
 
-                CombIteratorDeref* operator->() {
+                CombIteratorDeref *operator->() {
                     return &this->indices;
                 }
 
