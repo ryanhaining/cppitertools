@@ -60,9 +60,10 @@ namespace iter {
                 : public std::iterator<std::input_iterator_tag, KeyGroupPair>
             {
                 private:
+                    using Holder = DerefHolder<iterator_deref<Container>>;
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
-                    DerefHolder<iterator_deref<Container>> item;
+                    Holder item;
                     KeyFunc *key_func;
 
                 public:
@@ -79,7 +80,6 @@ namespace iter {
                     }
 
                     KeyGroupPair operator*() {
-                        // FIXME double deref
                         return {
                             (*this->key_func)(this->item.get()),
                             Group{*this, (*this->key_func)(this->item.get())}
@@ -117,11 +117,10 @@ namespace iter {
                         return !(this->sub_iter != this->sub_end);
                     }
 
-                    iterator_deref<Container> pull() {
-                        return this->item.pull();
+                    typename Holder::reference get() {
+                        return this->item.get();
                     }
 
-                    // FIXME double deref. Two deref holders?
                     key_func_ret next_key() {
                         return (*this->key_func)(this->item.get());
                     }
@@ -218,7 +217,7 @@ namespace iter {
                             }
 
                             iterator_deref<Container> operator*() {
-                                return this->group_p->owner.pull();
+                                return this->group_p->owner.get();
                             }
                     };
 
