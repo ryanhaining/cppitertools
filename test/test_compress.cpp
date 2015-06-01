@@ -60,6 +60,15 @@ TEST_CASE("compress: all false", "[compress]") {
     REQUIRE( std::begin(c) == std::end(c) );
 }
 
+TEST_CASE("compress: operator->", "[compress") {
+    std::vector<std::string> svec = {"a", "abc", "abcde"};
+    std::vector<bool> bvec = {false, false, true};
+    auto c = compress(svec, bvec);
+    auto it = std::begin(c);
+    REQUIRE( it->size() == 5 );
+}
+
+
 TEST_CASE("compress: binds to lvalues, moves rvalues", "[compress]") {
     BasicIterable<char> bi{'x', 'y', 'z'};
     std::vector<bool> bl{true, true, true};
