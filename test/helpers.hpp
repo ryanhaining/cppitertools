@@ -182,6 +182,7 @@ struct IsIterator <T, void_t<
         decltype(T(std::declval<const T&>())), // copyctor
         decltype(std::declval<T&>() = std::declval<const T&>()), // copy =
         decltype(*std::declval<T&>()), // operator*
+        decltype(std::declval<T&>().operator->()), // operator->
         decltype(++std::declval<T&>()), // prefix ++
         decltype(std::declval<T&>()++), // postfix ++
         decltype(std::declval<const T&>() != std::declval<const T&>()), //  !=
