@@ -47,9 +47,10 @@ namespace iter {
                         iterator_traits_deref<Container>>
             {
                 protected:
+                    using Holder = DerefHolder<iterator_deref<Container>>;
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
-                    DerefHolder<iterator_deref<Container>> item;
+                    Holder item;
                     FilterFunc *filter_func;
 
                     void inc_sub_iter() {
@@ -82,8 +83,8 @@ namespace iter {
                         this->skip_failures();
                     } 
 
-                    iterator_deref<Container> operator*() {
-                        return this->item.pull();
+                    typename Holder::reference operator*() {
+                        return this->item.get();
                     }
 
                     Iterator& operator++() { 

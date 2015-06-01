@@ -1,5 +1,5 @@
-#ifndef ITER_UNIQUE_JUSTSEEN_H_
-#define ITER_UNIQUE_JUSTSEEN_H_
+#ifndef ITER_UNIQUE_JUSTSEEN_HPP
+#define ITER_UNIQUE_JUSTSEEN_HPP
 
 #include "groupby.hpp"
 #include "imap.hpp"
@@ -26,5 +26,5 @@ namespace iter {
                 groupby(il));
     }
 }
-    
-#endif // #ifndef ITER_UNIQUE_JUSTSEEN_H_
+
+#endif

@@ -180,11 +180,9 @@ namespace iter {
     // if the iterate dereferences to an lvalue references, a pointer to the
     //     element is stored
     // if it does not, a value is stored instead
-    // get() returns a reference to the held item in either case
-    // pull() should be used when the item is being "pulled out" of the
-    //     DerefHolder.  after pull() is called, neither it nor get() can be
-    //     safely called after
-    // reset() replaces the currently held item and may be called after pull()
+    // get() returns a reference to the held item
+    // get_ptr() returns a pointer to the held item
+    // reset() replaces the currently held item
 
     template <typename T, typename =void>
     class DerefHolder {
@@ -197,6 +195,9 @@ namespace iter {
             std::unique_ptr<TPlain> item_p;
 
         public:
+            using reference = TPlain&;
+            using pointer = TPlain*;
+
             DerefHolder() = default;
 
             DerefHolder(const DerefHolder& other)
@@ -214,14 +215,12 @@ namespace iter {
             DerefHolder& operator=(DerefHolder&&) = default;
             ~DerefHolder() = default;
 
-            TPlain& get() {
-                return *item_p;
+            reference get() {
+                return *this->item_p;
             }
 
-            T pull() {
-                // NOTE should I reset the unique_ptr to nullptr here
-                // since its held item is now invalid anyway?
-                return std::move(*item_p);
+            pointer get_ptr() {
+                return this->item_p.get();
             }
 
             void reset(T&& item) {
@@ -239,20 +238,22 @@ namespace iter {
     template <typename T>
     class DerefHolder<T, std::enable_if_t<std::is_lvalue_reference<T>::value>>
     {
-        private:
-            static_assert(std::is_lvalue_reference<T>::value,
-                    "lvalue specialization handling non-lvalue-ref type");
+        public:
+            using reference = T;
+            using pointer = std::remove_reference_t<T>*;
 
-            std::remove_reference_t<T> *item_p =nullptr;
+        private:
+            pointer item_p{};
+            
         public:
             DerefHolder() = default;
 
-            T get() {
+            reference get() {
                 return *this->item_p;
             }
 
-            T pull() {
-                return this->get();
+            pointer get_ptr() {
+                return this->item_p;
             }
 
             void reset(T item) {
