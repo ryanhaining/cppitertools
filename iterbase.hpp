@@ -152,6 +152,9 @@ namespace iter {
             std::unique_ptr<TPlain> item_p;
 
         public:
+            using reference = TPlain&;
+            using pointer = TPlain*;
+
             DerefHolder() = default;
 
             DerefHolder(const DerefHolder& other)
@@ -168,14 +171,12 @@ namespace iter {
             DerefHolder& operator=(DerefHolder&&) = default;
             ~DerefHolder() = default;
 
-            TPlain& get() {
-                return *item_p;
+            reference get() {
+                return *this->item_p;
             }
 
-            T pull() {
-                // NOTE should I reset the unique_ptr to nullptr here
-                // since its held item is now invalid anyway?
-                return std::move(*item_p);
+            pointer get_ptr() {
+                return this->item_p.get();
             }
 
             void reset(T&& item) {
@@ -194,20 +195,22 @@ namespace iter {
     class DerefHolder<T,
         typename std::enable_if<std::is_lvalue_reference<T>::value>::type>
     {
-        private:
-            static_assert(std::is_lvalue_reference<T>::value,
-                    "lvalue specialization handling non-lvalue-ref type");
+        public:
+            using reference = T;
+            using pointer = typename std::remove_reference<T>::type*;
 
-            typename std::remove_reference<T>::type *item_p =nullptr;
+        private:
+            pointer item_p{};
+            
         public:
             DerefHolder() = default;
 
-            T get() {
+            reference get() {
                 return *this->item_p;
             }
 
-            T pull() {
-                return this->get();
+            pointer get_ptr() {
+                return this->item_p;
             }
 
             void reset(T item) {
