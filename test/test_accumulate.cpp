@@ -63,6 +63,13 @@ TEST_CASE("accumulate: postfix ++", "[accumulate]") {
     REQUIRE( *it == 5 );
 }
 
+TEST_CASE("accumulate: operator->", "[accumulate]") {
+    Vec ns{7, 3};
+    auto a = accumulate(ns);
+    auto it = std::begin(a);
+    const int *p = it.operator->();
+    REQUIRE( *p == 7 );
+}
 
 TEST_CASE("accumulate: iterator meets requirements", "[accumulate]") {
     Vec ns{};
