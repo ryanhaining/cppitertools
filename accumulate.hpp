@@ -76,6 +76,10 @@ namespace iter {
                         return this->acc_val;
                     }
 
+                    const AccumVal* operator->() const {
+                        return &this->acc_val;
+                    }
+
                     Iterator& operator++() { 
                         ++this->sub_iter;
                         if (this->sub_iter != this->sub_end) {
