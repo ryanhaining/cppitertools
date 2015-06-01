@@ -95,12 +95,12 @@ namespace iter {
     // type of C::iterator::operator->, also works with pointers
     // void if the iterator has no operator->
     template <typename C>
-    using iterator_arrow = arrow<iterator_type<C>>;
+    using iterator_arrow = detail::arrow<iterator_type<C>>;
 
     // applys the -> operator to an object, if the object is a pointer,
     // it returns the pointer
     template <typename T>
-    arrow<T> apply_arrow(T& t) {
+    detail::arrow<T> apply_arrow(T& t) {
         return detail::ArrowHelper<T>{}(t);
     }
 
