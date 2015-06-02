@@ -104,6 +104,24 @@ namespace iter {
         return detail::ArrowHelper<T>{}(t);
     }
 
+    // For iterators that have an operator* which returns a value
+    // they can return this type from their operator-> instead, which will
+    // wrap an object and allow it to be used with arrow
+    template <typename T>
+    class ArrowProxy {
+        private:
+            T obj;
+        public:
+            ArrowProxy(T&& in_obj)
+                : obj(std::move(in_obj))
+            { }
+
+            T *operator->() {
+                return &obj;
+            }
+    };
+
+
     template <typename, typename =void>
     struct is_random_access_iter : std::false_type { };
 
