@@ -49,6 +49,14 @@ TEST_CASE("dropwhile: only drops from beginning", "[dropwhile]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("dropwhile: operator->", "[dropwhile]") {
+    std::vector<std::string> vs = {"a", "ab", "abcdef", "abcdefghi"};
+    auto d = dropwhile(
+            [](const std::string& str) { return str.size() < 3; }, vs);
+    auto it = std::begin(d);
+    REQUIRE( it->size() == 6 );
+}
+
 namespace {
     int less_than_five(int i) {
         return i < 5;
