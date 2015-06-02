@@ -80,6 +80,10 @@ namespace iter {
                         return {this->index, *this->sub_iter};
                     }
 
+                    ArrowProxy<IterYield> operator->() {
+                        return {**this};
+                    }
+
                     Iterator& operator++() { 
                         ++this->sub_iter;
                         ++this->index;
