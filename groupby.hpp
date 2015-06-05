@@ -1,9 +1,12 @@
 #ifndef ITER_GROUP_BY_HPP_
 #define ITER_GROUP_BY_HPP_
 
+// this is easily the most functionally complex itertool
+
 #include "iterbase.hpp"
 
 #include <type_traits>
+#include <memory>
 #include <utility>
 #include <iterator>
 #include <initializer_list>
@@ -54,17 +57,19 @@ namespace iter {
         private:
             using KeyGroupPair =
                 std::pair<key_func_ret, Group>;
+            using Holder = DerefHolder<iterator_deref<Container>>;
         public:
 
             class Iterator 
                 : public std::iterator<std::input_iterator_tag, KeyGroupPair>
             {
                 private:
-                    using Holder = DerefHolder<iterator_deref<Container>>;
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
                     Holder item;
                     KeyFunc *key_func;
+
+                    std::unique_ptr<KeyGroupPair> current_key_group_pair;
 
                 public:
                     Iterator(iterator_type<Container>&& si,
@@ -79,14 +84,43 @@ namespace iter {
                         }
                     }
 
-                    KeyGroupPair operator*() {
-                        return {
-                            (*this->key_func)(this->item.get()),
-                            Group{*this, (*this->key_func)(this->item.get())}
-                        };
+                    Iterator(const Iterator& other)
+                        : sub_iter{other.sub_iter},
+                        sub_end{other.sub_end},
+                        item{other.item},
+                        key_func{other.key_func}
+                    { }
+
+                    Iterator& operator=(const Iterator& other) {
+                        if (this == &other) return *this;
+                        this->sub_iter = other.sub_iter;
+                        this->sub_end = other.sub_end;
+                        this->item = other.item;
+                        this->key_func = other.key_func;
+                        this->current_key_group_pair.reset();
+                        return *this;
+                    }
+
+                    ~Iterator() =default;
+
+                    // NOTE the implicitly generated move constructor would
+                    // be wrong
+
+                    KeyGroupPair& operator*() {
+                        set_key_group_pair();
+                        return *this->current_key_group_pair;
+                    }
+
+                    KeyGroupPair *operator->() {
+                        set_key_group_pair();
+                        return this->current_key_group_pair.get();
                     }
 
                     Iterator& operator++() { 
+                        if (!this->current_key_group_pair) {
+                            this->set_key_group_pair();
+                        }
+                        this->current_key_group_pair.reset();
                         return *this;
                     }
 
@@ -121,9 +155,23 @@ namespace iter {
                         return this->item.get();
                     }
 
+                    typename Holder::pointer get_ptr() {
+                        return this->item.get_ptr();
+                    }
+
                     key_func_ret next_key() {
                         return (*this->key_func)(this->item.get());
                     }
+
+                    void set_key_group_pair() {
+                        if (!this->current_key_group_pair) {
+                            this->current_key_group_pair.reset(
+                                    new KeyGroupPair(
+                                        (*this->key_func)(this->item.get()),
+                                        Group{*this, this->next_key()}));
+                        }
+                    }
+
             };
 
 
@@ -162,7 +210,7 @@ namespace iter {
                     // move-constructible, non-copy-constructible,
                     // non-assignable
                     Group() = delete;
-                    Group(const Group&) = delete;
+                    Group(const Group&) = default;
                     Group& operator=(const Group&) = delete;
                     Group& operator=(Group&&) = delete;
 
@@ -218,6 +266,10 @@ namespace iter {
 
                             iterator_deref<Container> operator*() {
                                 return this->group_p->owner.get();
+                            }
+
+                            typename Holder::pointer operator->() {
+                                return this->group_p->owner.get_ptr();
                             }
                     };
 
