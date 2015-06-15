@@ -210,6 +210,6 @@ TEST_CASE("chain.from_iterable: empty", "[chain.from_iterable]") {
 TEST_CASE("chain.from_iterable: iterator meets requirements",
         "[chain.from_iterable]") {
     const std::vector<std::string> v{};
-    auto c = chain(v);
+    auto c = chain.from_iterable(v);
     REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
 }
