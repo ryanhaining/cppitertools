@@ -17,6 +17,7 @@ class ValidIter {
         bool operator==(const ValidIter&) const;
         bool operator!=(const ValidIter&) const;
         int operator*();
+        void* operator->();
 };
 
 }
