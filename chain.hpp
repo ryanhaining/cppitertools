@@ -292,6 +292,10 @@ namespace iter {
                    iterator_deref<iterator_deref<Container>> operator*() {
                        return **this->sub_iter_p;
                    }
+
+                   iterator_arrow<iterator_deref<Container>> operator->() {
+                       return apply_arrow(*this->sub_iter_p);
+                   }
            };
 
            Iterator begin() {
