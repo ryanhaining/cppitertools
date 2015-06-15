@@ -15,6 +15,8 @@
 //
 // If a step of 0 is provided, a RangeException will be thrown
 
+#include "iterbase.hpp"
+
 #include <exception>
 #include <type_traits>
 #include <iterator>
@@ -204,11 +206,9 @@ namespace iter {
                         return this->data.value();
                     }
 
-#if 0
                     ArrowProxy<T> operator->() const {
                         return {**this};
                     }
-#endif
 
                     Iterator& operator++() {
                         this->data.inc();
