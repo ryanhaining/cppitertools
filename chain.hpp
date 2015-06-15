@@ -90,6 +90,13 @@ namespace iter {
                         return this->at_end ?
                             *this->rest_iter : *this->sub_iter;
                     }
+
+                    iterator_arrow<Container> operator->() {
+                        return this->at_end ?
+                            apply_arrow(this->rest_iter)
+                            : apply_arrow(this->sub_iter);
+                    }
+
             };
 
             Iterator begin() {
@@ -154,6 +161,10 @@ namespace iter {
 
                     iterator_deref<Container> operator*() {
                         return *this->sub_iter;
+                    }
+
+                    iterator_arrow<Container> operator->() {
+                        return apply_arrow(this->sub_iter);
                     }
             };
 
