@@ -40,6 +40,10 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
+                    reverse_iterator_arrow<Container> operator->() {
+                        return apply_arrow(this->sub_iter);
+                    }
+
                     Iterator& operator++() { 
                         ++this->sub_iter;
                         return *this;
@@ -103,8 +107,12 @@ namespace iter {
                         : sub_iter{iter}
                     { } 
 
-                    iterator_deref<T[N]> operator*() {
+                    T& operator*() {
                         return *(this->sub_iter - 1);
+                    }
+
+                    T *operator->() {
+                        return (this->sub_iter - 1);
                     }
 
                     Iterator& operator++() { 
