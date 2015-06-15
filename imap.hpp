@@ -106,14 +106,18 @@ namespace iter {
                     ZippedIterType zipiter;
 
                 public:
-                    Iterator(MapFunc& in_map_func, ZippedIterType&& in_zipiter) :
-                        map_func(&in_map_func),
+                    Iterator(MapFunc& in_map_func, ZippedIterType&& in_zipiter)
+                        : map_func(&in_map_func),
                         zipiter(std::move(in_zipiter))
                     { } 
 
                     IMapIterDeref operator*() {
                         return detail::call_with_tuple(
                                 *this->map_func, *(this->zipiter));
+                    }
+
+                    ArrowProxy<IMapIterDeref> operator->() {
+                        return {**this};
                     }
 
                     Iterator& operator++() { 
