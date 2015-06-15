@@ -29,7 +29,8 @@ namespace iter {
                       std::input_iterator_tag, CombinatorType>
             {
                 private:
-                    typename std::remove_reference<Container>::type *container_p;
+                    typename std::remove_reference<Container>::type *
+                        container_p;
                     std::size_t set_size;
                     std::shared_ptr<CombinatorType> comb;
                     iterator_type<CombinatorType> comb_iter;
@@ -39,7 +40,8 @@ namespace iter {
                     Iterator(Container& in_container, std::size_t sz)
                         : container_p{&in_container},
                         set_size{sz},
-                        comb{new CombinatorType(combinations(in_container, sz))},
+                        comb{new CombinatorType(
+                                combinations(in_container, sz))},
                         comb_iter{std::begin(*comb)},
                         comb_end{std::end(*comb)}
                     { }
@@ -49,7 +51,8 @@ namespace iter {
                         if (this->comb_iter == this->comb_end) {
                             ++this->set_size;
                             this->comb.reset(new CombinatorType(combinations(
-                                            *this->container_p, this->set_size)));
+                                            *this->container_p,
+                                            this->set_size)));
                             this->comb_iter = std::begin(*this->comb);
                             this->comb_end = std::end(*this->comb);
                         }
@@ -64,6 +67,10 @@ namespace iter {
 
                     iterator_deref<CombinatorType> operator*() {
                         return *this->comb_iter;
+                    }
+
+                    iterator_arrow<CombinatorType> operator->() {
+                        apply_arrow(this->comb_iter);
                     }
 
                     bool operator != (const Iterator& other) const {
