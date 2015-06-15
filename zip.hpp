@@ -86,6 +86,11 @@ namespace iter {
                                     *this->iter},
                                 *this->rest_iter);
                     }
+
+                    auto operator->() -> ArrowProxy<decltype(**this)> {
+                        return {**this};
+                    }
+
             };
 
             Iterator begin() {
@@ -136,6 +141,10 @@ namespace iter {
 
                     std::tuple<> operator*() {
                         return std::tuple<>{};
+                    }
+
+                    auto operator->() -> ArrowProxy<decltype(**this)> {
+                        return {**this};
                     }
             };
 
