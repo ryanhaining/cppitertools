@@ -74,6 +74,10 @@ namespace iter {
                     T& operator*() {
                         return *this->elem;
                     }
+
+                    TPlain* operator->() {
+                        return this->elem;
+                    }
             };
 
             Iterator begin() {
