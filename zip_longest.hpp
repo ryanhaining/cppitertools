@@ -99,6 +99,11 @@ namespace iter {
                                     *this->rest_iter);
                         }
                     }
+
+                    ArrowProxy<ZipIterDeref> operator->() {
+                        return {**this};
+                    }
+
             };
 
             Iterator begin() {
@@ -140,6 +145,10 @@ namespace iter {
 
                     constexpr std::tuple<> operator*() const {
                         return {};
+                    }
+
+                    constexpr ArrowProxy<std::tuple<>> operator->() const {
+                        return {{}};
                     }
             };
 
