@@ -204,6 +204,12 @@ namespace iter {
                         return this->data.value();
                     }
 
+#if 0
+                    ArrowProxy<T> operator->() const {
+                        return {**this};
+                    }
+#endif
+
                     Iterator& operator++() {
                         this->data.inc();
                         return *this;
