@@ -70,6 +70,10 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
+                    iterator_arrow<Container> operator->() {
+                        return apply_arrow(this->sub_iter);
+                    }
+
                     Iterator& operator++() { 
                         dumb_advance(this->sub_iter, this->sub_end,this->step);
                         this->current += this->step;
