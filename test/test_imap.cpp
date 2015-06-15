@@ -84,6 +84,22 @@ TEST_CASE("imap: terminates on shortest squence", "[imap]") {
     }
 }
 
+TEST_CASE("imap: operator->", "[imap]") {
+    std::vector<std::string> vs = {"ab", "abcd", "abcdefg"};
+    {
+        auto m = imap([](std::string& s) { return s; }, vs);
+        auto it = std::begin(m);
+        REQUIRE( it->size() == 2 );
+    }
+
+    {
+        auto m = imap([](std::string& s) -> std::string& { return s; }, vs);
+        auto it = std::begin(m);
+        REQUIRE( it->size() == 2 );
+    }
+}
+
+
 TEST_CASE("imap: empty sequence gives nothing", "[imap]") {
     Vec v{};
     auto im = imap(plusone, v);
