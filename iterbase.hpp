@@ -110,13 +110,14 @@ namespace iter {
     template <typename T>
     class ArrowProxy {
         private:
+            using TPlain = typename std::remove_reference<T>::type;
             T obj;
         public:
             ArrowProxy(T&& in_obj)
-                : obj(std::move(in_obj))
+                : obj(std::forward<T>(in_obj))
             { }
 
-            T *operator->() {
+            TPlain *operator->() {
                 return &obj;
             }
     };
