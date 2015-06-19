@@ -272,6 +272,8 @@ for (auto&& i : dropwhile([] (int i) {return i < 5;}, ivec)) {
 
 cycle
 -----
+*Additional Requirements*: Input must have a ForwardIterator
+
 
 Repeatedly produces all values of an iterable.  The loop will be infinite, so a
 `break` or other control flow structure is necessary to exit.
@@ -487,6 +489,8 @@ for (auto&& i : compress(ivec, bvec) {
 
 sorted
 ------
+*Additional Requirements*: Input must have a ForwardIterator
+
 Allows iteration over a sequence in sorted order. `sorted` does
 **not** produce a new sequence, copy elements, or modify the original
 sequence.  It only provides a way to iterate over existing elements.
@@ -507,6 +511,8 @@ for (auto&& i : sorted(nums)) {
 
 chain
 -----
+*Additional Requirements*: The underlying iterators of all containers'
+`operator*` must have the *exact* same type
 
 This can chain any set of ranges together as long as their iterators
 dereference to the same type.
@@ -567,7 +573,11 @@ for (auto&& i : slice(a,0,15,3)) {
 
 sliding\_window
 -------------
-Takes a section from a range and increments the whole section.
+*Additional Requirements*: Input must have a ForwardIterator
+
+Takes a section from a range and increments the whole section.  If the
+window size is larger than the length of the input, the `sliding_window` will
+yield nothing (begin == end).
 
 Example:
 `[1, 2, 3, 4, 5, 6, 7, 8, 9]`
@@ -616,6 +626,7 @@ for (auto&& sec : grouper(v,4))
 
 product
 ------
+*Additional Requirements*: Input must have a ForwardIterator
 
 Generates the cartesian project of the given ranges put together
 
@@ -635,6 +646,7 @@ for (auto&& t : product(v1,v2,v3,v4)) {
 
 combinations
 -----------
+*Additional Requirements*: Input must have a ForwardIterator
 
 Generates n length unique sequences of the input range.
 
@@ -649,6 +661,8 @@ for (auto&& i : combinations(v,3)) {
 
 combinations\_with\_replacement
 -----------------------------
+*Additional Requirements*: Input must have a ForwardIterator
+
 Like combinations, but with replacement of each element.  The
 below is printed by the loop that follows:
 ```
@@ -668,6 +682,7 @@ for (auto&& v : combinations_with_replacement(s, 2)) {
 
 permutations
 -----------
+*Additional Requirements*: Input must have a ForwardIterator
 
 Generates all the permutations of a range using `std::next_permutation`.  The
 iterators of the sequence passed must have an `operator*() const`
@@ -685,6 +700,7 @@ for (auto&& vec : permutations(v)) {
 
 powerset
 -------
+*Additional Requirements*: Input must have a ForwardIterator
 
 Generates every possible subset of a set, runs in O(2^n).
 
