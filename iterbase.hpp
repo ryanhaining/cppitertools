@@ -116,7 +116,7 @@ namespace iter {
             using TPlain = typename std::remove_reference<T>::type;
             T obj;
         public:
-            ArrowProxy(T&& in_obj)
+            constexpr ArrowProxy(T&& in_obj)
                 : obj(std::forward<T>(in_obj))
             { }
 
