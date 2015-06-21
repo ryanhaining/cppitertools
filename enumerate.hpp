@@ -9,16 +9,6 @@
 #include <initializer_list>
 #include <type_traits>
 
-
-// enumerate functionality for python-style for-each enumerate loops
-// for (auto e : enumerate(vec)) {
-//     std::cout << e.index
-//               << ": "
-//               << e.element
-//               << '\n';
-// }
-
-
 namespace iter {
 
     //Forward declarations of Enumerable and enumerate
@@ -50,9 +40,9 @@ namespace iter {
             Enumerable(Container&& in_container)
                 : container(std::forward<Container>(in_container))
             { }
-            
+
         public:
-            // "yielded" by the Enumerable::Iterator.  Has a .index, and a 
+            // "yielded" by the Enumerable::Iterator.  Has a .index, and a
             // .element referencing the value yielded by the subiterator
             class IterYield : public BasePair {
                 public:
@@ -74,7 +64,7 @@ namespace iter {
                     Iterator(iterator_type<Container>&& si)
                         : sub_iter{std::move(si)},
                         index{0}
-                    { } 
+                    { }
 
                     IterYield operator*() {
                         return {this->index, *this->sub_iter};
@@ -84,7 +74,7 @@ namespace iter {
                         return {**this};
                     }
 
-                    Iterator& operator++() { 
+                    Iterator& operator++() {
                         ++this->sub_iter;
                         ++this->index;
                         return *this;
@@ -120,11 +110,10 @@ namespace iter {
         return {std::forward<Container>(container)};
     }
 
-    // for initializer lists.  copy constructs the list into the Enumerable
     template <typename T>
     Enumerable<std::initializer_list<T>> enumerate(
             std::initializer_list<T> il)
-    {   
+    {
         return {std::move(il)};
     }
 }
