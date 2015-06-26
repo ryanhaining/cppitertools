@@ -57,7 +57,7 @@ namespace iter {
                 private:
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
-                    AccumulateFunc accumulate_func;
+                    AccumulateFunc *accumulate_func;
                     std::unique_ptr<AccumVal> acc_val;
                 public:
                     Iterator(iterator_type<Container>&& iter,
@@ -65,7 +65,7 @@ namespace iter {
                             AccumulateFunc in_accumulate_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
-                        accumulate_func(in_accumulate_func),
+                        accumulate_func(&in_accumulate_func),
                         // only get first value if not an end iterator
                         acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)}
                     { } 
@@ -102,7 +102,7 @@ namespace iter {
                     Iterator& operator++() { 
                         ++this->sub_iter;
                         if (this->sub_iter != this->sub_end) {
-                            *this->acc_val = accumulate_func(
+                            *this->acc_val = (*accumulate_func)(
                                     *this->acc_val, *this->sub_iter);
                         }
                         return *this;
