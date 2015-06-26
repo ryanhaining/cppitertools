@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <functional>
 #include <type_traits>
+#include <memory>
 
 namespace iter {
 
@@ -42,9 +43,6 @@ namespace iter {
                     typename std::result_of<AccumulateFunc(
                             iterator_deref<Container>,
                             iterator_deref<Container>)>::type>::type;
-            static_assert(
-                    std::is_default_constructible<AccumVal>::value,
-                    "Cannot accumulate a non-default constructible type");
 
             Accumulator(Container&& in_container,
                     AccumulateFunc in_accumulate_func)
@@ -60,31 +58,52 @@ namespace iter {
                     iterator_type<Container> sub_iter;
                     iterator_type<Container> sub_end;
                     AccumulateFunc accumulate_func;
-                    AccumVal acc_val;
+                    std::unique_ptr<AccumVal> acc_val;
                 public:
-                    Iterator (iterator_type<Container>&& iter,
+                    Iterator(iterator_type<Container>&& iter,
                             iterator_type<Container>&& end,
                             AccumulateFunc in_accumulate_func)
                         : sub_iter{std::move(iter)},
                         sub_end{std::move(end)},
                         accumulate_func(in_accumulate_func),
                         // only get first value if not an end iterator
-                        acc_val(!(iter != end) ? AccumVal{} : *iter)
+                        acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)}
                     { } 
 
+                    Iterator(const Iterator& other)
+                        : sub_iter{other.sub_iter},
+                        sub_end{other.sub_end},
+                        accumulate_func{other.accumulate_func},
+                        acc_val{other.acc_val ?
+                                new AccumVal(*other.acc_val) : nullptr}
+                    { }
+
+                    Iterator& operator=(const Iterator& other) {
+                        if (this == &other) return *this;
+                        this->sub_iter = other.sub_iter;
+                        this->sub_end = other.sub_end;
+                        this->accumulate_func = other.accumulate_func;
+                        this->acc_val.reset(other.acc_val ?
+                                new AccumVal(*other.acc_val) : nullptr);
+                        return *this;
+                    }
+
+                    Iterator(Iterator&&) =default;
+                    Iterator& operator=(Iterator&&) =default;
+
                     const AccumVal& operator*() const {
-                        return this->acc_val;
+                        return *this->acc_val;
                     }
 
                     const AccumVal* operator->() const {
-                        return &this->acc_val;
+                        return this->acc_val.get();
                     }
 
                     Iterator& operator++() { 
                         ++this->sub_iter;
                         if (this->sub_iter != this->sub_end) {
-                            this->acc_val = accumulate_func(
-                                    this->acc_val, *this->sub_iter);
+                            *this->acc_val = accumulate_func(
+                                    *this->acc_val, *this->sub_iter);
                         }
                         return *this;
                     }
