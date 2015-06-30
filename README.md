@@ -141,6 +141,14 @@ for (auto i : range(2, -3, -1)) {
 }
 ```
 
+A step size of 0 results in an empty range (Python's raises an exception).
+The following prints nothing
+```c++
+for (auto i : range(0, 10, 0)) {
+    cout << i << '\n';
+}
+```
+
 In addition to normal integer range operations, doubles and
 other numeric types are supported through the template
 
