@@ -20,17 +20,17 @@ namespace iter {
             T value_{};
             T step_{};
         public:
-            RangeIterData() =default;
-            RangeIterData(T in_value, T in_step)
+            constexpr RangeIterData() =default;
+            constexpr RangeIterData(T in_value, T in_step)
                 : value_{in_value},
                 step_{in_step}
             { }
 
-            T value() const {
+            constexpr T value() const {
                 return this->value_;
             }
 
-            T step() const {
+            constexpr T step() const {
                 return this->step_;
             }
 
@@ -38,11 +38,11 @@ namespace iter {
                 this->value_ += step_;
             }
 
-            bool operator==(const RangeIterData& other) const {
+            constexpr bool operator==(const RangeIterData& other) const {
               return this->value_ == other.value_;
             }
 
-            bool operator!=(const RangeIterData& other) const {
+            constexpr bool operator!=(const RangeIterData& other) const {
               return !(*this == other);
             }
     };
@@ -56,18 +56,18 @@ namespace iter {
             T step_{};
             unsigned long steps_taken{};
         public:
-            RangeIterData() =default;
-            RangeIterData(T in_start, T in_step)
+            constexpr RangeIterData() =default;
+            constexpr RangeIterData(T in_start, T in_step)
                 : start_{in_start},
                 value_{in_start},
                 step_{in_step}
             { }
 
-            T value() const {
+            constexpr T value() const {
                 return this->value_;
             }
 
-            T step() const {
+            constexpr T step() const {
                 return this->step_;
             }
 
@@ -77,15 +77,15 @@ namespace iter {
                         (this->step_ * this->steps_taken);
             }
 
-            bool operator==(const RangeIterData& other) const {
+            constexpr bool operator==(const RangeIterData& other) const {
                 // if the difference between the two values is less than the
                 // step size, they are considered equal
-                T diff = this->value_ < other.value_ ?
-                    other.value_ - this->value_ : this->value_ - other.value_;
-                return diff < step_;
+                return (this->value_ < other.value_ ?
+                    other.value_ - this->value_ :
+                    this->value_ - other.value_) < this->step_;
             }
 
-            bool operator!=(const RangeIterData& other) const {
+            constexpr bool operator!=(const RangeIterData& other) const {
               return !(*this == other);
             }
     };
@@ -174,18 +174,18 @@ namespace iter {
                     }
 
                 public:
-                    Iterator() =default;
+                    constexpr Iterator() =default;
 
-                    Iterator(T in_value, T in_step, bool in_is_end)
+                    constexpr Iterator(T in_value, T in_step, bool in_is_end)
                         : data(in_value, in_step),
                         is_end{in_is_end}
                     { }
 
-                    T operator*() const {
+                    constexpr T operator*() const {
                         return this->data.value();
                     }
 
-                    ArrowProxy<T> operator->() const {
+                    constexpr ArrowProxy<T> operator->() const {
                         return {**this};
                     }
 
@@ -237,11 +237,11 @@ namespace iter {
                     }
             };
 
-            Iterator begin() const {
+            constexpr Iterator begin() const {
                 return {start, step, false};
             }
 
-            Iterator end() const {
+            constexpr Iterator end() const {
                 return {stop, step, true};
             }
     };
