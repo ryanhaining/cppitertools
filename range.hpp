@@ -1,20 +1,6 @@
 #ifndef ITER_RANGE_H_
 #define ITER_RANGE_H_
 
-// range() for range-based loops with start, stop, and step.
-//
-// Acceptable forms are:
-// for (auto i : range(stop)) { ... } // start = 0, step = 1
-// for (auto i : range(start, stop)) { ... } // step = 1
-// for (auto i : range(start, stop, step)) { ... }
-//
-// The start may be greater than the stop if the range is negative
-// The range will effectively be empty if:
-//   1) step is positive and start > stop
-//   2) step is negative and start < stop
-//
-// If a step of 0 is provided, a RangeException will be thrown
-
 #include "iterbase.hpp"
 
 #include <exception>
@@ -104,13 +90,6 @@ namespace iter {
             }
     };
 
-
-    // Thrown when step 0 occurs
-    class RangeException : public std::exception {
-        const char *what() const noexcept override {
-            return "range step must be non-zero";
-        }
-    };
 
     template <typename T>
     class Range;
@@ -279,9 +258,7 @@ namespace iter {
 
     template <typename T>
     Range<T> range(T start, T stop, T step) {
-        if (step == 0) {
-            throw RangeException{};
-        }
+        if (step == T(0)) return {0};
         return {start, stop, step};
     }
 }
