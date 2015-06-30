@@ -95,11 +95,11 @@ namespace iter {
     class Range;
 
     template <typename T>
-    Range<T> range(T);
+    constexpr Range<T> range(T);
     template <typename T>
-    Range<T> range(T, T);
+    constexpr Range<T> range(T, T);
     template <typename T>
-    Range<T> range(T, T, T);
+    constexpr Range<T> range(T, T, T);
 
     // General version for everything not a float
     template <typename T>
@@ -112,13 +112,13 @@ namespace iter {
             const T stop;
             const T step;
 
-            Range(T in_stop)
+            constexpr Range(T in_stop)
                 : start{0},
                 stop{in_stop},
                 step{1}
             { }
 
-            Range(T in_start, T in_stop, T in_step =1)
+            constexpr Range(T in_start, T in_stop, T in_step =1)
                 : start{in_start},
                 stop{in_stop},
                 step{in_step}
@@ -247,19 +247,18 @@ namespace iter {
     };
 
     template <typename T>
-    Range<T> range(T stop) {
+    constexpr Range<T> range(T stop) {
         return {stop};
     }
 
     template <typename T>
-    Range<T> range(T start, T stop) {
+    constexpr Range<T> range(T start, T stop) {
         return {start, stop};
     }
 
     template <typename T>
-    Range<T> range(T start, T stop, T step) {
-        if (step == T(0)) return {0};
-        return {start, stop, step};
+    constexpr Range<T> range(T start, T stop, T step) {
+        return step == T(0) ? Range<T>{0} : Range<T>{start, stop, step};
     }
 }
 
