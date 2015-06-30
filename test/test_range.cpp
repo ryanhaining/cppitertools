@@ -89,11 +89,17 @@ TEST_CASE("range: stops short when step > stop-start", "[range]") {
     REQUIRE( v.size() == 1 );
 }
 
-TEST_CASE("Step size of 0 gives an empty range", "[range]") {
+TEST_CASE("range: step size of 0 gives an empty range", "[range]") {
     auto r = range(0, 10, 0);
     REQUIRE( std::begin(r) == std::end(r) );
     auto r2 = range(0, -10, 0);
     REQUIRE( std::begin(r2) == std::end(r2) );
+}
+
+TEST_CASE("range: can create constexpr ranges", "[range]") {
+    constexpr auto r = range(10); (void)r;
+    constexpr auto r2 = range(4, 10); (void)r2;
+    constexpr auto r3 = range(4, 10, 2); (void)r3;
 }
 
 TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
