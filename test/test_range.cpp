@@ -89,8 +89,11 @@ TEST_CASE("range: stops short when step > stop-start", "[range]") {
     REQUIRE( v.size() == 1 );
 }
 
-TEST_CASE("No 0 step ranges allowed", "[range]") {
-    REQUIRE_THROWS(range(0, 1, 0));
+TEST_CASE("Step size of 0 gives an empty range", "[range]") {
+    auto r = range(0, 10, 0);
+    REQUIRE( std::begin(r) == std::end(r) );
+    auto r2 = range(0, -10, 0);
+    REQUIRE( std::begin(r2) == std::end(r2) );
 }
 
 TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
