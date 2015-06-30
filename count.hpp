@@ -8,7 +8,7 @@
 namespace iter {
 
     template <typename T>
-    constexpr auto count(T start, T step)
+    constexpr auto count(T start, T step) noexcept
             -> decltype(range(start, start, start)) {
         // if step is < 0, stop is numeric min, otherwise numeric max
         return range(
@@ -19,7 +19,7 @@ namespace iter {
     }
 
     template <typename T =long>
-    constexpr auto count(T start =T(0))
+    constexpr auto count(T start =T(0)) noexcept
             -> decltype(range(start, start)) {
         return count(start, T(1));
     }
