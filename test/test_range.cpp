@@ -104,6 +104,11 @@ TEST_CASE("range: can create constexpr ranges", "[range]") {
     constexpr auto it = r2.begin(); // std::begin isn't constexpr
     constexpr auto i = *it;
     static_assert(i == 4, "range's begin has the wrong value");
+
+    constexpr auto rf = range(10.0);
+    constexpr auto itf = rf.begin();
+    constexpr auto f = *itf;
+    static_assert(f == 0.0, "range's begin has tho wrong value (float)");
 }
 
 TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
