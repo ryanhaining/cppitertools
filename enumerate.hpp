@@ -47,8 +47,8 @@ namespace iter {
             class IterYield : public BasePair {
                 public:
                     using BasePair::BasePair;
-                    decltype(BasePair::first)& index = BasePair::first;
-                    decltype(BasePair::second)& element = BasePair::second;
+                    typename BasePair::first_type& index = BasePair::first;
+                    typename BasePair::second_type& element = BasePair::second;
             };
 
             //  Holds an iterator of the contained type and a size_t for the
