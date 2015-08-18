@@ -74,6 +74,10 @@ namespace iter {
                         return this->window;
                     }
 
+                    DerefVec *operator->() {
+                        return this->window;
+                    }
+
                     Iterator& operator++() {
                         ++this->sub_iter;
                         this->window.get().pop_front();

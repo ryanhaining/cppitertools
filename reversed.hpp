@@ -32,6 +32,10 @@ namespace iter {
             using reverse_iterator_traits_deref =
                 std::remove_reference_t<reverse_iterator_deref>;
 
+            using reverse_iterator_arrow =
+                detail::arrow<reverse_iterator_type>;
+
+
         public:
             class Iterator : public std::iterator<
                          std::input_iterator_tag,
@@ -48,7 +52,11 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
-                    Iterator& operator++() {
+                    reverse_iterator_arrow operator->() {
+                        return apply_arrow(this->sub_iter);
+                    }
+
+                    Iterator& operator++() { 
                         ++this->sub_iter;
                         return *this;
                     }

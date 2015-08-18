@@ -100,6 +100,14 @@ TEST_CASE("moves rvalues into enumerable object", "[enumerate]") {
     (void)e;
 }
 
+TEST_CASE("enumerate: operator->", "[enumerate]") {
+    std::vector<int> ns = {50, 60, 70};
+    auto e = enumerate(ns);
+    auto it = std::begin(e);
+    REQUIRE( it->first == 0 );
+    REQUIRE( it->second == 50 );
+}
+
 TEST_CASE("Works with const iterable", "[enumerate]") {
     const std::string s{"ace"};
     auto e = enumerate(s);

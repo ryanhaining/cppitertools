@@ -57,7 +57,11 @@ namespace iter {
                     }
 
                     Permutable& operator*() {
-                        return working_set;
+                        return this->working_set;
+                    }
+
+                    Permutable *operator->() {
+                        return &this->working_set;
                     }
 
                     Iterator& operator++() {

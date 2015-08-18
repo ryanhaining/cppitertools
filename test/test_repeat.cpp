@@ -24,6 +24,24 @@ TEST_CASE("repeat: one argument keeps giving value back", "[repeat]") {
     REQUIRE( *it == 'a' );
 }
 
+TEST_CASE("repeat: can be used as constexpr", "[repeat]") {
+    static constexpr char c = 'a';
+    {
+        constexpr auto r = repeat(c);
+        constexpr auto i = r.begin();
+        constexpr char c2 = *i;
+        static_assert(c == c2, "repeat value not as expected");
+        constexpr auto i2 = ++i; (void)i2;
+    }
+
+    {
+        constexpr auto r = repeat(c, 2);
+        constexpr auto i = r.begin();
+        constexpr char c2 = *i;
+        static_assert( c2 == c, "repeat value not as expected");
+    }
+}
+
 TEST_CASE("repeat: two argument repeats a number of times", "[repeat]") {
     auto r = repeat('a', 3);
     std::string s(std::begin(r), std::end(r));

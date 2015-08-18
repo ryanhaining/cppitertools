@@ -68,6 +68,10 @@ namespace iter {
                         return *this->comb_iter;
                     }
 
+                    iterator_arrow<CombinatorType> operator->() {
+                        apply_arrow(this->comb_iter);
+                    }
+
                     bool operator != (const Iterator& other) const {
                         return !(*this == other);
                     }

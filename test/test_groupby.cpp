@@ -162,6 +162,52 @@ TEST_CASE("groupby: doesn't double dereference", "[groupby]") {
     }
 }
 
+TEST_CASE("grouby: iterator doesn't need to be dereferenced before advanced",
+        "[groupby]") {
+    std::vector<int> ns = {2, 4, 7};
+    auto g = groupby(ns);
+    auto it = std::begin(g);
+    ++it;
+    REQUIRE( (*it).first == 4 );
+}
+
+TEST_CASE("groupby: iterator can be dereferenced multiple times", "[groupby]"){
+    std::vector<int> ns = {2, 4, 7};
+    auto g = groupby(ns);
+    auto it = std::begin(g);
+    auto k1 = (*it).first;
+    auto k2 = (*it).first;
+    REQUIRE( k1 == k2 );
+}
+
+
+TEST_CASE("groupby: copy constructed iterators behave as expected",
+        "[groupby]") {
+    std::vector<int> ns = {2, 3, 4, 5};
+    auto g = groupby(ns);
+    auto it = std::begin(g);
+    REQUIRE( it->first == 2 );
+    {
+        auto it2 = it;
+        REQUIRE( it2->first == 2);
+        ++it;
+        REQUIRE( it->first == 3 );
+        REQUIRE( *std::begin(it->second) == 3 );
+    }
+    REQUIRE( it->first == 3 );
+    REQUIRE( *std::begin(it->second) == 3 );
+}
+
+
+TEST_CASE("groupby: operator-> on both iterator types", "[groupby]") {
+    std::vector<std::string> ns = {"a", "abc"};
+    auto g = groupby(ns, std::mem_fn(&std::string::size));
+    auto it = std::begin(g);
+    REQUIRE( it->first == 1 );
+    auto it2 = std::begin(it->second);
+    REQUIRE( it2->size() == 1 );
+}
+
 TEST_CASE("groupby: iterator and groupiterator are correct", "[groupby]") {
     std::string s{"abc"};
     auto c = groupby(s);

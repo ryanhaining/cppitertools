@@ -98,6 +98,10 @@ namespace iter {
                                     *this->iter},
                                 *this->rest_iter);
                     }
+
+                    ArrowProxy<ProdIterDeref> operator->() {
+                        return {**this};
+                    }
             };
 
             Iterator begin() {

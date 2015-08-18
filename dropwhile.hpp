@@ -82,6 +82,10 @@ namespace iter {
                         return this->item.get();
                     }
 
+                    typename Holder::pointer operator->() {
+                        return this->item.get_ptr();
+                    }
+
                     Iterator& operator++() { 
                         this->inc_sub_iter();
                         return *this;

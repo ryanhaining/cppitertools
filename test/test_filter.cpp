@@ -95,6 +95,14 @@ TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
 }
 
 
+TEST_CASE("filter: operator->", "[filter]") {
+    std::vector<std::string> vs = {"ab", "abc", "abcdef"};
+    auto f = filter([](const std::string& str) {return str.size() > 4;}, vs);
+    auto it = std::begin(f);
+    REQUIRE( it->size() == 6 );
+}
+
+
 TEST_CASE("filter: all elements fail predicate", "[filter]") {
     Vec ns{10,20,30,40,50};
     auto f = filter(less_than_five, ns);

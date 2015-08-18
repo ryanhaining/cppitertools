@@ -105,6 +105,10 @@ namespace iter {
                         return *this->sub_iter;
                     }
 
+                    iterator_arrow<Container> operator->() {
+                        return apply_arrow(this->sub_iter);
+                    }
+
                     Iterator& operator++() { 
                         this->increment_iterators();
                         this->skip_failures();

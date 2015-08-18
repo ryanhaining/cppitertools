@@ -68,4 +68,8 @@ TEST_CASE("reversed: iterator meets requirements", "[reversed]") {
     Vec v;
     auto r = reversed(v);
     REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+
+    int a[1];
+    auto ra = reversed(a);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(ra))>::value );
 }

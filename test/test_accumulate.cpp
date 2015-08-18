@@ -37,6 +37,21 @@ TEST_CASE("accumulate: with initializer_list works", "[accumulate]") {
     REQUIRE( v == vc );
 }
 
+struct Integer {
+    const int value;
+    constexpr Integer(int i) : value{i} { }
+    constexpr Integer operator+(Integer other) const noexcept {
+        return {this->value + other.value};
+    }
+};
+
+TEST_CASE("accumulate: intermidate type need not be default constructible",
+        "[accumulate]") {
+    std::vector<Integer> v = {{2}, {3}, {10}};
+    auto a = accumulate(v, std::plus<Integer>{});
+    auto it = std::begin(a);
+}
+
 TEST_CASE("accumulate: binds reference when it should", "[accumulate]") {
     BasicIterable<int> bi{1, 2};
     accumulate(bi);
@@ -63,9 +78,18 @@ TEST_CASE("accumulate: postfix ++", "[accumulate]") {
     REQUIRE( *it == 5 );
 }
 
+TEST_CASE("accumulate: operator->", "[accumulate]") {
+    Vec ns{7, 3};
+    auto a = accumulate(ns);
+    auto it = std::begin(a);
+    const int *p = it.operator->();
+    REQUIRE( *p == 7 );
+}
 
 TEST_CASE("accumulate: iterator meets requirements", "[accumulate]") {
     Vec ns{};
-    auto a = accumulate(ns);
+    auto a = accumulate(ns, [](int a, int b) { return a + b; });
+    auto it = std::begin(a);
+    it = std::begin(a);
     REQUIRE( itertest::IsIterator<decltype(std::begin(a))>::value );
 }

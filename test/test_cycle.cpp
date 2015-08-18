@@ -56,3 +56,10 @@ TEST_CASE("cycle: iterator meets requirements", "[cycle]") {
     auto c = cycle(s);
     REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
 }
+
+TEST_CASE("cycle: arrow works", "[cycle]") {
+    std::vector<std::string> v = {"hello"};
+    auto c = cycle(v);
+    auto it = std::begin(c);
+    REQUIRE( it->size() == 5 );
+}

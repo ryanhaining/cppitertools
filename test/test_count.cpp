@@ -53,6 +53,16 @@ TEST_CASE("count: with step > 1", "[count]") {
     REQUIRE( v == vc );
 }
 
+TEST_CASE("count: can bo constexpr", "[count]") {
+    constexpr auto c = count();
+    constexpr auto c2 = count(5); (void)c2;
+    constexpr auto c3 = count(5, 2); (void)c3;
+
+    constexpr auto it = c.begin();
+    constexpr auto i = *it;
+    static_assert(i == 0, "count begin not correct value");
+}
+
 TEST_CASE("count: iterator meets requirements", "[count]") {
     auto c = count();
     REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );

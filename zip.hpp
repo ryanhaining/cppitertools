@@ -72,6 +72,11 @@ namespace iter {
                     ZipIterDeref operator*() {
                         return ZipIterDeref{(*std::get<Is>(this->iters))...};
                     }
+
+                    auto operator->() -> ArrowProxy<decltype(**this)> {
+                        return {**this};
+                    }
+
             };
 
             Iterator begin() {

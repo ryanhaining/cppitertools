@@ -55,6 +55,14 @@ TEST_CASE("combinations_with_replacement: 0 size is empty",
     REQUIRE( std::begin(cwr) == std::end(cwr) );
 }
 
+TEST_CASE("combinations_with_replacement: operator->",
+        "[combinations_with_replacement]") {
+    std::string s{"ABCD"};
+    auto c = combinations_with_replacement(s, 2);
+    auto it = std::begin(c);
+    REQUIRE( it->size() == 2 );
+}
+
 TEST_CASE("combinations_with_replacement: binds to lvalues, moves rvalues",
         "[combinations_with_replacement]") {
     BasicIterable<char> bi{'x', 'y', 'z'};

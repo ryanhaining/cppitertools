@@ -11,6 +11,8 @@
 #include <type_traits>
 #include <utility>
 
+
+
 namespace iter {
     // rather than a chain function, use a callable object to support
     // from_iterable
@@ -33,13 +35,17 @@ class Chained {
                 "and references.");
 
         using IterTupType = iterator_tuple_type<TupType>;
-
-        using DerefType =
-            iterator_deref<std::tuple_element_t<0, TupType>>;
+        using DerefType = iterator_deref<std::tuple_element_t<0, TupType>>;
+        using ArrowType = iterator_arrow<std::tuple_element_t<0, TupType>>;
 
         template <std::size_t Idx>
         static DerefType get_and_deref(IterTupType& iters) {
             return *std::get<Idx>(iters);
+        }
+
+        template <std::size_t Idx>
+        static ArrowType get_and_arrow(IterTupType& iters) {
+            return apply_arrow(std::get<Idx>(iters));
         }
 
         template <std::size_t Idx>
@@ -54,12 +60,15 @@ class Chained {
         }
 
         using DerefFunc = DerefType (*)(IterTupType&);
+        using ArrowFunc = ArrowType (*)(IterTupType&);
         using IncFunc = void (*)(IterTupType&);
         using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
 
-
         constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{{
             get_and_deref<Is>...}};
+
+        constexpr static std::array<ArrowFunc, sizeof...(Is)> arrowers{{
+            get_and_arrow<Is>...}};
 
         constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{{
             get_and_increment<Is>...}};
@@ -105,6 +114,10 @@ class Chained {
 
                 decltype(auto) operator*() {
                     return derefers[this->index](this->iters);
+                }
+
+                decltype(auto) operator->() {
+                    return arrowers[this->index](this->iters);
                 }
 
                 Iterator& operator++() {
@@ -174,7 +187,7 @@ constexpr std::array<
 
         public:
             class Iterator
-                :public std::iterator<std::input_iterator_tag,
+                : public std::iterator<std::input_iterator_tag,
                     iterator_traits_deref<iterator_deref<Container>>>
             {
                 private:
@@ -279,6 +292,10 @@ constexpr std::array<
 
                    iterator_deref<iterator_deref<Container>> operator*() {
                        return **this->sub_iter_p;
+                   }
+
+                   iterator_arrow<iterator_deref<Container>> operator->() {
+                       return apply_arrow(*this->sub_iter_p);
                    }
            };
 

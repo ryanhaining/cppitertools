@@ -103,6 +103,10 @@ namespace iter {
                     DerefVec& operator*() {
                         return this->group;
                     }
+
+                    DerefVec *operator->() {
+                        return &this->group;
+                    }
             };
 
             Iterator begin() {

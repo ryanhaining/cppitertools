@@ -7,6 +7,7 @@
 #include <utility>
 #include <iterator>
 #include <initializer_list>
+#include <type_traits>
 
 namespace iter {
 

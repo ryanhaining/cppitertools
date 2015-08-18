@@ -10,15 +10,27 @@
 
 namespace iter {
 
-    //Forward declarations of Slice and slice
-    //template <typename Container, typename DifferenceType>
-    //class Slice;
+    template <typename Container, typename DifferenceType>
+    class Slice;
 
-    //template <typename T>
-    //Slice<std::initializer_list<T>> slice( std::initializer_list<T>);
+    template <typename Container, typename DifferenceType>
+    Slice<Container, DifferenceType> slice(
+            Container&& container,
+            DifferenceType start, DifferenceType stop, DifferenceType step=1);
 
-    //template <typename Container, typename DifferenceType>
-    //Slice<Container> slice(Container &&);
+    template <typename Container, typename DifferenceType>
+    Slice<Container, DifferenceType> slice(
+            Container&& container, DifferenceType stop);
+
+    template <typename T, typename DifferenceType>
+    Slice<std::initializer_list<T>, DifferenceType> slice(
+            std::initializer_list<T> il, DifferenceType start,
+            DifferenceType stop, DifferenceType step=1);
+
+    template <typename T, typename DifferenceType>
+    Slice<std::initializer_list<T>, DifferenceType> slice(
+            std::initializer_list<T> il, DifferenceType stop);
+
     template <typename Container, typename DifferenceType>
     class Slice {
         private:
@@ -27,12 +39,13 @@ namespace iter {
             DifferenceType stop;
             DifferenceType step;
 
-            // The only thing allowed to directly instantiate an Slice is
-            // the slice function
-            //friend Slice slice<Container, DifferenceType>(Container &&);
-            //template <typename T>
-            //friend Slice<std::initializer_list<T>> slice(std::initializer_list<T>);
-        public:
+            friend Slice slice<Container, DifferenceType>(
+                    Container&&, DifferenceType, DifferenceType,
+                    DifferenceType);
+
+            friend Slice slice<Container, DifferenceType>(
+                    Container&&, DifferenceType);
+
             Slice(Container&& in_container, DifferenceType in_start,
                   DifferenceType in_stop, DifferenceType in_step)
                 : container(std::forward<Container>(in_container)),
@@ -42,6 +55,7 @@ namespace iter {
             { }
 
 
+        public:
             class Iterator 
                 : public std::iterator<std::input_iterator_tag,
                     iterator_traits_deref<Container>>
@@ -68,6 +82,10 @@ namespace iter {
 
                     iterator_deref<Container> operator*() {
                         return *this->sub_iter;
+                    }
+
+                    iterator_arrow<Container> operator->() {
+                        return apply_arrow(this->sub_iter);
                     }
 
                     Iterator& operator++() { 
@@ -113,7 +131,7 @@ namespace iter {
     template <typename Container, typename DifferenceType>
     Slice<Container, DifferenceType> slice(
             Container&& container,
-            DifferenceType start, DifferenceType stop, DifferenceType step=1) {
+            DifferenceType start, DifferenceType stop, DifferenceType step) {
         return {std::forward<Container>(container), start, stop, step};
     }
 
@@ -127,7 +145,7 @@ namespace iter {
     template <typename T, typename DifferenceType>
     Slice<std::initializer_list<T>, DifferenceType> slice(
             std::initializer_list<T> il, DifferenceType start,
-            DifferenceType stop, DifferenceType step=1) {
+            DifferenceType stop, DifferenceType step) {
         return {std::move(il), start, stop, step};
     }
 

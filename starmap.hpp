@@ -63,6 +63,10 @@ namespace iter {
                     decltype(auto) operator*() {
                         return call_with_tuple(*this->func, *this->sub_iter);
                     }
+
+                    auto operator->() -> ArrowProxy<decltype(**this)> {
+                        return {**this};
+                    }
             };
 
             Iterator begin() {
@@ -129,6 +133,10 @@ namespace iter {
 
                     decltype(auto) operator*() {
                         return callers[this->index](*this->func, *this->tup);
+                    }
+
+                    auto operator->() -> ArrowProxy<decltype(**this)> {
+                        return {**this};
                     }
 
                     Iterator& operator++() {

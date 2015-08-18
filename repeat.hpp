@@ -6,54 +6,40 @@
 #include <utility>
 
 namespace iter {
-
-    // must be negative
-    constexpr int INFINITE_REPEAT = -1;
+    template <typename T>
+    class RepeaterWithCount ;
 
     template <typename T>
-    class Repeater;
+    constexpr RepeaterWithCount<T> repeat(T&&, int);
 
     template <typename T>
-    Repeater<T> repeat(T&&);
-
-    template <typename T>
-    Repeater<T> repeat(T&&, int);
-
-    template <typename T>
-    class Repeater {
-        friend Repeater repeat<T>(T&&);
-        friend Repeater repeat<T>(T&&, int);
+    class RepeaterWithCount {
+        friend RepeaterWithCount repeat<T>(T&&, int);
         private:
             using TPlain = std::remove_reference_t<T>;
             T elem;
             int count;
 
-            Repeater(T e, int c)
+            constexpr RepeaterWithCount(T e, int c)
                 : elem(std::forward<T>(e)),
                 count{c}
             { }
-        public:
 
+        public:
             class Iterator
-                : public std::iterator<std::input_iterator_tag, TPlain>
+                : public std::iterator<std::input_iterator_tag, const TPlain>
             {
                 private:
-                    TPlain* elem;
+                    const TPlain *elem;
                     int count;
                 public:
-                    Iterator(TPlain* e, int c)
+                    constexpr Iterator(const TPlain* e, int c)
                         : elem{e},
                         count{c}
                     { }
 
-                    // count down to 0
-                    // INFINITE_REPEAT will be negative, and in that case
-                    // the value is never decremented, it will always compare
-                    // != to an end iterator
                     Iterator& operator++() {
-                        if (this->count > 0) {
-                            --this->count;
-                        }
+                        --this->count;
                         return *this;
                     }
 
@@ -63,38 +49,104 @@ namespace iter {
                         return ret;
                     }
 
-                    bool operator!=(const Iterator& other) const {
+                    constexpr bool operator!=(const Iterator& other) const {
                         return !(*this == other);
                     }
 
-                    bool operator==(const Iterator& other) const {
+                    constexpr bool operator==(const Iterator& other) const {
                         return this->count == other.count;
                     }
 
-                    T& operator*() {
+                    constexpr const TPlain& operator*() const {
                         return *this->elem;
+                    }
+
+                    constexpr const TPlain* operator->() const {
+                        return this->elem;
                     }
             };
 
-            Iterator begin() {
+            constexpr Iterator begin() const {
                 return {&this->elem, this->count};
             }
 
-            Iterator end() {
+            constexpr Iterator end() const {
                 return {&this->elem, 0};
             }
 
     };
-
-    template <typename T>
-    Repeater<T> repeat(T&& e) {
-        return {std::forward<T>(e), INFINITE_REPEAT};
-    }
         
     template <typename T>
-    Repeater<T> repeat(T&& e, int count) {
-        // if count is negative, pass 0 instead
+    constexpr RepeaterWithCount<T> repeat(T&& e, int count) {
         return {std::forward<T>(e), count < 0 ? 0 : count};
+    }
+
+    template <typename T>
+    class Repeater;
+
+    template <typename T>
+    constexpr Repeater<T> repeat(T&&);
+
+    template <typename T>
+    class Repeater{
+        friend Repeater repeat<T>(T&&);
+        private:
+            using TPlain = typename std::remove_reference<T>::type;
+            T elem;
+
+            constexpr Repeater(T e)
+                : elem(std::forward<T>(e))
+            { }
+        public:
+            class Iterator
+                : public std::iterator<std::input_iterator_tag, const TPlain>
+            {
+                private:
+                    const TPlain *elem;
+
+                public:
+                    constexpr Iterator(const TPlain* e)
+                        : elem{e}
+                    { }
+
+                    constexpr const Iterator& operator++() const {
+                        return *this;
+                    }
+
+                    constexpr Iterator operator++(int) const {
+                        return *this;
+                    }
+
+                    constexpr bool operator!=(const Iterator&) const {
+                        return true;
+                    }
+
+                    constexpr bool operator==(const Iterator&) const {
+                        return false;
+                    }
+
+                    constexpr const TPlain& operator*() const {
+                        return *this->elem;
+                    }
+
+                    constexpr const TPlain* operator->() const {
+                        return this->elem;
+                    }
+            };
+
+
+            constexpr Iterator begin() const {
+                return {&this->elem};
+            }
+
+            constexpr Iterator end() const {
+                return {nullptr};
+            }
+    };
+
+    template <typename T>
+    constexpr Repeater<T> repeat(T&& e) {
+        return {std::forward<T>(e)};
     }
 }
 
