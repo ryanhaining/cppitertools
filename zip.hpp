@@ -114,10 +114,6 @@ namespace iter {
                 public:
                     constexpr static const bool is_base_iter = true;
 
-                    Iterator() { }
-                    Iterator(const Iterator&) { }
-                    Iterator& operator=(const Iterator&) { return *this; }
-
                     Iterator& operator++() {
                         return *this;
                     }
