@@ -23,7 +23,7 @@ namespace iter {
     friend Zipped zip<Container, RestContainers...>(
         Container&&, RestContainers&&...);
 
-    template <typename... RC>
+    template <typename...>
     friend class Zipped;
 
    private:

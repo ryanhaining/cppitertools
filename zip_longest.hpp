@@ -27,7 +27,7 @@ namespace iter {
     friend ZippedLongest zip_longest<Container, RestContainers...>(
         Container&&, RestContainers&&...);
 
-    template <typename... Cs>
+    template <typename...>
     friend class ZippedLongest;
 
    private:
