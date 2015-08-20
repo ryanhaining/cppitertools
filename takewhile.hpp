@@ -9,134 +9,120 @@
 
 namespace iter {
 
-    //Forward declarations of TakeWhile and takewhile
-    template <typename FilterFunc, typename Container>
-    class TakeWhile;
+  // Forward declarations of TakeWhile and takewhile
+  template <typename FilterFunc, typename Container>
+  class TakeWhile;
 
-    template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container&&);
+  template <typename FilterFunc, typename Container>
+  TakeWhile<FilterFunc, Container> takewhile(FilterFunc, Container&&);
 
-    template <typename FilterFunc, typename T>
-    TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc, std::initializer_list<T>);
+  template <typename FilterFunc, typename T>
+  TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
+      FilterFunc, std::initializer_list<T>);
 
-    template <typename FilterFunc, typename Container>
-    class TakeWhile {
-        private:
-            Container container;
-            FilterFunc filter_func;
+  template <typename FilterFunc, typename Container>
+  class TakeWhile {
+   private:
+    Container container;
+    FilterFunc filter_func;
 
-            friend TakeWhile takewhile<FilterFunc, Container>(
-                    FilterFunc, Container&&);
+    friend TakeWhile takewhile<FilterFunc, Container>(FilterFunc, Container&&);
 
-            template <typename FF, typename T>
-            friend TakeWhile<FF, std::initializer_list<T>> takewhile(
-                    FF, std::initializer_list<T>);
+    template <typename FF, typename T>
+    friend TakeWhile<FF, std::initializer_list<T>> takewhile(
+        FF, std::initializer_list<T>);
 
-            TakeWhile(FilterFunc in_filter_func, Container&& in_container)
-                : container(std::forward<Container>(in_container)),
-                filter_func(in_filter_func)
-            { }
+    TakeWhile(FilterFunc in_filter_func, Container&& in_container)
+        : container(std::forward<Container>(in_container)),
+          filter_func(in_filter_func) {}
 
+   public:
+    class Iterator : public std::iterator<std::input_iterator_tag,
+                         iterator_traits_deref<Container>> {
+     private:
+      using Holder = DerefHolder<iterator_deref<Container>>;
+      iterator_type<Container> sub_iter;
+      iterator_type<Container> sub_end;
+      Holder item;
+      FilterFunc* filter_func;
 
-        public:
+      void inc_sub_iter() {
+        ++this->sub_iter;
+        if (this->sub_iter != this->sub_end) {
+          this->item.reset(*this->sub_iter);
+        }
+      }
 
-            class Iterator 
-                : public std::iterator<std::input_iterator_tag,
-                    iterator_traits_deref<Container>>
-            {
-                private:
-                    using Holder = DerefHolder<iterator_deref<Container>>;
-                    iterator_type<Container> sub_iter;
-                    iterator_type<Container> sub_end;
-                    Holder item;
-                    FilterFunc *filter_func;
+      void check_current() {
+        if (this->sub_iter != this->sub_end
+            && !(*this->filter_func)(this->item.get())) {
+          this->sub_iter = this->sub_end;
+        }
+      }
 
-                    void inc_sub_iter() {
-                        ++this->sub_iter;
-                        if (this->sub_iter != this->sub_end) {
-                            this->item.reset(*this->sub_iter);
-                        }
-                    }
+     public:
+      Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
+          FilterFunc& in_filter_func)
+          : sub_iter{std::move(iter)},
+            sub_end{std::move(end)},
+            filter_func(&in_filter_func) {
+        if (this->sub_iter != this->sub_end) {
+          this->item.reset(*this->sub_iter);
+        }
+        this->check_current();
+      }
 
-                    void check_current() {
-                        if (this->sub_iter != this->sub_end
-                                && !(*this->filter_func)(this->item.get())) {
-                            this->sub_iter = this->sub_end;
-                        }
-                    }
+      typename Holder::reference operator*() {
+        return this->item.get();
+      }
 
-                public:
-                    Iterator(iterator_type<Container>&& iter,
-                            iterator_type<Container>&& end,
-                            FilterFunc& in_filter_func)
-                        : sub_iter{std::move(iter)},
-                        sub_end{std::move(end)},
-                        filter_func(&in_filter_func)
-                    { 
-                        if (this->sub_iter != this->sub_end) {
-                            this->item.reset(*this->sub_iter);
-                        }
-                        this->check_current();
-                    } 
+      typename Holder::pointer operator->() {
+        return this->item.get_ptr();
+      }
 
-                    typename Holder::reference operator*() {
-                        return this->item.get();
-                    }
+      Iterator& operator++() {
+        this->inc_sub_iter();
+        this->check_current();
+        return *this;
+      }
 
-                    typename Holder::pointer operator->() {
-                        return this->item.get_ptr();
-                    }
+      Iterator operator++(int) {
+        auto ret = *this;
+        ++*this;
+        return ret;
+      }
 
-                    Iterator& operator++() { 
-                        this->inc_sub_iter();
-                        this->check_current();
-                        return *this;
-                    }
+      bool operator!=(const Iterator& other) const {
+        return this->sub_iter != other.sub_iter;
+      }
 
-                    Iterator operator++(int) {
-                        auto ret = *this;
-                        ++*this;
-                        return ret;
-                    }
-
-                    bool operator!=(const Iterator& other) const {
-                        return this->sub_iter != other.sub_iter;
-                    }
-
-                    bool operator==(const Iterator& other) const {
-                        return !(*this != other);
-                    }
-                
-            };
-
-            Iterator begin() {
-                return {std::begin(this->container),
-                        std::end(this->container),
-                        this->filter_func};
-            }
-
-            Iterator end() {
-                return {std::end(this->container),
-                        std::end(this->container),
-                        this->filter_func};
-            }
-
+      bool operator==(const Iterator& other) const {
+        return !(*this != other);
+      }
     };
 
-    template <typename FilterFunc, typename Container>
-    TakeWhile<FilterFunc, Container> takewhile(
-            FilterFunc filter_func, Container&& container) {
-        return {filter_func, std::forward<Container>(container)};
+    Iterator begin() {
+      return {std::begin(this->container), std::end(this->container),
+          this->filter_func};
     }
 
-    template <typename FilterFunc, typename T>
-    TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
-            FilterFunc filter_func, std::initializer_list<T> il)
-    {
-        return {filter_func, std::move(il)};
+    Iterator end() {
+      return {std::end(this->container), std::end(this->container),
+          this->filter_func};
     }
+  };
 
+  template <typename FilterFunc, typename Container>
+  TakeWhile<FilterFunc, Container> takewhile(
+      FilterFunc filter_func, Container&& container) {
+    return {filter_func, std::forward<Container>(container)};
+  }
+
+  template <typename FilterFunc, typename T>
+  TakeWhile<FilterFunc, std::initializer_list<T>> takewhile(
+      FilterFunc filter_func, std::initializer_list<T> il) {
+    return {filter_func, std::move(il)};
+  }
 }
 
 #endif

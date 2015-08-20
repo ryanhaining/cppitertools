@@ -12,166 +12,147 @@
 
 namespace iter {
 
-    //Forward declarations of Accumulator and accumulate
-    template <typename Container, typename AccumulateFunc>
-    class Accumulator;
+  // Forward declarations of Accumulator and accumulate
+  template <typename Container, typename AccumulateFunc>
+  class Accumulator;
 
-    template <typename Container, typename AccumulateFunc>
-    Accumulator<Container, AccumulateFunc> accumulate(
-            Container&&, AccumulateFunc);
+  template <typename Container, typename AccumulateFunc>
+  Accumulator<Container, AccumulateFunc> accumulate(
+      Container&&, AccumulateFunc);
 
-    template <typename T, typename AccumulateFunc>
-    Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T>, AccumulateFunc);
+  template <typename T, typename AccumulateFunc>
+  Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
+      std::initializer_list<T>, AccumulateFunc);
 
-    template <typename Container, typename AccumulateFunc>
-    class Accumulator {
-        private:
-            Container container;
-            AccumulateFunc accumulate_func;
+  template <typename Container, typename AccumulateFunc>
+  class Accumulator {
+   private:
+    Container container;
+    AccumulateFunc accumulate_func;
 
-            friend Accumulator accumulate<Container, AccumulateFunc>(
-                    Container&&, AccumulateFunc);
+    friend Accumulator accumulate<Container, AccumulateFunc>(
+        Container&&, AccumulateFunc);
 
-            template <typename T, typename AF>
-            friend Accumulator<std::initializer_list<T>, AF> accumulate(
-                    std::initializer_list<T>, AF);
+    template <typename T, typename AF>
+    friend Accumulator<std::initializer_list<T>, AF> accumulate(
+        std::initializer_list<T>, AF);
 
-            // AccumVal must be default constructible
-            using AccumVal =
-                typename std::remove_reference<
-                    typename std::result_of<AccumulateFunc(
-                            iterator_deref<Container>,
-                            iterator_deref<Container>)>::type>::type;
+    // AccumVal must be default constructible
+    using AccumVal =
+        typename std::remove_reference<typename std::result_of<AccumulateFunc(
+            iterator_deref<Container>, iterator_deref<Container>)>::type>::type;
 
-            Accumulator(Container&& in_container,
-                    AccumulateFunc in_accumulate_func)
-                : container(std::forward<Container>(in_container)),
-                accumulate_func(in_accumulate_func)
-            { }
-        public:
+    Accumulator(Container&& in_container, AccumulateFunc in_accumulate_func)
+        : container(std::forward<Container>(in_container)),
+          accumulate_func(in_accumulate_func) {}
 
-            class Iterator 
-                : public std::iterator<std::input_iterator_tag, AccumVal>
-            {
-                private:
-                    iterator_type<Container> sub_iter;
-                    iterator_type<Container> sub_end;
-                    AccumulateFunc *accumulate_func;
-                    std::unique_ptr<AccumVal> acc_val;
-                public:
-                    Iterator(iterator_type<Container>&& iter,
-                            iterator_type<Container>&& end,
-                            AccumulateFunc in_accumulate_func)
-                        : sub_iter{std::move(iter)},
-                        sub_end{std::move(end)},
-                        accumulate_func(&in_accumulate_func),
-                        // only get first value if not an end iterator
-                        acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)}
-                    { } 
+   public:
+    class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
+     private:
+      iterator_type<Container> sub_iter;
+      iterator_type<Container> sub_end;
+      AccumulateFunc* accumulate_func;
+      std::unique_ptr<AccumVal> acc_val;
 
-                    Iterator(const Iterator& other)
-                        : sub_iter{other.sub_iter},
-                        sub_end{other.sub_end},
-                        accumulate_func{other.accumulate_func},
-                        acc_val{other.acc_val ?
-                                new AccumVal(*other.acc_val) : nullptr}
-                    { }
+     public:
+      Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
+          AccumulateFunc in_accumulate_func)
+          : sub_iter{std::move(iter)},
+            sub_end{std::move(end)},
+            accumulate_func(&in_accumulate_func),
+            // only get first value if not an end iterator
+            acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)} {}
 
-                    Iterator& operator=(const Iterator& other) {
-                        if (this == &other) return *this;
-                        this->sub_iter = other.sub_iter;
-                        this->sub_end = other.sub_end;
-                        this->accumulate_func = other.accumulate_func;
-                        this->acc_val.reset(other.acc_val ?
-                                new AccumVal(*other.acc_val) : nullptr);
-                        return *this;
-                    }
+      Iterator(const Iterator& other)
+          : sub_iter{other.sub_iter},
+            sub_end{other.sub_end},
+            accumulate_func{other.accumulate_func},
+            acc_val{other.acc_val ? new AccumVal(*other.acc_val) : nullptr} {}
 
-                    Iterator(Iterator&&) =default;
-                    Iterator& operator=(Iterator&&) =default;
+      Iterator& operator=(const Iterator& other) {
+        if (this == &other) return *this;
+        this->sub_iter = other.sub_iter;
+        this->sub_end = other.sub_end;
+        this->accumulate_func = other.accumulate_func;
+        this->acc_val.reset(
+            other.acc_val ? new AccumVal(*other.acc_val) : nullptr);
+        return *this;
+      }
 
-                    const AccumVal& operator*() const {
-                        return *this->acc_val;
-                    }
+      Iterator(Iterator&&) = default;
+      Iterator& operator=(Iterator&&) = default;
 
-                    const AccumVal* operator->() const {
-                        return this->acc_val.get();
-                    }
+      const AccumVal& operator*() const {
+        return *this->acc_val;
+      }
 
-                    Iterator& operator++() { 
-                        ++this->sub_iter;
-                        if (this->sub_iter != this->sub_end) {
-                            *this->acc_val = (*accumulate_func)(
-                                    *this->acc_val, *this->sub_iter);
-                        }
-                        return *this;
-                    }
+      const AccumVal* operator->() const {
+        return this->acc_val.get();
+      }
 
-                    Iterator operator++(int) {
-                        auto ret = *this;
-                        ++*this;
-                        return ret;
-                    }
+      Iterator& operator++() {
+        ++this->sub_iter;
+        if (this->sub_iter != this->sub_end) {
+          *this->acc_val = (*accumulate_func)(*this->acc_val, *this->sub_iter);
+        }
+        return *this;
+      }
 
-                    bool operator!=(const Iterator& other) const {
-                        return this->sub_iter != other.sub_iter;
-                    }
+      Iterator operator++(int) {
+        auto ret = *this;
+        ++*this;
+        return ret;
+      }
 
-                    bool operator==(const Iterator& other) const {
-                        return !(*this != other);
-                    }
-            };
+      bool operator!=(const Iterator& other) const {
+        return this->sub_iter != other.sub_iter;
+      }
 
-            Iterator begin() {
-                return {std::begin(this->container),
-                        std::end(this->container),
-                        this->accumulate_func};
-            }
-
-            Iterator end() {
-                return {std::end(this->container),
-                        std::end(this->container),
-                        this->accumulate_func};
-            }
-
+      bool operator==(const Iterator& other) const {
+        return !(*this != other);
+      }
     };
 
-    // Helper function to instantiate an Accumulator
-    template <typename Container, typename AccumulateFunc>
-    Accumulator<Container, AccumulateFunc> accumulate(
-            Container&& container,
-            AccumulateFunc accumulate_func)
-    {
-        return {std::forward<Container>(container), accumulate_func};
+    Iterator begin() {
+      return {std::begin(this->container), std::end(this->container),
+          this->accumulate_func};
     }
 
-    template <typename Container>
-    auto accumulate(Container&& container) -> 
-        decltype(accumulate(std::forward<Container>(container),
-                    std::plus<typename std::remove_reference<
-                        iterator_deref<Container>>::type>{}))
-    {
-        return accumulate(std::forward<Container>(container),
-                    std::plus<typename std::remove_reference<
-                        iterator_deref<Container>>::type>{});
+    Iterator end() {
+      return {std::end(this->container), std::end(this->container),
+          this->accumulate_func};
     }
+  };
 
-    template <typename T, typename AccumulateFunc>
-    Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-            std::initializer_list<T> il,
-            AccumulateFunc accumulate_func)
-    {
-        return {std::move(il), accumulate_func};
-    }
+  // Helper function to instantiate an Accumulator
+  template <typename Container, typename AccumulateFunc>
+  Accumulator<Container, AccumulateFunc> accumulate(
+      Container&& container, AccumulateFunc accumulate_func) {
+    return {std::forward<Container>(container), accumulate_func};
+  }
 
-    template <typename T>
-    auto accumulate(std::initializer_list<T> il) ->
-        decltype(accumulate(std::move(il), std::plus<T>{}))
-    {
-        return accumulate(std::move(il), std::plus<T>{});
-    }
+  template <typename Container>
+  auto accumulate(Container&& container) -> decltype(accumulate(
+      std::forward<Container>(container),
+      std::plus<
+          typename std::remove_reference<iterator_deref<Container>>::type>{})) {
+    return accumulate(
+        std::forward<Container>(container),
+        std::plus<
+            typename std::remove_reference<iterator_deref<Container>>::type>{});
+  }
 
+  template <typename T, typename AccumulateFunc>
+  Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
+      std::initializer_list<T> il, AccumulateFunc accumulate_func) {
+    return {std::move(il), accumulate_func};
+  }
+
+  template <typename T>
+  auto accumulate(std::initializer_list<T> il)
+      -> decltype(accumulate(std::move(il), std::plus<T>{})) {
+    return accumulate(std::move(il), std::plus<T>{});
+  }
 }
 
 #endif
