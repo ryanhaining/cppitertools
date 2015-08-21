@@ -24,8 +24,6 @@ namespace iter {
     // .from_iterable()
     class ChainMaker;
   }
-
-  extern const impl::ChainMaker chain;
 }
 
 template <typename Container, typename... RestContainers>
@@ -307,6 +305,10 @@ class iter::impl::ChainMaker {
   }
 };
 
-constexpr iter::impl::ChainMaker iter::chain{};
+namespace iter {
+  namespace {
+    constexpr auto chain = impl::ChainMaker{};
+  }
+}
 
 #endif
