@@ -131,7 +131,7 @@ class iter::impl::Range {
   class Iterator : public std::iterator<std::forward_iterator_tag, T,
                        std::ptrdiff_t, T*, T> {
    private:
-     detail::RangeIterData<T> data;
+    detail::RangeIterData<T> data;
     bool is_end;
 
     // compare unsigned values
