@@ -17,6 +17,7 @@ progs = Split(
     '''
     accumulate
     chain
+    chunked
     combinatoric
     compress
     count
@@ -26,7 +27,6 @@ progs = Split(
     filter
     filterfalse
     groupby
-    grouper
     imap
     range
     repeat
