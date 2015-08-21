@@ -8,92 +8,93 @@
 #include <initializer_list>
 
 namespace iter {
+  namespace impl {
+    template <typename Container>
+    class Cycler;
+  }
 
   template <typename Container>
-  class Cycle;
-
-  template <typename Container>
-  Cycle<Container> cycle(Container&&);
+  impl::Cycler<Container> cycle(Container&&);
 
   template <typename T>
-  Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>);
+  impl::Cycler<std::initializer_list<T>> cycle(std::initializer_list<T>);
+}
 
-  template <typename Container>
-  class Cycle {
+template <typename Container>
+class iter::impl::Cycler {
+ private:
+  friend Cycler iter::cycle<Container>(Container&&);
+  template <typename T>
+  friend Cycler<std::initializer_list<T>> iter::cycle(std::initializer_list<T>);
+
+  Container container;
+
+  Cycler(Container&& in_container)
+      : container(std::forward<Container>(in_container)) {}
+
+ public:
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       iterator_traits_deref<Container>> {
    private:
-    friend Cycle cycle<Container>(Container&&);
-    template <typename T>
-    friend Cycle<std::initializer_list<T>> cycle(std::initializer_list<T>);
-
-    Container container;
-
-    Cycle(Container&& in_container)
-        : container(std::forward<Container>(in_container)) {}
+    iterator_type<Container> sub_iter;
+    iterator_type<Container> begin;
+    iterator_type<Container> end;
 
    public:
-    class Iterator : public std::iterator<std::input_iterator_tag,
-                         iterator_traits_deref<Container>> {
-     private:
-      using iter_type = iterator_type<Container>;
-      iterator_type<Container> sub_iter;
-      iterator_type<Container> begin;
-      iterator_type<Container> end;
+    Iterator(
+        const iterator_type<Container>& iter, iterator_type<Container>&& in_end)
+        : sub_iter{iter}, begin{iter}, end{std::move(in_end)} {}
 
-     public:
-      Iterator(const iterator_type<Container>& iter,
-          iterator_type<Container>&& in_end)
-          : sub_iter{iter}, begin{iter}, end{std::move(in_end)} {}
-
-      iterator_deref<Container> operator*() {
-        return *this->sub_iter;
-      }
-
-      iterator_arrow<Container> operator->() {
-        return apply_arrow(this->sub_iter);
-      }
-
-      Iterator& operator++() {
-        ++this->sub_iter;
-        // reset to beginning upon reaching the end
-        if (!(this->sub_iter != this->end)) {
-          this->sub_iter = this->begin;
-        }
-        return *this;
-      }
-
-      Iterator operator++(int) {
-        auto ret = *this;
-        ++*this;
-        return ret;
-      }
-
-      bool operator!=(const Iterator& other) const {
-        return this->sub_iter != other.sub_iter;
-      }
-
-      bool operator==(const Iterator& other) const {
-        return !(*this != other);
-      }
-    };
-
-    Iterator begin() {
-      return {std::begin(this->container), std::end(this->container)};
+    iterator_deref<Container> operator*() {
+      return *this->sub_iter;
     }
 
-    Iterator end() {
-      return {std::end(this->container), std::end(this->container)};
+    iterator_arrow<Container> operator->() {
+      return apply_arrow(this->sub_iter);
+    }
+
+    Iterator& operator++() {
+      ++this->sub_iter;
+      // reset to beginning upon reaching the end
+      if (!(this->sub_iter != this->end)) {
+        this->sub_iter = this->begin;
+      }
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      auto ret = *this;
+      ++*this;
+      return ret;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return this->sub_iter != other.sub_iter;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return !(*this != other);
     }
   };
 
-  template <typename Container>
-  Cycle<Container> cycle(Container&& container) {
-    return {std::forward<Container>(container)};
+  Iterator begin() {
+    return {std::begin(this->container), std::end(this->container)};
   }
 
-  template <typename T>
-  Cycle<std::initializer_list<T>> cycle(std::initializer_list<T> il) {
-    return {std::move(il)};
+  Iterator end() {
+    return {std::end(this->container), std::end(this->container)};
   }
+};
+
+template <typename Container>
+iter::impl::Cycler<Container> iter::cycle(Container&& container) {
+  return {std::forward<Container>(container)};
+}
+
+template <typename T>
+iter::impl::Cycler<std::initializer_list<T>> iter::cycle(
+    std::initializer_list<T> il) {
+  return {std::move(il)};
 }
 
 #endif
