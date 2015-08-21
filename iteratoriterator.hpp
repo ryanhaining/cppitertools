@@ -15,6 +15,7 @@
 // behave like some_collection<T> when iterated over or indexed
 
 namespace iter {
+  namespace impl {
   template <typename T, typename = void>
   struct HasConstDeref : std::false_type {};
 
@@ -75,7 +76,7 @@ namespace iter {
       return **this->sub_iter;
     }
 
-    auto operator-> () -> decltype(*sub_iter) {
+    auto operator -> () -> decltype(*sub_iter) {
       return *this->sub_iter;
     }
 
@@ -263,6 +264,7 @@ namespace iter {
       return container;
     }
   };
+}
 }
 
 #endif

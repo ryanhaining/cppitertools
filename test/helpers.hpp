@@ -172,7 +172,7 @@ class BasicIterable {
         }
 };
 
-using iter::void_t;
+using iter::impl::void_t;
 
 template <typename, typename =void>
 struct IsIterator : std::false_type { };

@@ -13,7 +13,7 @@
 namespace iter {
   template <typename GroupByType>
   struct GroupFrontGetter {
-    auto operator()(iterator_deref<GroupByType> gb)
+    auto operator()(impl::iterator_deref<GroupByType> gb)
         -> decltype(*std::begin(gb.second)) {
       return *std::begin(gb.second);
     }

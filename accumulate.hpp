@@ -142,11 +142,11 @@ namespace iter {
   auto accumulate(Container&& container) -> decltype(accumulate(
       std::forward<Container>(container),
       std::plus<
-          typename std::remove_reference<iterator_deref<Container>>::type>{})) {
+          typename std::remove_reference<impl::iterator_deref<Container>>::type>{})) {
     return accumulate(
         std::forward<Container>(container),
         std::plus<
-            typename std::remove_reference<iterator_deref<Container>>::type>{});
+            typename std::remove_reference<impl::iterator_deref<Container>>::type>{});
   }
 
   template <typename T>

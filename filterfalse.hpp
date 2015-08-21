@@ -25,12 +25,12 @@ namespace iter {
       PredicateFlipper(const PredicateFlipper&) = default;
 
       // Calls the filter_func
-      bool operator()(const iterator_deref<Container> item) const {
+      bool operator()(const impl::iterator_deref<Container> item) const {
         return !bool(filter_func(item));
       }
 
       // with non-const incase FilterFunc::operator() is non-const
-      bool operator()(const iterator_deref<Container> item) {
+      bool operator()(const impl::iterator_deref<Container> item) {
         return !bool(filter_func(item));
       }
     };
@@ -40,7 +40,7 @@ namespace iter {
     template <typename Container>
     class BoolFlipper {
      public:
-      bool operator()(const iterator_deref<Container> item) const {
+      bool operator()(const impl::iterator_deref<Container> item) const {
         return !bool(item);
       }
     };

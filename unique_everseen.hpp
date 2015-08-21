@@ -15,9 +15,9 @@ namespace iter {
   // performance checking if it has ever been seen
   template <typename Container>
   auto unique_everseen(Container&& container)
-      -> impl::Filtered<std::function<bool(iterator_deref<Container>)>,
+      -> impl::Filtered<std::function<bool(impl::iterator_deref<Container>)>,
           Container> {
-    using elem_t = iterator_deref<Container>;
+    using elem_t = impl::iterator_deref<Container>;
     std::unordered_set<typename std::decay<elem_t>::type> elem_seen;
 
     std::function<bool(elem_t)> func =

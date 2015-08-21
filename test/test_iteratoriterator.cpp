@@ -5,7 +5,7 @@
 
 #include "catch.hpp"
 
-using iter::IterIterWrapper;
+using iter::impl::IterIterWrapper;
 
 TEST_CASE("Iterator over a vector of vector iterators", "[iteratoriterator]") {
     using std::vector;

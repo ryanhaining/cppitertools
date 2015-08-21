@@ -15,6 +15,7 @@
 #include <cstddef>
 
 namespace iter {
+  namespace impl {
   template <typename T>
   struct type_is {
     using type = T;
@@ -277,6 +278,7 @@ namespace iter {
       return this->item_p != nullptr;
     }
   };
+}
 }
 
 #endif

@@ -78,7 +78,7 @@ class iter::impl::IMapper {
   ZippedType zipped;
 
   using IMapIterDeref =
-      decltype(detail::call_with_tuple(map_func, *std::begin(zipped)));
+      decltype(iter::detail::call_with_tuple(map_func, *std::begin(zipped)));
 
   IMapper(MapFunc in_map_func, Containers&&... in_containers)
       : map_func(in_map_func),
@@ -96,7 +96,7 @@ class iter::impl::IMapper {
         : map_func(&in_map_func), zipiter(std::move(in_zipiter)) {}
 
     IMapIterDeref operator*() {
-      return detail::call_with_tuple(*this->map_func, *(this->zipiter));
+      return iter::detail::call_with_tuple(*this->map_func, *(this->zipiter));
     }
 
     ArrowProxy<IMapIterDeref> operator->() {

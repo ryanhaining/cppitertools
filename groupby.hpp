@@ -294,8 +294,8 @@ namespace iter {
     template <typename Container>
     class ItemReturner {
      public:
-      iterator_deref<Container> operator()(
-          iterator_deref<Container> item) const {
+       impl::iterator_deref<Container> operator()(
+          impl::iterator_deref<Container> item) const {
         return item;
       }
     };
