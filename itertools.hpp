@@ -13,7 +13,7 @@
 #include "filter.hpp"
 #include "filterfalse.hpp"
 #include "groupby.hpp"
-#include "grouper.hpp"
+#include "chunked.hpp"
 #include "imap.hpp"
 #include "sliding_window.hpp"
 #include "permutations.hpp"

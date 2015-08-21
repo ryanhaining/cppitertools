@@ -17,6 +17,7 @@ progs = Split(
     '''
     accumulate
     chain
+    chunked
     combinations
     combinations_with_replacement
     compress
@@ -27,7 +28,6 @@ progs = Split(
     filter
     filterfalse
     groupby
-    grouper
     imap
     permutations
     powerset

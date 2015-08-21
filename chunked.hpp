@@ -1,5 +1,5 @@
-#ifndef ITER_GROUPER_HPP_
-#define ITER_GROUPER_HPP_
+#ifndef ITER_CHUNKED_HPP_
+#define ITER_CHUNKED_HPP_
 
 #include "iterbase.hpp"
 #include "iteratoriterator.hpp"
@@ -15,29 +15,29 @@
 namespace iter {
   namespace impl {
     template <typename Container>
-    class Grouper;
+    class Chunker;
   }
 
   template <typename Container>
-  impl::Grouper<Container> grouper(Container&&, std::size_t);
+  impl::Chunker<Container> chunked(Container&&, std::size_t);
 
   template <typename T>
-  impl::Grouper<std::initializer_list<T>> grouper(
+  impl::Chunker<std::initializer_list<T>> chunked(
       std::initializer_list<T>, std::size_t);
 }
 
 template <typename Container>
-class iter::impl::Grouper {
+class iter::impl::Chunker {
  private:
   Container container;
-  std::size_t group_size;
+  std::size_t chunk_size;
 
-  Grouper(Container&& c, std::size_t sz)
-      : container(std::forward<Container>(c)), group_size{sz} {}
+  Chunker(Container&& c, std::size_t sz)
+      : container(std::forward<Container>(c)), chunk_size{sz} {}
 
-  friend Grouper iter::grouper<Container>(Container&&, std::size_t);
+  friend Chunker iter::chunked<Container>(Container&&, std::size_t);
   template <typename T>
-  friend Grouper<std::initializer_list<T>> iter::grouper(
+  friend Chunker<std::initializer_list<T>> iter::chunked(
       std::initializer_list<T>, std::size_t);
 
   using IndexVector = std::vector<iterator_type<Container>>;
@@ -48,18 +48,18 @@ class iter::impl::Grouper {
    private:
     iterator_type<Container> sub_iter;
     iterator_type<Container> sub_end;
-    DerefVec group;
-    std::size_t group_size = 0;
+    DerefVec chunk;
+    std::size_t chunk_size = 0;
 
     bool done() const {
-      return this->group.empty();
+      return this->chunk.empty();
     }
 
-    void refill_group() {
-      this->group.get().clear();
+    void refill_chunk() {
+      this->chunk.get().clear();
       std::size_t i{0};
-      while (i < group_size && this->sub_iter != this->sub_end) {
-        group.get().push_back(this->sub_iter);
+      while (i < chunk_size && this->sub_iter != this->sub_end) {
+        chunk.get().push_back(this->sub_iter);
         ++this->sub_iter;
         ++i;
       }
@@ -70,13 +70,13 @@ class iter::impl::Grouper {
         iterator_type<Container>&& in_end, std::size_t s)
         : sub_iter{std::move(in_iter)},
           sub_end{std::move(in_end)},
-          group_size{s} {
-      this->group.get().reserve(this->group_size);
-      this->refill_group();
+          chunk_size{s} {
+      this->chunk.get().reserve(this->chunk_size);
+      this->refill_chunk();
     }
 
     Iterator& operator++() {
-      this->refill_group();
+      this->refill_chunk();
       return *this;
     }
 
@@ -96,33 +96,33 @@ class iter::impl::Grouper {
     }
 
     DerefVec& operator*() {
-      return this->group;
+      return this->chunk;
     }
 
     DerefVec* operator->() {
-      return &this->group;
+      return &this->chunk;
     }
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container), group_size};
+    return {std::begin(this->container), std::end(this->container), chunk_size};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container), group_size};
+    return {std::end(this->container), std::end(this->container), chunk_size};
   }
 };
 
 template <typename Container>
-iter::impl::Grouper<Container> iter::grouper(
-    Container&& container, std::size_t group_size) {
-  return {std::forward<Container>(container), group_size};
+iter::impl::Chunker<Container> iter::chunked(
+    Container&& container, std::size_t chunk_size) {
+  return {std::forward<Container>(container), chunk_size};
 }
 
 template <typename T>
-iter::impl::Grouper<std::initializer_list<T>> iter::grouper(
-    std::initializer_list<T> il, std::size_t group_size) {
-  return {std::move(il), group_size};
+iter::impl::Chunker<std::initializer_list<T>> iter::chunked(
+    std::initializer_list<T> il, std::size_t chunk_size) {
+  return {std::move(il), chunk_size};
 }
 
 #endif

@@ -31,7 +31,7 @@ evaluation wherever possible.
 [reversed](#reversed)<br />
 [slice](#slice)<br />
 [sliding\_window](#sliding_window)<br />
-[grouper](#grouper)<br />
+[chunked](#chunked)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
@@ -611,16 +611,16 @@ for (auto&& sec : sliding_window(v,4)) {
     cout << '\n';
 }
 ```
-grouper
+chunked
 ------
 
-grouper is very similar to sliding window, except instead of the
+chunked is very similar to sliding window, except instead of the
 section sliding by only 1 it goes the length of the full section.
 
 Example usage:
 ```c++
 vector<int> v {1,2,3,4,5,6,7,8,9};
-for (auto&& sec : grouper(v,4))
+for (auto&& sec : chunked(v,4))
 //each section will have 4 elements
 //except the last one may be cut short
 {
