@@ -614,22 +614,26 @@ for (auto&& sec : sliding_window(v,4)) {
 chunked
 ------
 
-chunked is very similar to sliding window, except instead of the
-section sliding by only 1 it goes the length of the full section.
+chunked will yield subsequent chunkes of an iterable in blocks of a specified
+size. The final chunk may be shorter than the rest if the chunk size given
+does not evenly divide the length of the iterable
 
 Example usage:
 ```c++
 vector<int> v {1,2,3,4,5,6,7,8,9};
-for (auto&& sec : chunked(v,4))
-//each section will have 4 elements
-//except the last one may be cut short
-{
+for (auto&& sec : chunked(v,4)) {
     for (auto&& i : sec) {
-        cout << i << " ";
-        i.get() *= 2;
+        cout << i << ' ';
     }
     cout << '\n';
 }
+```
+
+The above prints:
+```
+1 2 3 4
+5 6 7 8
+9
 ```
 
 product
