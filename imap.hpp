@@ -8,9 +8,7 @@
 #include <tuple>
 
 namespace iter {
-
   namespace detail {
-
     template <std::size_t Index, typename Functor, typename Tup>
     struct Expander {
       template <typename... Ts>
@@ -58,87 +56,86 @@ namespace iter {
 
   }  // end detail
 
-  // Forward declarations of IMap and imap
-  template <typename MapFunc, typename... Containers>
-  class IMap;
+  namespace impl {
+    template <typename MapFunc, typename... Containers>
+    class IMapper;
+  }
 
   template <typename MapFunc, typename... Containers>
-  IMap<MapFunc, Containers...> imap(MapFunc, Containers&&...);
+  impl::IMapper<MapFunc, Containers...> imap(MapFunc, Containers&&...);
+}
 
-  template <typename MapFunc, typename... Containers>
-  class IMap {
-    // The imap function is the only thing allowed to create a IMap
-    friend IMap imap<MapFunc, Containers...>(MapFunc, Containers&&...);
+template <typename MapFunc, typename... Containers>
+class iter::impl::IMapper {
+  // The imap function is the only thing allowed to create a IMapper
+  friend IMapper iter::imap<MapFunc, Containers...>(MapFunc, Containers&&...);
 
-    using ZippedType = decltype(zip(std::declval<Containers>()...));
-    using ZippedIterType = iterator_type<ZippedType>;
+  using ZippedType = decltype(zip(std::declval<Containers>()...));
+  using ZippedIterType = iterator_type<ZippedType>;
 
+ private:
+  MapFunc map_func;
+  ZippedType zipped;
+
+  using IMapIterDeref =
+      decltype(detail::call_with_tuple(map_func, *std::begin(zipped)));
+
+  IMapper(MapFunc in_map_func, Containers&&... in_containers)
+      : map_func(in_map_func),
+        zipped(zip(std::forward<Containers>(in_containers)...)) {}
+
+ public:
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       typename std::remove_reference<IMapIterDeref>::type> {
    private:
-    MapFunc map_func;
-    ZippedType zipped;
-
-    using IMapIterDeref =
-        decltype(detail::call_with_tuple(map_func, *std::begin(zipped)));
-
-    // Value constructor for use only in the imap function
-    IMap(MapFunc in_map_func, Containers&&... in_containers)
-        : map_func(in_map_func),
-          zipped(zip(std::forward<Containers>(in_containers)...)) {}
+    MapFunc* map_func;
+    ZippedIterType zipiter;
 
    public:
-    class Iterator : public std::iterator<std::input_iterator_tag,
-                         typename std::remove_reference<IMapIterDeref>::type> {
-     private:
-      MapFunc* map_func;
-      ZippedIterType zipiter;
+    Iterator(MapFunc& in_map_func, ZippedIterType&& in_zipiter)
+        : map_func(&in_map_func), zipiter(std::move(in_zipiter)) {}
 
-     public:
-      Iterator(MapFunc& in_map_func, ZippedIterType&& in_zipiter)
-          : map_func(&in_map_func), zipiter(std::move(in_zipiter)) {}
-
-      IMapIterDeref operator*() {
-        return detail::call_with_tuple(*this->map_func, *(this->zipiter));
-      }
-
-      ArrowProxy<IMapIterDeref> operator->() {
-        return {**this};
-      }
-
-      Iterator& operator++() {
-        ++this->zipiter;
-        return *this;
-      }
-
-      Iterator operator++(int) {
-        auto ret = *this;
-        ++*this;
-        return ret;
-      }
-
-      bool operator!=(const Iterator& other) const {
-        return this->zipiter != other.zipiter;
-      }
-
-      bool operator==(const Iterator& other) const {
-        return !(*this != other);
-      }
-    };
-
-    Iterator begin() {
-      return {this->map_func, this->zipped.begin()};
+    IMapIterDeref operator*() {
+      return detail::call_with_tuple(*this->map_func, *(this->zipiter));
     }
 
-    Iterator end() {
-      return {this->map_func, this->zipped.end()};
+    ArrowProxy<IMapIterDeref> operator->() {
+      return {**this};
+    }
+
+    Iterator& operator++() {
+      ++this->zipiter;
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      auto ret = *this;
+      ++*this;
+      return ret;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return this->zipiter != other.zipiter;
+    }
+
+    bool operator==(const Iterator& other) const {
+      return !(*this != other);
     }
   };
 
-  // Helper function to instantiate a IMap
-  template <typename MapFunc, typename... Containers>
-  IMap<MapFunc, Containers...> imap(
-      MapFunc map_func, Containers&&... containers) {
-    return {map_func, std::forward<Containers>(containers)...};
+  Iterator begin() {
+    return {this->map_func, this->zipped.begin()};
   }
+
+  Iterator end() {
+    return {this->map_func, this->zipped.end()};
+  }
+};
+
+template <typename MapFunc, typename... Containers>
+iter::impl::IMapper<MapFunc, Containers...> iter::imap(
+    MapFunc map_func, Containers&&... containers) {
+  return {map_func, std::forward<Containers>(containers)...};
 }
 
-#endif  // #ifndef ITER_IMAP_H_
+#endif
