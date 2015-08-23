@@ -148,6 +148,9 @@ class BasicIterable {
             private:
                 T *p;
             public:
+#ifdef DEFINE_DEFAULT_ITERATOR_CTOR
+                Iterator() = default;
+#endif
                 Iterator(T *b) : p{b} { }
                 bool operator!=(const Iterator& other) const {
                     return this->p != other.p;

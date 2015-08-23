@@ -1,4 +1,7 @@
+#define DEFINE_DEFAULT_ITERATOR_CTOR
 #include "helpers.hpp"
+#undef DEFINE_DEFAULT_ITERATOR_CTOR
+
 #include <combinations.hpp>
 
 #include <set>
@@ -55,6 +58,15 @@ TEST_CASE("combinations: size 0 gives nothing", "[combinations]") {
     std::string s{"ABCD"};
     auto c = combinations(s, 0);
     REQUIRE( std::begin(c) == std::end(c) );
+}
+
+TEST_CASE("combinations: iterable without operator*() const", "[combinations]")
+{
+    BasicIterable<char> bi{'x', 'y', 'z'};
+    auto c = combinations(bi, 1);
+    auto it = std::begin(c);
+    ++it;
+    (*it)[0];
 }
 
 TEST_CASE("combinations: binds to lvalues, moves rvalues", "[combinations]") {
