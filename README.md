@@ -228,6 +228,8 @@ for(auto&& i : filterfalse(vec)) {
 ```
 unique\_everseen
 ---------------
+*Additional Requirements*: Underlying values must be copy-constructible.
+
 This is a filter adaptor that only generates values that have never been seen
 before. For this to work your object must be specialized for `std::hash`.
 
