@@ -16,31 +16,32 @@ namespace iter {
   }
 
   template <typename Container>
-  impl::Enumerable<Container> enumerate(Container&&);
+  impl::Enumerable<Container> enumerate(Container&&, std::size_t = 0);
 
   template <typename T>
   impl::Enumerable<std::initializer_list<T>> enumerate(
-      std::initializer_list<T>);
+      std::initializer_list<T>, std::size_t = 0);
 }
 
 template <typename Container>
 class iter::impl::Enumerable {
  private:
   Container container;
+  const std::size_t start;
 
   // The only thing allowed to directly instantiate an Enumerable is
   // the enumerate function
-  friend Enumerable iter::enumerate<Container>(Container&&);
+  friend Enumerable iter::enumerate<Container>(Container&&, std::size_t);
   template <typename T>
   friend Enumerable<std::initializer_list<T>> iter::enumerate(
-      std::initializer_list<T>);
+      std::initializer_list<T>, std::size_t);
 
   // for IterYield
   using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
 
   // Value constructor for use only in the enumerate function
-  Enumerable(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
+  Enumerable(Container&& in_container, std::size_t in_start)
+      : container(std::forward<Container>(in_container)), start{in_start} {}
 
  public:
   // "yielded" by the Enumerable::Iterator.  Has a .index, and a
@@ -61,8 +62,8 @@ class iter::impl::Enumerable {
     std::size_t index;
 
    public:
-    Iterator(iterator_type<Container>&& si)
-        : sub_iter{std::move(si)}, index{0} {}
+    Iterator(iterator_type<Container>&& si, std::size_t start)
+        : sub_iter{std::move(si)}, index{start} {}
 
     IterYield operator*() {
       return {this->index, *this->sub_iter};
@@ -94,23 +95,24 @@ class iter::impl::Enumerable {
   };
 
   Iterator begin() {
-    return {std::begin(this->container)};
+    return {std::begin(this->container), start};
   }
 
   Iterator end() {
-    return {std::end(this->container)};
+    return {std::end(this->container), start};
   }
 };
 
 template <typename Container>
-iter::impl::Enumerable<Container> iter::enumerate(Container&& container) {
-  return {std::forward<Container>(container)};
+iter::impl::Enumerable<Container> iter::enumerate(
+    Container&& container, std::size_t start) {
+  return {std::forward<Container>(container), start};
 }
 
 template <typename T>
 iter::impl::Enumerable<std::initializer_list<T>> iter::enumerate(
-    std::initializer_list<T> il) {
-  return {std::move(il)};
+    std::initializer_list<T> il, std::size_t start) {
+  return {std::move(il), start};
 }
 
 #endif
