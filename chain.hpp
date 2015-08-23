@@ -1,7 +1,7 @@
 #ifndef ITER_CHAIN_HPP_
 #define ITER_CHAIN_HPP_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <utility>
 #include <iterator>

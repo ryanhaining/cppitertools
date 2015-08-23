@@ -1,8 +1,8 @@
 #ifndef ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 #define ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 
-#include "iterbase.hpp"
-#include "iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
+#include "internal/iteratoriterator.hpp"
 
 #include <iterator>
 #include <vector>

@@ -1,7 +1,7 @@
 #ifndef ITER_ACCUMULATE_H_
 #define ITER_ACCUMULATE_H_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <utility>
 #include <iterator>

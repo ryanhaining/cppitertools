@@ -1,7 +1,7 @@
 #ifndef ITER_DROPWHILE_H_
 #define ITER_DROPWHILE_H_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <utility>
 #include <iterator>

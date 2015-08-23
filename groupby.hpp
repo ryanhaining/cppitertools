@@ -3,7 +3,7 @@
 
 // this is easily the most functionally complex itertool
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <type_traits>
 #include <memory>

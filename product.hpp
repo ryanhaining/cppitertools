@@ -1,7 +1,7 @@
 #ifndef ITER_PRODUCT_HPP_
 #define ITER_PRODUCT_HPP_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <iterator>
 #include <tuple>

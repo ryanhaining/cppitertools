@@ -1,7 +1,7 @@
 #ifndef ITER_UNIQUE_JUSTSEEN_HPP
 #define ITER_UNIQUE_JUSTSEEN_HPP
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 #include "groupby.hpp"
 #include "imap.hpp"
 

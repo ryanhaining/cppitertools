@@ -1,7 +1,7 @@
 #ifndef ITER_COMPRESS_H_
 #define ITER_COMPRESS_H_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <utility>
 #include <iterator>

@@ -1,7 +1,7 @@
 #ifndef ITER_SLICE_HPP_
 #define ITER_SLICE_HPP_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 
 #include <iterator>
 #include <type_traits>

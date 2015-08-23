@@ -1,8 +1,8 @@
 #ifndef ITER_CHUNKED_HPP_
 #define ITER_CHUNKED_HPP_
 
-#include "iterbase.hpp"
-#include "iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
+#include "internal/iteratoriterator.hpp"
 
 #include <vector>
 #include <algorithm>

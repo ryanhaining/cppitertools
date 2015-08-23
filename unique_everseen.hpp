@@ -1,7 +1,7 @@
 #ifndef ITER_UNIQUE_EVERSEEN_HPP_
 #define ITER_UNIQUE_EVERSEEN_HPP_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 #include "filter.hpp"
 
 #include <type_traits>

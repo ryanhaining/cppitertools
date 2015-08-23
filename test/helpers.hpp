@@ -1,7 +1,7 @@
 #ifndef TEST_HELPER_H_
 #define TEST_HELPER_H_
 
-#include <iterbase.hpp>
+#include <internal/iterbase.hpp>
 
 #include <stdexcept>
 #include <type_traits>

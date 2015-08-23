@@ -1,7 +1,7 @@
 #ifndef ITER_POWERSET_HPP_
 #define ITER_POWERSET_HPP_
 
-#include "iterbase.hpp"
+#include "internal/iterbase.hpp"
 #include "combinations.hpp"
 
 #include <cassert>
