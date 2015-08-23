@@ -696,13 +696,12 @@ for (auto&& v : combinations_with_replacement(s, 2)) {
 }
 ```
 
-
 permutations
 -----------
-*Additional Requirements*: Input must have a ForwardIterator
+*Additional Requirements*: Input must have a ForwardIterator.  Iterator must
+have an `operator*() const`.
 
-Generates all the permutations of a range using `std::next_permutation`.  The
-iterators of the sequence passed must have an `operator*() const`
+Generates all the permutations of a range using `std::next_permutation`.
 
 Example usage:
 ```c++
