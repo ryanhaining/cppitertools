@@ -341,6 +341,10 @@ for (auto&& i : count()) {
 
 groupby
 -------
+*Additional Requirements*: If the Input's iterator's `operator*()` returns
+a reference, the reference must remain valid after the iterator is incremented.
+Roughly equivalent to requiring the Input have a ForwardIterator.
+
 Separate an iterable into groups sharing a common key.  The following example
 creates a new group whenever a string of a different length is encountered.
 ```c++
