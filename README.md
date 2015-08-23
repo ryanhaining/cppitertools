@@ -365,6 +365,9 @@ Thus, if the group is unsorted, the same key may appear multiple times.
 
 accumulate
 -------
+*Additional Requirements*: Type return from functor (with reference removed)
+must be assignable.
+
 Differs from `std::accumulate` (which in my humble opinion should be named
 `std::reduce` or `std::foldl`).  It is similar to a functional reduce where one
 can see all of the intermediate results.  By default, it keeps a running sum.
@@ -556,6 +559,8 @@ for (auto&& i : chain.from_iterable(matrix)) {
 
 reversed
 -------
+*Additional Requirements*: Input must have `.rbegin()` and `.rend()`, or be
+a plain C array.
 
 Iterates over elements of a sequence in reverse order.
 
