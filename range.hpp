@@ -107,9 +107,14 @@ namespace iter {
 
 template <typename T>
 class iter::impl::Range {
-  friend Range iter::range<T>(T) noexcept;
-  friend Range iter::range<T>(T, T) noexcept;
-  friend Range iter::range<T>(T, T, T) noexcept;
+  // see stackoverflow.com/questions/32174186 about why only specializations
+  // aren't marked as friend
+  template <typename U>
+  friend constexpr Range<U> iter::range(U) noexcept;
+  template <typename U>
+  friend constexpr Range<U> iter::range(U, U) noexcept;
+  template <typename U>
+  friend constexpr Range<U> iter::range(U, U, U) noexcept;
 
  private:
   const T start;
