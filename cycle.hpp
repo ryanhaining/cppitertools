@@ -33,6 +33,7 @@ class iter::impl::Cycler {
       : container(std::forward<Container>(in_container)) {}
 
  public:
+  Cycler(Cycler&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
