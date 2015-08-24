@@ -44,6 +44,7 @@ class iter::impl::CombinatorWithReplacement {
   using CombIteratorDeref = IterIterWrapper<IndexVector>;
 
  public:
+  CombinatorWithReplacement(CombinatorWithReplacement&&) = default;
   class Iterator
       : public std::iterator<std::input_iterator_tag, CombIteratorDeref> {
    private:
