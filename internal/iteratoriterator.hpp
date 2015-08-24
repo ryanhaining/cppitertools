@@ -22,24 +22,23 @@ namespace iter {
     struct HasConstDeref<T, void_t<decltype(*std::declval<const T&>())>>
         : std::true_type {};
 
-    template <typename Iter,
-        typename Diff = typename std::iterator_traits<Iter>::difference_type>
+    template <typename TopIter>
     class IteratorIterator
         : public std::iterator<std::random_access_iterator_tag,
-              typename std::iterator_traits<Iter>::value_type, Diff,
-              typename std::iterator_traits<Iter>::pointer,
-              typename std::iterator_traits<Iter>::reference> {
+                               typename std::decay<decltype(
+                                   **std::declval<TopIter>())>::type> {
+      using Diff = std::ptrdiff_t;
       static_assert(
-          std::is_same<typename std::iterator_traits<Iter>::iterator_category,
+          std::is_same<typename std::iterator_traits<TopIter>::iterator_category,
               std::random_access_iterator_tag>::value,
           "IteratorIterator only works with random access iterators");
 
      private:
-      Iter sub_iter;
+      TopIter sub_iter;
 
      public:
       IteratorIterator() = default;
-      IteratorIterator(const Iter& it) : sub_iter{it} {}
+      IteratorIterator(const TopIter& it) : sub_iter{it} {}
 
       bool operator==(const IteratorIterator& other) const {
         return !(*this != other);
