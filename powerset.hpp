@@ -39,6 +39,8 @@ class iter::impl::Powersetter {
       : container(std::forward<Container>(in_container)) {}
 
  public:
+  Powersetter(Powersetter&&) = default;
+
   class Iterator
       : public std::iterator<std::input_iterator_tag, CombinatorType> {
    private:
