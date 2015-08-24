@@ -41,6 +41,7 @@ class iter::impl::Combinator {
   using CombIteratorDeref = IterIterWrapper<IndexVector>;
 
  public:
+  Combinator(Combinator&&) = default;
   class Iterator
       : public std::iterator<std::input_iterator_tag, CombIteratorDeref> {
    private:
