@@ -44,6 +44,8 @@ class iter::impl::Enumerable {
       : container(std::forward<Container>(in_container)), start{in_start} {}
 
  public:
+  Enumerable(Enumerable&&) = default;
+
   // "yielded" by the Enumerable::Iterator.  Has a .index, and a
   // .element referencing the value yielded by the subiterator
   class IterYield : public BasePair {
