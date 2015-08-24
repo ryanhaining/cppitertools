@@ -48,6 +48,8 @@ class iter::impl::Accumulator {
         accumulate_func(in_accumulate_func) {}
 
  public:
+  Accumulator(Accumulator&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:
     iterator_type<Container> sub_iter;
@@ -57,7 +59,7 @@ class iter::impl::Accumulator {
 
    public:
     Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
-        AccumulateFunc in_accumulate_func)
+        AccumulateFunc in_accumulate_fun)
         : sub_iter{std::move(iter)},
           sub_end{std::move(end)},
           accumulate_func(&in_accumulate_func),
