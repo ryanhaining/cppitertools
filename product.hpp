@@ -27,9 +27,6 @@ namespace iter {
 // specialization for at least 1 template argument
 template <typename Container, typename... RestContainers>
 class iter::impl::Productor<Container, RestContainers...> {
-  static_assert(!std::is_rvalue_reference<Container>::value,
-      "Itertools cannot be templated with rvalue references");
-
   friend Productor iter::product<Container, RestContainers...>(
       Container&&, RestContainers&&...);
 
@@ -47,6 +44,7 @@ class iter::impl::Productor<Container, RestContainers...> {
         rest_products{std::forward<RestContainers>(rest)...} {}
 
  public:
+  Productor(Productor&&) = default;
   class Iterator
       : public std::iterator<std::input_iterator_tag, ProdIterDeref> {
    private:
@@ -116,6 +114,7 @@ class iter::impl::Productor<Container, RestContainers...> {
 template <>
 class iter::impl::Productor<> {
  public:
+  Productor(Productor&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, std::tuple<>> {
    public:
     constexpr static const bool is_base_iter = true;
