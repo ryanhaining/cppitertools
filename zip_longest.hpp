@@ -26,9 +26,6 @@ namespace iter {
 
 template <typename Container, typename... RestContainers>
 class iter::impl::ZippedLongest<Container, RestContainers...> {
-  static_assert(!std::is_rvalue_reference<Container>::value,
-      "Itertools cannot be templated with rvalue references");
-
   friend ZippedLongest zip_longest<Container, RestContainers...>(
       Container&&, RestContainers&&...);
 
@@ -49,6 +46,7 @@ class iter::impl::ZippedLongest<Container, RestContainers...> {
         rest_zipped{std::forward<RestContainers>(rest)...} {}
 
  public:
+  ZippedLongest(ZippedLongest&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
    private:
     using RestIter = typename ZippedLongest<RestContainers...>::Iterator;
@@ -114,6 +112,7 @@ class iter::impl::ZippedLongest<Container, RestContainers...> {
 template <>
 class iter::impl::ZippedLongest<> {
  public:
+  ZippedLongest(ZippedLongest&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, std::tuple<>> {
    public:
     Iterator& operator++() {
