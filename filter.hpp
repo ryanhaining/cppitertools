@@ -40,6 +40,8 @@ class iter::impl::Filtered {
         filter_func(in_filter_func) {}
 
  public:
+  Filtered(Filtered&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    protected:
