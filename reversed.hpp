@@ -32,6 +32,7 @@ class iter::impl::Reverser {
       : container(std::forward<Container>(in_container)) {}
 
  public:
+  Reverser(Reverser&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
@@ -95,7 +96,8 @@ class iter::impl::Reverser<T[N]> {
   Reverser(T* in_array) : array{in_array} {}
 
  public:
-  Reverser(const Reverser&) = default;
+  Reverser(Reverser&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag, T> {
    private:
     T* sub_iter;
