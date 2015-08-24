@@ -29,6 +29,8 @@ class iter::impl::RepeaterWithCount {
   using TPlain = typename std::remove_reference<T>::type;
 
  public:
+  RepeaterWithCount(RepeaterWithCount&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag, const TPlain> {
    private:
     const TPlain* elem;
@@ -100,6 +102,8 @@ class iter::impl::Repeater {
   constexpr Repeater(T e) : elem(std::forward<T>(e)) {}
 
  public:
+  Repeater(Repeater&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag, const TPlain> {
    private:
     const TPlain* elem;
