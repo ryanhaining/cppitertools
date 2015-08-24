@@ -49,6 +49,8 @@ class iter::impl::SortedView {
   }
 
  public:
+  SortedView(SortedView&&) = default;
+
   ItIt begin() {
     return std::begin(sorted_iters);
   }
