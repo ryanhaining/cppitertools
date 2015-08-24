@@ -40,6 +40,8 @@ class iter::impl::Permuter {
       : container(std::forward<Container>(in_container)) {}
 
  public:
+  Permuter(Permuter&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag, Permutable> {
    private:
     static constexpr const int COMPLETE = -1;
