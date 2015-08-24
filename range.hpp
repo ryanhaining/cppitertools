@@ -107,9 +107,9 @@ namespace iter {
 
 template <typename T>
 class iter::impl::Range {
-  friend Range iter::range<T>(T) noexcept;
-  friend Range iter::range<T>(T, T) noexcept;
-  friend Range iter::range<T>(T, T, T) noexcept;
+  friend constexpr Range iter::range<T>(T) noexcept;
+  friend constexpr Range iter::range<T>(T, T) noexcept;
+  friend constexpr Range iter::range<T>(T, T, T) noexcept;
 
  private:
   const T start;
