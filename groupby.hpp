@@ -44,11 +44,6 @@ class iter::impl::GroupProducer {
         key_func(in_key_func) {}
 
  public:
-  GroupProducer() = delete;
-  GroupProducer(const GroupProducer&) = delete;
-  GroupProducer& operator=(const GroupProducer&) = delete;
-  GroupProducer& operator=(GroupProducer&&) = delete;
-
   GroupProducer(GroupProducer&&) = default;
 
   class Iterator;
@@ -196,13 +191,7 @@ class iter::impl::GroupProducer {
       }
     }
 
-    // move-constructible, non-copy-constructible,
-    // non-assignable
-    Group() = delete;
-    Group(const Group&) = default;
-    Group& operator=(const Group&) = delete;
-    Group& operator=(Group&&) = delete;
-
+    // move-constructible, non-copy-constructible, non-assignable
     Group(Group&& other)
         : owner{other.owner}, key{other.key}, completed{other.completed} {
       other.completed = true;
