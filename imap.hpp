@@ -85,6 +85,8 @@ class iter::impl::IMapper {
         zipped(zip(std::forward<Containers>(in_containers)...)) {}
 
  public:
+  IMapper(IMapper&&) = default;
+
   class Iterator : public std::iterator<std::input_iterator_tag,
                        typename std::remove_reference<IMapIterDeref>::type> {
    private:
