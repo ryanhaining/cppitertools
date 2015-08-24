@@ -41,6 +41,7 @@ class iter::impl::WindowSlider {
   using DerefVec = IterIterWrapper<IndexVector>;
 
  public:
+  WindowSlider(WindowSlider&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
     iterator_type<Container> sub_iter;
