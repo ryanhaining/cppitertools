@@ -25,7 +25,7 @@ namespace iter {
     template <typename TopIter>
     class IteratorIterator
         : public std::iterator<std::random_access_iterator_tag,
-                               typename std::decay<decltype(
+                               typename std::remove_reference<decltype(
                                    **std::declval<TopIter>())>::type> {
       using Diff = std::ptrdiff_t;
       static_assert(
