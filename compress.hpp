@@ -58,6 +58,7 @@ class iter::impl::Compressed {
         selectors(std::forward<Selector>(in_selectors)) {}
 
  public:
+  Compressed(Compressed&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
