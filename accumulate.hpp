@@ -59,10 +59,10 @@ class iter::impl::Accumulator {
 
    public:
     Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
-        AccumulateFunc in_accumulate_fun)
+        AccumulateFunc& in_accumulate_fun)
         : sub_iter{std::move(iter)},
           sub_end{std::move(end)},
-          accumulate_func(&in_accumulate_func),
+          accumulate_func(&in_accumulate_fun),
           // only get first value if not an end iterator
           acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)} {}
 
