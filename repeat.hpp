@@ -17,7 +17,10 @@ namespace iter {
 
 template <typename T>
 class iter::impl::RepeaterWithCount {
-  friend RepeaterWithCount iter::repeat<T>(T&&, int);
+  // see stackoverflow.com/questions/32174186/ about why this isn't
+  // declaring just a specialization as friend
+  template <typename U>
+  friend constexpr RepeaterWithCount<U> iter::repeat(U&&, int);
 
  private:
   T elem;
@@ -93,7 +96,8 @@ namespace iter {
 
 template <typename T>
 class iter::impl::Repeater {
-  friend Repeater iter::repeat<T>(T&&);
+  template <typename U>
+  friend constexpr Repeater<U> iter::repeat(U&&);
 
  private:
   using TPlain = typename std::remove_reference<T>::type;
