@@ -67,11 +67,11 @@ class iter::impl::RepeaterWithCount {
     }
   };
 
-  constexpr Iterator begin() {
+  constexpr Iterator begin() const {
     return {&this->elem, this->count};
   }
 
-  constexpr Iterator end() {
+  constexpr Iterator end() const {
     return {&this->elem, 0};
   }
 };
@@ -136,11 +136,11 @@ class iter::impl::Repeater {
     }
   };
 
-  constexpr Iterator begin() {
+  constexpr Iterator begin() const {
     return {&this->elem};
   }
 
-  constexpr Iterator end() {
+  constexpr Iterator end() const {
     return {nullptr};
   }
 };
