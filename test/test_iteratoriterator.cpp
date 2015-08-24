@@ -52,3 +52,12 @@ TEST_CASE("IteratorIterator operator->", "[iteratoriterator]") {
     auto it = std::begin(itritr);
     REQUIRE( it->size() == 8 );
 }
+
+TEST_CASE("Iterate over a vector of string iterators", "[iteratoriterator]") {
+  std::string str = "hello world";
+  IterIterWrapper<std::vector<std::string::iterator>> itritr;
+  auto it = std::begin(itritr);
+  static_assert(std::is_same<decltype(*it),
+      std::iterator_traits<decltype(it)>::reference>::value,
+      "iterator is mis marked");
+}
