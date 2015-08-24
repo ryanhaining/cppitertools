@@ -53,6 +53,7 @@ class iter::impl::Sliced {
         step{in_step} {}
 
  public:
+  Sliced(Sliced&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
