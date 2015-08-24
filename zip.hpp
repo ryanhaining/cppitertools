@@ -43,6 +43,7 @@ class iter::impl::Zipped<Container, RestContainers...> {
         rest_zipped{std::forward<RestContainers>(rest)...} {}
 
  public:
+  Zipped(Zipped&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
    private:
     using RestIter = typename Zipped<RestContainers...>::Iterator;
@@ -99,6 +100,7 @@ class iter::impl::Zipped<Container, RestContainers...> {
 template <>
 class iter::impl::Zipped<> {
  public:
+  Zipped(Zipped&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, std::tuple<>> {
    public:
     constexpr static const bool is_base_iter = true;
