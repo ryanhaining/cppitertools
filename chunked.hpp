@@ -44,6 +44,7 @@ class iter::impl::Chunker {
   using DerefVec = IterIterWrapper<IndexVector>;
 
  public:
+  Chunker(Chunker&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
     iterator_type<Container> sub_iter;
