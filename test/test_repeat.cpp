@@ -35,6 +35,13 @@ TEST_CASE("repeat: can be used as constexpr", "[repeat]") {
     }
 
     {
+      constexpr static auto r = repeat('a');
+      constexpr auto i = r.begin();
+      //constexpr char c2 = *i;
+      //static_assert(c2 == 'a', "repeat value not as expected");
+    }
+
+    {
         constexpr auto r = repeat(c, 2);
         constexpr auto i = r.begin();
         constexpr char c2 = *i;
