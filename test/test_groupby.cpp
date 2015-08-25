@@ -47,7 +47,7 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
     }
 
     SECTION("lambda function") {
-        for (auto&& gb : groupby(vec, 
+        for (auto&& gb : groupby(vec,
                     [](const std::string& s){return s.size();})) {
             keys.push_back(gb.first);
             groups.emplace_back(std::begin(gb.second), std::end(gb.second));
@@ -201,7 +201,7 @@ TEST_CASE("groupby: copy constructed iterators behave as expected",
 
 TEST_CASE("groupby: operator-> on both iterator types", "[groupby]") {
     std::vector<std::string> ns = {"a", "abc"};
-    auto g = groupby(ns, std::mem_fn(&std::string::size));
+    auto g = groupby(ns, [](const std::string& str){return str.size();});
     auto it = std::begin(g);
     REQUIRE( it->first == 1 );
     auto it2 = std::begin(it->second);

@@ -5,14 +5,8 @@
 #include <string>
 #include <functional>
 
-// fix OSX compilation
-static int string_length(const std::string & str)
-{
-    return str.length();
-}
-
 int main() {
-    auto len = string_length;
+    auto len = [](const std::string& str){ return str.size(); };
     std::vector<std::string> vec = {
         "hi", "ab", "ho",
         "abc", "def",
