@@ -59,6 +59,12 @@ This library takes every effort to rely on as little as possible from the
 underlying iterables, but if anything noteworthy is needed it is described
 in this document.
 
+#### Guarantees of implementations
+By implementations I mean the objects returned by the API's functions. All of
+the implementation classes are move-constructible, not copy-constructible,
+not assignable. All iterators that work over another iterable are tagged
+as InputIterators and behave as such.
+
 #### Feedback
 If you find anything not working as you expect, not compiling when you believe
 it should, a divergence from the python itertools behavior, or any sort of
