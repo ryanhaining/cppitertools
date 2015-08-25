@@ -12,12 +12,12 @@ namespace iter {
 
     // forward isn't constexpr until c++14
     template <typename T>
-    constexpr T&& forward( typename std::remove_reference<T>::type& t ) {
+    constexpr T&& forward(typename std::remove_reference<T>::type& t) {
       return static_cast<T&&>(t);
     }
 
     template <typename T>
-    constexpr T&& forward( typename std::remove_reference<T>::type&& t ) {
+    constexpr T&& forward(typename std::remove_reference<T>::type&& t) {
       return static_cast<T&&>(t);
     }
   }
