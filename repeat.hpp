@@ -9,6 +9,17 @@ namespace iter {
   namespace impl {
     template <typename T>
     class RepeaterWithCount;
+
+    // forward isn't constexpr until c++14
+    template <typename T>
+    constexpr T&& forward( typename std::remove_reference<T>::type& t ) {
+      return static_cast<T&&>(t);
+    }
+
+    template <typename T>
+    constexpr T&& forward( typename std::remove_reference<T>::type&& t ) {
+      return static_cast<T&&>(t);
+    }
   }
 
   template <typename T>
@@ -27,7 +38,7 @@ class iter::impl::RepeaterWithCount {
   int count;
 
   constexpr RepeaterWithCount(T e, int c)
-      : elem(std::forward<T>(e)), count{c} {}
+      : elem(impl::forward<T>(e)), count{c} {}
 
   using TPlain = typename std::remove_reference<T>::type;
 
@@ -81,7 +92,7 @@ class iter::impl::RepeaterWithCount {
 
 template <typename T>
 constexpr iter::impl::RepeaterWithCount<T> iter::repeat(T&& e, int count) {
-  return {std::forward<T>(e), count < 0 ? 0 : count};
+  return {impl::forward<T>(e), count < 0 ? 0 : count};
 }
 
 namespace iter {
@@ -103,7 +114,7 @@ class iter::impl::Repeater {
   using TPlain = typename std::remove_reference<T>::type;
   T elem;
 
-  constexpr Repeater(T e) : elem(std::forward<T>(e)) {}
+  constexpr Repeater(T e) : elem(impl::forward<T>(e)) {}
 
  public:
   Repeater(Repeater&&) = default;
@@ -151,7 +162,7 @@ class iter::impl::Repeater {
 
 template <typename T>
 constexpr iter::impl::Repeater<T> iter::repeat(T&& e) {
-  return {std::forward<T>(e)};
+  return {impl::forward<T>(e)};
 }
 
 #endif
