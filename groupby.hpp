@@ -193,7 +193,7 @@ class iter::impl::GroupProducer {
 
     // move-constructible, non-copy-constructible, non-assignable
     Group(Group&& other)
-        : owner{other.owner}, key{other.key}, completed{other.completed} {
+        : owner(other.owner), key{other.key}, completed{other.completed} {
       other.completed = true;
     }
 
