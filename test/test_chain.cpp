@@ -186,6 +186,12 @@ TEST_CASE("chain.from_iterable: postfix ++", "[chain.from_iterable]") {
     REQUIRE( *it == 'n' );
 }
 
+TEST_CASE("chain.from_iterable: operator->","[chain.from_iterable]") {
+    std::vector<std::vector<std::string>> sv{{"a", "ab"}, {"abc"}};
+    auto ch = chain.from_iterable(sv);
+    auto it = std::begin(ch);
+    REQUIRE( it->size() == 1 );
+}
 
 TEST_CASE("chain.from_iterable: moves rvalues and binds ref to lvalues",
         "[chain.from_iterable]") {
