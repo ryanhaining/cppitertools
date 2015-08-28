@@ -33,6 +33,7 @@ class iter::impl::Zipped {
   Zipped(TupleType&& in_containers) : containers(std::move(in_containers)) {}
 
  public:
+  Zipped(Zipped&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
    private:
     iterator_tuple_type<TupleType> iters;
@@ -66,6 +67,10 @@ class iter::impl::Zipped {
 
     ZipIterDeref operator*() {
       return ZipIterDeref{(*std::get<Is>(this->iters))...};
+    }
+
+    auto operator -> () -> ArrowProxy<decltype(**this)> {
+      return {**this};
     }
   };
 
