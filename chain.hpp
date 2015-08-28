@@ -88,6 +88,7 @@ class iter::impl::Chained {
   TupType tup;
 
  public:
+  Chained(Chained&&) = default;
 
   class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
    private:
