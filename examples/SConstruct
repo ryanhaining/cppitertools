@@ -1,11 +1,10 @@
 import os
 
 env = Environment(
-    ENV = {'PATH' : os.environ['PATH']},
+    ENV=os.environ,
     CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++14',
-                '-fdiagnostics-color=always',
                '-I/usr/local/include'],
     CPPPATH='..',
     LINKFLAGS='-L/usr/local/lib')
@@ -17,6 +16,7 @@ progs = Split(
     '''
     accumulate
     chain
+    chunked
     combinatoric
     compress
     count
@@ -26,7 +26,6 @@ progs = Split(
     filter
     filterfalse
     groupby
-    grouper
     imap
     range
     repeat

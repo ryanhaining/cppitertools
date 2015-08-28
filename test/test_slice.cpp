@@ -96,7 +96,7 @@ TEST_CASE("slice: moves rvalues and binds to lvalues", "[slice]") {
 
 
 TEST_CASE("slice: with iterable doesn't move or copy elems", "[slice]") {
-    constexpr std::array<itertest::SolidInt, 3> arr{{{6}, {7}, {8}}};
+    constexpr itertest::SolidInt arr[] = {{6}, {7}, {8}};
     for (auto&& i : slice(arr, 2)) {
         (void)i;
     }

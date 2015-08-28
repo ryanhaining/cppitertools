@@ -48,6 +48,14 @@ TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
     REQUIRE( (*it).first == 1 );
 }
 
+TEST_CASE("enumerate: with starting value", "[enumerate]") {
+  std::string str = "hey";
+  auto e = enumerate(str, 5);
+  Vec v(std::begin(e), std::end(e));
+  Vec vc{{5, 'h'}, {6, 'e'}, {7, 'y'}};
+
+  REQUIRE( v == vc );
+}
 
 TEST_CASE("Modifications through enumerate affect container", "[enumerate]") {
     std::vector<int> v{1, 2, 3, 4};
@@ -122,7 +130,6 @@ TEST_CASE("Doesn't move or copy elements of iterable", "[enumerate]") {
         (void)i;
     }
 }
-
 
 TEST_CASE("enumerate: iterator meets requirements", "[enumerate]") {
     std::string s{};

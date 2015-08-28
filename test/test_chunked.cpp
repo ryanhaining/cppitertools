@@ -1,4 +1,4 @@
-#include <grouper.hpp>
+#include <chunked.hpp>
 
 #include <vector>
 #include <array>
@@ -8,14 +8,14 @@
 #include "helpers.hpp"
 #include "catch.hpp"
 
-using iter::grouper;
+using iter::chunked;
 using Vec = std::vector<int>;
 using ResVec = std::vector<Vec>;
 
-TEST_CASE("grouper: basic test", "[grouper]") {
+TEST_CASE("chunked: basic test", "[chunked]") {
     Vec ns = {1,2,3,4,5,6};
     ResVec results;
-    for (auto&& g : grouper(ns, 2)) {
+    for (auto&& g : chunked(ns, 2)) {
         results.emplace_back(std::begin(g), std::end(g));
     }
 
@@ -24,10 +24,10 @@ TEST_CASE("grouper: basic test", "[grouper]") {
     REQUIRE( results == rc );
 }
 
-TEST_CASE("grouper: len(iterable) % groupsize != 0", "[grouper]") {
+TEST_CASE("chunked: len(iterable) % groupsize != 0", "[chunked]") {
     Vec ns = {1,2,3,4,5,6,7};
     ResVec results;
-    for (auto&& g : grouper(ns, 3)) {
+    for (auto&& g : chunked(ns, 3)) {
         results.emplace_back(std::begin(g), std::end(g));
     }
 
@@ -36,9 +36,9 @@ TEST_CASE("grouper: len(iterable) % groupsize != 0", "[grouper]") {
     REQUIRE( results == rc );
 }
 
-TEST_CASE("grouper: iterators can be compared", "[grouper]") {
+TEST_CASE("chunked: iterators can be compared", "[chunked]") {
     Vec ns = {1,2,3,4,5,6,7};
-    auto g = grouper(ns, 3);
+    auto g = chunked(ns, 3);
     auto it = std::begin(g);
     REQUIRE( it == std::begin(g) );
     REQUIRE_FALSE( it != std::begin(g) );
@@ -47,20 +47,20 @@ TEST_CASE("grouper: iterators can be compared", "[grouper]") {
     REQUIRE_FALSE( it == std::begin(g) );
 }
 
-TEST_CASE("grouper: size 0 is empty", "[grouper]") {
+TEST_CASE("chunked: size 0 is empty", "[chunked]") {
     Vec ns{1, 2, 3};
-    auto g = grouper(ns, 0);
+    auto g = chunked(ns, 0);
     REQUIRE( std::begin(g) == std::end(g) );
 }
 
-TEST_CASE("grouper: empty iterable gives empty grouper", "[grouper]") {
+TEST_CASE("chunked: empty iterable gives empty chunked", "[chunked]") {
     Vec ns{};
-    auto g = grouper(ns, 1);
+    auto g = chunked(ns, 1);
     REQUIRE( std::begin(g) == std::end(g) );
 }
 
-TEST_CASE("grouper: iterator meets requirements", "[grouper]") {
+TEST_CASE("chunked: iterator meets requirements", "[chunked]") {
     std::string s{};
-    auto c = grouper(s, 1);
+    auto c = chunked(s, 1);
     REQUIRE( itertest::IsIterator<decltype(std::begin(c))>::value );
 }

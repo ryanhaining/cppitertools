@@ -38,7 +38,7 @@ evaluation wherever possible.
 [reversed](#reversed)<br />
 [slice](#slice)<br />
 [sliding\_window](#sliding_window)<br />
-[grouper](#grouper)<br />
+[chunked](#chunked)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
@@ -65,6 +65,12 @@ should be fairly obvious: any time an element needs to appear multiple times
 This library takes every effort to rely on as little as possible from the
 underlying iterables, but if anything noteworthy is needed it is described
 in this document.
+
+#### Guarantees of implementations
+By implementations I mean the objects returned by the API's functions. All of
+the implementation classes are move-constructible, not copy-constructible,
+not assignable. All iterators that work over another iterable are tagged
+as InputIterators and behave as such.
 
 #### Feedback
 If you find anything not working as you expect, not compiling when you believe
@@ -235,6 +241,8 @@ for(auto&& i : filterfalse(vec)) {
 ```
 unique\_everseen
 ---------------
+*Additional Requirements*: Underlying values must be copy-constructible.
+
 This is a filter adaptor that only generates values that have never been seen
 before. For this to work your object must be specialized for `std::hash`.
 
@@ -348,6 +356,10 @@ for (auto&& i : count()) {
 
 groupby
 -------
+*Additional Requirements*: If the Input's iterator's `operator*()` returns
+a reference, the reference must remain valid after the iterator is incremented.
+Roughly equivalent to requiring the Input have a ForwardIterator.
+
 Separate an iterable into groups sharing a common key.  The following example
 creates a new group whenever a string of a different length is encountered.
 ```c++
@@ -414,6 +426,9 @@ for (auto&& i : starmap(Callable{}, t)) {
 
 accumulate
 -------
+*Additional Requirements*: Type return from functor (with reference removed)
+must be assignable.
+
 Differs from `std::accumulate` (which in my humble opinion should be named
 `std::reduce` or `std::foldl`).  It is similar to a functional reduce where one
 can see all of the intermediate results.  By default, it keeps a running sum.
@@ -605,6 +620,8 @@ for (auto&& i : chain.from_iterable(matrix)) {
 
 reversed
 -------
+*Additional Requirements*: Input must have `.rbegin()` and `.rend()`, or be
+a plain C array.
 
 Iterates over elements of a sequence in reverse order.
 
@@ -660,25 +677,29 @@ for (auto&& sec : sliding_window(v,4)) {
     cout << '\n';
 }
 ```
-grouper
+chunked
 ------
 
-grouper is very similar to sliding window, except instead of the
-section sliding by only 1 it goes the length of the full section.
+chunked will yield subsequent chunkes of an iterable in blocks of a specified
+size. The final chunk may be shorter than the rest if the chunk size given
+does not evenly divide the length of the iterable
 
 Example usage:
 ```c++
 vector<int> v {1,2,3,4,5,6,7,8,9};
-for (auto&& sec : grouper(v,4))
-//each section will have 4 elements
-//except the last one may be cut short
-{
+for (auto&& sec : chunked(v,4)) {
     for (auto&& i : sec) {
-        cout << i << " ";
-        i.get() *= 2;
+        cout << i << ' ';
     }
     cout << '\n';
 }
+```
+
+The above prints:
+```
+1 2 3 4
+5 6 7 8
+9
 ```
 
 product
@@ -736,13 +757,12 @@ for (auto&& v : combinations_with_replacement(s, 2)) {
 }
 ```
 
-
 permutations
 -----------
-*Additional Requirements*: Input must have a ForwardIterator
+*Additional Requirements*: Input must have a ForwardIterator.  Iterator must
+have an `operator*() const`.
 
-Generates all the permutations of a range using `std::next_permutation`.  The
-iterators of the sequence passed must have an `operator*() const`
+Generates all the permutations of a range using `std::next_permutation`.
 
 Example usage:
 ```c++

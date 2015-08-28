@@ -88,11 +88,6 @@ namespace iter {
                              ? OptType<Is>{*std::get<Is>(this->iters)}
                                 : OptType<Is>{})...};
                     }
-
-                    ArrowProxy<ZipIterDeref> operator->() {
-                        return {**this};
-                    }
-
             };
 
             Iterator begin() {
@@ -110,7 +105,7 @@ namespace iter {
                     iterator_tuple_type<TupleType>{
                         std::end(std::get<Is>(this->containers))...}};
             }
-    };
+};
 
     template <typename TupleType, std::size_t... Is>
     ZippedLongest<TupleType, Is...> zip_longest_impl(
@@ -120,9 +115,8 @@ namespace iter {
 
     template <typename... Containers>
     auto zip_longest(Containers&&... containers) {
-        return zip_longest_impl(
-            std::tuple<Containers...>{
-                std::forward<Containers>(containers)...},
+        return zip_longest_impl(std::tuple<Containers...>{
+            std::forward<Containers>(containers)...},
             std::index_sequence_for<Containers...>{});
     }
 }

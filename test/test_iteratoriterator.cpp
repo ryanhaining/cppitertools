@@ -1,11 +1,11 @@
-#include <iteratoriterator.hpp>
+#include <internal/iteratoriterator.hpp>
 
 #include <vector>
 #include <string>
 
 #include "catch.hpp"
 
-using iter::IterIterWrapper;
+using iter::impl::IterIterWrapper;
 
 TEST_CASE("Iterator over a vector of vector iterators", "[iteratoriterator]") {
     using std::vector;
@@ -51,4 +51,13 @@ TEST_CASE("IteratorIterator operator->", "[iteratoriterator]") {
     itritr.get().push_back(std::begin(v));
     auto it = std::begin(itritr);
     REQUIRE( it->size() == 8 );
+}
+
+TEST_CASE("Iterate over a vector of string iterators", "[iteratoriterator]") {
+  std::string str = "hello world";
+  IterIterWrapper<std::vector<std::string::iterator>> itritr;
+  auto it = std::begin(itritr);
+  static_assert(std::is_same<decltype(*it),
+      std::iterator_traits<decltype(it)>::reference>::value,
+      "iterator is mis marked");
 }

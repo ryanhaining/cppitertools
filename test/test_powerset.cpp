@@ -18,7 +18,8 @@ TEST_CASE("powerset: basic test, [1, 2, 3]", "[powerset]") {
         v.emplace(std::begin(st), std::end(st));
     }
 
-    const IntPermSet vc = { {}, {1}, {2}, {3,}, {1,2}, {1,3}, {2,3}, {1,2,3} };
+    const IntPermSet vc = { std::multiset<int>{},
+      {1}, {2}, {3,}, {1,2}, {1,3}, {2,3}, {1,2,3} };
     REQUIRE( v == vc );
 }
 

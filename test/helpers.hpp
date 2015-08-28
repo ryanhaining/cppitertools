@@ -1,7 +1,7 @@
 #ifndef TEST_HELPER_H_
 #define TEST_HELPER_H_
 
-#include <iterbase.hpp>
+#include <internal/iterbase.hpp>
 
 #include <stdexcept>
 #include <type_traits>
@@ -135,6 +135,9 @@ class BasicIterable {
             private:
                 T *p;
             public:
+#ifdef DEFINE_DEFAULT_ITERATOR_CTOR
+                Iterator() = default;
+#endif
                 Iterator(T *b) : p{b} { }
                 bool operator!=(const Iterator& other) const {
                     return this->p != other.p;
@@ -164,7 +167,7 @@ class BasicIterable {
 #endif // ifdef DECLARE_REVERSE_ITERATOR
 };
 
-using iter::void_t;
+using iter::impl::void_t;
 
 template <typename, typename =void>
 struct IsIterator : std::false_type { };
