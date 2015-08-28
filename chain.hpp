@@ -84,10 +84,10 @@ class iter::impl::Chained {
   using TraitsValue = iterator_traits_deref<std::tuple_element_t<0, TupType>>;
 
  private:
+  Chained(TupType&& t) : tup(std::move(t)) {}
   TupType tup;
 
  public:
-  Chained(TupType&& t) : tup(std::move(t)) {}
 
   class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
    private:
