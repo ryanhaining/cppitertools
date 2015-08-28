@@ -2,7 +2,7 @@ import os
 
 env = Environment(
     ENV = os.environ,
-    CXX='c++'
+    CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include', '-I.'],
