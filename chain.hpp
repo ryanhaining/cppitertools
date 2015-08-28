@@ -41,10 +41,16 @@ class iter::impl::Chained {
 
   using IterTupType = iterator_tuple_type<TupType>;
   using DerefType = iterator_deref<std::tuple_element_t<0, TupType>>;
+  using ArrowType = iterator_arrow<std::tuple_element_t<0, TupType>>;
 
   template <std::size_t Idx>
   static DerefType get_and_deref(IterTupType& iters) {
     return *std::get<Idx>(iters);
+  }
+
+  template <std::size_t Idx>
+  static ArrowType get_and_arrow(IterTupType& iters) {
+    return apply_arrow(std::get<Idx>(iters));
   }
 
   template <std::size_t Idx>
@@ -59,11 +65,15 @@ class iter::impl::Chained {
   }
 
   using DerefFunc = DerefType (*)(IterTupType&);
+  using ArrowFunc = ArrowType (*)(IterTupType&);
   using IncFunc = void (*)(IterTupType&);
   using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
 
   constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{
       {get_and_deref<Is>...}};
+
+  constexpr static std::array<ArrowFunc, sizeof...(Is)> arrowers{
+      {get_and_arrow<Is>...}};
 
   constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{
       {get_and_increment<Is>...}};
@@ -77,7 +87,6 @@ class iter::impl::Chained {
   TupType tup;
 
  public:
-  Chained(Chained&&) = default;
   Chained(TupType&& t) : tup(std::move(t)) {}
 
   class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
@@ -101,6 +110,10 @@ class iter::impl::Chained {
 
     decltype(auto) operator*() {
       return derefers[this->index](this->iters);
+    }
+
+    decltype(auto) operator -> () {
+      return arrowers[this->index](this->iters);
     }
 
     Iterator& operator++() {
@@ -140,6 +153,10 @@ class iter::impl::Chained {
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::DerefFunc,
     sizeof...(Is)> iter::impl::Chained<TupType, Is...>::derefers;
+
+template <typename TupType, std::size_t... Is>
+constexpr std::array<typename iter::impl::Chained<TupType, Is...>::ArrowFunc,
+    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::arrowers;
 
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::IncFunc,
