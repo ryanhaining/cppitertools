@@ -152,7 +152,7 @@ TEST_CASE("chain: iterator meets requirements", "[chain]") {
 template <typename... Ts>
 using ImpT = decltype(chain(std::declval<Ts>()...));
 TEST_CASE("chain: has correct ctor and assign ops", "[chain]") {
-  using T = ImpT<std::string&, std::vector<char>, char[10]>;
+  using T = ImpT<std::string&, std::vector<char>, char (&)[10]>;
   REQUIRE(itertest::IsMoveConstructibleOnly<T>::value);
 }
 
