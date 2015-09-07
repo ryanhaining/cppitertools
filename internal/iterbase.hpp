@@ -63,6 +63,7 @@ namespace iter {
       template <typename T, typename = void>
       struct ArrowHelper {
         using type = void;
+        void operator()(T&) const noexcept { }
       };
 
       template <typename T>
