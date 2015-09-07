@@ -5,6 +5,7 @@
 
 using itertest::SolidInt;
 using itertest::IsIterator;
+using itertest::IsMoveConstructibleOnly;
 
 namespace {
 
@@ -80,4 +81,47 @@ TEST_CASE("IsIterator fails when missing copy assignment", "[helpers]") {
 
 TEST_CASE("IsIterator passes a valid iterator", "[helpers]") {
     REQUIRE( IsIterator<ValidIter>::value );
+}
+
+struct HasNothing {
+  HasNothing(const HasNothing&) = delete;
+  HasNothing& operator=(const HasNothing&) = delete;
+};
+
+struct HasMoveAndCopyCtor {
+  HasMoveAndCopyCtor(const HasMoveAndCopyCtor&);
+  HasMoveAndCopyCtor(HasMoveAndCopyCtor&&);
+};
+
+struct HasMoveCtorAndAssign {
+  HasMoveCtorAndAssign(HasMoveCtorAndAssign&&);
+  HasMoveCtorAndAssign& operator=(HasMoveCtorAndAssign&&);
+};
+
+struct HasMoveCtorAndCopyAssign {
+  HasMoveCtorAndCopyAssign(HasMoveCtorAndCopyAssign&&);
+  HasMoveCtorAndCopyAssign&  operator=(const HasMoveCtorAndCopyAssign&);
+};
+
+struct HasMoveCtorOnly {
+  HasMoveCtorOnly(HasMoveCtorOnly&&);
+};
+
+TEST_CASE("IsMoveConstructibleOnly false without move ctor", "[helpers]") {
+  REQUIRE_FALSE( IsMoveConstructibleOnly<HasNothing>::value );
+}
+
+TEST_CASE("IsMoveConstructibleOnly false with copy ctor", "[helpers]") {
+  REQUIRE_FALSE( IsMoveConstructibleOnly<HasMoveAndCopyCtor>::value );
+}
+
+TEST_CASE("IsMoveConstructibleOnly false with move assign", "[helpers]") {
+  REQUIRE_FALSE( IsMoveConstructibleOnly<HasMoveCtorAndAssign>::value );
+}
+TEST_CASE("IsMoveConstructibleOnly false with copy assign", "[helpers]") {
+  REQUIRE_FALSE( IsMoveConstructibleOnly<HasMoveCtorAndCopyAssign>::value );
+}
+
+TEST_CASE("IsMoveConstructibleOnly true when met", "[helpers]") {
+  REQUIRE( IsMoveConstructibleOnly<HasMoveCtorOnly>::value );
 }
