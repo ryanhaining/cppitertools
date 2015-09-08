@@ -27,9 +27,8 @@ namespace iter {
           if (elem_seen.find(e) == std::end(elem_seen)) {
             elem_seen.insert(e);
             return true;
-          } else {
-            return false;
           }
+          return false;
         };
     return filter(func, std::forward<Container>(container));
   }
@@ -42,9 +41,8 @@ namespace iter {
       if (elem_seen.find(e) == std::end(elem_seen)) {
         elem_seen.insert(e);
         return true;
-      } else {
-        return false;
       }
+      return false;
     };
     return filter(func, il);
   }
