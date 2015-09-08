@@ -48,7 +48,7 @@ class iter::impl::Accumulator {
         accumulate_func(in_accumulate_func) {}
 
  public:
-  Accumulator(Accumulator&&) = default;
+  Accumulator(Accumulator&&) noexcept = default;
 
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:
@@ -73,7 +73,7 @@ class iter::impl::Accumulator {
           acc_val{other.acc_val ? new AccumVal(*other.acc_val) : nullptr} {}
 
     Iterator& operator=(const Iterator& other) {
-      if (this == &other) return *this;
+      if (this == &other) { return *this; }
       this->sub_iter = other.sub_iter;
       this->sub_end = other.sub_end;
       this->accumulate_func = other.accumulate_func;
@@ -82,8 +82,8 @@ class iter::impl::Accumulator {
       return *this;
     }
 
-    Iterator(Iterator&&) = default;
-    Iterator& operator=(Iterator&&) = default;
+    Iterator(Iterator&&) noexcept = default;
+    Iterator& operator=(Iterator&&) noexcept = default;
 
     const AccumVal& operator*() const {
       return *this->acc_val;
