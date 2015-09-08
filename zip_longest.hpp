@@ -88,9 +88,8 @@ class iter::impl::ZippedLongest<Container, RestContainers...> {
       if (this->iter != this->end) {
         return std::tuple_cat(
             std::tuple<OptType>{{*this->iter}}, *this->rest_iter);
-      } else {
-        return std::tuple_cat(std::tuple<OptType>{{}}, *this->rest_iter);
       }
+      return std::tuple_cat(std::tuple<OptType>{{}}, *this->rest_iter);
     }
 
     ArrowProxy<ZipIterDeref> operator->() {
