@@ -48,7 +48,7 @@ class iter::impl::Accumulator {
         accumulate_func(in_accumulate_func) {}
 
  public:
-  Accumulator(Accumulator&&) noexcept = default;
+  Accumulator(Accumulator&&) = default;
 
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:

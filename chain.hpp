@@ -46,7 +46,7 @@ class iter::impl::Chained {
         rest_chained{std::forward<RestContainers>(rest)...} {}
 
  public:
-  Chained(Chained&&) noexcept = default;
+  Chained(Chained&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
@@ -123,7 +123,7 @@ class iter::impl::Chained<Container> {
       : container(std::forward<Container>(in_container)) {}
 
  public:
-  Chained(Chained&&) noexcept = default;
+  Chained(Chained&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
@@ -181,7 +181,7 @@ class iter::impl::ChainedFromIterable {
       : container(std::forward<Container>(in_container)) {}
 
  public:
-  ChainedFromIterable(ChainedFromIterable&&) noexcept = default;
+  ChainedFromIterable(ChainedFromIterable&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<iterator_deref<Container>>> {
    private:
@@ -241,8 +241,8 @@ class iter::impl::ChainedFromIterable {
       return *this;
     }
 
-    Iterator(Iterator&&) noexcept = default;
-    Iterator& operator=(Iterator&&) noexcept = default;
+    Iterator(Iterator&&) = default;
+    Iterator& operator=(Iterator&&) = default;
     ~Iterator() = default;
 
     Iterator& operator++() {
