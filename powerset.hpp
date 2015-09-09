@@ -54,7 +54,8 @@ class iter::impl::Powersetter {
     Iterator(Container& in_container, std::size_t sz)
         : container_p{&in_container},
           set_size{sz},
-          comb{new CombinatorType(combinations(in_container, sz))},
+          comb{
+              std::make_shared<CombinatorType>(combinations(in_container, sz))},
           comb_iter{std::begin(*comb)},
           comb_end{std::end(*comb)} {}
 
@@ -62,8 +63,8 @@ class iter::impl::Powersetter {
       ++this->comb_iter;
       if (this->comb_iter == this->comb_end) {
         ++this->set_size;
-        this->comb.reset(new CombinatorType(
-            combinations(*this->container_p, this->set_size)));
+        this->comb = std::make_shared<CombinatorType>(
+            combinations(*this->container_p, this->set_size));
         this->comb_iter = std::begin(*this->comb);
         this->comb_end = std::end(*this->comb);
       }
