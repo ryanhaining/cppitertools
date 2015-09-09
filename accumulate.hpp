@@ -82,8 +82,8 @@ class iter::impl::Accumulator {
       return *this;
     }
 
-    Iterator(Iterator&&) noexcept = default;
-    Iterator& operator=(Iterator&&) noexcept = default;
+    Iterator(Iterator&&) = default;
+    Iterator& operator=(Iterator&&) = default;
 
     const AccumVal& operator*() const {
       return *this->acc_val;
