@@ -71,7 +71,7 @@ class iter::impl::Accumulator {
           acc_val{other.acc_val ? new AccumVal(*other.acc_val) : nullptr} {}
 
     Iterator& operator=(const Iterator& other) {
-      if (this == &other) return *this;
+      if (this == &other) { return *this; }
       this->sub_iter = other.sub_iter;
       this->sub_end = other.sub_end;
       this->accumulate_func = other.accumulate_func;

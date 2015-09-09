@@ -68,7 +68,7 @@ namespace iter {
       T start_{};
       T value_{};
       T step_{};
-      unsigned long steps_taken{};
+      std::size_t steps_taken{};
 
      public:
       constexpr RangeIterData() noexcept = default;
@@ -162,9 +162,8 @@ class iter::impl::Range {
         const Iterator& lhs, const Iterator& rhs) noexcept {
       if (rhs.is_end) {
         return not_equal_to_impl(lhs, rhs, std::is_unsigned<T>{});
-      } else {
-        return not_equal_to_impl(rhs, lhs, std::is_unsigned<T>{});
       }
+      return not_equal_to_impl(rhs, lhs, std::is_unsigned<T>{});
     }
 
    public:

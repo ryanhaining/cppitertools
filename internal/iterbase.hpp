@@ -54,7 +54,7 @@ namespace iter {
       template <typename T, typename = void>
       struct ArrowHelper {
         using type = void;
-        void operator()(T&) const noexcept { }
+        void operator()(T&) const noexcept {}
       };
 
       template <typename T>
@@ -239,8 +239,7 @@ namespace iter {
     // get() returns a reference to the held item
     // get_ptr() returns a pointer to the held item
     // reset() replaces the currently held item
-
-    template <typename T, typename = void>
+    template <typename T>
     class DerefHolder {
      private:
       static_assert(!std::is_lvalue_reference<T>::value,
@@ -283,17 +282,16 @@ namespace iter {
       }
 
       explicit operator bool() const {
-        return this->item_p;
+        return static_cast<bool>(this->item_p);
       }
     };
 
-    // Specialization for when T is an lvalue ref.  Keep this in mind
-    // wherever a T appears.
+    // Specialization for when T is an lvalue ref
     template <typename T>
-    class DerefHolder<T, std::enable_if_t<std::is_lvalue_reference<T>::value>> {
+    class DerefHolder<T&> {
      public:
-      using reference = T;
-      using pointer = std::remove_reference_t<T>*;
+      using reference = T&;
+      using pointer = T*;
 
      private:
       pointer item_p{};
@@ -309,7 +307,7 @@ namespace iter {
         return this->item_p;
       }
 
-      void reset(T item) {
+      void reset(reference item) {
         this->item_p = &item;
       }
 
