@@ -2,12 +2,11 @@ import os
 
 env = Environment(
     ENV = os.environ,
-    CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
                '-pedantic', '-std=c++11',
                '-I/usr/local/include', '-I.'],
     CPPPATH='..',
-    LINKFLAGS='-L/usr/local/lib')
+    LINKFLAGS=['-L/usr/local/lib'])
 
 # allows highighting to print to terminal from compiler output
 env['ENV']['TERM'] = os.environ['TERM']
@@ -43,6 +42,7 @@ progs = Split(
     zip
 
     iteratoriterator
+    iterbase
     mixed
     helpers
     '''
