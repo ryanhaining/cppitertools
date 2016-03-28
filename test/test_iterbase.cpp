@@ -39,15 +39,9 @@ TEST_CASE("Detects correct iterator types", "[iterbase]") {
   REQUIRE((std::is_same<it::iterator_traits_deref<IVec>,
       IVec::iterator::value_type>::value));
 
-  REQUIRE((std::is_same<it::reverse_iterator_type<IVec>,
-      IVec::reverse_iterator>::value));
-  REQUIRE((std::is_same<it::reverse_iterator_deref<IVec>,
-      IVec::reverse_iterator::reference>::value));
   REQUIRE(
       (std::is_same<it::iterator_arrow<IVec>, IVec::iterator::pointer>::value));
   REQUIRE((std::is_same<it::iterator_arrow<int[10]>, int*>::value));
-  REQUIRE((std::is_same<it::reverse_iterator_arrow<IVec>,
-      IVec::reverse_iterator::pointer>::value));
 }
 
 TEST_CASE("advance, next, size", "[iterbase]") {

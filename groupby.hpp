@@ -36,8 +36,7 @@ class iter::impl::GroupProducer {
   friend GroupProducer<std::initializer_list<T>, KF> iter::groupby(
       std::initializer_list<T>, KF);
 
-  using key_func_ret =
-      typename std::result_of<KeyFunc(iterator_deref<Container>)>::type;
+  using key_func_ret = std::result_of_t<KeyFunc(iterator_deref<Container>)>;
 
   GroupProducer(Container&& in_container, KeyFunc in_key_func)
       : container(std::forward<Container>(in_container)),
@@ -154,9 +153,9 @@ class iter::impl::GroupProducer {
 
     void set_key_group_pair() {
       if (!this->current_key_group_pair) {
-        this->current_key_group_pair.reset(
-            new KeyGroupPair((*this->key_func)(this->item.get()),
-                Group{*this, this->next_key()}));
+        this->current_key_group_pair =
+            std::make_unique<KeyGroupPair>((*this->key_func)(this->item.get()),
+                Group{*this, this->next_key()});
       }
     }
   };
@@ -200,7 +199,7 @@ class iter::impl::GroupProducer {
     class GroupIterator : public std::iterator<std::input_iterator_tag,
                               iterator_traits_deref<Container>> {
      private:
-      typename std::remove_reference<key_func_ret>::type* key;
+      std::remove_reference_t<key_func_ret>* key;
       Group* group_p;
 
       bool not_at_end() {
@@ -291,15 +290,13 @@ namespace iter {
   }
 
   template <typename Container>
-  auto groupby(Container&& container) -> decltype(groupby(
-      std::forward<Container>(container), detail::ItemReturner<Container>())) {
+  auto groupby(Container&& container) {
     return groupby(
         std::forward<Container>(container), detail::ItemReturner<Container>());
   }
 
   template <typename T>
-  auto groupby(std::initializer_list<T> il) -> decltype(groupby(
-      std::move(il), detail::ItemReturner<std::initializer_list<T>>())) {
+  auto groupby(std::initializer_list<T> il) {
     return groupby(
         std::move(il), detail::ItemReturner<std::initializer_list<T>>());
   }

@@ -179,3 +179,9 @@ TEST_CASE("sorted: has correct ctor and assign ops", "[sorted]") {
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string&>>::value);
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string>>::value);
 }
+
+TEST_CASE("sorted: iterator meets requirements", "[sorted]") {
+    Vec v;
+    auto r = sorted(v);
+    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+}

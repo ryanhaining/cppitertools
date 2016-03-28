@@ -44,7 +44,7 @@ class iter::impl::Powersetter {
   class Iterator
       : public std::iterator<std::input_iterator_tag, CombinatorType> {
    private:
-    typename std::remove_reference<Container>::type* container_p;
+    std::remove_reference_t<Container>* container_p;
     std::size_t set_size;
     std::shared_ptr<CombinatorType> comb;
     iterator_type<CombinatorType> comb_iter;
@@ -65,6 +65,7 @@ class iter::impl::Powersetter {
         ++this->set_size;
         this->comb = std::make_shared<CombinatorType>(
             combinations(*this->container_p, this->set_size));
+
         this->comb_iter = std::begin(*this->comb);
         this->comb_end = std::end(*this->comb);
       }

@@ -3,140 +3,123 @@
 
 #include "internal/iterbase.hpp"
 
-#include <utility>
+#include <array>
+#include <initializer_list>
 #include <iterator>
 #include <memory>
-#include <initializer_list>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {
-    template <typename Container, typename... RestContainers>
+    template <typename TupType, std::size_t... Is>
     class Chained;
-
-    template <typename Container>
-    class Chained<Container>;
 
     template <typename Container>
     class ChainedFromIterable;
 
     // rather than a chain function, use a callable object to support
-    // .from_iterable()
+    // from_iterable
     class ChainMaker;
   }
 }
 
-template <typename Container, typename... RestContainers>
+template <typename TupType, std::size_t... Is>
 class iter::impl::Chained {
-  static_assert(are_same<iterator_deref<Container>,
-                    iterator_deref<RestContainers>...>::value,
+ private:
+  friend class ChainMaker;
+
+  static_assert(std::tuple_size<std::decay_t<TupType>>::value == sizeof...(Is),
+      "tuple size != sizeof Is");
+
+  static_assert(
+      are_same<iterator_deref<std::tuple_element_t<Is, TupType>>...>::value,
       "All chained iterables must have iterators that "
       "dereference to the same type, including cv-qualifiers "
       "and references.");
 
-  friend class ChainMaker;
-  template <typename, typename...>
-  friend class Chained;
+  using IterTupType = iterator_tuple_type<TupType>;
+  using DerefType = iterator_deref<std::tuple_element_t<0, TupType>>;
+  using ArrowType = iterator_arrow<std::tuple_element_t<0, TupType>>;
+
+  template <std::size_t Idx>
+  static DerefType get_and_deref(IterTupType& iters) {
+    return *std::get<Idx>(iters);
+  }
+
+  template <std::size_t Idx>
+  static ArrowType get_and_arrow(IterTupType& iters) {
+    return apply_arrow(std::get<Idx>(iters));
+  }
+
+  template <std::size_t Idx>
+  static void get_and_increment(IterTupType& iters) {
+    ++std::get<Idx>(iters);
+  }
+
+  template <std::size_t Idx>
+  static bool get_and_check_not_equal(
+      const IterTupType& lhs, const IterTupType& rhs) {
+    return std::get<Idx>(lhs) != std::get<Idx>(rhs);
+  }
+
+  using DerefFunc = DerefType (*)(IterTupType&);
+  using ArrowFunc = ArrowType (*)(IterTupType&);
+  using IncFunc = void (*)(IterTupType&);
+  using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
+
+  constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{
+      {get_and_deref<Is>...}};
+
+  constexpr static std::array<ArrowFunc, sizeof...(Is)> arrowers{
+      {get_and_arrow<Is>...}};
+
+  constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{
+      {get_and_increment<Is>...}};
+
+  constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{
+      {get_and_check_not_equal<Is>...}};
+
+  using TraitsValue = iterator_traits_deref<std::tuple_element_t<0, TupType>>;
 
  private:
-  Container container;
-  Chained<RestContainers...> rest_chained;
-  Chained(Container&& in_container, RestContainers&&... rest)
-      : container(std::forward<Container>(in_container)),
-        rest_chained{std::forward<RestContainers>(rest)...} {}
+  Chained(TupType&& t) : tup(std::move(t)) {}
+  TupType tup;
 
  public:
   Chained(Chained&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
+
+  class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
    private:
-    using RestIter = typename Chained<RestContainers...>::Iterator;
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
-    RestIter rest_iter;
-    bool at_end;
+    std::size_t index;
+    IterTupType iters;
+    IterTupType ends;
 
-   public:
-    Iterator(iterator_type<Container>&& s_begin,
-        iterator_type<Container>&& s_end, RestIter&& in_rest_iter)
-        : sub_iter{std::move(s_begin)},
-          sub_end{std::move(s_end)},
-          rest_iter{std::move(in_rest_iter)},
-          at_end{!(sub_iter != sub_end)} {}
-
-    Iterator& operator++() {
-      if (this->at_end) {
-        ++this->rest_iter;
-      } else {
-        ++this->sub_iter;
-        if (!(this->sub_iter != this->sub_end)) {
-          this->at_end = true;
-        }
+    void check_for_end_and_adjust() {
+      while (this->index < sizeof...(Is)
+             && !(neq_comparers[this->index](this->iters, this->ends))) {
+        ++this->index;
       }
-      return *this;
     }
-
-    Iterator operator++(int) {
-      auto ret = *this;
-      ++*this;
-      return ret;
-    }
-
-    bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter
-             || this->rest_iter != other.rest_iter;
-    }
-
-    bool operator==(const Iterator& other) const {
-      return !(*this != other);
-    }
-
-    iterator_deref<Container> operator*() {
-      return this->at_end ? *this->rest_iter : *this->sub_iter;
-    }
-
-    iterator_arrow<Container> operator->() {
-      return this->at_end ? apply_arrow(this->rest_iter)
-                          : apply_arrow(this->sub_iter);
-    }
-  };
-
-  Iterator begin() {
-    return {std::begin(this->container), std::end(this->container),
-        std::begin(this->rest_chained)};
-  }
-
-  Iterator end() {
-    return {std::end(this->container), std::end(this->container),
-        std::end(this->rest_chained)};
-  }
-};
-template <typename Container>
-class iter::impl::Chained<Container> {
-  friend class ChainMaker;
-  template <typename, typename...>
-  friend class Chained;
-
- private:
-  Container container;
-  Chained(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
-
- public:
-  Chained(Chained&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
-   private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
 
    public:
-    Iterator(const iterator_type<Container>& s_begin,
-        const iterator_type<Container>& s_end)
-        : sub_iter{s_begin}, sub_end{s_end} {}
+    Iterator(std::size_t i, IterTupType&& in_iters, IterTupType&& in_ends)
+        : index{i}, iters(in_iters), ends(in_ends) {
+      this->check_for_end_and_adjust();
+    }
+
+    decltype(auto) operator*() {
+      return derefers[this->index](this->iters);
+    }
+
+    decltype(auto) operator -> () {
+      return arrowers[this->index](this->iters);
+    }
 
     Iterator& operator++() {
-      ++this->sub_iter;
+      incrementers[this->index](this->iters);
+      this->check_for_end_and_adjust();
       return *this;
     }
 
@@ -147,30 +130,42 @@ class iter::impl::Chained<Container> {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return this->index != other.index
+             || (this->index != sizeof...(Is)
+                    && neq_comparers[this->index](this->iters, other.iters));
     }
 
     bool operator==(const Iterator& other) const {
       return !(*this != other);
     }
-
-    iterator_deref<Container> operator*() {
-      return *this->sub_iter;
-    }
-
-    iterator_arrow<Container> operator->() {
-      return apply_arrow(this->sub_iter);
-    }
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container)};
+    return {0, IterTupType{std::begin(std::get<Is>(this->tup))...},
+        IterTupType{std::end(std::get<Is>(this->tup))...}};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container)};
+    return {sizeof...(Is), IterTupType{std::end(std::get<Is>(this->tup))...},
+        IterTupType{std::end(std::get<Is>(this->tup))...}};
   }
 };
+
+template <typename TupType, std::size_t... Is>
+constexpr std::array<typename iter::impl::Chained<TupType, Is...>::DerefFunc,
+    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::derefers;
+
+template <typename TupType, std::size_t... Is>
+constexpr std::array<typename iter::impl::Chained<TupType, Is...>::ArrowFunc,
+    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::arrowers;
+
+template <typename TupType, std::size_t... Is>
+constexpr std::array<typename iter::impl::Chained<TupType, Is...>::IncFunc,
+    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::incrementers;
+
+template <typename TupType, std::size_t... Is>
+constexpr std::array<typename iter::impl::Chained<TupType, Is...>::NeqFunc,
+    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::neq_comparers;
 
 template <typename Container>
 class iter::impl::ChainedFromIterable {
@@ -194,8 +189,7 @@ class iter::impl::ChainedFromIterable {
     std::unique_ptr<SubIter> sub_end_p;
 
     static std::unique_ptr<SubIter> clone_sub_pointer(const SubIter* sub_iter) {
-      return std::unique_ptr<SubIter>{
-          sub_iter ? new SubIter{*sub_iter} : nullptr};
+      return sub_iter ? std::make_unique<SubIter>(*sub_iter) : nullptr;
     }
 
     bool sub_iters_differ(const Iterator& other) const {
@@ -218,11 +212,11 @@ class iter::impl::ChainedFromIterable {
           sub_iter_p{!(top_iter != top_end)
                          ?  // iter == end ?
                          nullptr
-                         : new SubIter{std::begin(*top_iter)}},
-          sub_end_p{!(top_iter != top_end) ?  // iter == end ?
+                         : std::make_unique<SubIter>(std::begin(*top_iter))},
+          sub_end_p{!(top_iter != top_end)
+                        ?  // iter == end ?
                         nullptr
-                                           : new SubIter{std::end(*top_iter)}} {
-    }
+                        : std::make_unique<SubIter>(std::end(*top_iter))} {}
 
     Iterator(const Iterator& other)
         : top_level_iter{other.top_level_iter},
@@ -250,11 +244,13 @@ class iter::impl::ChainedFromIterable {
       if (!(*this->sub_iter_p != *this->sub_end_p)) {
         ++this->top_level_iter;
         if (this->top_level_iter != this->top_level_end) {
-          sub_iter_p.reset(new SubIter{std::begin(*this->top_level_iter)});
-          sub_end_p.reset(new SubIter{std::end(*this->top_level_iter)});
+          sub_iter_p =
+              std::make_unique<SubIter>(std::begin(*this->top_level_iter));
+          sub_end_p =
+              std::make_unique<SubIter>(std::end(*this->top_level_iter));
         } else {
-          sub_iter_p.reset(nullptr);
-          sub_end_p.reset(nullptr);
+          sub_iter_p.reset();
+          sub_end_p.reset();
         }
       }
       return *this;
@@ -294,14 +290,23 @@ class iter::impl::ChainedFromIterable {
 };
 
 class iter::impl::ChainMaker {
+ private:
+  template <typename TupleType, std::size_t... Is>
+  Chained<TupleType, Is...> chain_impl(
+      TupleType&& in_containers, std::index_sequence<Is...>) const {
+    return {std::move(in_containers)};
+  }
+
  public:
   // expose regular call operator to provide usual chain()
   template <typename... Containers>
-  Chained<Containers...> operator()(Containers&&... cs) const {
-    return {std::forward<Containers>(cs)...};
+  auto operator()(Containers&&... cs) const {
+    return this->chain_impl(
+        std::tuple<Containers...>{std::forward<Containers>(cs)...},
+        std::index_sequence_for<Containers...>{});
   }
 
-  // chain.from_iterable()
+  // chain.from_iterable
   template <typename Container>
   ChainedFromIterable<Container> from_iterable(Container&& container) const {
     return {std::forward<Container>(container)};
@@ -310,7 +315,7 @@ class iter::impl::ChainMaker {
 
 namespace iter {
   namespace {
-    constexpr auto chain = impl::ChainMaker{};
+    constexpr auto chain = iter::impl::ChainMaker{};
   }
 }
 

@@ -11,38 +11,20 @@
 #include <iterator>
 
 namespace iter {
-  // the container type must be usable in an unordered_map to achieve constant
-  // performance checking if it has ever been seen
   template <typename Container>
-  auto unique_everseen(Container&& container)
-      -> impl::Filtered<std::function<bool(impl::iterator_deref<Container>)>,
-          Container> {
-    using elem_t = impl::iterator_deref<Container>;
-    std::unordered_set<typename std::decay<elem_t>::type> elem_seen;
-
-    std::function<bool(elem_t)> func =
-        // has to be captured by value because it goes out of scope when the
-        // function returns
-        [elem_seen](elem_t e) mutable {
-          if (elem_seen.find(e) == std::end(elem_seen)) {
-            elem_seen.insert(e);
-            return true;
-          }
-          return false;
-        };
+  auto unique_everseen(Container&& container) {
+    using elem_type = impl::iterator_deref<Container>;
+    auto func = [elem_seen = std::unordered_set<std::decay_t<elem_type>>()](
+        const elem_type& e) mutable {
+      return elem_seen.insert(e).second;
+    };
     return filter(func, std::forward<Container>(container));
   }
 
   template <typename T>
-  auto unique_everseen(std::initializer_list<T> il)
-      -> impl::Filtered<std::function<bool(T)>, std::initializer_list<T>> {
-    std::unordered_set<T> elem_seen;
-    std::function<bool(T)> func = [elem_seen](const T& e) mutable {
-      if (elem_seen.find(e) == std::end(elem_seen)) {
-        elem_seen.insert(e);
-        return true;
-      }
-      return false;
+  auto unique_everseen(std::initializer_list<T> il) {
+    auto func = [elem_seen = std::unordered_set<T>()](const T& e) mutable {
+      return elem_seen.insert(e).second;
     };
     return filter(func, il);
   }

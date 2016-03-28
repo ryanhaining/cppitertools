@@ -68,9 +68,7 @@ iter::impl::SortedView<Container> iter::sorted(
 
 namespace iter {
   template <typename Container>
-  auto sorted(Container&& container)
-      -> decltype(sorted(std::forward<Container>(container),
-          std::less<impl::const_iterator_deref<Container>>())) {
+  auto sorted(Container&& container) {
     return sorted(std::forward<Container>(container),
         std::less<impl::const_iterator_deref<Container>>());
   }

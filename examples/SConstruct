@@ -4,7 +4,7 @@ env = Environment(
     ENV=os.environ,
     CXX='c++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
-               '-pedantic', '-std=c++11',
+               '-pedantic', '-std=c++14',
                '-I/usr/local/include'],
     CPPPATH='..',
     LINKFLAGS='-L/usr/local/lib')
@@ -33,6 +33,7 @@ progs = Split(
     slice
     sliding_window
     sorted
+    starmap
     takewhile
     unique_justseen
     unique_everseen

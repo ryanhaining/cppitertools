@@ -147,15 +147,13 @@ namespace iter {
   }
 
   template <typename Container>
-  auto filter(Container&& container) -> decltype(filter(
-      detail::BoolTester<Container>(), std::forward<Container>(container))) {
+  auto filter(Container&& container) {
     return filter(
         detail::BoolTester<Container>(), std::forward<Container>(container));
   }
 
   template <typename T>
-  auto filter(std::initializer_list<T> il) -> decltype(
-      filter(detail::BoolTester<std::initializer_list<T>>(), std::move(il))) {
+  auto filter(std::initializer_list<T> il) {
     return filter(
         detail::BoolTester<std::initializer_list<T>>(), std::move(il));
   }

@@ -164,6 +164,11 @@ namespace itertest {
     Iterator end() {
       return {this->data + this->size};
     }
+
+#ifdef DECLARE_REVERSE_ITERATOR
+    Iterator rbegin();
+    Iterator rend();
+#endif // ifdef DECLARE_REVERSE_ITERATOR
   };
 
   using iter::impl::void_t;

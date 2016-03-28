@@ -8,6 +8,7 @@
 // this file directly.
 
 #include <utility>
+#include <tuple>
 #include <iterator>
 #include <functional>
 #include <memory>
@@ -47,17 +48,7 @@ namespace iter {
 
     template <typename Container>
     using iterator_traits_deref =
-        typename std::remove_reference<iterator_deref<Container>>::type;
-
-    // iterator_type<C> is the type of C's iterator
-    template <typename Container>
-    using reverse_iterator_type = decltype(std::declval<Container&>().rbegin());
-
-    // iterator_deref<C> is the type obtained by dereferencing an iterator
-    // to an object of type C
-    template <typename Container>
-    using reverse_iterator_deref =
-        decltype(*std::declval<reverse_iterator_type<Container>&>());
+        std::remove_reference_t<iterator_deref<Container>>;
 
     namespace detail {
       template <typename T, typename = void>
@@ -91,9 +82,6 @@ namespace iter {
     template <typename C>
     using iterator_arrow = detail::arrow<iterator_type<C>>;
 
-    template <typename C>
-    using reverse_iterator_arrow = detail::arrow<reverse_iterator_type<C>>;
-
     // applys the -> operator to an object, if the object is a pointer,
     // it returns the pointer
     template <typename T>
@@ -123,10 +111,9 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        typename std::enable_if<std::is_same<typename std::iterator_traits<T>::
-                                                 iterator_category,
-                                    std::random_access_iterator_tag>::value,
-                                     void>::type> : std::true_type {};
+        std::enable_if_t<std::is_same<
+            typename std::iterator_traits<T>::iterator_category,
+            std::random_access_iterator_tag>::value>> : std::true_type {};
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
@@ -195,6 +182,56 @@ namespace iter {
         : std::integral_constant<bool,
               std::is_same<T, U>::value && are_same<T, Ts...>::value> {};
 
+    namespace detail {
+      template <typename... Ts>
+      std::tuple<iterator_deref<Ts>...> iterator_tuple_deref_helper(
+          const std::tuple<Ts...>&);
+    }
+
+    namespace detail {
+      template <typename... Ts>
+      std::tuple<iterator_type<Ts>...> iterator_tuple_type_helper(
+          const std::tuple<Ts...>&);
+    }
+    // Given a tuple template argument, evaluates to a tuple of iterators
+    // for the template argument's contained types.
+    template <typename TupleType>
+    using iterator_tuple_type =
+        decltype(detail::iterator_tuple_type_helper(std::declval<TupleType>()));
+
+
+    // Given a tuple template argument, evaluates to a tuple of
+    // what the iterators for the template argument's contained types
+    // dereference to
+    template <typename TupleType>
+    using iterator_deref_tuple = decltype(
+        detail::iterator_tuple_deref_helper(std::declval<TupleType>()));
+
+    // ---- Tuple utilities ---- //
+
+    // function absorbing all arguments passed to it. used when
+    // applying a function to a parameter pack but not passing the evaluated
+    // results anywhere
+    template <typename... Ts>
+    void absorb(Ts&&...) {}
+
+    namespace detail {
+      template <typename Func, typename TupleType, std::size_t... Is>
+      decltype(auto) call_with_tuple_impl(
+          Func&& mf, TupleType&& tup, std::index_sequence<Is...>) {
+        return mf(std::forward<std::tuple_element_t<Is,
+            std::remove_reference_t<TupleType>>>(std::get<Is>(tup))...);
+      }
+    }
+
+    // expand a TupleType into individual arguments when calling a Func
+    template <typename Func, typename TupleType>
+    decltype(auto) call_with_tuple(Func&& mf, TupleType&& tup) {
+      constexpr auto TUP_SIZE = std::tuple_size<std::decay_t<TupleType>>::value;
+      return detail::call_with_tuple_impl(std::forward<Func>(mf),
+          std::forward<TupleType>(tup), std::make_index_sequence<TUP_SIZE>{});
+    }
+
     // DerefHolder holds the value gotten from an iterator dereference
     // if the iterate dereferences to an lvalue references, a pointer to the
     //     element is stored
@@ -208,7 +245,7 @@ namespace iter {
       static_assert(!std::is_lvalue_reference<T>::value,
           "Non-lvalue-ref specialization used for lvalue ref type");
       // it could still be an rvalue reference
-      using TPlain = typename std::remove_reference<T>::type;
+      using TPlain = std::remove_reference_t<T>;
 
       std::unique_ptr<TPlain> item_p;
 
@@ -219,10 +256,12 @@ namespace iter {
       DerefHolder() = default;
 
       DerefHolder(const DerefHolder& other)
-          : item_p{other.item_p ? new TPlain(*other.item_p) : nullptr} {}
+          : item_p{other.item_p ? std::make_unique<TPlain>(*other.item_p)
+                                : nullptr} {}
 
       DerefHolder& operator=(const DerefHolder& other) {
-        this->item_p.reset(other.item_p ? new TPlain(*other.item_p) : nullptr);
+        this->item_p =
+            other.item_p ? std::make_unique<TPlain>(*other.item_p) : nullptr;
         return *this;
       }
 
@@ -239,7 +278,7 @@ namespace iter {
       }
 
       void reset(T&& item) {
-        item_p.reset(new TPlain(std::move(item)));
+        item_p = std::make_unique<TPlain>(std::move(item));
       }
 
       explicit operator bool() const {

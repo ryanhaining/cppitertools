@@ -24,6 +24,7 @@
 #include "reversed.hpp"
 #include "slice.hpp"
 #include "sorted.hpp"
+#include "starmap.hpp"
 #include "takewhile.hpp"
 #include "unique_everseen.hpp"
 #include "unique_justseen.hpp"

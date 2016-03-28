@@ -3,7 +3,7 @@ import os
 env = Environment(
     ENV = os.environ,
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
-               '-pedantic', '-std=c++11',
+               '-pedantic', '-std=c++14',
                '-I/usr/local/include', '-I.'],
     CPPPATH='..',
     LINKFLAGS=['-L/usr/local/lib'])
@@ -35,6 +35,7 @@ progs = Split(
     reversed
     slice
     sliding_window
+    starmap
     sorted
     takewhile
     unique_everseen

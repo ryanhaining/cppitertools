@@ -41,11 +41,11 @@ TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
     REQUIRE(v == vc);
   }
 
-  SECTION("with function") {
-    auto im = imap(plusone, ns);
-    Vec v(std::begin(im), std::end(im));
-    Vec vc = {11, 21, 31};
-    REQUIRE(v == vc);
+  SECTION("with callable") {
+      auto im = imap(PlusOner{}, ns);
+      Vec v(std::begin(im), std::end(im));
+      Vec vc = {11, 21, 31};
+      REQUIRE( v == vc );
   }
 
   SECTION("with function") {

@@ -38,10 +38,8 @@ class iter::impl::Accumulator {
   friend Accumulator<std::initializer_list<T>, AF> iter::accumulate(
       std::initializer_list<T>, AF);
 
-  // AccumVal must be default constructible
-  using AccumVal =
-      typename std::remove_reference<typename std::result_of<AccumulateFunc(
-          iterator_deref<Container>, iterator_deref<Container>)>::type>::type;
+  using AccumVal = std::remove_reference_t<std::result_of_t<AccumulateFunc(
+      iterator_deref<Container>, iterator_deref<Container>)>>;
 
   Accumulator(Container&& in_container, AccumulateFunc in_accumulate_func)
       : container(std::forward<Container>(in_container)),
@@ -143,12 +141,9 @@ namespace iter {
   template <typename Container>
   auto accumulate(Container&& container) -> decltype(accumulate(
       std::forward<Container>(container),
-      std::plus<typename std::
-              remove_reference<impl::iterator_deref<Container>>::type>{})) {
-    return accumulate(
-        std::forward<Container>(container),
-        std::plus<typename std::
-                remove_reference<impl::iterator_deref<Container>>::type>{});
+      std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{})) {
+    return accumulate(std::forward<Container>(container),
+        std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{});
   }
 
   template <typename T>

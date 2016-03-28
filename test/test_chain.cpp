@@ -152,7 +152,7 @@ TEST_CASE("chain: iterator meets requirements", "[chain]") {
 template <typename... Ts>
 using ImpT = decltype(chain(std::declval<Ts>()...));
 TEST_CASE("chain: has correct ctor and assign ops", "[chain]") {
-  using T = ImpT<std::string&, std::vector<char>, char (&)[10]>;
+  using T = ImpT<std::string&, std::vector<char>, char(&)[10]>;
   REQUIRE(itertest::IsMoveConstructibleOnly<T>::value);
 }
 
@@ -192,6 +192,13 @@ TEST_CASE("chain.from_iterable: postfix ++", "[chain.from_iterable]") {
   auto it = std::begin(ch);
   it++;
   REQUIRE(*it == 'n');
+}
+
+TEST_CASE("chain.from_iterable: operator->","[chain.from_iterable]") {
+    std::vector<std::vector<std::string>> sv{{"a", "ab"}, {"abc"}};
+    auto ch = chain.from_iterable(sv);
+    auto it = std::begin(ch);
+    REQUIRE( it->size() == 1 );
 }
 
 TEST_CASE("chain.from_iterable: moves rvalues and binds ref to lvalues",
