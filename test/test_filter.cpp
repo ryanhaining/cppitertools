@@ -70,6 +70,17 @@ TEST_CASE("filter: using identity", "[filter]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("filter: skips null pointers", "[filter]") {
+  int a = 1;
+  int b = 2;
+  const std::vector<int *> ns = {0, &a, nullptr, nullptr, &b, nullptr};
+
+  auto f = filter(ns);
+  const std::vector<int *> v(std::begin(f), std::end(f));
+  const std::vector<int *> vc = {&a, &b};
+  REQUIRE( v == vc );
+}
+
 TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
   itertest::BasicIterable<int> bi{1, 2, 3, 4};
 
