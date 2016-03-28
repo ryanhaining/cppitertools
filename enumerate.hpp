@@ -13,14 +13,8 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Enumerable;
+    struct EnumerateFn;
   }
-
-  template <typename Container>
-  impl::Enumerable<Container> enumerate(Container&&, std::size_t = 0);
-
-  template <typename T>
-  impl::Enumerable<std::initializer_list<T>> enumerate(
-      std::initializer_list<T>, std::size_t = 0);
 }
 
 template <typename Container>
@@ -29,12 +23,7 @@ class iter::impl::Enumerable {
   Container container;
   const std::size_t start;
 
-  // The only thing allowed to directly instantiate an Enumerable is
-  // the enumerate function
-  friend Enumerable iter::enumerate<Container>(Container&&, std::size_t);
-  template <typename T>
-  friend Enumerable<std::initializer_list<T>> iter::enumerate(
-      std::initializer_list<T>, std::size_t);
+  friend struct EnumerateFn;
 
   // for IterYield
   using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
@@ -105,16 +94,22 @@ class iter::impl::Enumerable {
   }
 };
 
-template <typename Container>
-iter::impl::Enumerable<Container> iter::enumerate(
-    Container&& container, std::size_t start) {
-  return {std::forward<Container>(container), start};
-}
+struct iter::impl::EnumerateFn {
+  template <typename Container>
+  Enumerable<Container> operator()(
+      Container&& container, std::size_t start=0) const {
+    return {std::forward<Container>(container), start};
+  }
 
-template <typename T>
-iter::impl::Enumerable<std::initializer_list<T>> iter::enumerate(
-    std::initializer_list<T> il, std::size_t start) {
-  return {std::move(il), start};
+  template <typename T>
+  Enumerable<std::initializer_list<T>> operator()(
+      std::initializer_list<T> il, std::size_t start=0) const {
+    return {std::move(il), start};
+  }
+};
+
+namespace iter {
+constexpr impl::EnumerateFn enumerate;
 }
 
 #endif
