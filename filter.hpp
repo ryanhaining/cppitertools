@@ -107,7 +107,7 @@ class iter::impl::Filtered {
   }
 };
 
-class iter::impl::FilterFn {
+class iter::impl::FilterFn : public iter::impl::Pipeable<FilterFn> {
  public:
   template <typename FilterFunc, typename Container>
   iter::impl::Filtered<FilterFunc, Container> operator()(
