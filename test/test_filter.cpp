@@ -136,6 +136,16 @@ TEST_CASE("filter: works with pipe", "[filter]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("filter: using identity and pipe", "[filter]") {
+  Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
+  auto f = ns | filter;
+  Vec v(std::begin(f), std::end(f));
+
+  Vec vc = {1, 2, 3, 4, 5};
+  REQUIRE(v == vc);
+}
+
+
 TEST_CASE("filter: iterator meets requirements", "[filter]") {
   std::string s{};
   auto c = filter([] { return true; }, s);
