@@ -11,14 +11,9 @@ namespace iter {
   namespace impl {
     template <typename FilterFunc, typename Container>
     class Filtered;
+
+    class FilterFn;
   }
-
-  template <typename FilterFunc, typename Container>
-  impl::Filtered<FilterFunc, Container> filter(FilterFunc, Container&&);
-
-  template <typename FilterFunc, typename T>
-  impl::Filtered<FilterFunc, std::initializer_list<T>> filter(
-      FilterFunc, std::initializer_list<T>);
 }
 
 template <typename FilterFunc, typename Container>
@@ -27,12 +22,7 @@ class iter::impl::Filtered {
   Container container;
   FilterFunc filter_func;
 
-  // The filter function is the only thing allowed to create a Filtered
-  friend Filtered iter::filter<FilterFunc, Container>(FilterFunc, Container&&);
-
-  template <typename FF, typename T>
-  friend Filtered<FF, std::initializer_list<T>> iter::filter(
-      FF, std::initializer_list<T>);
+  friend class FilterFn;
 
   // Value constructor for use only in the filter function
   Filtered(FilterFunc in_filter_func, Container&& in_container)
@@ -117,46 +107,48 @@ class iter::impl::Filtered {
   }
 };
 
-template <typename FilterFunc, typename Container>
-iter::impl::Filtered<FilterFunc, Container> iter::filter(
-    FilterFunc filter_func, Container&& container) {
-  return {filter_func, std::forward<Container>(container)};
-}
-
-template <typename FilterFunc, typename T>
-iter::impl::Filtered<FilterFunc, std::initializer_list<T>> iter::filter(
-    FilterFunc filter_func, std::initializer_list<T> il) {
-  return {filter_func, std::move(il)};
-}
-
-namespace iter {
-  namespace detail {
-
-    template <typename T>
-    bool boolean_cast(const T& t) {
-      return bool(t);
-    }
-
-    template <typename Container>
-    class BoolTester {
-     public:
-      bool operator()(const impl::iterator_deref<Container> item) const {
-        return bool(item);
-      }
-    };
+class iter::impl::FilterFn {
+ public:
+  template <typename FilterFunc, typename Container>
+  iter::impl::Filtered<FilterFunc, Container> operator()(
+      FilterFunc filter_func, Container&& container) const {
+    return {std::move(filter_func), std::forward<Container>(container)};
   }
 
-  template <typename Container>
-  auto filter(Container&& container) {
-    return filter(
-        detail::BoolTester<Container>(), std::forward<Container>(container));
+  template <typename FilterFunc, typename T>
+  iter::impl::Filtered<FilterFunc, std::initializer_list<T>> operator()(
+      FilterFunc filter_func, std::initializer_list<T> il) const {
+    return {std::move(filter_func), std::move(il)};
+  }
+
+  template <typename Container,
+      typename = std::enable_if_t<is_iterable<Container>>>
+  auto operator()(Container&& container) const {
+    return (*this)(BoolTester<Container>{}, std::forward<Container>(container));
   }
 
   template <typename T>
-  auto filter(std::initializer_list<T> il) {
-    return filter(
-        detail::BoolTester<std::initializer_list<T>>(), std::move(il));
+  auto operator()(std::initializer_list<T> il) const {
+    return (*this)(BoolTester<std::initializer_list<T>>{}, std::move(il));
   }
+
+ private:
+  template <typename T>
+  bool boolean_cast(const T& t) {
+    return bool(t);
+  }
+
+  template <typename Container>
+  class BoolTester {
+   public:
+    bool operator()(const impl::iterator_deref<Container> item) const {
+      return bool(item);
+    }
+  };
+};
+
+namespace iter {
+  constexpr impl::FilterFn filter{};
 }
 
 #endif
