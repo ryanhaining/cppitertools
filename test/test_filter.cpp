@@ -127,6 +127,15 @@ TEST_CASE("filter: doesn't move or copy elements of iterable", "[filter]") {
   }
 }
 
+TEST_CASE("filter: works with pipe", "[filter]") {
+  Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
+  Vec vc = {1, 2, 3, 1, -1};
+
+  auto f = ns | filter(LessThanValue{5});
+  Vec v(std::begin(f), std::end(f));
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("filter: iterator meets requirements", "[filter]") {
   std::string s{};
   auto c = filter([] { return true; }, s);
