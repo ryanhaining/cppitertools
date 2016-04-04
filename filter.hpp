@@ -132,20 +132,10 @@ class iter::impl::FilterFn : public iter::impl::Pipeable<FilterFn> {
     return (*this)(BoolTester<std::initializer_list<T>>{}, std::move(il));
   }
 
-  template <typename FilterFunc>
-  struct FilterFnPartial : Pipeable<FilterFnPartial<FilterFunc>> {
-    FilterFnPartial(FilterFunc f) : fun(std::move(f)) {}
-    template <typename Container>
-    auto operator()(Container&& container) const {
-      return FilterFn{}(fun, std::forward<Container>(container));
-    }
-   private:
-    FilterFunc fun;
-  };
-
-  template <typename FilterFunc, typename=std::enable_if_t<!is_iterable<FilterFunc>>>
-  FilterFnPartial<FilterFunc> operator()(FilterFunc filter_func) const {
-    return {filter_func};
+  template <typename FilterFunc,
+      typename = std::enable_if_t<!is_iterable<FilterFunc>>>
+  FnPartial<FilterFn, FilterFunc> operator()(FilterFunc filter_func) const {
+    return {*this, std::move(filter_func)};
   }
 
  private:
