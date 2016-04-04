@@ -137,6 +137,15 @@ TEST_CASE("enumerate: iterator meets requirements", "[enumerate]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
 }
 
+TEST_CASE("enumerate: works with pipe", "[enumerate]") {
+  constexpr char str[] = {'a', 'b', 'c'};
+  auto e = str | enumerate;
+  Vec v(std::begin(e), std::end(e));
+  Vec vc{{0, 'a'}, {1, 'b'}, {2, 'c'}};
+
+  REQUIRE(v == vc);
+}
+
 template <typename T>
 using ImpT = decltype(enumerate(std::declval<T>()));
 TEST_CASE("enumerate: has correct ctor and assign ops", "[enumerate]") {
