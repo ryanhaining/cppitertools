@@ -340,21 +340,23 @@ namespace iter {
     template <typename ItTool, typename T>
     struct FnPartial : Pipeable<FnPartial<ItTool, T>> {
       ItTool tool_fun;
-      mutable T t;
-      FnPartial(ItTool in_tool, T in_t)
-          : tool_fun(std::move(in_tool)), t(std::move(in_t)) {}
+      mutable T stored_arg;
+      constexpr FnPartial(ItTool in_tool, T in_t)
+          : tool_fun(in_tool), stored_arg(in_t) {}
+
       template <typename Container>
       auto operator()(Container&& container) const {
-        return tool_fun(t, std::forward<Container>(container));
+        return tool_fun(stored_arg, std::forward<Container>(container));
       }
     };
 
-#if 0
     template <typename ItTool>
     struct PipeableAndBindFirst : Pipeable<ItTool> {
-
+      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
+      FnPartial<ItTool, Func> operator()(Func func) const {
+        return {static_cast<const ItTool&>(*this), std::move(func)};
+      }
     };
-#endif
   }
 }
 
