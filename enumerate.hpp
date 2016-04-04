@@ -94,7 +94,7 @@ class iter::impl::Enumerable {
   }
 };
 
-struct iter::impl::EnumerateFn {
+struct iter::impl::EnumerateFn : iter::impl::Pipeable<EnumerateFn> {
   template <typename Container>
   Enumerable<Container> operator()(
       Container&& container, std::size_t start=0) const {
