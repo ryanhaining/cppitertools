@@ -50,12 +50,12 @@ namespace iter {
     using iterator_traits_deref =
         std::remove_reference_t<iterator_deref<Container>>;
 
-    template <typename T, typename=void>
+    template <typename T, typename = void>
     struct IsIterable : std::false_type {};
 
     // Assuming that if a type works with std::begin, it is an iterable.
     template <typename T>
-    struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type{};
+    struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type {};
 
     template <typename T>
     constexpr bool is_iterable = IsIterable<T>::value;
@@ -209,7 +209,6 @@ namespace iter {
     using iterator_tuple_type =
         decltype(detail::iterator_tuple_type_helper(std::declval<TupleType>()));
 
-
     // Given a tuple template argument, evaluates to a tuple of
     // what the iterators for the template argument's contained types
     // dereference to
@@ -230,7 +229,7 @@ namespace iter {
       decltype(auto) call_with_tuple_impl(
           Func&& mf, TupleType&& tup, std::index_sequence<Is...>) {
         return mf(std::forward<std::tuple_element_t<Is,
-            std::remove_reference_t<TupleType>>>(std::get<Is>(tup))...);
+                std::remove_reference_t<TupleType>>>(std::get<Is>(tup))...);
       }
     }
 
@@ -329,14 +328,33 @@ namespace iter {
     // allows f(x) to be 'called' as x | f
     // let the record show I dislike adding yet another syntactical mess to
     // this clown car of a language.
-    template<typename F>
+    template <typename ItTool>
     struct Pipeable {
-      template<typename T>
-        friend decltype(auto) operator|(T&& x, const Pipeable& p) {
-          return static_cast<const F&>(p)(std::forward<T>(x));
+      template <typename T>
+      friend decltype(auto) operator|(T&& x, const Pipeable& p) {
+        return static_cast<const ItTool&>(p)(std::forward<T>(x));
       }
     };
 
+    // T is whatever is being held for later use
+    template <typename ItTool, typename T>
+    struct FnPartial : Pipeable<FnPartial<ItTool, T>> {
+      ItTool tool_fun;
+      mutable T t;
+      FnPartial(ItTool in_tool, T in_t)
+          : tool_fun(std::move(in_tool)), t(std::move(in_t)) {}
+      template <typename Container>
+      auto operator()(Container&& container) const {
+        return tool_fun(t, std::forward<Container>(container));
+      }
+    };
+
+#if 0
+    template <typename ItTool>
+    struct PipeableAndBindFirst : Pipeable<ItTool> {
+
+    };
+#endif
   }
 }
 
