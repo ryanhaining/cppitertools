@@ -107,7 +107,7 @@ class iter::impl::Filtered {
   }
 };
 
-class iter::impl::FilterFn : public iter::impl::Pipeable<FilterFn> {
+class iter::impl::FilterFn : public PipeableAndBindFirst<FilterFn> {
  public:
   template <typename FilterFunc, typename Container>
   iter::impl::Filtered<FilterFunc, Container> operator()(
@@ -131,12 +131,7 @@ class iter::impl::FilterFn : public iter::impl::Pipeable<FilterFn> {
   auto operator()(std::initializer_list<T> il) const {
     return (*this)(BoolTester<std::initializer_list<T>>{}, std::move(il));
   }
-
-  template <typename FilterFunc,
-      typename = std::enable_if_t<!is_iterable<FilterFunc>>>
-  FnPartial<FilterFn, FilterFunc> operator()(FilterFunc filter_func) const {
-    return {*this, std::move(filter_func)};
-  }
+  using PipeableAndBindFirst<FilterFn>::operator();
 
  private:
   template <typename T>
