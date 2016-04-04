@@ -50,6 +50,16 @@ namespace iter {
     using iterator_traits_deref =
         std::remove_reference_t<iterator_deref<Container>>;
 
+    template <typename T, typename=void>
+    struct IsIterable : std::false_type {};
+
+    // Assuming that if a type works with std::begin, it is an iterable.
+    template <typename T>
+    struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type{};
+
+    template <typename T>
+    constexpr bool is_iterable = IsIterable<T>::value;
+
     namespace detail {
       template <typename T, typename = void>
       struct ArrowHelper {
@@ -315,6 +325,18 @@ namespace iter {
         return this->item_p != nullptr;
       }
     };
+
+    // allows f(x) to be 'called' as x | f
+    // let the record show I dislike adding yet another syntactical mess to
+    // this clown car of a language.
+    template<typename F>
+    struct Pipeable {
+      template<typename T>
+        friend decltype(auto) operator|(T&& x, const Pipeable& p) {
+          return static_cast<const F&>(p)(std::forward<T>(x));
+      }
+    };
+
   }
 }
 
