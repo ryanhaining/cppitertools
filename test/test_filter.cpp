@@ -73,12 +73,12 @@ TEST_CASE("filter: using identity", "[filter]") {
 TEST_CASE("filter: skips null pointers", "[filter]") {
   int a = 1;
   int b = 2;
-  const std::vector<int *> ns = {0, &a, nullptr, nullptr, &b, nullptr};
+  const std::vector<int*> ns = {0, &a, nullptr, nullptr, &b, nullptr};
 
   auto f = filter(ns);
-  const std::vector<int *> v(std::begin(f), std::end(f));
-  const std::vector<int *> vc = {&a, &b};
-  REQUIRE( v == vc );
+  const std::vector<int*> v(std::begin(f), std::end(f));
+  const std::vector<int*> vc = {&a, &b};
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("filter: binds to lvalues, moves rvales", "[filter]") {
@@ -144,7 +144,6 @@ TEST_CASE("filter: using identity and pipe", "[filter]") {
   Vec vc = {1, 2, 3, 4, 5};
   REQUIRE(v == vc);
 }
-
 
 TEST_CASE("filter: iterator meets requirements", "[filter]") {
   std::string s{};
