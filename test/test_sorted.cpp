@@ -181,7 +181,7 @@ TEST_CASE("sorted: has correct ctor and assign ops", "[sorted]") {
 }
 
 TEST_CASE("sorted: iterator meets requirements", "[sorted]") {
-    Vec v;
-    auto r = sorted(v);
-    REQUIRE( itertest::IsIterator<decltype(std::begin(r))>::value );
+  Vec v;
+  auto r = sorted(v);
+  REQUIRE(itertest::IsIterator<decltype(std::begin(r))>::value);
 }
