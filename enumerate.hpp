@@ -23,7 +23,7 @@ class iter::impl::Enumerable {
   Container container;
   const std::size_t start;
 
-  friend struct EnumerateFn;
+  friend EnumerateFn;
 
   // for IterYield
   using BasePair = std::pair<std::size_t, iterator_deref<Container>>;

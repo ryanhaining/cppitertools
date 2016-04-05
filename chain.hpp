@@ -28,7 +28,7 @@ namespace iter {
 template <typename TupType, std::size_t... Is>
 class iter::impl::Chained {
  private:
-  friend class ChainMaker;
+  friend ChainMaker;
 
   static_assert(std::tuple_size<std::decay_t<TupType>>::value == sizeof...(Is),
       "tuple size != sizeof Is");
@@ -171,7 +171,7 @@ template <typename Container>
 class iter::impl::ChainedFromIterable {
  private:
   Container container;
-  friend class ChainMaker;
+  friend ChainMaker;
   ChainedFromIterable(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
 

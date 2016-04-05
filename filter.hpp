@@ -22,7 +22,7 @@ class iter::impl::Filtered {
   Container container;
   FilterFunc filter_func;
 
-  friend class FilterFn;
+  friend FilterFn;
 
   // Value constructor for use only in the filter function
   Filtered(FilterFunc in_filter_func, Container&& in_container)
