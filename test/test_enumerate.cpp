@@ -50,7 +50,7 @@ TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
 
 TEST_CASE("enumerate: with starting value", "[enumerate]") {
   std::string str = "hey";
-  auto e = enumerate(str, 5);
+  auto e = enumerate(str, 5u);
   Vec v(std::begin(e), std::end(e));
   Vec vc{{5, 'h'}, {6, 'e'}, {7, 'y'}};
 
