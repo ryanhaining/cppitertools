@@ -25,6 +25,21 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("cycle: with pipe", "[cycle]") {
+  std::vector<int> ns{2, 4, 6};
+  std::vector<int> v;
+  std::size_t count = 0;
+  for (auto i : ns | cycle) {
+    v.push_back(i);
+    ++count;
+    if (count == ns.size() * 2) break;
+  }
+
+  auto vc = ns;
+  vc.insert(std::end(vc), std::begin(ns), std::end(ns));
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("cycle: empty cycle terminates", "[cycle]") {
   std::vector<int> ns;
   auto c = cycle(ns);
