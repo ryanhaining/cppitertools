@@ -12,8 +12,9 @@ namespace iter {
     template <typename Container>
     class Cycler;
 
-    struct CycleFn;
+    using CycleFn = IterToolFn<Cycler>;
   }
+  constexpr impl::CycleFn cycle{};
 }
 
 template <typename Container>
@@ -80,22 +81,5 @@ class iter::impl::Cycler {
     return {std::end(this->container), std::end(this->container)};
   }
 };
-
-struct iter::impl::CycleFn {
-  template <typename Container>
-  iter::impl::Cycler<Container> operator()(Container&& container) const {
-    return {std::forward<Container>(container)};
-  }
-
-  template <typename T>
-  iter::impl::Cycler<std::initializer_list<T>> operator()(
-      std::initializer_list<T> il) const {
-    return {std::move(il)};
-  }
-};
-
-namespace iter {
-  constexpr impl::CycleFn cycle{};
-}
 
 #endif
