@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -18,10 +17,6 @@ namespace iter {
   }
   template <typename Container, typename KeyFunc>
   impl::GroupProducer<Container, KeyFunc> groupby(Container&&, KeyFunc);
-
-  template <typename T, typename KeyFunc>
-  impl::GroupProducer<std::initializer_list<T>, KeyFunc> groupby(
-      std::initializer_list<T>, KeyFunc);
 }
 
 template <typename Container, typename KeyFunc>
@@ -31,10 +26,6 @@ class iter::impl::GroupProducer {
   KeyFunc key_func;
 
   friend GroupProducer iter::groupby<Container, KeyFunc>(Container&&, KeyFunc);
-
-  template <typename T, typename KF>
-  friend GroupProducer<std::initializer_list<T>, KF> iter::groupby(
-      std::initializer_list<T>, KF);
 
   using key_func_ret = std::result_of_t<KeyFunc(iterator_deref<Container>)>;
 
@@ -269,11 +260,6 @@ iter::impl::GroupProducer<Container, KeyFunc> iter::groupby(
   return {std::forward<Container>(container), key_func};
 }
 
-template <typename T, typename KeyFunc>
-iter::impl::GroupProducer<std::initializer_list<T>, KeyFunc> iter::groupby(
-    std::initializer_list<T> il, KeyFunc key_func) {
-  return {std::move(il), key_func};
-}
 
 namespace iter {
   namespace detail {
@@ -295,11 +281,6 @@ namespace iter {
         std::forward<Container>(container), detail::ItemReturner<Container>());
   }
 
-  template <typename T>
-  auto groupby(std::initializer_list<T> il) {
-    return groupby(
-        std::move(il), detail::ItemReturner<std::initializer_list<T>>());
-  }
 }
 
 #endif
