@@ -12,8 +12,17 @@ namespace iter {
     template <typename FilterFunc, typename Container>
     class Filtered;
 
-    class FilterFn;
+    struct BoolTester {
+      template <typename T>
+      constexpr bool operator()(const T& item) const {
+        return bool(item);
+      }
+    };
+
+    using FilterFn = IterToolFnOptionalBindFirst<Filtered, BoolTester>;
   }
+
+  constexpr impl::FilterFn filter{};
 }
 
 template <typename FilterFunc, typename Container>
@@ -106,50 +115,5 @@ class iter::impl::Filtered {
         this->filter_func};
   }
 };
-
-class iter::impl::FilterFn : public PipeableAndBindFirst<FilterFn> {
- public:
-  template <typename FilterFunc, typename Container>
-  iter::impl::Filtered<FilterFunc, Container> operator()(
-      FilterFunc filter_func, Container&& container) const {
-    return {std::move(filter_func), std::forward<Container>(container)};
-  }
-
-  template <typename FilterFunc, typename T>
-  iter::impl::Filtered<FilterFunc, std::initializer_list<T>> operator()(
-      FilterFunc filter_func, std::initializer_list<T> il) const {
-    return {std::move(filter_func), std::move(il)};
-  }
-
-  template <typename Container,
-      typename = std::enable_if_t<is_iterable<Container>>>
-  auto operator()(Container&& container) const {
-    return (*this)(BoolTester<Container>{}, std::forward<Container>(container));
-  }
-
-  template <typename T>
-  auto operator()(std::initializer_list<T> il) const {
-    return (*this)(BoolTester<std::initializer_list<T>>{}, std::move(il));
-  }
-  using PipeableAndBindFirst<FilterFn>::operator();
-
- private:
-  template <typename T>
-  bool boolean_cast(const T& t) {
-    return bool(t);
-  }
-
-  template <typename Container>
-  class BoolTester {
-   public:
-    bool operator()(const impl::iterator_deref<Container> item) const {
-      return bool(item);
-    }
-  };
-};
-
-namespace iter {
-  constexpr impl::FilterFn filter{};
-}
 
 #endif
