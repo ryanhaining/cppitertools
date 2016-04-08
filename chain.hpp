@@ -4,7 +4,6 @@
 #include "internal/iterbase.hpp"
 
 #include <array>
-#include <initializer_list>
 #include <iterator>
 #include <memory>
 #include <tuple>
