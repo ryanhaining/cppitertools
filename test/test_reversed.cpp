@@ -16,9 +16,16 @@ using Vec = const std::vector<int>;
 
 TEST_CASE("reversed: can reverse a vector", "[reversed]") {
   Vec ns = {10, 20, 30, 40};
-  auto r = reversed(ns);
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto r = reversed(ns);
+    v.assign(std::begin(r), std::end(r));
+  }
+  SECTION("Pipe") {
+    auto r = ns | reversed;
+    v.assign(std::begin(r), std::end(r));
+  }
 
-  Vec v(std::begin(r), std::end(r));
   Vec vc = {40, 30, 20, 10};
 
   REQUIRE(v == vc);
