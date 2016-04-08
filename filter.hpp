@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -16,9 +15,6 @@ namespace iter {
   template <typename FilterFunc, typename Container>
   impl::Filtered<FilterFunc, Container> filter(FilterFunc, Container&&);
 
-  template <typename FilterFunc, typename T>
-  impl::Filtered<FilterFunc, std::initializer_list<T>> filter(
-      FilterFunc, std::initializer_list<T>);
 }
 
 template <typename FilterFunc, typename Container>
@@ -29,10 +25,6 @@ class iter::impl::Filtered {
 
   // The filter function is the only thing allowed to create a Filtered
   friend Filtered iter::filter<FilterFunc, Container>(FilterFunc, Container&&);
-
-  template <typename FF, typename T>
-  friend Filtered<FF, std::initializer_list<T>> iter::filter(
-      FF, std::initializer_list<T>);
 
   // Value constructor for use only in the filter function
   Filtered(FilterFunc in_filter_func, Container&& in_container)
@@ -123,19 +115,9 @@ iter::impl::Filtered<FilterFunc, Container> iter::filter(
   return {filter_func, std::forward<Container>(container)};
 }
 
-template <typename FilterFunc, typename T>
-iter::impl::Filtered<FilterFunc, std::initializer_list<T>> iter::filter(
-    FilterFunc filter_func, std::initializer_list<T> il) {
-  return {filter_func, std::move(il)};
-}
 
 namespace iter {
   namespace detail {
-
-    template <typename T>
-    bool boolean_cast(const T& t) {
-      return bool(t);
-    }
 
     template <typename Container>
     class BoolTester {
@@ -152,11 +134,6 @@ namespace iter {
         detail::BoolTester<Container>(), std::forward<Container>(container));
   }
 
-  template <typename T>
-  auto filter(std::initializer_list<T> il) {
-    return filter(
-        detail::BoolTester<std::initializer_list<T>>(), std::move(il));
-  }
 }
 
 #endif
