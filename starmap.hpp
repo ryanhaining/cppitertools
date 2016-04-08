@@ -10,6 +10,8 @@
 #include <cassert>
 #include <memory>
 
+//NOTE I don't know why, but clang gets very confused by having this-> in the
+//Iterators' member functions
 namespace iter {
   namespace impl {
     template <typename Func, typename Container>
@@ -80,7 +82,7 @@ class iter::impl::StarMapper {
     }
 
     decltype(auto) operator*() {
-      return call_with_tuple(*this->func, *this->sub_iter);
+      return call_with_tuple(*func, *sub_iter);
     }
 
     auto operator -> () -> ArrowProxy<decltype(**this)> {
@@ -139,7 +141,7 @@ class iter::impl::TupleStarMapper {
         : func{&f}, tup{&t}, index{i} {}
 
     decltype(auto) operator*() {
-      return callers[this->index](*this->func, *this->tup);
+      return callers[index](*func, *tup);
     }
 
     auto operator -> () -> ArrowProxy<decltype(**this)> {
@@ -147,7 +149,7 @@ class iter::impl::TupleStarMapper {
     }
 
     Iterator& operator++() {
-      ++this->index;
+      ++index;
       return *this;
     }
 
@@ -158,7 +160,7 @@ class iter::impl::TupleStarMapper {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->index != other.index;
+      return index != other.index;
     }
 
     bool operator==(const Iterator& other) const {
