@@ -29,14 +29,6 @@ TEST_CASE("accumulate: With subtraction lambda", "[accumulate]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("accumulate: with initializer_list works", "[accumulate]") {
-  auto a = accumulate({1, 2, 3});
-  Vec v(std::begin(a), std::end(a));
-  Vec vc{1, 3, 6};
-
-  REQUIRE(v == vc);
-}
-
 struct Integer {
   const int value;
   constexpr Integer(int i) : value{i} {}

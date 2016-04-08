@@ -87,13 +87,6 @@ TEST_CASE("enumerate with static array works", "[enumerate]") {
   }
 }
 
-TEST_CASE("initializer_list works", "[enumerate]") {
-  auto e = enumerate({'a', 'b', 'c'});
-  Vec v(std::begin(e), std::end(e));
-  Vec vc{{0, 'a'}, {1, 'b'}, {2, 'c'}};
-  REQUIRE(v == vc);
-}
-
 TEST_CASE("binds reference when it should", "[enumerate]") {
   BasicIterable<char> bi{'x', 'y', 'z'};
   auto e = enumerate(bi);
