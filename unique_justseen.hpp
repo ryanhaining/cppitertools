@@ -6,7 +6,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
 
@@ -16,15 +15,6 @@ namespace iter {
     return imap([](auto&& group) -> impl::iterator_deref<Container> {
       return *std::begin(group.second);
     }, groupby(std::forward<Container>(container)));
-  }
-
-  template <typename T>
-  auto unique_justseen(std::initializer_list<T> il) {
-    return imap(
-        [](auto&& group) -> impl::iterator_deref<std::initializer_list<T>> {
-          return *std::begin(group.second);
-        },
-        groupby(il));
   }
 }
 
