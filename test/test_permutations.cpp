@@ -13,11 +13,17 @@ using IntPermSet = std::multiset<std::vector<int>>;
 
 TEST_CASE("permutations: basic test, 3 element sequence", "[permutations]") {
   const std::vector<int> ns = {1, 7, 9};
-  auto p = permutations(ns);
 
   IntPermSet v;
-  for (auto&& st : p) {
-    v.emplace(std::begin(st), std::end(st));
+  SECTION("Normal call") {
+    for (auto&& st : permutations(ns)) {
+      v.emplace(std::begin(st), std::end(st));
+    }
+  }
+  SECTION("Pipe") {
+    for (auto&& st : ns | permutations) {
+      v.emplace(std::begin(st), std::end(st));
+    }
   }
 
   const IntPermSet vc = {
