@@ -16,7 +16,7 @@ namespace iter {
 
     using EnumerateFn = IterToolFn<Enumerable>;
   }
-  constexpr impl::EnumerateFn enumerate;
+  constexpr impl::EnumerateFn enumerate{};
 }
 
 template <typename Container>
