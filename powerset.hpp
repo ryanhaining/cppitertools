@@ -6,7 +6,6 @@
 
 #include <cassert>
 #include <memory>
-#include <initializer_list>
 #include <utility>
 #include <iterator>
 #include <type_traits>
@@ -19,9 +18,6 @@ namespace iter {
   template <typename Container>
   impl::Powersetter<Container> powerset(Container&&);
 
-  template <typename T>
-  impl::Powersetter<std::initializer_list<T>> powerset(
-      std::initializer_list<T>);
 }
 
 template <typename Container>
@@ -31,9 +27,6 @@ class iter::impl::Powersetter {
   using CombinatorType = decltype(combinations(std::declval<Container&>(), 0));
 
   friend Powersetter iter::powerset<Container>(Container&&);
-  template <typename T>
-  friend Powersetter<std::initializer_list<T>> iter::powerset(
-      std::initializer_list<T>);
 
   Powersetter(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
@@ -108,12 +101,6 @@ class iter::impl::Powersetter {
 template <typename Container>
 iter::impl::Powersetter<Container> iter::powerset(Container&& container) {
   return {std::forward<Container>(container)};
-}
-
-template <typename T>
-iter::impl::Powersetter<std::initializer_list<T>> iter::powerset(
-    std::initializer_list<T> il) {
-  return {std::move(il)};
 }
 
 #endif
