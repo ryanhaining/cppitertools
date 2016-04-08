@@ -6,7 +6,6 @@
 #include <utility>
 #include <iterator>
 #include <functional>
-#include <initializer_list>
 #include <type_traits>
 
 namespace iter {
@@ -18,9 +17,6 @@ namespace iter {
   template <typename Container>
   impl::Enumerable<Container> enumerate(Container&&, std::size_t = 0);
 
-  template <typename T>
-  impl::Enumerable<std::initializer_list<T>> enumerate(
-      std::initializer_list<T>, std::size_t = 0);
 }
 
 template <typename Container>
@@ -32,9 +28,6 @@ class iter::impl::Enumerable {
   // The only thing allowed to directly instantiate an Enumerable is
   // the enumerate function
   friend Enumerable iter::enumerate<Container>(Container&&, std::size_t);
-  template <typename T>
-  friend Enumerable<std::initializer_list<T>> iter::enumerate(
-      std::initializer_list<T>, std::size_t);
 
   // for IterYield
   using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
@@ -109,12 +102,6 @@ template <typename Container>
 iter::impl::Enumerable<Container> iter::enumerate(
     Container&& container, std::size_t start) {
   return {std::forward<Container>(container), start};
-}
-
-template <typename T>
-iter::impl::Enumerable<std::initializer_list<T>> iter::enumerate(
-    std::initializer_list<T> il, std::size_t start) {
-  return {std::move(il), start};
 }
 
 #endif
