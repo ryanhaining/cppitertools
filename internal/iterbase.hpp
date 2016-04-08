@@ -336,28 +336,6 @@ namespace iter {
       }
     };
 
-    // T is whatever is being held for later use
-    template <typename ItTool, typename T>
-    struct FnPartial : Pipeable<FnPartial<ItTool, T>> {
-      ItTool tool_fun;
-      mutable T stored_arg;
-      constexpr FnPartial(ItTool in_tool, T in_t)
-          : tool_fun(in_tool), stored_arg(in_t) {}
-
-      template <typename Container>
-      auto operator()(Container&& container) const {
-        return tool_fun(stored_arg, std::forward<Container>(container));
-      }
-    };
-
-    template <typename ItTool>
-    struct PipeableAndBindFirst : Pipeable<ItTool> {
-      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
-      FnPartial<ItTool, Func> operator()(Func func) const {
-        return {static_cast<const ItTool&>(*this), std::move(func)};
-      }
-    };
-
     // Pipeable Callable generator, where ItImpl is templated on the first
     // argument to the call.
     template <template <typename> class ItImpl>
@@ -371,6 +349,55 @@ namespace iter {
       ItImpl<std::initializer_list<T>> operator()(
           std::initializer_list<T> il, Ts... ts) const {
         return {std::move(il), std::move(ts)...};
+      }
+    };
+
+    // This is a complicated class to generate a callable that can work:
+    //  (1) with just a single (iterable) passed, and DefaultFunc substituted
+    //  (2) with an iterable and a callable
+    //  (3) with just a callable, to have the iterable passed later via pipe
+    template <template <typename, typename> class ItImpl, typename DefaultFunc>
+    struct IterToolFnOptionalBindFirst
+        : Pipeable<IterToolFnOptionalBindFirst<ItImpl, DefaultFunc>> {
+      // T is whatever is being held for later use
+      template <typename T>
+      struct FnPartial : Pipeable<FnPartial<T>> {
+        mutable T stored_arg;
+        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+
+        template <typename Container>
+        auto operator()(Container&& container) const {
+          return IterToolFnOptionalBindFirst{}(
+              stored_arg, std::forward<Container>(container));
+        }
+      };
+
+      template <typename Func, typename Container>
+      ItImpl<Func, Container> operator()(
+          Func func, Container&& container) const {
+        return {std::move(func), std::forward<Container>(container)};
+      }
+
+      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
+      FnPartial<Func> operator()(Func func) const {
+        return {std::move(func)};
+      }
+
+      template <typename Container,
+          typename = std::enable_if_t<is_iterable<Container>>>
+      auto operator()(Container&& container) const {
+        return (*this)(DefaultFunc{}, std::forward<Container>(container));
+      }
+
+      template <typename Func, typename T>
+      ItImpl<Func, std::initializer_list<T>> operator()(
+          Func func, std::initializer_list<T> il) const {
+        return {std::move(func), std::move(il)};
+      }
+
+      template <typename T>
+      auto operator()(std::initializer_list<T> il) const {
+        return (*this)(DefaultFunc{}, std::move(il));
       }
     };
   }
