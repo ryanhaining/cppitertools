@@ -10,7 +10,6 @@
 #include <functional>
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -21,9 +20,6 @@ namespace iter {
   template <typename Container>
   impl::Chunker<Container> chunked(Container&&, std::size_t);
 
-  template <typename T>
-  impl::Chunker<std::initializer_list<T>> chunked(
-      std::initializer_list<T>, std::size_t);
 }
 
 template <typename Container>
@@ -36,9 +32,6 @@ class iter::impl::Chunker {
       : container(std::forward<Container>(c)), chunk_size{sz} {}
 
   friend Chunker iter::chunked<Container>(Container&&, std::size_t);
-  template <typename T>
-  friend Chunker<std::initializer_list<T>> iter::chunked(
-      std::initializer_list<T>, std::size_t);
 
   using IndexVector = std::vector<iterator_type<Container>>;
   using DerefVec = IterIterWrapper<IndexVector>;
@@ -118,12 +111,6 @@ template <typename Container>
 iter::impl::Chunker<Container> iter::chunked(
     Container&& container, std::size_t chunk_size) {
   return {std::forward<Container>(container), chunk_size};
-}
-
-template <typename T>
-iter::impl::Chunker<std::initializer_list<T>> iter::chunked(
-    std::initializer_list<T> il, std::size_t chunk_size) {
-  return {std::move(il), chunk_size};
 }
 
 #endif
