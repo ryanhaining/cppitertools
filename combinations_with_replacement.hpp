@@ -7,7 +7,6 @@
 #include <iterator>
 #include <vector>
 #include <type_traits>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -19,9 +18,6 @@ namespace iter {
   impl::CombinatorWithReplacement<Container> combinations_with_replacement(
       Container&&, std::size_t);
 
-  template <typename T>
-  impl::CombinatorWithReplacement<std::initializer_list<T>>
-      combinations_with_replacement(std::initializer_list<T>, std::size_t);
 }
 
 template <typename Container>
@@ -32,10 +28,6 @@ class iter::impl::CombinatorWithReplacement {
 
   friend CombinatorWithReplacement
   iter::combinations_with_replacement<Container>(Container&&, std::size_t);
-  template <typename T>
-  friend CombinatorWithReplacement<std::initializer_list<T>>
-      iter::combinations_with_replacement(
-          std::initializer_list<T>, std::size_t);
 
   CombinatorWithReplacement(Container&& in_container, std::size_t n)
       : container(std::forward<Container>(in_container)), length{n} {}
@@ -122,13 +114,6 @@ template <typename Container>
 iter::impl::CombinatorWithReplacement<Container>
 iter::combinations_with_replacement(Container&& container, std::size_t length) {
   return {std::forward<Container>(container), length};
-}
-
-template <typename T>
-iter::impl::CombinatorWithReplacement<std::initializer_list<T>>
-iter::combinations_with_replacement(
-    std::initializer_list<T> il, std::size_t length) {
-  return {std::move(il), length};
 }
 
 #endif
