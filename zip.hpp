@@ -69,7 +69,7 @@ class iter::impl::Zipped {
       return ZipIterDeref{(*std::get<Is>(this->iters))...};
     }
 
-    auto operator -> () -> ArrowProxy<decltype(**this)> {
+    auto operator-> () -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };

@@ -113,7 +113,7 @@ class iter::impl::Chained {
       return derefers[this->index](this->iters);
     }
 
-    decltype(auto) operator -> () {
+    decltype(auto) operator-> () {
       return arrowers[this->index](this->iters);
     }
 
@@ -225,7 +225,9 @@ class iter::impl::ChainedFromIterable {
           sub_end_p{clone_sub_pointer(other.sub_end_p.get())} {}
 
     Iterator& operator=(const Iterator& other) {
-      if (this == &other) { return *this; }
+      if (this == &other) {
+        return *this;
+      }
 
       this->top_level_iter = other.top_level_iter;
       this->top_level_end = other.top_level_end;

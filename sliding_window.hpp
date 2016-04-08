@@ -55,7 +55,9 @@ class iter::impl::WindowSlider {
       while (i < window_sz && this->sub_iter != in_end) {
         this->window.get().push_back(this->sub_iter);
         ++i;
-        if (i != window_sz) { ++this->sub_iter; }
+        if (i != window_sz) {
+          ++this->sub_iter;
+        }
       }
     }
 

@@ -80,7 +80,9 @@ class iter::impl::GroupProducer {
           key_func{other.key_func} {}
 
     Iterator& operator=(const Iterator& other) {
-      if (this == &other) { return *this; }
+      if (this == &other) {
+        return *this;
+      }
       this->sub_iter = other.sub_iter;
       this->sub_end = other.sub_end;
       this->item = other.item;
@@ -191,8 +193,9 @@ class iter::impl::GroupProducer {
     }
 
     // move-constructible, non-copy-constructible, non-assignable
-    Group(Group&& other) noexcept
-        : owner(other.owner), key{other.key}, completed{other.completed} {
+    Group(Group&& other) noexcept : owner(other.owner),
+                                    key{other.key},
+                                    completed{other.completed} {
       other.completed = true;
     }
 

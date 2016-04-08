@@ -83,7 +83,7 @@ class iter::impl::StarMapper {
       return call_with_tuple(*this->func, *this->sub_iter);
     }
 
-    auto operator -> () -> ArrowProxy<decltype(**this)> {
+    auto operator-> () -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };
@@ -142,7 +142,7 @@ class iter::impl::TupleStarMapper {
       return callers[this->index](*this->func, *this->tup);
     }
 
-    auto operator -> () -> ArrowProxy<decltype(**this)> {
+    auto operator-> () -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
 

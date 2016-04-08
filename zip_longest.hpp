@@ -85,7 +85,7 @@ class iter::impl::ZippedLongest {
                   : OptType<Is>{})...};
     }
 
-    auto operator -> () -> ArrowProxy<decltype(**this)> {
+    auto operator-> () -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };
