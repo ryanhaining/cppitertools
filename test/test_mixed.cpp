@@ -121,3 +121,8 @@ TEST_CASE("takewhile doesn't dereference multiple times", "[imap][takewhile]") {
   std::vector<int> vs(std::begin(get_vals), std::end(get_vals));
   REQUIRE(vs == vsc);
 }
+
+TEST_CASE("sorted(chain.from_iterable)", "[sorted][chain.from_iterable]") {
+  std::vector<std::vector<int>> v = {{2,4,6}};
+  auto s = iter::sorted(iter::chain.from_iterable(v));
+}
