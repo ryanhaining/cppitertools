@@ -14,27 +14,19 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Permuter;
+    using PermutationsFn = IterToolFn<Permuter>;
   }
-  template <typename Container>
-  impl::Permuter<Container> permutations(Container&&);
-
-  template <typename T>
-  impl::Permuter<std::initializer_list<T>> permutations(
-      std::initializer_list<T>);
+  constexpr impl::PermutationsFn permutations{};
 }
 
 template <typename Container>
 class iter::impl::Permuter {
  private:
+  friend PermutationsFn;
   Container container;
 
   using IndexVector = std::vector<iterator_type<Container>>;
   using Permutable = IterIterWrapper<IndexVector>;
-
-  friend Permuter iter::permutations<Container>(Container&&);
-  template <typename T>
-  friend Permuter<std::initializer_list<T>> iter::permutations(
-      std::initializer_list<T>);
 
   Permuter(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
@@ -108,16 +100,5 @@ class iter::impl::Permuter {
     return {std::end(this->container), std::end(this->container)};
   }
 };
-
-template <typename Container>
-iter::impl::Permuter<Container> iter::permutations(Container&& container) {
-  return {std::forward<Container>(container)};
-}
-
-template <typename T>
-iter::impl::Permuter<std::initializer_list<T>> iter::permutations(
-    std::initializer_list<T> il) {
-  return {std::move(il)};
-}
 
 #endif
