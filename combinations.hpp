@@ -7,7 +7,6 @@
 #include <vector>
 #include <type_traits>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -18,9 +17,6 @@ namespace iter {
   template <typename Container>
   impl::Combinator<Container> combinations(Container&&, std::size_t);
 
-  template <typename T>
-  impl::Combinator<std::initializer_list<T>> combinations(
-      std::initializer_list<T>, std::size_t);
 }
 
 template <typename Container>
@@ -30,9 +26,6 @@ class iter::impl::Combinator {
   std::size_t length;
 
   friend Combinator iter::combinations<Container>(Container&&, std::size_t);
-  template <typename T>
-  friend Combinator<std::initializer_list<T>> iter::combinations(
-      std::initializer_list<T>, std::size_t);
 
   Combinator(Container&& in_container, std::size_t in_length)
       : container(std::forward<Container>(in_container)), length{in_length} {}
@@ -140,12 +133,6 @@ template <typename Container>
 iter::impl::Combinator<Container> iter::combinations(
     Container&& container, std::size_t length) {
   return {std::forward<Container>(container), length};
-}
-
-template <typename T>
-iter::impl::Combinator<std::initializer_list<T>> iter::combinations(
-    std::initializer_list<T> il, std::size_t length) {
-  return {std::move(il), length};
 }
 
 #endif
