@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -16,16 +15,12 @@ namespace iter {
   template <typename Container>
   impl::Cycler<Container> cycle(Container&&);
 
-  template <typename T>
-  impl::Cycler<std::initializer_list<T>> cycle(std::initializer_list<T>);
 }
 
 template <typename Container>
 class iter::impl::Cycler {
  private:
   friend Cycler iter::cycle<Container>(Container&&);
-  template <typename T>
-  friend Cycler<std::initializer_list<T>> iter::cycle(std::initializer_list<T>);
 
   Container container;
 
@@ -90,12 +85,6 @@ class iter::impl::Cycler {
 template <typename Container>
 iter::impl::Cycler<Container> iter::cycle(Container&& container) {
   return {std::forward<Container>(container)};
-}
-
-template <typename T>
-iter::impl::Cycler<std::initializer_list<T>> iter::cycle(
-    std::initializer_list<T> il) {
-  return {std::move(il)};
 }
 
 #endif
