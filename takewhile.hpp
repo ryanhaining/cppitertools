@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -16,9 +15,6 @@ namespace iter {
   template <typename FilterFunc, typename Container>
   impl::Taker<FilterFunc, Container> takewhile(FilterFunc, Container&&);
 
-  template <typename FilterFunc, typename T>
-  impl::Taker<FilterFunc, std::initializer_list<T>> takewhile(
-      FilterFunc, std::initializer_list<T>);
 }
 
 template <typename FilterFunc, typename Container>
@@ -28,10 +24,6 @@ class iter::impl::Taker {
   FilterFunc filter_func;
 
   friend Taker iter::takewhile<FilterFunc, Container>(FilterFunc, Container&&);
-
-  template <typename FF, typename T>
-  friend Taker<FF, std::initializer_list<T>> iter::takewhile(
-      FF, std::initializer_list<T>);
 
   Taker(FilterFunc in_filter_func, Container&& in_container)
       : container(std::forward<Container>(in_container)),
@@ -119,12 +111,6 @@ template <typename FilterFunc, typename Container>
 iter::impl::Taker<FilterFunc, Container> iter::takewhile(
     FilterFunc filter_func, Container&& container) {
   return {filter_func, std::forward<Container>(container)};
-}
-
-template <typename FilterFunc, typename T>
-iter::impl::Taker<FilterFunc, std::initializer_list<T>> iter::takewhile(
-    FilterFunc filter_func, std::initializer_list<T> il) {
-  return {filter_func, std::move(il)};
 }
 
 #endif
