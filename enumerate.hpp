@@ -13,8 +13,10 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Enumerable;
-    struct EnumerateFn;
+
+    using EnumerateFn = IterToolFn<Enumerable>;
   }
+  constexpr impl::EnumerateFn enumerate;
 }
 
 template <typename Container>
@@ -29,7 +31,7 @@ class iter::impl::Enumerable {
   using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
 
   // Value constructor for use only in the enumerate function
-  Enumerable(Container&& in_container, std::size_t in_start)
+  Enumerable(Container&& in_container, std::size_t in_start = 0)
       : container(std::forward<Container>(in_container)), start{in_start} {}
 
  public:
@@ -93,23 +95,5 @@ class iter::impl::Enumerable {
     return {std::end(this->container), start};
   }
 };
-
-struct iter::impl::EnumerateFn : iter::impl::Pipeable<EnumerateFn> {
-  template <typename Container>
-  Enumerable<Container> operator()(
-      Container&& container, std::size_t start=0) const {
-    return {std::forward<Container>(container), start};
-  }
-
-  template <typename T>
-  Enumerable<std::initializer_list<T>> operator()(
-      std::initializer_list<T> il, std::size_t start=0) const {
-    return {std::move(il), start};
-  }
-};
-
-namespace iter {
-constexpr impl::EnumerateFn enumerate;
-}
 
 #endif

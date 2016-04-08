@@ -357,6 +357,22 @@ namespace iter {
         return {static_cast<const ItTool&>(*this), std::move(func)};
       }
     };
+
+    // Pipeable Callable generator, where ItImpl is templated on the first
+    // argument to the call.
+    template <template <typename> class ItImpl>
+    struct IterToolFn : Pipeable<IterToolFn<ItImpl>> {
+      template <typename T, typename... Ts>
+      ItImpl<T> operator()(T&& t, Ts... ts) const {
+        return {std::forward<T>(t), std::move(ts)...};
+      }
+
+      template <typename T, typename... Ts>
+      ItImpl<std::initializer_list<T>> operator()(
+          std::initializer_list<T> il, Ts... ts) const {
+        return {std::move(il), std::move(ts)...};
+      }
+    };
   }
 }
 
