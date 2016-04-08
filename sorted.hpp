@@ -42,8 +42,8 @@ class iter::impl::SortedView {
 
     // sort by comparing the elements that the iterators point to
     std::sort(std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
-        [compare_func](const iterator_type<Container>& it1,
-                  const iterator_type<Container>& it2) {
+        [compare_func](iterator_type<Container>& it1,
+                  iterator_type<Container>& it2) {
           return compare_func(*it1, *it2);
         });
   }
@@ -70,7 +70,7 @@ namespace iter {
   template <typename Container>
   auto sorted(Container&& container) {
     return sorted(std::forward<Container>(container),
-        std::less<impl::const_iterator_deref<Container>>());
+        std::less<impl::iterator_deref<Container>>());
   }
 }
 
