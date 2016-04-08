@@ -15,13 +15,10 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Powersetter;
-  }
-  template <typename Container>
-  impl::Powersetter<Container> powerset(Container&&);
 
-  template <typename T>
-  impl::Powersetter<std::initializer_list<T>> powerset(
-      std::initializer_list<T>);
+    using PowersetFn = IterToolFn<Powersetter>;
+  }
+  constexpr impl::PowersetFn powerset{};
 }
 
 template <typename Container>
@@ -30,10 +27,7 @@ class iter::impl::Powersetter {
   Container container;
   using CombinatorType = decltype(combinations(std::declval<Container&>(), 0));
 
-  friend Powersetter iter::powerset<Container>(Container&&);
-  template <typename T>
-  friend Powersetter<std::initializer_list<T>> iter::powerset(
-      std::initializer_list<T>);
+  friend PowersetFn;
 
   Powersetter(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
@@ -104,16 +98,5 @@ class iter::impl::Powersetter {
     return {this->container, dumb_size(this->container) + 1};
   }
 };
-
-template <typename Container>
-iter::impl::Powersetter<Container> iter::powerset(Container&& container) {
-  return {std::forward<Container>(container)};
-}
-
-template <typename T>
-iter::impl::Powersetter<std::initializer_list<T>> iter::powerset(
-    std::initializer_list<T> il) {
-  return {std::move(il)};
-}
 
 #endif
