@@ -10,17 +10,17 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Reverser;
-  }
 
-  template <typename Container>
-  impl::Reverser<Container> reversed(Container&&);
+    using ReversedFn = IterToolFn<Reverser>;
+  }
+  constexpr impl::ReversedFn reversed{};
 }
 
 template <typename Container>
 class iter::impl::Reverser {
  private:
   Container container;
-  friend Reverser iter::reversed<Container>(Container&&);
+  friend ReversedFn;
 
   Reverser(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
@@ -82,10 +82,5 @@ class iter::impl::Reverser {
     return {std::rend(this->container)};
   }
 };
-
-template <typename Container>
-iter::impl::Reverser<Container> iter::reversed(Container&& container) {
-  return {std::forward<Container>(container)};
-}
 
 #endif
