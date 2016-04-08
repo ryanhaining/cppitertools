@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 #include <functional>
 #include <type_traits>
 #include <memory>
@@ -20,9 +19,6 @@ namespace iter {
   impl::Accumulator<Container, AccumulateFunc> accumulate(
       Container&&, AccumulateFunc);
 
-  template <typename T, typename AccumulateFunc>
-  impl::Accumulator<std::initializer_list<T>, AccumulateFunc> accumulate(
-      std::initializer_list<T>, AccumulateFunc);
 }
 
 template <typename Container, typename AccumulateFunc>
@@ -33,10 +29,6 @@ class iter::impl::Accumulator {
 
   friend Accumulator iter::accumulate<Container, AccumulateFunc>(
       Container&&, AccumulateFunc);
-
-  template <typename T, typename AF>
-  friend Accumulator<std::initializer_list<T>, AF> iter::accumulate(
-      std::initializer_list<T>, AF);
 
   using AccumVal = std::remove_reference_t<std::result_of_t<AccumulateFunc(
       iterator_deref<Container>, iterator_deref<Container>)>>;
@@ -131,12 +123,6 @@ iter::impl::Accumulator<Container, AccumulateFunc> iter::accumulate(
   return {std::forward<Container>(container), accumulate_func};
 }
 
-template <typename T, typename AccumulateFunc>
-iter::impl::Accumulator<std::initializer_list<T>, AccumulateFunc>
-iter::accumulate(std::initializer_list<T> il, AccumulateFunc accumulate_func) {
-  return {std::move(il), accumulate_func};
-}
-
 namespace iter {
   template <typename Container>
   auto accumulate(Container&& container) -> decltype(accumulate(
@@ -144,12 +130,6 @@ namespace iter {
       std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{})) {
     return accumulate(std::forward<Container>(container),
         std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{});
-  }
-
-  template <typename T>
-  auto accumulate(std::initializer_list<T> il)
-      -> decltype(accumulate(std::move(il), std::plus<T>{})) {
-    return accumulate(std::move(il), std::plus<T>{});
   }
 }
 
