@@ -34,8 +34,17 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
   }
 
   SECTION("callable object") {
-    auto tw = takewhile(UnderTen{}, ns);
-    Vec v(std::begin(tw), std::end(tw));
+    std::vector<int> v;
+    SECTION("Normal call") {
+      auto tw = takewhile(UnderTen{}, ns);
+      v.assign(std::begin(tw), std::end(tw));
+    }
+
+    SECTION("Pipe") {
+      auto tw = ns | takewhile(UnderTen{});
+      v.assign(std::begin(tw), std::end(tw));
+    }
+
     Vec vc = {1, 3, 5};
     REQUIRE(v == vc);
   }
@@ -46,6 +55,21 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
     Vec vc = {1, 3, 5};
     REQUIRE(v == vc);
   }
+}
+
+TEST_CASE("takewhile: identity", "[takewhile]") {
+  Vec ns{1, 2, 3, 0, 4, 5, 0};
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto tw = takewhile(ns);
+    v.assign(std::begin(tw), std::end(tw));
+  }
+  SECTION("Pipe") {
+    auto tw = ns | takewhile;
+    v.assign(std::begin(tw), std::end(tw));
+  }
+  Vec vc = {1,2,3};
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("takewhile: everything passes predicate", "[takewhile]") {
