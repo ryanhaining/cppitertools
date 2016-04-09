@@ -20,14 +20,6 @@ namespace iter {
     };
     return filter(func, std::forward<Container>(container));
   }
-
-  template <typename T>
-  auto unique_everseen(std::initializer_list<T> il) {
-    auto func = [elem_seen = std::unordered_set<T>()](const T& e) mutable {
-      return elem_seen.insert(e).second;
-    };
-    return filter(func, il);
-  }
 }
 
 #endif

@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -16,9 +15,6 @@ namespace iter {
   template <typename FilterFunc, typename Container>
   impl::Dropper<FilterFunc, Container> dropwhile(FilterFunc, Container&&);
 
-  template <typename FilterFunc, typename T>
-  impl::Dropper<FilterFunc, std::initializer_list<T>> dropwhile(
-      FilterFunc, std::initializer_list<T>);
 }
 
 template <typename FilterFunc, typename Container>
@@ -30,9 +26,6 @@ class iter::impl::Dropper {
   friend Dropper iter::dropwhile<FilterFunc, Container>(
       FilterFunc, Container&&);
 
-  template <typename FF, typename T>
-  friend Dropper<FF, std::initializer_list<T>> iter::dropwhile(
-      FF, std::initializer_list<T>);
 
   Dropper(FilterFunc in_filter_func, Container&& in_container)
       : container(std::forward<Container>(in_container)),
@@ -119,12 +112,6 @@ template <typename FilterFunc, typename Container>
 iter::impl::Dropper<FilterFunc, Container> iter::dropwhile(
     FilterFunc filter_func, Container&& container) {
   return {filter_func, std::forward<Container>(container)};
-}
-
-template <typename FilterFunc, typename T>
-iter::impl::Dropper<FilterFunc, std::initializer_list<T>> iter::dropwhile(
-    FilterFunc filter_func, std::initializer_list<T> il) {
-  return {filter_func, std::move(il)};
 }
 
 #endif

@@ -5,7 +5,6 @@
 
 #include <iterator>
 #include <type_traits>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -20,15 +19,6 @@ namespace iter {
   template <typename Container, typename DifferenceType>
   impl::Sliced<Container, DifferenceType> slice(
       Container&& container, DifferenceType stop);
-
-  template <typename T, typename DifferenceType>
-  impl::Sliced<std::initializer_list<T>, DifferenceType> slice(
-      std::initializer_list<T> il, DifferenceType start, DifferenceType stop,
-      DifferenceType step = 1);
-
-  template <typename T, typename DifferenceType>
-  impl::Sliced<std::initializer_list<T>, DifferenceType> slice(
-      std::initializer_list<T> il, DifferenceType stop);
 }
 
 template <typename Container, typename DifferenceType>
@@ -129,19 +119,6 @@ template <typename Container, typename DifferenceType>
 iter::impl::Sliced<Container, DifferenceType> iter::slice(
     Container&& container, DifferenceType stop) {
   return {std::forward<Container>(container), 0, stop, 1};
-}
-
-template <typename T, typename DifferenceType>
-iter::impl::Sliced<std::initializer_list<T>, DifferenceType> iter::slice(
-    std::initializer_list<T> il, DifferenceType start, DifferenceType stop,
-    DifferenceType step) {
-  return {std::move(il), start, stop, step};
-}
-
-template <typename T, typename DifferenceType>
-iter::impl::Sliced<std::initializer_list<T>, DifferenceType> iter::slice(
-    std::initializer_list<T> il, DifferenceType stop) {
-  return {std::move(il), 0, stop, 1};
 }
 
 #endif

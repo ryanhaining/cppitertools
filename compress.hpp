@@ -5,7 +5,6 @@
 
 #include <utility>
 #include <iterator>
-#include <initializer_list>
 
 namespace iter {
   namespace impl {
@@ -16,17 +15,6 @@ namespace iter {
   template <typename Container, typename Selector>
   impl::Compressed<Container, Selector> compress(Container&&, Selector&&);
 
-  template <typename T, typename Selector>
-  impl::Compressed<std::initializer_list<T>, Selector> compress(
-      std::initializer_list<T>, Selector&&);
-
-  template <typename Container, typename T>
-  impl::Compressed<Container, std::initializer_list<T>> compress(
-      Container&&, std::initializer_list<T>);
-
-  template <typename T, typename U>
-  impl::Compressed<std::initializer_list<T>, std::initializer_list<U>> compress(
-      std::initializer_list<T>, std::initializer_list<U>);
 }
 
 template <typename Container, typename Selector>
@@ -37,18 +25,6 @@ class iter::impl::Compressed {
 
   friend Compressed iter::compress<Container, Selector>(
       Container&&, Selector&&);
-
-  template <typename T, typename Sel>
-  friend Compressed<std::initializer_list<T>, Sel> iter::compress(
-      std::initializer_list<T>, Sel&&);
-
-  template <typename Con, typename T>
-  friend Compressed<Con, std::initializer_list<T>> iter::compress(
-      Con&&, std::initializer_list<T>);
-
-  template <typename T, typename U>
-  friend Compressed<std::initializer_list<T>, std::initializer_list<U>>
-      iter::compress(std::initializer_list<T>, std::initializer_list<U>);
 
   // Selector::Iterator type
   using selector_iter_type = decltype(std::begin(selectors));
@@ -138,25 +114,6 @@ iter::impl::Compressed<Container, Selector> iter::compress(
     Container&& container, Selector&& selectors) {
   return {
       std::forward<Container>(container), std::forward<Selector>(selectors)};
-}
-
-template <typename T, typename Selector>
-iter::impl::Compressed<std::initializer_list<T>, Selector> iter::compress(
-    std::initializer_list<T> data, Selector&& selectors) {
-  return {std::move(data), std::forward<Selector>(selectors)};
-}
-
-template <typename Container, typename T>
-iter::impl::Compressed<Container, std::initializer_list<T>> iter::compress(
-    Container&& container, std::initializer_list<T> selectors) {
-  return {std::forward<Container>(container), std::move(selectors)};
-}
-
-template <typename T, typename U>
-iter::impl::Compressed<std::initializer_list<T>, std::initializer_list<U>>
-iter::compress(
-    std::initializer_list<T> data, std::initializer_list<U> selectors) {
-  return {std::move(data), std::move(selectors)};
 }
 
 #endif

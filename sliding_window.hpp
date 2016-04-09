@@ -17,9 +17,6 @@ namespace iter {
   template <typename Container>
   impl::WindowSlider<Container> sliding_window(Container&&, std::size_t);
 
-  template <typename T>
-  impl::WindowSlider<std::initializer_list<T>> sliding_window(
-      std::initializer_list<T>, std::size_t);
 }
 
 template <typename Container>
@@ -30,9 +27,6 @@ class iter::impl::WindowSlider {
 
   friend WindowSlider iter::sliding_window<Container>(Container&&, std::size_t);
 
-  template <typename T>
-  friend WindowSlider<std::initializer_list<T>> iter::sliding_window(
-      std::initializer_list<T>, std::size_t);
 
   WindowSlider(Container&& in_container, std::size_t win_sz)
       : container(std::forward<Container>(in_container)), window_size{win_sz} {}
@@ -107,12 +101,6 @@ template <typename Container>
 iter::impl::WindowSlider<Container> iter::sliding_window(
     Container&& container, std::size_t window_size) {
   return {std::forward<Container>(container), window_size};
-}
-
-template <typename T>
-iter::impl::WindowSlider<std::initializer_list<T>> iter::sliding_window(
-    std::initializer_list<T> il, std::size_t window_size) {
-  return {std::move(il), window_size};
 }
 
 #endif
