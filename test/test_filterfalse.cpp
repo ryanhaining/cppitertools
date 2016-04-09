@@ -40,8 +40,15 @@ TEST_CASE("filterfalse: handles different functor types", "[filterfalse]") {
   }
 
   SECTION("with callable object") {
-    auto f = filterfalse(LessThanValue{5}, ns);
-    Vec v(std::begin(f), std::end(f));
+    std::vector<int> v;
+    SECTION("Normal call") {
+      auto f = filterfalse(LessThanValue{5}, ns);
+      v.assign(std::begin(f), std::end(f));
+    }
+    SECTION("Pipe") {
+      auto f = ns | filterfalse(LessThanValue{5});
+      v.assign(std::begin(f), std::end(f));
+    }
     REQUIRE(v == vc);
   }
 
@@ -55,8 +62,16 @@ TEST_CASE("filterfalse: handles different functor types", "[filterfalse]") {
 
 TEST_CASE("filterfalse: using identity", "[filterfalse]") {
   Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
-  auto f = filterfalse(ns);
-  Vec v(std::begin(f), std::end(f));
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto f = filterfalse(ns);
+    v.assign(std::begin(f), std::end(f));
+  }
+
+  SECTION("Pipe") {
+    auto f = ns | filterfalse;
+    v.assign(std::begin(f), std::end(f));
+  }
 
   Vec vc = {0, 0, 0, 0, 0, 0};
   REQUIRE(v == vc);
