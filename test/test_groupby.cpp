@@ -30,9 +30,17 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
   std::vector<std::vector<std::string>> groups;
 
   SECTION("Function pointer") {
-    for (auto&& gb : groupby(vec, length)) {
-      keys.push_back(gb.first);
-      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    SECTION("Normal call") {
+      for (auto&& gb : groupby(vec, length)) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("Pipe") {
+      for (auto&& gb : vec | groupby(length)) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
     }
   }
 
@@ -109,9 +117,17 @@ TEST_CASE("groupby: single argument uses elements as keys", "[groupby]") {
   std::vector<int> ivec = {5, 5, 6, 6, 19, 19, 19, 19, 69, 0, 10, 10};
   std::vector<int> keys;
   std::vector<std::vector<int>> groups;
-  for (auto&& gb : groupby(ivec)) {
-    keys.push_back(gb.first);
-    groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+  SECTION("Normal call") {
+    for (auto&& gb : groupby(ivec)) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+  SECTION("Pipe") {
+    for (auto&& gb : ivec | groupby) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
   }
 
   const std::vector<int> kc = {5, 6, 19, 69, 0, 10};
