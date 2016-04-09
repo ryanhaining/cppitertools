@@ -136,15 +136,6 @@ TEST_CASE("filter: works with pipe", "[filter]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("filter: works with initializer_list", "[filter]") {
-  auto f = filter(LessThanValue{5}, {1, 2, 5, 6, 3, 1, 7, -1, 5});
-  Vec v(std::begin(f), std::end(f));
-  Vec vc = {1, 2, 3, 1, -1};
-  REQUIRE(v == vc);
-  auto f2 = filter({1, 2, 5, 6, 3, 1, 7, -1, 5});
-  Vec v2(std::begin(f2), std::end(f2));
-}
-
 TEST_CASE("filter: using identity and pipe", "[filter]") {
   Vec ns{0, 1, 2, 0, 3, 0, 0, 0, 4, 5, 0};
   auto f = ns | filter;
