@@ -2,6 +2,7 @@
 #define ITER_TAKEWHILE_H_
 
 #include "internal/iterbase.hpp"
+#include "filter.hpp"
 
 #include <utility>
 #include <iterator>
@@ -10,11 +11,10 @@ namespace iter {
   namespace impl {
     template <typename FilterFunc, typename Container>
     class Taker;
+
+    using TakeWhileFn = IterToolFnOptionalBindFirst<Taker, BoolTester>;
   }
-
-  template <typename FilterFunc, typename Container>
-  impl::Taker<FilterFunc, Container> takewhile(FilterFunc, Container&&);
-
+  constexpr impl::TakeWhileFn takewhile{};
 }
 
 template <typename FilterFunc, typename Container>
@@ -23,7 +23,7 @@ class iter::impl::Taker {
   Container container;
   FilterFunc filter_func;
 
-  friend Taker iter::takewhile<FilterFunc, Container>(FilterFunc, Container&&);
+  friend TakeWhileFn;
 
   Taker(FilterFunc in_filter_func, Container&& in_container)
       : container(std::forward<Container>(in_container)),
@@ -106,11 +106,5 @@ class iter::impl::Taker {
         this->filter_func};
   }
 };
-
-template <typename FilterFunc, typename Container>
-iter::impl::Taker<FilterFunc, Container> iter::takewhile(
-    FilterFunc filter_func, Container&& container) {
-  return {filter_func, std::forward<Container>(container)};
-}
 
 #endif
