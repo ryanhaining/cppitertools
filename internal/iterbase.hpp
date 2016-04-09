@@ -353,6 +353,7 @@ namespace iter {
     template <template <typename, typename> class ItImpl, typename DefaultFunc>
     struct IterToolFnOptionalBindFirst
         : Pipeable<IterToolFnOptionalBindFirst<ItImpl, DefaultFunc>> {
+     private:
       // T is whatever is being held for later use
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
@@ -366,6 +367,7 @@ namespace iter {
         }
       };
 
+     public:
       template <typename Func, typename Container>
       ItImpl<Func, Container> operator()(
           Func func, Container&& container) const {
@@ -381,6 +383,42 @@ namespace iter {
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
         return (*this)(DefaultFunc{}, std::forward<Container>(container));
+      }
+    };
+
+    template <template <typename, typename> class ItImpl, typename DefaultFunc>
+    struct IterToolFnOptionalBindSecond
+        : Pipeable<IterToolFnOptionalBindSecond<ItImpl, DefaultFunc>> {
+     private:
+      // T is whatever is being held for later use
+      template <typename T>
+      struct FnPartial : Pipeable<FnPartial<T>> {
+        mutable T stored_arg;
+        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+
+        template <typename Container>
+        auto operator()(Container&& container) const {
+          return IterToolFnOptionalBindSecond{}(
+              std::forward<Container>(container), stored_arg);
+        }
+      };
+
+     public:
+      template <typename Container, typename Func>
+      ItImpl<Container, Func> operator()(
+          Container&& container, Func func) const {
+        return {std::forward<Container>(container), std::move(func)};
+      }
+
+      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
+      FnPartial<Func> operator()(Func func) const {
+        return {std::move(func)};
+      }
+
+      template <typename Container,
+          typename = std::enable_if_t<is_iterable<Container>>>
+      auto operator()(Container&& container) const {
+        return (*this)(std::forward<Container>(container), DefaultFunc{});
       }
     };
   }
