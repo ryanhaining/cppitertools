@@ -2,6 +2,7 @@
 #define ITER_DROPWHILE_H_
 
 #include "internal/iterbase.hpp"
+#include "filter.hpp"
 
 #include <utility>
 #include <iterator>
@@ -10,11 +11,10 @@ namespace iter {
   namespace impl {
     template <typename FilterFunc, typename Container>
     class Dropper;
+
+    using DropWhileFn = IterToolFnOptionalBindFirst<Dropper, BoolTester>;
   }
-
-  template <typename FilterFunc, typename Container>
-  impl::Dropper<FilterFunc, Container> dropwhile(FilterFunc, Container&&);
-
+  constexpr impl::DropWhileFn dropwhile{};
 }
 
 template <typename FilterFunc, typename Container>
@@ -23,9 +23,7 @@ class iter::impl::Dropper {
   Container container;
   FilterFunc filter_func;
 
-  friend Dropper iter::dropwhile<FilterFunc, Container>(
-      FilterFunc, Container&&);
-
+  friend DropWhileFn;
 
   Dropper(FilterFunc in_filter_func, Container&& in_container)
       : container(std::forward<Container>(in_container)),
@@ -107,11 +105,5 @@ class iter::impl::Dropper {
         this->filter_func};
   }
 };
-
-template <typename FilterFunc, typename Container>
-iter::impl::Dropper<FilterFunc, Container> iter::dropwhile(
-    FilterFunc filter_func, Container&& container) {
-  return {filter_func, std::forward<Container>(container)};
-}
 
 #endif
