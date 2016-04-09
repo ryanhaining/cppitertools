@@ -14,9 +14,17 @@ namespace iter {
   namespace impl {
     template <typename Container, typename KeyFunc>
     class GroupProducer;
+
+    struct Identity {
+      template <typename T>
+      const T& operator()(const T& t) const {
+        return t;
+      }
+    };
+
+    using GroupByFn = IterToolFnOptionalBindSecond<GroupProducer, Identity>;
   }
-  template <typename Container, typename KeyFunc>
-  impl::GroupProducer<Container, KeyFunc> groupby(Container&&, KeyFunc);
+  constexpr impl::GroupByFn groupby{};
 }
 
 template <typename Container, typename KeyFunc>
@@ -25,7 +33,7 @@ class iter::impl::GroupProducer {
   Container container;
   KeyFunc key_func;
 
-  friend GroupProducer iter::groupby<Container, KeyFunc>(Container&&, KeyFunc);
+  friend GroupByFn;
 
   using key_func_ret = std::result_of_t<KeyFunc(iterator_deref<Container>)>;
 
@@ -256,34 +264,5 @@ class iter::impl::GroupProducer {
         std::end(this->container), std::end(this->container), this->key_func};
   }
 };
-
-template <typename Container, typename KeyFunc>
-iter::impl::GroupProducer<Container, KeyFunc> iter::groupby(
-    Container&& container, KeyFunc key_func) {
-  return {std::forward<Container>(container), key_func};
-}
-
-
-namespace iter {
-  namespace detail {
-    // Takes something and returns it, used for default key of comparing
-    // items in the sequence directly
-    template <typename Container>
-    class ItemReturner {
-     public:
-      impl::iterator_deref<Container> operator()(
-          impl::iterator_deref<Container> item) const {
-        return item;
-      }
-    };
-  }
-
-  template <typename Container>
-  auto groupby(Container&& container) {
-    return groupby(
-        std::forward<Container>(container), detail::ItemReturner<Container>());
-  }
-
-}
 
 #endif
