@@ -13,12 +13,10 @@ namespace iter {
   namespace impl {
     template <typename Container, typename AccumulateFunc>
     class Accumulator;
+
+    using AccumulateFn = IterToolFnOptionalBindSecond<Accumulator, std::plus<>>;
   }
-
-  template <typename Container, typename AccumulateFunc>
-  impl::Accumulator<Container, AccumulateFunc> accumulate(
-      Container&&, AccumulateFunc);
-
+  constexpr impl::AccumulateFn accumulate{};
 }
 
 template <typename Container, typename AccumulateFunc>
@@ -27,8 +25,7 @@ class iter::impl::Accumulator {
   Container container;
   AccumulateFunc accumulate_func;
 
-  friend Accumulator iter::accumulate<Container, AccumulateFunc>(
-      Container&&, AccumulateFunc);
+  friend AccumulateFn;
 
   using AccumVal = std::remove_reference_t<std::result_of_t<AccumulateFunc(
       iterator_deref<Container>, iterator_deref<Container>)>>;
@@ -118,21 +115,5 @@ class iter::impl::Accumulator {
         this->accumulate_func};
   }
 };
-
-template <typename Container, typename AccumulateFunc>
-iter::impl::Accumulator<Container, AccumulateFunc> iter::accumulate(
-    Container&& container, AccumulateFunc accumulate_func) {
-  return {std::forward<Container>(container), accumulate_func};
-}
-
-namespace iter {
-  template <typename Container>
-  auto accumulate(Container&& container) -> decltype(accumulate(
-      std::forward<Container>(container),
-      std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{})) {
-    return accumulate(std::forward<Container>(container),
-        std::plus<std::remove_reference_t<impl::iterator_deref<Container>>>{});
-  }
-}
 
 #endif
