@@ -13,18 +13,34 @@ using itertest::BasicIterable;
 using Vec = const std::vector<int>;
 TEST_CASE("Simple sum", "[accumulate]") {
   Vec ns{1, 2, 3, 4, 5};
-  auto a = accumulate(ns);
 
-  Vec v(std::begin(a), std::end(a));
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto a = accumulate(ns);
+    v.assign(std::begin(a), std::end(a));
+  }
+  SECTION("Pipe") {
+    auto a = ns | accumulate;
+    v.assign(std::begin(a), std::end(a));
+  }
+
   Vec vc{1, 3, 6, 10, 15};
   REQUIRE(v == vc);
 }
 
 TEST_CASE("accumulate: With subtraction lambda", "[accumulate]") {
   Vec ns{5, 4, 3, 2, 1};
-  auto a = accumulate(ns, [](int a, int b) { return a - b; });
+  std::vector<int> v;
 
-  Vec v(std::begin(a), std::end(a));
+  SECTION("Normal call") {
+    auto a = accumulate(ns, [](int a, int b) { return a - b; });
+    v.assign(std::begin(a), std::end(a));
+  }
+  SECTION("Pipe") {
+    auto a = ns | accumulate([](int a, int b) { return a - b; });
+    v.assign(std::begin(a), std::end(a));
+  }
+
   Vec vc{5, 1, -2, -4, -5};
   REQUIRE(v == vc);
 }
