@@ -14,8 +14,15 @@ using Vec = const std::vector<int>;
 
 TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
-  auto d = dropwhile([](int i) { return i < 5; }, ns);
-  Vec v(std::begin(d), std::end(d));
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto d = dropwhile([](int i) { return i < 5; }, ns);
+    v.assign(std::begin(d), std::end(d));
+  }
+  SECTION("Pipe") {
+    auto d = ns | dropwhile([](int i) { return i < 5; });
+    v.assign(std::begin(d), std::end(d));
+  }
   Vec vc = {5, 6, 7, 8};
   REQUIRE(v == vc);
 }
@@ -33,6 +40,14 @@ TEST_CASE("dropwhile: skips all elements when all are true under predicate",
   Vec ns{3, 4, 5, 6};
   auto d = dropwhile([](int i) { return i != 0; }, ns);
   REQUIRE(std::begin(d) == std::end(d));
+}
+
+TEST_CASE("dropwhile: identity", "[dropwhile]") {
+  Vec ns {1, 2, 0, 3, 1, 0};
+  auto d = dropwhile(ns);
+  Vec v(std::begin(d), std::end(d));
+  Vec vc = {0, 3, 1, 0};
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("dropwhile: empty case is empty", "[dropwhile]") {
