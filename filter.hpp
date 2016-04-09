@@ -33,6 +33,7 @@ class iter::impl::Filtered {
 
   friend FilterFn;
 
+ protected:
   // Value constructor for use only in the filter function
   Filtered(FilterFunc in_filter_func, Container&& in_container)
       : container(std::forward<Container>(in_container)),
