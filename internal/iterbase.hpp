@@ -344,12 +344,6 @@ namespace iter {
       ItImpl<T> operator()(T&& t, Ts... ts) const {
         return {std::forward<T>(t), std::move(ts)...};
       }
-
-      template <typename T, typename... Ts>
-      ItImpl<std::initializer_list<T>> operator()(
-          std::initializer_list<T> il, Ts... ts) const {
-        return {std::move(il), std::move(ts)...};
-      }
     };
 
     // This is a complicated class to generate a callable that can work:
@@ -387,17 +381,6 @@ namespace iter {
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
         return (*this)(DefaultFunc{}, std::forward<Container>(container));
-      }
-
-      template <typename Func, typename T>
-      ItImpl<Func, std::initializer_list<T>> operator()(
-          Func func, std::initializer_list<T> il) const {
-        return {std::move(func), std::move(il)};
-      }
-
-      template <typename T>
-      auto operator()(std::initializer_list<T> il) const {
-        return (*this)(DefaultFunc{}, std::move(il));
       }
     };
   }
