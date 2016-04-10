@@ -16,8 +16,15 @@ using Vec = const std::vector<int>;
 
 TEST_CASE("sorted: iterates through a vector in sorted order", "[sorted]") {
   Vec ns = {4, 0, 5, 1, 6, 7, 9, 3, 2, 8};
-  auto s = sorted(ns);
-  Vec v(std::begin(s), std::end(s));
+  std::vector<int> v;
+  SECTION("Normal Call") {
+    auto s = sorted(ns);
+    v.assign(std::begin(s), std::end(s));
+  }
+  SECTION("Pipe") {
+    auto s = ns | sorted;
+    v.assign(std::begin(s), std::end(s));
+  }
   Vec vc = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   REQUIRE(v == vc);
 }
@@ -58,22 +65,28 @@ namespace {
   };
 }
 
-TEST_CASE("sorted: works with different functor types", "[sorted]") {
+TEST_CASE("sorted: works with different callable types", "[sorted]") {
   Vec ns = {4, 1, 3, 2, 0};
   std::vector<int> v;
   SECTION("with function pointer") {
     auto s = sorted(ns, int_greater_than);
-    v.insert(v.begin(), std::begin(s), std::end(s));
+    v.assign(std::begin(s), std::end(s));
   }
 
   SECTION("with callable object") {
-    auto s = sorted(ns, IntGreaterThan{});
-    v.insert(v.begin(), std::begin(s), std::end(s));
+    SECTION("Normal call") {
+      auto s = sorted(ns, IntGreaterThan{});
+      v.assign(std::begin(s), std::end(s));
+    }
+    SECTION("Pipe") {
+      auto s = ns | sorted(IntGreaterThan{});
+      v.assign(std::begin(s), std::end(s));
+    }
   }
 
   SECTION("with lambda") {
     auto s = sorted(ns, [](int lhs, int rhs) { return lhs > rhs; });
-    v.insert(v.begin(), std::begin(s), std::end(s));
+    v.assign(std::begin(s), std::end(s));
   }
 
   Vec vc = {4, 3, 2, 1, 0};
