@@ -10,27 +10,24 @@
 
 namespace iter {
   namespace impl {
-    template <typename Container>
+    template <typename Container, typename CompareFunc>
     class SortedView;
+    using SortedFn = IterToolFnOptionalBindSecond<SortedView, std::less<>>;
   }
-
-  template <typename Container, typename CompareFunc>
-  impl::SortedView<Container> sorted(Container&&, CompareFunc);
+  constexpr impl::SortedFn sorted{};
 }
 
-template <typename Container>
+template <typename Container, typename CompareFunc>
 class iter::impl::SortedView {
  private:
   using IterIterWrap = IterIterWrapper<std::vector<iterator_type<Container>>>;
   using ItIt = iterator_type<IterIterWrap>;
 
-  template <typename C, typename F>
-  friend SortedView<C> iter::sorted(C&&, F);
+  friend SortedFn;
 
   Container container;
   IterIterWrap sorted_iters;
 
-  template <typename CompareFunc>
   SortedView(Container&& in_container, CompareFunc compare_func)
       : container(std::forward<Container>(in_container)) {
     // Fill the sorted_iters vector with an iterator to each
@@ -41,11 +38,10 @@ class iter::impl::SortedView {
     }
 
     // sort by comparing the elements that the iterators point to
-    std::sort(std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
+    std::sort(
+        std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
         [compare_func](iterator_type<Container> it1,
-                  iterator_type<Container> it2) {
-          return compare_func(*it1, *it2);
-        });
+            iterator_type<Container> it2) { return compare_func(*it1, *it2); });
   }
 
  public:
@@ -59,18 +55,5 @@ class iter::impl::SortedView {
     return std::end(sorted_iters);
   }
 };
-
-template <typename Container, typename CompareFunc>
-iter::impl::SortedView<Container> iter::sorted(
-    Container&& container, CompareFunc compare_func) {
-  return {std::forward<Container>(container), compare_func};
-}
-
-namespace iter {
-  template <typename Container>
-  auto sorted(Container&& container) {
-    return sorted(std::forward<Container>(container), std::less<>{});
-  }
-}
 
 #endif
