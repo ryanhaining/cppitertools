@@ -376,7 +376,6 @@ namespace iter {
     struct IterToolFnOptionalBindFirst
         : PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
               DefaultFunc>> {
-     private:
      public:
       template <typename Func, typename Container>
       ItImpl<Func, Container> operator()(
@@ -391,8 +390,7 @@ namespace iter {
       }
 
       using PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
-          DefaultFunc>>::
-      operator();
+          DefaultFunc>>::operator();
     };
 
     template <template <typename, typename> class ItImpl, typename DefaultFunc>
