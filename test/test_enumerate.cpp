@@ -139,6 +139,15 @@ TEST_CASE("enumerate: works with pipe", "[enumerate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("enumerate: works index and pipe", "[enumerate]") {
+  constexpr char str[] = {'a', 'b', 'c'};
+  auto e = str | enumerate(2);
+  Vec v(std::begin(e), std::end(e));
+  Vec vc{{2, 'a'}, {3, 'b'}, {4, 'c'}};
+
+  REQUIRE(v == vc);
+}
+
 template <typename T>
 using ImpT = decltype(enumerate(std::declval<T>()));
 TEST_CASE("enumerate: has correct ctor and assign ops", "[enumerate]") {
