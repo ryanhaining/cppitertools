@@ -10,31 +10,20 @@
 #include <cassert>
 #include <memory>
 
-//NOTE I don't know why, but clang gets very confused by having this-> in the
-//Iterators' member functions
 namespace iter {
   namespace impl {
     template <typename Func, typename Container>
     class StarMapper;
 
-    template <typename Func, typename Container>
-    StarMapper<Func, Container> starmap_helper(
-        Func, Container&&, std::false_type);
-
-    template <typename Func, typename Container>
-    auto starmap_helper(Func, Container&&, std::true_type);
-
     template <typename Func, typename TupType, std::size_t... Is>
     class TupleStarMapper;
 
-    template <typename Func, typename TupType, std::size_t... Is>
-    TupleStarMapper<Func, TupType, Is...> starmap_with_tuples(
-        Func, TupType&&, std::index_sequence<Is...>);
+    struct StarMapFn;
   }
-
-  template <typename Func, typename Seq>
-  auto starmap(Func func, Seq&& sequence);
 }
+
+// NOTE I don't know why, but clang gets very confused by having this-> in the
+// Iterators' member functions for these classes
 
 // starmap with a container<T> where T is one of tuple, pair, array
 template <typename Func, typename Container>
@@ -48,8 +37,8 @@ class iter::impl::StarMapper {
 
   StarMapper(Func f, Container&& c)
       : func(std::move(f)), container(std::forward<Container>(c)) {}
-  friend StarMapper starmap_helper<Func, Container>(
-      Func, Container&&, std::false_type);
+
+  friend StarMapFn;
 
  public:
   class Iterator
@@ -110,8 +99,7 @@ class iter::impl::TupleStarMapper {
   static_assert(sizeof...(Is) == std::tuple_size<std::decay_t<TupType>>::value,
       "tuple size doesn't match size of Is");
 
-  friend TupleStarMapper starmap_with_tuples<Func, TupType, Is...>(
-      Func, TupType&&, std::index_sequence<Is...>);
+  friend StarMapFn;
 
   template <std::size_t Idx>
   static decltype(auto) get_and_call_with_tuple(Func& f, TupType& t) {
@@ -182,44 +170,49 @@ constexpr std::array<
     typename iter::impl::TupleStarMapper<Func, TupType, Is...>::CallerFunc,
     sizeof...(Is)> iter::impl::TupleStarMapper<Func, TupType, Is...>::callers;
 
-template <typename Func, typename TupType, std::size_t... Is>
-iter::impl::TupleStarMapper<Func, TupType, Is...>
-iter::impl::starmap_with_tuples(
-    Func func, TupType&& tup, std::index_sequence<Is...>) {
-  return {std::move(func), std::forward<TupType>(tup)};
-}
+struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
+ private:
+  template <typename Func, typename TupType, std::size_t... Is>
+  TupleStarMapper<Func, TupType, Is...> helper_with_tuples(
+      Func func, TupType&& tup, std::index_sequence<Is...>) const {
+    return {std::move(func), std::forward<TupType>(tup)};
+  }
 
-// handles tuple-like types
-template <typename Func, typename TupType>
-auto iter::impl::starmap_helper(Func func, TupType&& tup, std::true_type) {
-  return starmap_with_tuples(std::move(func), std::forward<TupType>(tup),
-      std::
-          make_index_sequence<std::tuple_size<std::decay_t<TupType>>::value>{});
-}
+  // handles tuple-like types
+  template <typename Func, typename TupType>
+  auto helper(Func func, TupType&& tup, std::true_type) const {
+    return helper_with_tuples(std::move(func), std::forward<TupType>(tup),
+        std::make_index_sequence<std::tuple_size<std::decay_t<TupType>>::
+                                      value>{});
+  }
 
-// handles everything else
-template <typename Func, typename Container>
-iter::impl::StarMapper<Func, Container> iter::impl::starmap_helper(
-    Func func, Container&& container, std::false_type) {
-  return {std::move(func), std::forward<Container>(container)};
-}
+  // handles everything else
+  template <typename Func, typename Container>
+  StarMapper<Func, Container> helper(
+      Func func, Container&& container, std::false_type) const {
+    return {std::move(func), std::forward<Container>(container)};
+  }
+
+  template <typename T, typename = void>
+  struct is_tuple_like : public std::false_type {};
+
+  template <typename T>
+  struct is_tuple_like<T,
+      void_t<decltype(std::tuple_size<std::decay_t<T>>::value)>>
+      : public std::true_type {};
+
+ public:
+  template <typename Func, typename Seq>
+  auto operator()(Func func, Seq&& sequence) const {
+    return helper(
+        std::move(func), std::forward<Seq>(sequence), is_tuple_like<Seq>{});
+  }
+
+  using PipeableAndBindFirst<StarMapFn>::operator();
+};
 
 namespace iter {
-  namespace impl {
-    template <typename T, typename = void>
-    struct is_tuple_like : public std::false_type {};
-
-    template <typename T>
-    struct is_tuple_like<T,
-        void_t<decltype(std::tuple_size<std::decay_t<T>>::value)>>
-        : public std::true_type {};
-  }
-}
-
-template <typename Func, typename Seq>
-auto iter::starmap(Func func, Seq&& sequence) {
-  return impl::starmap_helper(
-      std::move(func), std::forward<Seq>(sequence), impl::is_tuple_like<Seq>{});
+  constexpr impl::StarMapFn starmap{};
 }
 
 #endif
