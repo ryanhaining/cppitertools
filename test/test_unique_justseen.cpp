@@ -22,8 +22,15 @@ TEST_CASE("unique justseen: adjacent repeating values", "[unique_justseen]") {
 
 TEST_CASE("unique justseen: some repeating values", "[unique_justseen]") {
   Vec ns = {1, 2, 2, 3, 4, 4, 5, 6, 6};
-  auto ue = unique_justseen(ns);
-  Vec v(std::begin(ue), std::end(ue));
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto ue = unique_justseen(ns);
+    v.assign(std::begin(ue), std::end(ue));
+  }
+  SECTION("Pipe") {
+    auto ue = ns | unique_justseen;
+    v.assign(std::begin(ue), std::end(ue));
+  }
   Vec vc = {1, 2, 3, 4, 5, 6};
   REQUIRE(v == vc);
 }
