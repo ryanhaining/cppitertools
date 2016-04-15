@@ -350,7 +350,7 @@ namespace iter {
     // f(a, b) is the same as b | f(a)
     template <typename F>
     struct PipeableAndBindFirst : Pipeable<F> {
-     protected:
+     public:
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
         mutable T stored_arg;
@@ -363,39 +363,51 @@ namespace iter {
       };
 
       template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
-      FnPartial<T> operator()(T t) const {
-        return {std::move(t)};
+      FnPartial<std::decay_t<T>> operator()(T&& t) const {
+        return {std::forward<T>(t)};
       }
     };
 
     // This is a complicated class to generate a callable that can work:
-    //  (1) with just a single (iterable) passed, and DefaultFunc substituted
+    //  (1) with just a single (iterable) passed, and DefaultT substituted
     //  (2) with an iterable and a callable
     //  (3) with just a callable, to have the iterable passed later via pipe
-    template <template <typename, typename> class ItImpl, typename DefaultFunc>
+    template <template <typename, typename> class ItImpl, typename DefaultT>
     struct IterToolFnOptionalBindFirst
-        : PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
-              DefaultFunc>> {
+        : Pipeable<IterToolFnOptionalBindFirst<ItImpl, DefaultT>> {
      public:
-      template <typename Func, typename Container>
-      ItImpl<Func, Container> operator()(
-          Func func, Container&& container) const {
+      template <typename T, typename Container>
+      ItImpl<T, Container> operator()(T func, Container&& container) const {
         return {std::move(func), std::forward<Container>(container)};
       }
 
       template <typename Container,
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
-        return (*this)(DefaultFunc{}, std::forward<Container>(container));
+        return (*this)(DefaultT{}, std::forward<Container>(container));
       }
 
-      using PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
-          DefaultFunc>>::operator();
+      template <typename T>
+      struct FnPartial : Pipeable<FnPartial<T>> {
+        mutable T stored_arg;
+        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+
+        template <typename Container>
+        auto operator()(Container&& container) const {
+          return IterToolFnOptionalBindFirst{}(
+              stored_arg, std::forward<Container>(container));
+        }
+      };
+
+      template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
+      FnPartial<std::decay_t<T>> operator()(T&& t) const {
+        return {std::forward<T>(t)};
+      }
     };
 
-    template <template <typename, typename> class ItImpl, typename DefaultFunc>
+    template <template <typename, typename> class ItImpl, typename DefaultT>
     struct IterToolFnOptionalBindSecond
-        : Pipeable<IterToolFnOptionalBindSecond<ItImpl, DefaultFunc>> {
+        : Pipeable<IterToolFnOptionalBindSecond<ItImpl, DefaultT>> {
      private:
       // T is whatever is being held for later use
       template <typename T>
@@ -411,21 +423,20 @@ namespace iter {
       };
 
      public:
-      template <typename Container, typename Func>
-      ItImpl<Container, Func> operator()(
-          Container&& container, Func func) const {
+      template <typename Container, typename T>
+      ItImpl<Container, T> operator()(Container&& container, T func) const {
         return {std::forward<Container>(container), std::move(func)};
       }
 
-      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
-      FnPartial<Func> operator()(Func func) const {
-        return {std::move(func)};
+      template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
+      FnPartial<std::decay_t<T>> operator()(T&& func) const {
+        return {std::forward<T>(func)};
       }
 
       template <typename Container,
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
-        return (*this)(std::forward<Container>(container), DefaultFunc{});
+        return (*this)(std::forward<Container>(container), DefaultT{});
       }
     };
   }
