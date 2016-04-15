@@ -346,15 +346,11 @@ namespace iter {
       }
     };
 
-    // This is a complicated class to generate a callable that can work:
-    //  (1) with just a single (iterable) passed, and DefaultFunc substituted
-    //  (2) with an iterable and a callable
-    //  (3) with just a callable, to have the iterable passed later via pipe
-    template <template <typename, typename> class ItImpl, typename DefaultFunc>
-    struct IterToolFnOptionalBindFirst
-        : Pipeable<IterToolFnOptionalBindFirst<ItImpl, DefaultFunc>> {
-     private:
-      // T is whatever is being held for later use
+    // Pipeable callable which allows binding of the first argument
+    // f(a, b) is the same as b | f(a)
+    template <typename F>
+    struct PipeableAndBindFirst : Pipeable<F> {
+     protected:
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
         mutable T stored_arg;
@@ -362,11 +358,25 @@ namespace iter {
 
         template <typename Container>
         auto operator()(Container&& container) const {
-          return IterToolFnOptionalBindFirst{}(
-              stored_arg, std::forward<Container>(container));
+          return F{}(stored_arg, std::forward<Container>(container));
         }
       };
 
+      template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
+      FnPartial<T> operator()(T t) const {
+        return {std::move(t)};
+      }
+    };
+
+    // This is a complicated class to generate a callable that can work:
+    //  (1) with just a single (iterable) passed, and DefaultFunc substituted
+    //  (2) with an iterable and a callable
+    //  (3) with just a callable, to have the iterable passed later via pipe
+    template <template <typename, typename> class ItImpl, typename DefaultFunc>
+    struct IterToolFnOptionalBindFirst
+        : PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
+              DefaultFunc>> {
+     private:
      public:
       template <typename Func, typename Container>
       ItImpl<Func, Container> operator()(
@@ -374,16 +384,15 @@ namespace iter {
         return {std::move(func), std::forward<Container>(container)};
       }
 
-      template <typename Func, typename = std::enable_if_t<!is_iterable<Func>>>
-      FnPartial<Func> operator()(Func func) const {
-        return {std::move(func)};
-      }
-
       template <typename Container,
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
         return (*this)(DefaultFunc{}, std::forward<Container>(container));
       }
+
+      using PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl,
+          DefaultFunc>>::
+      operator();
     };
 
     template <template <typename, typename> class ItImpl, typename DefaultFunc>
