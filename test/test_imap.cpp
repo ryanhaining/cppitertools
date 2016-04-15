@@ -34,26 +34,30 @@ namespace {
 
 TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
   Vec ns = {10, 20, 30};
+  std::vector<int> v;
   SECTION("with lambda") {
     auto im = imap([](int i) { return i + 1; }, ns);
-    Vec v(std::begin(im), std::end(im));
-    Vec vc = {11, 21, 31};
-    REQUIRE(v == vc);
+    v.assign(std::begin(im), std::end(im));
   }
 
   SECTION("with callable") {
-    auto im = imap(PlusOner{}, ns);
-    Vec v(std::begin(im), std::end(im));
-    Vec vc = {11, 21, 31};
-    REQUIRE(v == vc);
+    SECTION("Normal call") {
+      auto im = imap(PlusOner{}, ns);
+      v.assign(std::begin(im), std::end(im));
+    }
+    SECTION("Pipe") {
+      auto im = ns | imap(PlusOner{});
+      v.assign(std::begin(im), std::end(im));
+    }
   }
 
   SECTION("with function") {
     auto im = imap(PlusOner{}, ns);
-    Vec v(std::begin(im), std::end(im));
-    Vec vc = {11, 21, 31};
-    REQUIRE(v == vc);
+    v.assign(std::begin(im), std::end(im));
   }
+
+  Vec vc = {11, 21, 31};
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("imap: works with multiple sequences", "[imap]") {
