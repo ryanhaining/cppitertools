@@ -11,27 +11,27 @@
 
 namespace iter {
   namespace impl {
-    template <typename Container>
+    template <typename Container, typename Index>
     class Enumerable;
 
-    using EnumerateFn = IterToolFn<Enumerable>;
+    using EnumerateFn = IterToolFnOptionalBindSecond<Enumerable, std::size_t>;
   }
   constexpr impl::EnumerateFn enumerate{};
 }
 
-template <typename Container>
+template <typename Container, typename Index>
 class iter::impl::Enumerable {
  private:
   Container container;
-  const std::size_t start;
+  const Index start;
 
   friend EnumerateFn;
 
   // for IterYield
-  using BasePair = std::pair<std::size_t, iterator_deref<Container>>;
+  using BasePair = std::pair<Index, iterator_deref<Container>>;
 
   // Value constructor for use only in the enumerate function
-  Enumerable(Container&& in_container, std::size_t in_start = 0)
+  Enumerable(Container&& in_container, Index in_start)
       : container(std::forward<Container>(in_container)), start{in_start} {}
 
  public:
@@ -46,16 +46,16 @@ class iter::impl::Enumerable {
     typename BasePair::second_type& element = BasePair::second;
   };
 
-  //  Holds an iterator of the contained type and a size_t for the
+  //  Holds an iterator of the contained type and an Index for the
   //  index.  Each call to ++ increments both of these data members.
   //  Each dereference returns an IterYield.
   class Iterator : public std::iterator<std::input_iterator_tag, IterYield> {
    private:
     iterator_type<Container> sub_iter;
-    std::size_t index;
+    Index index;
 
    public:
-    Iterator(iterator_type<Container>&& si, std::size_t start)
+    Iterator(iterator_type<Container>&& si, Index start)
         : sub_iter{std::move(si)}, index{start} {}
 
     IterYield operator*() {
