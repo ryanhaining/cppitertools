@@ -38,17 +38,23 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
   Vec vc = {2l, 33l, 42l};
 
+  std::vector<int> v;
   SECTION("with function") {
-    auto sm = starmap(f, v1);
-    Vec v(std::begin(sm), std::end(sm));
-    REQUIRE(v == vc);
+    SECTION("Normal call") {
+      auto sm = starmap(f, v1);
+      v.assign(std::begin(sm), std::end(sm));
+    }
+    SECTION("pipe") {
+      auto sm = v1 | starmap(f);
+      v.assign(std::begin(sm), std::end(sm));
+    }
   }
 
   SECTION("with lambda") {
     auto sm = starmap([](long a, int b) { return a * b; }, v1);
-    Vec v(std::begin(sm), std::end(sm));
-    REQUIRE(v == vc);
+    v.assign(std::begin(sm), std::end(sm));
   }
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("starmap: list of tuples", "[starmap]") {
@@ -66,10 +72,17 @@ TEST_CASE("starmap: list of tuples", "[starmap]") {
 TEST_CASE("starmap: tuple of tuples", "[starmap]") {
   using Vec = const std::vector<int>;
   auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
-  auto sm = starmap(Callable{}, tup);
-  Vec v(std::begin(sm), std::end(sm));
-  Vec vc = {89, 7};
+  std::vector<int> v;
+  SECTION("Normal call") {
+    auto sm = starmap(Callable{}, tup);
+    v.assign(std::begin(sm), std::end(sm));
+  }
+  SECTION("Pipe") {
+    auto sm = tup | starmap(Callable{});
+    v.assign(std::begin(sm), std::end(sm));
+  }
 
+  Vec vc = {89, 7};
   REQUIRE(v == vc);
 }
 
