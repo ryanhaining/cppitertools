@@ -7,10 +7,17 @@
 #include <utility>
 
 namespace iter {
-  template <typename MapFunc, typename... Containers>
-  decltype(auto) imap(MapFunc map_func, Containers&&... containers) {
-    return starmap(map_func, zip(std::forward<Containers>(containers)...));
+  namespace impl {
+    struct IMapFn : PipeableAndBindFirst<IMapFn> {
+      template <typename MapFunc, typename... Containers>
+      decltype(auto) operator()(
+          MapFunc map_func, Containers&&... containers) const {
+        return starmap(map_func, zip(std::forward<Containers>(containers)...));
+      }
+      using PipeableAndBindFirst<IMapFn>::operator();
+    };
   }
+  constexpr impl::IMapFn imap{};
 }
 
 #endif
