@@ -8,14 +8,18 @@
 #include <iterator>
 
 namespace iter {
-
-  template <typename Container>
-  auto unique_justseen(Container&& container) {
-    // explicit return type in lambda so reference types are preserved
-    return imap([](auto&& group) -> impl::iterator_deref<Container> {
-      return *std::begin(group.second);
-    }, groupby(std::forward<Container>(container)));
+  namespace impl {
+    struct UniqueJustseenFn : Pipeable<UniqueJustseenFn> {
+      template <typename Container>
+      auto operator()(Container&& container) const {
+        // explicit return type in lambda so reference types are preserved
+        return imap([](auto&& group) -> impl::iterator_deref<Container> {
+          return *std::begin(group.second);
+        }, groupby(std::forward<Container>(container)));
+      }
+    };
   }
+  constexpr impl::UniqueJustseenFn unique_justseen{};
 }
 
 #endif
