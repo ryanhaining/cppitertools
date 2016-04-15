@@ -11,15 +11,21 @@
 #include <iterator>
 
 namespace iter {
-  template <typename Container>
-  auto unique_everseen(Container&& container) {
-    using elem_type = impl::iterator_deref<Container>;
-    auto func = [elem_seen = std::unordered_set<std::decay_t<elem_type>>()](
-        const elem_type& e) mutable {
-      return elem_seen.insert(e).second;
+  namespace impl {
+    struct UniqueEverseenFn : Pipeable<UniqueEverseenFn> {
+      template <typename Container>
+      auto operator()(Container&& container) const {
+        using elem_type = impl::iterator_deref<Container>;
+        auto func = [elem_seen = std::unordered_set<std::decay_t<elem_type>>()](
+            const elem_type& e) mutable {
+          return elem_seen.insert(e).second;
+        };
+        return filter(func, std::forward<Container>(container));
+      }
     };
-    return filter(func, std::forward<Container>(container));
   }
+
+  constexpr impl::UniqueEverseenFn unique_everseen{};
 }
 
 #endif
