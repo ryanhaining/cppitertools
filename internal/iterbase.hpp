@@ -350,7 +350,7 @@ namespace iter {
     // f(a, b) is the same as b | f(a)
     template <typename F>
     struct PipeableAndBindFirst : Pipeable<F> {
-     public:
+     protected:
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
         mutable T stored_arg;
@@ -362,6 +362,7 @@ namespace iter {
         }
       };
 
+     public:
       template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
       FnPartial<std::decay_t<T>> operator()(T&& t) const {
         return {std::forward<T>(t)};
@@ -374,35 +375,31 @@ namespace iter {
     //  (3) with just a callable, to have the iterable passed later via pipe
     template <template <typename, typename> class ItImpl, typename DefaultT>
     struct IterToolFnOptionalBindFirst
-        : Pipeable<IterToolFnOptionalBindFirst<ItImpl, DefaultT>> {
+        : PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>> {
+    private:
+      using Base = PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>>;
+     protected:
+      template <typename Container>
+      auto operator()(Container&& container, std::false_type) const {
+        return static_cast<const Base&>(*this)(std::forward<Container>(container));
+      }
+
+      template <typename Container>
+      auto operator()(Container&& container, std::true_type) const {
+        return (*this)(DefaultT{}, std::forward<Container>(container));
+      }
+
      public:
-      template <typename T, typename Container>
+      template <typename T>
+      auto operator()(T&& t) const {
+        return (*this)(std::forward<T>(t), IsIterable<T>{});
+      }
+
+      template <typename T, typename Container, typename = std::enable_if_t<is_iterable<Container>>>
       ItImpl<T, Container> operator()(T func, Container&& container) const {
         return {std::move(func), std::forward<Container>(container)};
       }
 
-      template <typename Container,
-          typename = std::enable_if_t<is_iterable<Container>>>
-      auto operator()(Container&& container) const {
-        return (*this)(DefaultT{}, std::forward<Container>(container));
-      }
-
-      template <typename T>
-      struct FnPartial : Pipeable<FnPartial<T>> {
-        mutable T stored_arg;
-        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
-
-        template <typename Container>
-        auto operator()(Container&& container) const {
-          return IterToolFnOptionalBindFirst{}(
-              stored_arg, std::forward<Container>(container));
-        }
-      };
-
-      template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
-      FnPartial<std::decay_t<T>> operator()(T&& t) const {
-        return {std::forward<T>(t)};
-      }
     };
 
     template <template <typename, typename> class ItImpl, typename DefaultT>
