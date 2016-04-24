@@ -16,8 +16,15 @@ TEST_CASE("combinations_with_replacement: Simple combination",
     "[combinations_with_replacement]") {
   std::string s{"ABC"};
   CharCombSet sc;
-  for (auto v : combinations_with_replacement(s, 2)) {
-    sc.emplace_back(std::begin(v), std::end(v));
+  SECTION("Normal call") {
+    for (auto v : combinations_with_replacement(s, 2)) {
+      sc.emplace_back(std::begin(v), std::end(v));
+    }
+  }
+  SECTION("Pipe") {
+    for (auto v : s | combinations_with_replacement(2)) {
+      sc.emplace_back(std::begin(v), std::end(v));
+    }
   }
   CharCombSet ans = {
       {'A', 'A'}, {'A', 'B'}, {'A', 'C'}, {'B', 'B'}, {'B', 'C'}, {'C', 'C'}};
