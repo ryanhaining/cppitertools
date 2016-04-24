@@ -12,12 +12,10 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class CombinatorWithReplacement;
+    using CombinationsWithReplacementFn =
+        IterToolFnBindSizeTSecond<CombinatorWithReplacement>;
   }
-
-  template <typename Container>
-  impl::CombinatorWithReplacement<Container> combinations_with_replacement(
-      Container&&, std::size_t);
-
+  constexpr impl::CombinationsWithReplacementFn combinations_with_replacement{};
 }
 
 template <typename Container>
@@ -26,8 +24,7 @@ class iter::impl::CombinatorWithReplacement {
   Container container;
   std::size_t length;
 
-  friend CombinatorWithReplacement
-  iter::combinations_with_replacement<Container>(Container&&, std::size_t);
+  friend CombinationsWithReplacementFn;
 
   CombinatorWithReplacement(Container&& in_container, std::size_t n)
       : container(std::forward<Container>(in_container)), length{n} {}
@@ -109,11 +106,5 @@ class iter::impl::CombinatorWithReplacement {
     return {this->container, 0};
   }
 };
-
-template <typename Container>
-iter::impl::CombinatorWithReplacement<Container>
-iter::combinations_with_replacement(Container&& container, std::size_t length) {
-  return {std::forward<Container>(container), length};
-}
 
 #endif
