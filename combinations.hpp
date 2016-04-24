@@ -12,11 +12,10 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Combinator;
+
+    using CombinationsFn = IterToolFnBindSizeTSecond<Combinator>;
   }
-
-  template <typename Container>
-  impl::Combinator<Container> combinations(Container&&, std::size_t);
-
+  constexpr impl::CombinationsFn combinations{};
 }
 
 template <typename Container>
@@ -25,7 +24,7 @@ class iter::impl::Combinator {
   Container container;
   std::size_t length;
 
-  friend Combinator iter::combinations<Container>(Container&&, std::size_t);
+  friend CombinationsFn;
 
   Combinator(Container&& in_container, std::size_t in_length)
       : container(std::forward<Container>(in_container)), length{in_length} {}
@@ -128,11 +127,5 @@ class iter::impl::Combinator {
     return {this->container, 0};
   }
 };
-
-template <typename Container>
-iter::impl::Combinator<Container> iter::combinations(
-    Container&& container, std::size_t length) {
-  return {std::forward<Container>(container), length};
-}
 
 #endif
