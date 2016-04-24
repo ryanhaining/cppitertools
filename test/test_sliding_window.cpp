@@ -13,30 +13,19 @@ using Vec = const std::vector<int>;
 
 TEST_CASE("sliding_window: window of size 3", "[sliding_window]") {
   Vec ns = {10, 20, 30, 40, 50};
-  auto sw = sliding_window(ns, 3);
-  auto it = std::begin(sw);
-  REQUIRE(it != std::end(sw));
-  {
-    Vec v(std::begin(*it), std::end(*it));
-    Vec vc = {10, 20, 30};
-    REQUIRE(v == vc);
+  std::vector<std::vector<int>> vc = {{10, 20, 30}, {20, 30, 40}, {30, 40, 50}};
+  std::vector<std::vector<int>> v;
+  SECTION("Normal call") {
+    for (auto&& win : sliding_window(ns, 3)) {
+      v.emplace_back(std::begin(win), std::end(win));
+    }
   }
-  ++it;
-  REQUIRE(it != std::end(sw));
-  {
-    Vec v(std::begin(*it), std::end(*it));
-    Vec vc = {20, 30, 40};
-    REQUIRE(v == vc);
+  SECTION("Pipe") {
+    for (auto&& win : ns | sliding_window(3)) {
+      v.emplace_back(std::begin(win), std::end(win));
+    }
   }
-  ++it;
-  REQUIRE(it != std::end(sw));
-  {
-    Vec v(std::begin(*it), std::end(*it));
-    Vec vc = {30, 40, 50};
-    REQUIRE(v == vc);
-  }
-  ++it;
-  REQUIRE(it == std::end(sw));
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("sliding window: oversized window is empty", "[sliding_window]") {
