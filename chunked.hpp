@@ -15,11 +15,10 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class Chunker;
+
+    using ChunkedFn = IterToolFnBindSizeTSecond<Chunker>;
   }
-
-  template <typename Container>
-  impl::Chunker<Container> chunked(Container&&, std::size_t);
-
+  constexpr impl::ChunkedFn chunked{};
 }
 
 template <typename Container>
@@ -31,7 +30,7 @@ class iter::impl::Chunker {
   Chunker(Container&& c, std::size_t sz)
       : container(std::forward<Container>(c)), chunk_size{sz} {}
 
-  friend Chunker iter::chunked<Container>(Container&&, std::size_t);
+  friend ChunkedFn;
 
   using IndexVector = std::vector<iterator_type<Container>>;
   using DerefVec = IterIterWrapper<IndexVector>;
@@ -106,11 +105,5 @@ class iter::impl::Chunker {
     return {std::end(this->container), std::end(this->container), chunk_size};
   }
 };
-
-template <typename Container>
-iter::impl::Chunker<Container> iter::chunked(
-    Container&& container, std::size_t chunk_size) {
-  return {std::forward<Container>(container), chunk_size};
-}
 
 #endif
