@@ -12,11 +12,9 @@ namespace iter {
   namespace impl {
     template <typename Container>
     class WindowSlider;
+    using SlidingWindowFn = IterToolFnBindSizeTSecond<WindowSlider>;
   }
-
-  template <typename Container>
-  impl::WindowSlider<Container> sliding_window(Container&&, std::size_t);
-
+  constexpr impl::SlidingWindowFn sliding_window{};
 }
 
 template <typename Container>
@@ -25,8 +23,7 @@ class iter::impl::WindowSlider {
   Container container;
   std::size_t window_size;
 
-  friend WindowSlider iter::sliding_window<Container>(Container&&, std::size_t);
-
+  friend SlidingWindowFn;
 
   WindowSlider(Container&& in_container, std::size_t win_sz)
       : container(std::forward<Container>(in_container)), window_size{win_sz} {}
@@ -96,11 +93,5 @@ class iter::impl::WindowSlider {
         this->window_size};
   }
 };
-
-template <typename Container>
-iter::impl::WindowSlider<Container> iter::sliding_window(
-    Container&& container, std::size_t window_size) {
-  return {std::forward<Container>(container), window_size};
-}
 
 #endif
