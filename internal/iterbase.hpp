@@ -376,12 +376,15 @@ namespace iter {
     template <template <typename, typename> class ItImpl, typename DefaultT>
     struct IterToolFnOptionalBindFirst
         : PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>> {
-    private:
-      using Base = PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>>;
+     private:
+      using Base =
+          PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>>;
+
      protected:
       template <typename Container>
       auto operator()(Container&& container, std::false_type) const {
-        return static_cast<const Base&>(*this)(std::forward<Container>(container));
+        return static_cast<const Base&> (*this)(
+            std::forward<Container>(container));
       }
 
       template <typename Container>
@@ -395,11 +398,11 @@ namespace iter {
         return (*this)(std::forward<T>(t), IsIterable<T>{});
       }
 
-      template <typename T, typename Container, typename = std::enable_if_t<is_iterable<Container>>>
+      template <typename T, typename Container,
+          typename = std::enable_if_t<is_iterable<Container>>>
       ItImpl<T, Container> operator()(T func, Container&& container) const {
         return {std::move(func), std::forward<Container>(container)};
       }
-
     };
 
     template <template <typename, typename> class ItImpl, typename DefaultT>
@@ -434,6 +437,33 @@ namespace iter {
           typename = std::enable_if_t<is_iterable<Container>>>
       auto operator()(Container&& container) const {
         return (*this)(std::forward<Container>(container), DefaultT{});
+      }
+    };
+
+    template <template <typename> class ItImpl>
+    struct IterToolFnBindSizeTSecond {  // NOTE not pipeable
+     private:
+      using Size = std::size_t;
+      struct FnPartial : Pipeable<FnPartial> {
+        Size sz{};
+        constexpr FnPartial(Size in_sz) : sz{in_sz} {}
+
+        template <typename Container>
+        auto operator()(Container&& container) const {
+          return IterToolFnBindSizeTSecond{}(
+              std::forward<Container>(container), sz);
+        }
+      };
+
+     public:
+      FnPartial operator()(Size sz) const {
+        return {sz};
+      }
+
+      template <typename Container,
+          typename = std::enable_if_t<is_iterable<Container>>>
+      ItImpl<Container> operator()(Container&& container, Size sz) const {
+        return {std::forward<Container>(container), sz};
       }
     };
   }
