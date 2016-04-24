@@ -19,8 +19,15 @@ using CharCombSet = std::vector<std::vector<char>>;
 TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
   std::string s{"ABCD"};
   CharCombSet sc;
-  for (auto v : combinations(s, 2)) {
-    sc.emplace_back(std::begin(v), std::end(v));
+  SECTION("Normal call") {
+    for (auto&& v : combinations(s, 2)) {
+      sc.emplace_back(std::begin(v), std::end(v));
+    }
+  }
+  SECTION("Pipe") {
+    for (auto&& v : s | combinations(2)) {
+      sc.emplace_back(std::begin(v), std::end(v));
+    }
   }
 
   CharCombSet ans = {
