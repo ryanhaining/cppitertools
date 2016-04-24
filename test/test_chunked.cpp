@@ -15,8 +15,15 @@ using ResVec = std::vector<Vec>;
 TEST_CASE("chunked: basic test", "[chunked]") {
   Vec ns = {1, 2, 3, 4, 5, 6};
   ResVec results;
-  for (auto&& g : chunked(ns, 2)) {
-    results.emplace_back(std::begin(g), std::end(g));
+  SECTION("Normal call") {
+    for (auto&& g : chunked(ns, 2)) {
+      results.emplace_back(std::begin(g), std::end(g));
+    }
+  }
+  SECTION("Pipe") {
+    for (auto&& g : ns | chunked(2)) {
+      results.emplace_back(std::begin(g), std::end(g));
+    }
   }
 
   ResVec rc = {{1, 2}, {3, 4}, {5, 6}};
