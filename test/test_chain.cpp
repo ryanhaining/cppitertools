@@ -158,8 +158,15 @@ TEST_CASE("chain: has correct ctor and assign ops", "[chain]") {
 
 TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
   std::vector<std::string> sv{"abc", "xyz"};
-  auto ch = chain.from_iterable(sv);
-  std::vector<char> v(std::begin(ch), std::end(ch));
+  std::vector<char> v;
+  SECTION("Normal call") {
+    auto ch = chain.from_iterable(sv);
+    v.assign(std::begin(ch), std::end(ch));
+  }
+  SECTION("Pipe") {
+    auto ch = sv | chain.from_iterable;
+    v.assign(std::begin(ch), std::end(ch));
+  }
 
   std::vector<char> vc{'a', 'b', 'c', 'x', 'y', 'z'};
   REQUIRE(v == vc);
