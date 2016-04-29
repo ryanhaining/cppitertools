@@ -10,15 +10,9 @@ namespace iter {
   namespace impl {
     template <typename Container, typename DifferenceType>
     class Sliced;
+
+    struct SliceFn;
   }
-
-  template <typename Container, typename DifferenceType>
-  impl::Sliced<Container, DifferenceType> slice(Container&& container,
-      DifferenceType start, DifferenceType stop, DifferenceType step = 1);
-
-  template <typename Container, typename DifferenceType>
-  impl::Sliced<Container, DifferenceType> slice(
-      Container&& container, DifferenceType stop);
 }
 
 template <typename Container, typename DifferenceType>
@@ -29,11 +23,7 @@ class iter::impl::Sliced {
   DifferenceType stop;
   DifferenceType step;
 
-  friend Sliced iter::slice<Container, DifferenceType>(
-      Container&&, DifferenceType, DifferenceType, DifferenceType);
-
-  friend Sliced iter::slice<Container, DifferenceType>(
-      Container&&, DifferenceType);
+  friend SliceFn;
 
   Sliced(Container&& in_container, DifferenceType in_start,
       DifferenceType in_stop, DifferenceType in_step)
@@ -107,18 +97,61 @@ class iter::impl::Sliced {
   }
 };
 
-// Helper function to instantiate a Sliced
-template <typename Container, typename DifferenceType>
-iter::impl::Sliced<Container, DifferenceType> iter::slice(Container&& container,
-    DifferenceType start, DifferenceType stop, DifferenceType step) {
-  return {std::forward<Container>(container), start, stop, step};
-}
+struct iter::impl::SliceFn {
+ private:
+  template <typename DifferenceType>
+  class FnPartial : public Pipeable<FnPartial<DifferenceType>> {
+   public:
+    template <typename Container>
+    Sliced<Container, DifferenceType> operator()(Container&& container) const {
+      return {std::forward<Container>(container), start, stop, step};
+    }
 
-// only give the end as an arg and assume step  is 1 and begin is 0
-template <typename Container, typename DifferenceType>
-iter::impl::Sliced<Container, DifferenceType> iter::slice(
-    Container&& container, DifferenceType stop) {
-  return {std::forward<Container>(container), 0, stop, 1};
+   private:
+    friend SliceFn;
+    constexpr FnPartial(DifferenceType in_start, DifferenceType in_stop,
+        DifferenceType in_step) noexcept : start{in_start},
+                                           stop{in_stop},
+                                           step{in_step} {}
+    DifferenceType start;
+    DifferenceType stop;
+    DifferenceType step;
+  };
+
+ public:
+  template <typename Container, typename DifferenceType,
+      typename = std::enable_if_t<is_iterable<Container>>>
+  Sliced<Container, DifferenceType> operator()(Container&& container,
+      DifferenceType start, DifferenceType stop,
+      DifferenceType step = 1) const {
+    return {std::forward<Container>(container), start, stop, step};
+  }
+
+  // only given the end, assume step is 1 and begin is 0
+  template <typename Container, typename DifferenceType,
+      typename = std::enable_if_t<is_iterable<Container>>>
+  iter::impl::Sliced<Container, DifferenceType> operator()(
+      Container&& container, DifferenceType stop) const {
+    return {std::forward<Container>(container), 0, stop, 1};
+  }
+
+  template <typename DifferenceType,
+      typename = std::enable_if_t<!is_iterable<DifferenceType>>>
+  constexpr FnPartial<DifferenceType> operator()(DifferenceType stop) const
+      noexcept {
+    return {0, stop, 1};
+  }
+
+  template <typename DifferenceType,
+      typename = std::enable_if_t<!is_iterable<DifferenceType>>>
+  constexpr FnPartial<DifferenceType> operator()(DifferenceType start,
+      DifferenceType stop, DifferenceType step = 1) const noexcept {
+    return {start, stop, step};
+  }
+};
+
+namespace iter {
+  constexpr impl::SliceFn slice{};
 }
 
 #endif
