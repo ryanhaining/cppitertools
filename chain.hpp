@@ -18,6 +18,8 @@ namespace iter {
     template <typename Container>
     class ChainedFromIterable;
 
+    using ChainFromIterableFn = IterToolFn<ChainedFromIterable>;
+
     // rather than a chain function, use a callable object to support
     // from_iterable
     class ChainMaker;
@@ -169,8 +171,8 @@ constexpr std::array<typename iter::impl::Chained<TupType, Is...>::NeqFunc,
 template <typename Container>
 class iter::impl::ChainedFromIterable {
  private:
+  friend ChainFromIterableFn;
   Container container;
-  friend ChainMaker;
   ChainedFromIterable(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
 
@@ -307,11 +309,7 @@ class iter::impl::ChainMaker {
         std::index_sequence_for<Containers...>{});
   }
 
-  // chain.from_iterable
-  template <typename Container>
-  ChainedFromIterable<Container> from_iterable(Container&& container) const {
-    return {std::forward<Container>(container)};
-  }
+  ChainFromIterableFn from_iterable;
 };
 
 namespace iter {
