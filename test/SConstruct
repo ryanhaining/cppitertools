@@ -36,6 +36,7 @@ progs = Split(
     slice
     sliding_window
     sorted
+    shuffled
     takewhile
     unique_everseen
     unique_justseen
