@@ -547,7 +547,7 @@ The below outputs `0 2 4 3 1`.
 
 ```c++
 unordered_set<int> nums{4, 0, 2, 1, 3};
-for (auto&& i : sorted(nums)) {
+for (auto&& i : shuffled(nums)) {
     cout << i << '\n';
 }
 ```
