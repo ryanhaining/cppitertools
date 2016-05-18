@@ -35,7 +35,8 @@ namespace iter {
 }
 
 // power of 2 approximation (val < pow(2, get_approx(val)+1))
-uint16_t iter::impl::lfsr::get_approx(uint64_t val) {
+inline uint16_t
+iter::impl::lfsr::get_approx(uint64_t val) {
   if (val == 0)
 	  return 0;
   uint16_t pow2_approx = 0;
@@ -53,7 +54,8 @@ uint16_t iter::impl::lfsr::get_approx(uint64_t val) {
   return pow2_approx;
 }
 
-uint64_t iter::impl::lfsr::shift(uint64_t reg, uint8_t reg_size) {
+inline uint64_t
+iter::impl::lfsr::shift(uint64_t reg, uint8_t reg_size) {
   if (reg & 1)
     reg = ((reg ^ PRIME_POLY[reg_size]) >> 1) | (1 << reg_size);
   else
