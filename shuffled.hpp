@@ -81,8 +81,8 @@ class iter::impl::ShuffledView {
         in_begin(std::begin(container)), seed(seed) {
     if (size > 0)
     {
-      uint64_t mask = 0;
-      std::uninitialized_fill((char*)&mask, (char*)&mask + size_approx, 0xFF);
+      uint64_t mask = 0xFFFFFFFFFFFFFFFFULL;
+	  mask >> (64-size_approx);
       this->seed = seed & mask;
       this->seed = lfsr::shift(this->seed, size_approx);
       while(this->seed >= size)
