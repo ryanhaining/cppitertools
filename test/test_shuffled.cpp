@@ -19,7 +19,7 @@ TEST_CASE("shuffled: iterates through a vector in shuffled order", "[shuffled]")
   Vec ns = {4, 0, 5, 1, 6, 7, 9, 3, 2, 8};
   auto s = shuffled(ns);
   Vec v(std::begin(s), std::end(s));
-  Vec vc = {2, 7, 5, 9, 8, 6, 3, 1, 0, 4};
+  Vec vc = {2, 9, 8, 6, 7, 5, 3, 1, 0, 4};
   REQUIRE(v == vc);
 }
 
@@ -41,27 +41,27 @@ TEST_CASE("shuffled: restore iteration through a vector in shuffled order "
 
   // overflow - same as default
   Vec v10(s.restore(10), std::end(s));
-  Vec vc10 = {2, 7, 5, 9, 8, 6, 3, 1, 0, 4};
+  Vec vc10 = {2, 9, 8, 6, 7, 5, 3, 1, 0, 4};
   REQUIRE(v10 == vc10);
 
-  Vec v1(s.restore(5), std::end(s));
-  Vec vc1 = {7, 5, 9, 8, 6, 3, 1, 0, 4};
+  Vec v1(s.restore(6), std::end(s));
+  Vec vc1 = {9, 8, 6, 7, 5, 3, 1, 0, 4};
   REQUIRE(v1 == vc1);
 
-  Vec v2(s.restore(2), std::end(s));
-  Vec vc2 = {5, 9, 8, 6, 3, 1, 0, 4};
+  Vec v2(s.restore(9), std::end(s));
+  Vec vc2 = {8, 6, 7, 5, 3, 1, 0, 4};
   REQUIRE(v2 == vc2);
 
-  Vec v3(s.restore(6), std::end(s));
-  Vec vc3 = {9, 8, 6, 3, 1, 0, 4};
+  Vec v3(s.restore(4), std::end(s));
+  Vec vc3 = {6, 7, 5, 3, 1, 0, 4};
   REQUIRE(v3 == vc3);
 
-  Vec v4(s.restore(9), std::end(s));
-  Vec vc4 = {8, 6, 3, 1, 0, 4};
+  Vec v4(s.restore(5), std::end(s));
+  Vec vc4 = {7, 5, 3, 1, 0, 4};
   REQUIRE(v4 == vc4);
 
-  Vec v5(s.restore(4), std::end(s));
-  Vec vc5 = {6, 3, 1, 0, 4};
+  Vec v5(s.restore(2), std::end(s));
+  Vec vc5 = {5, 3, 1, 0, 4};
   REQUIRE(v5 == vc5);
 
   Vec v6(s.restore(7), std::end(s));
@@ -96,7 +96,7 @@ TEST_CASE("shuffled: iterates through a vector in shuffled order with non"
   Vec ns = {4, 0, 5, 1, 6, 7, 9, 3, 2, 8};
   auto s = shuffled(ns, 1234);
   Vec v(std::begin(s), std::end(s));
-  Vec vc = {9, 8, 6, 3, 1, 0, 4, 2, 7, 5};
+  Vec vc = {4, 2, 9, 8, 6, 7, 5, 3, 1, 0};
   REQUIRE(v == vc);
 }
 

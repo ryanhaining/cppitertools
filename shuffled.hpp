@@ -10,7 +10,8 @@
  * implemented through advance of the first (begin) iterator of the
  * container, so random access iterator is desirable. In the constructor
  * we have to calculate the total size of the container, so
- * dumb_distance will be used.*/
+ * std::distance will be used. User can define more effective
+ * std::distance for the container.*/
 
 namespace iter {
   namespace impl {
@@ -33,7 +34,7 @@ namespace iter {
   impl::ShuffledView<Container, Distance> shuffled(Container&&, int seed = 1);
 }
 
-// power of 2 approximation
+// power of 2 approximation (val < pow(2, get_approx(val)+1))
 uint16_t iter::impl::lfsr::get_approx(uint64_t val) {
   if (val == 0)
 	  return 0;
@@ -49,7 +50,7 @@ uint16_t iter::impl::lfsr::get_approx(uint64_t val) {
         break;
     }
   }
-  return pow2_approx + 1;
+  return pow2_approx;
 }
 
 uint64_t iter::impl::lfsr::shift(uint64_t reg, uint8_t reg_size) {
@@ -77,12 +78,13 @@ class iter::impl::ShuffledView {
   using IterDeref = typename std::remove_reference<iterator_deref<Container>>;
   ShuffledView(ShuffledView&&) : size(0) {};
   ShuffledView(Container&& container, int seed)
-      : size(dumb_size(container)), size_approx(lfsr::get_approx(size)),
+      : size(std::distance(std::begin(container), std::end(container))),
+        size_approx(lfsr::get_approx(size)),
         in_begin(std::begin(container)), seed(seed) {
     if (size > 0)
     {
       uint64_t mask = 0xFFFFFFFFFFFFFFFFULL;
-	  mask >> (64-size_approx);
+      mask = (mask >> (64-size_approx));
       this->seed = seed & mask;
       this->seed = lfsr::shift(this->seed, size_approx);
       while(this->seed >= size)
@@ -133,7 +135,7 @@ class iter::impl::ShuffledView {
 
     auto operator*() -> decltype(*copy) {
       copy = owner->in_begin;
-      dumb_advance(copy, static_cast<Distance>(state-1));
+	  std::advance(copy, static_cast<Distance>(state-1));
       return *copy;
     }
 
