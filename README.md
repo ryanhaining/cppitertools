@@ -26,6 +26,7 @@ evaluation wherever possible.
 [accumulate](#accumulate)<br />
 [compress](#compress)<br />
 [sorted](#sorted)<br />
+[shuffled](#shuffled)<br />
 [chain](#chain)<br />
 [chain.from\_iterable](#chainfrom_iterable)<br />
 [reversed](#reversed)<br />
@@ -570,6 +571,25 @@ The below outputs `0 1 2 3 4`.
 ```c++
 unordered_set<int> nums{4, 0, 2, 1, 3};
 for (auto&& i : sorted(nums)) {
+    cout << i << ' ';
+}
+```
+
+shuffled
+--------
+*Additional Requirements*: Input must have a ForwardIterator.
+
+Allows iteration over a sequence in shuffled order. `shuffled` does
+**not** produce a new sequence, copy elements, or modify the original
+sequence.  It only provides a way to iterate over existing elements.
+`shuffled` also takes an optional second argument - randomization seed.
+If not provided, defaults to 1.
+
+The below outputs `0 2 4 3 1`.
+
+```c++
+unordered_set<int> nums{4, 0, 2, 1, 3};
+for (auto&& i : shuffled(nums)) {
     cout << i << '\n';
 }
 ```

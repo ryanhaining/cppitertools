@@ -37,6 +37,7 @@ progs = Split(
     sliding_window
     starmap
     sorted
+    shuffled
     takewhile
     unique_everseen
     unique_justseen
