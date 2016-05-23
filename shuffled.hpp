@@ -15,7 +15,7 @@
 
 namespace iter {
   namespace impl {
-    template <typename Container, typename Distance = std::size_t>
+    template <typename Container>
     class ShuffledView;
     // linear feedback shift register
     namespace lfsr {
@@ -30,8 +30,8 @@ namespace iter {
     }
   }
 
-  template <typename Container, typename Distance = std::size_t>
-  impl::ShuffledView<Container, Distance> shuffled(Container&&, int seed = 1);
+  template <typename Container>
+  impl::ShuffledView<Container> shuffled(Container&&, int seed = 1);
 }
 
 // power of 2 approximation (val < pow(2, get_approx(val)+1))
@@ -63,26 +63,29 @@ iter::impl::lfsr::shift(uint64_t reg, uint8_t reg_size) {
   return reg;
 }
 
-template <typename Container, typename Distance>
+template <typename Container>
 class iter::impl::ShuffledView {
  private:
 
-  Distance                 size;
+  uint64_t                 size;
   uint8_t                  size_approx;
   iterator_type<Container> in_begin;
   uint64_t                 seed;
+  Container                container;
 
-  template <typename C, typename D>
-  friend ShuffledView<C, D> iter::shuffled(C&&, int);
+  template <typename C>
+  friend ShuffledView<C> iter::shuffled(C&&, int);
 
 
  public:
   using IterDeref = typename std::remove_reference<iterator_deref<Container>>;
-  ShuffledView(ShuffledView&&) : size(0) {};
+  ShuffledView(ShuffledView&& copy)
+      : size(0), container(std::forward<Container>(copy.container)) {};
   ShuffledView(Container&& container, int seed)
       : size(std::distance(std::begin(container), std::end(container))),
         size_approx(lfsr::get_approx(size)),
-        in_begin(std::begin(container)), seed(seed) {
+        in_begin(std::begin(container)), seed(seed),
+        container(std::forward<Container>(container)) {
     if (size > 0)
     {
       uint64_t mask = 0xFFFFFFFFFFFFFFFFULL;
@@ -97,8 +100,8 @@ class iter::impl::ShuffledView {
   class Iterator
       : public std::iterator<std::input_iterator_tag, IterDeref> {
   private:
-    friend class ShuffledView<Container, Distance>;
-    ShuffledView<Container, Distance>* owner;
+    friend class ShuffledView<Container>;
+    ShuffledView<Container>* owner;
     uint64_t state;
     iterator_type<Container> copy; // referenced by operator* value
 
@@ -111,8 +114,6 @@ class iter::impl::ShuffledView {
     };
 
     Iterator& operator++() {
-      if (operator==(owner->end()))
-        return *this;
       state = lfsr::shift(state, owner->size_approx);
       while(state > owner->size)
         state = lfsr::shift(state, owner->size_approx);
@@ -137,7 +138,7 @@ class iter::impl::ShuffledView {
 
     auto operator*() -> decltype(*copy) {
       copy = owner->in_begin;
-	  std::advance(copy, static_cast<Distance>(state-1));
+	  std::advance(copy, static_cast<uint64_t>(state-1));
       return *copy;
     }
 
@@ -179,8 +180,8 @@ class iter::impl::ShuffledView {
   }
 };
 
-template <typename Container, typename Distance = std::size_t>
-iter::impl::ShuffledView<Container, Distance> iter::shuffled(
+template <typename Container>
+iter::impl::ShuffledView<Container> iter::shuffled(
     Container&& container, int seed = 1) {
   return {std::forward<Container>(container), seed};
 }

@@ -205,7 +205,7 @@ TEST_CASE("shuffled: moves rvalues and binds to lvalues", "[shuffled]") {
   REQUIRE_FALSE(bi.was_moved_from());
 
   shuffled(std::move(bi));
-  REQUIRE_FALSE(bi.was_moved_from()); // shuffled not store container inside
+  REQUIRE(bi.was_moved_from());
 }
 
 TEST_CASE("shuffled: doesn't move or copy elements of iterable", "[shuffled]") {
