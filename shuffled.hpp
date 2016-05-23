@@ -86,8 +86,10 @@ class iter::impl::ShuffledView {
         size_approx(lfsr::get_approx(size)),
         in_begin(std::begin(container)), seed(seed),
         container(std::forward<Container>(container)) {
-    if (size > 0)
-    {
+    if (size == 1) {
+      this->seed = 1;
+    }
+    else if (size > 1) {
       uint64_t mask = 0xFFFFFFFFFFFFFFFFULL;
       mask = (mask >> (64-size_approx));
       this->seed = seed & mask;

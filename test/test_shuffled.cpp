@@ -222,3 +222,11 @@ TEST_CASE("shuffled: has correct ctor and assign ops", "[shuffled]") {
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string>>::value);
 }
 
+TEST_CASE("shuffled: correct work with 1 and 0 sized container.", "[shuffled]") {
+  Vec onesz = {7};
+  for (auto &&i : shuffled(onesz))
+    REQUIRE(i == 7);
+  Vec zerosz;
+  for (auto &&i : shuffled(zerosz))
+    REQUIRE(false);
+}
