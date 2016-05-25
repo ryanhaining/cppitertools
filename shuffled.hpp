@@ -40,12 +40,12 @@ iter::impl::lfsr::get_approx(uint64_t val) {
   if (val == 0)
     return 0;
   uint16_t pow2_approx = 0;
-  if (val > 9223372036854775808UL) {
+  if (val > 9223372036854775808ULL) {
     pow2_approx = 63;
   }
   else {
     while (pow2_approx < 64) {
-      if (val >= (1UL << (pow2_approx + 1)))
+      if (val >= (static_cast<uint64_t>(1) << (pow2_approx + 1)))
         ++pow2_approx;
       else
         break;
