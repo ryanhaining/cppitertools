@@ -23,6 +23,22 @@ TEST_CASE("shuffled: iterates through a vector in shuffled order", "[shuffled]")
   REQUIRE(v == vc);
 }
 
+TEST_CASE("shuffled: shuffling one-element container", "[shuffled]") {
+  Vec ns = {4};
+  auto s = shuffled(ns);
+  Vec v(std::begin(s), std::end(s));
+  Vec vc = {4};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("shuffled: shuffling two-element container", "[shuffled]") {
+  Vec ns = {4, 3};
+  auto s = shuffled(ns);
+  Vec v(std::begin(s), std::end(s));
+  Vec vc = {3, 4};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("shuffled: iterates through a list of strings in shuffled order",
           "[shuffled]") {
   std::list<std::string> ns = {"apple", "banana", "orange", "peach"};
@@ -114,7 +130,7 @@ TEST_CASE("shuffled: can iterate over unordered container", "[shuffled]") {
   auto s = shuffled(ns);
 
   Vec v(std::begin(s), std::end(s));
-  Vec vc = {3, 2, 1, 4, 0};
+  Vec vc = {0, 3, 2, 1, 4};
   REQUIRE(v == vc);
 }
 

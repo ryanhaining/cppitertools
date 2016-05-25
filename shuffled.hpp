@@ -38,7 +38,7 @@ namespace iter {
 inline uint16_t
 iter::impl::lfsr::get_approx(uint64_t val) {
   if (val == 0)
-	  return 0;
+    return 0;
   uint16_t pow2_approx = 0;
   if (val > 9223372036854775808UL) {
     pow2_approx = 63;
@@ -56,10 +56,13 @@ iter::impl::lfsr::get_approx(uint64_t val) {
 
 inline uint64_t
 iter::impl::lfsr::shift(uint64_t reg, uint8_t reg_size) {
-  if (reg & 1)
-    reg = ((reg ^ PRIME_POLY[reg_size]) >> 1) | (1 << reg_size);
-  else
+  if (reg & 1) {
+    reg = ((reg ^ PRIME_POLY[reg_size]) >> 1) |
+      (static_cast<uint64_t>(1) << reg_size);
+  }
+  else {
     reg >>= 1;
+  }
   return reg;
 }
 
@@ -91,10 +94,10 @@ class iter::impl::ShuffledView {
     }
     else if (size > 1) {
       uint64_t mask = 0xFFFFFFFFFFFFFFFFULL;
-      mask = (mask >> (64-size_approx));
+      mask = (mask >> (64-(size_approx+1)));
       this->seed = seed & mask;
       this->seed = lfsr::shift(this->seed, size_approx);
-      while(this->seed >= size)
+      while(this->seed > size)
         this->seed = lfsr::shift(this->seed, size_approx);
     }
   }
