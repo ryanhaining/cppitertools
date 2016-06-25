@@ -165,6 +165,7 @@ class iter::impl::ShuffledView {
   }
 };
 
+
 template <typename Container, typename Distance = std::size_t>
 iter::impl::ShuffledView<Container, Distance> iter::shuffled(
     Container&& container, int seed) {
