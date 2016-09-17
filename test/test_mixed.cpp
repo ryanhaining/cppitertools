@@ -126,3 +126,19 @@ TEST_CASE("sorted(chain.from_iterable)", "[sorted][chain.from_iterable]") {
   std::vector<std::vector<int>> v = {{2,4,6}};
   auto s = iter::sorted(iter::chain.from_iterable(v));
 }
+
+TEST_CASE("filter into enumerate with pipe", "[filter][enumerate]") {
+  using iter::imap;
+  using iter::filter;
+  using iter::enumerate;
+
+  std::array<MyUnMovable, 4> arr = {{{41}, {42}, {43}, {44}}};
+  auto seq = arr
+    | filter([](const MyUnMovable& mv) { return mv.get_val() % 2 == 0; })
+    | enumerate
+    | imap([] (const auto& imv) { return std::make_pair(imv.first, imv.second.get_val());});
+  using Vec = std::vector<std::pair<std::size_t, int>>;
+  const Vec v(std::begin(seq), std::end(seq));
+  const Vec vc = {{0, 42}, {1, 44}};
+  REQUIRE(v == vc);
+}
