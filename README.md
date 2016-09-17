@@ -113,6 +113,50 @@ from `zip` must be moved into the `enumerate` object. As a more specific
 result, itertools can be mixed and nested.
 
 
+
+#### Pipe syntax
+Wherever it makes sense I've implemented the "pipe" operator that has become
+common in similar libraries. When the syntax is available it is done by pulling
+out the iterable from the call and placing it before the tool. For example:
+
+```c++
+filter(pred, seq);  // regular call
+seq | filter(pred);  // pipe-style
+enumerate(seq);  // regular call
+seq | enumerate;  // pipe-style.
+```
+
+The following tools support pipe. The remaining I left out because although
+some of them have multiple reasonable versions, it wasn't obvious to me how I
+would expect them to behave:
+
+- accumulate
+- chain.from\_iterable
+- chunked
+- combinations
+- combinations\_with\_replacement
+- cycle
+- dropwhile
+- enumerate
+- filter
+- filterfalse
+- groupby
+- imap
+- permutations
+- powerset
+- reversed
+- slice
+- sliding\_window
+- sorted
+- starmap
+- takewhile
+- unique\_everseen
+- unique\_justseen
+
+I don't personally care for the piping style, but it seemed to be desired by
+the users.
+
+
 range
 -----
 
