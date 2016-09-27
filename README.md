@@ -657,8 +657,8 @@ for (auto&& i : chain.from_iterable(matrix)) {
 
 reversed
 -------
-*Additional Requirements*: Input must have `.rbegin()` and `.rend()`, or be
-a plain C array.
+*Additional Requirements*: Input must be compatible with `std::rbegin()` and
+`std::rend()`
 
 Iterates over elements of a sequence in reverse order.
 
