@@ -6,6 +6,8 @@ evaluation wherever possible.
 
 *Note*: Everthing is inside the `iter` namespace.
 
+[@cppitertools on twitter](https://twitter.com/cppitertools)
+
 #### Table of Contents
 [range](#range)<br />
 [enumerate](#enumerate)<br />
