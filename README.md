@@ -6,7 +6,7 @@ evaluation wherever possible.
 
 *Note*: Everthing is inside the `iter` namespace.
 
-[@cppitertools on twitter](https://twitter.com/cppitertools)
+Follow [@cppitertools](https://twitter.com/cppitertools) for updates.
 
 #### Table of Contents
 [range](#range)<br />
