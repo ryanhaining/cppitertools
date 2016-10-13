@@ -188,7 +188,7 @@ class iter::impl::ShuffledView {
 
 template <typename Container>
 iter::impl::ShuffledView<Container> iter::shuffled(
-    Container&& container, int seed = 1) {
+    Container&& container, int seed /*= 1*/) {
   return {std::forward<Container>(container), seed};
 }
 
