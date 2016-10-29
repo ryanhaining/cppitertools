@@ -97,9 +97,9 @@ TEST_CASE("Operations on BaseIterators with SameTypes work",
   SameTypes s;
   BaseIterator<SameTypes> it(s.begin());
   REQUIRE(it.same_iterator_types);
-  REQUIRE(it.deref() == 0);
-  it.inc();
-  REQUIRE(it.deref() == 1);
+  REQUIRE(*it == 0);
+  ++it;
+  REQUIRE(*it == 1);
 }
 
 TEST_CASE("Operations on BaseIterators with DifferentTypes work",
@@ -107,27 +107,27 @@ TEST_CASE("Operations on BaseIterators with DifferentTypes work",
   DifferentTypes d;
   using BI = BaseIterator<DifferentTypes>;
   BI it(d.begin());
-  REQUIRE(it.deref() == 0);
-  it.inc();
-  REQUIRE(it.deref() == 1);
+  REQUIRE(*it == 0);
+  ++it;
+  REQUIRE(*it == 1);
 
   BI it2(d.begin());
 
-  REQUIRE(it.not_equal(it2));
-  REQUIRE(it2.not_equal(it));
-  it2.inc();
+  REQUIRE(it != it2);
+  REQUIRE(it2 != it);
+  ++it2;
 
-  REQUIRE_FALSE(it.not_equal(it2));
-  REQUIRE_FALSE(it2.not_equal(it));
+  REQUIRE_FALSE(it != it2);
+  REQUIRE_FALSE(it2 != it);
 
   BI bend(d.end());
-  REQUIRE(it.not_equal(bend));
-  REQUIRE(bend.not_equal(it));
+  REQUIRE(it != bend);
+  REQUIRE(bend != it);
 
-  it.inc();
-  it.inc();
-  REQUIRE_FALSE(it.not_equal(bend));
-  REQUIRE_FALSE(bend.not_equal(it));
+  ++it;
+  ++it;
+  REQUIRE_FALSE(it != bend);
+  REQUIRE_FALSE(bend != it);
 }
 
 TEST_CASE("Can copy construct a BaseIterator with SameTypes",
@@ -136,9 +136,9 @@ TEST_CASE("Can copy construct a BaseIterator with SameTypes",
   using BI = BaseIterator<SameTypes>;
   BI it(s.begin());
   BI it2(it);
-  REQUIRE_FALSE(it.not_equal(it2));
-  it2.inc();
-  REQUIRE(it.not_equal(it2));
+  REQUIRE_FALSE(it != it2);
+  ++it2;
+  REQUIRE(it != it2);
 }
 
 
@@ -147,11 +147,11 @@ TEST_CASE("Can copy assign a BaseIterator with SameTypes", "[base_iterator]") {
   using BI = BaseIterator<SameTypes>;
   BI it(s.begin());
   BI it2(s.begin());
-  REQUIRE_FALSE(it.not_equal(it2));
-  it2.inc();
-  REQUIRE(it.not_equal(it2));
+  REQUIRE_FALSE(it != it2);
+  ++it2;
+  REQUIRE(it != it2);
   it = it2;
-  REQUIRE_FALSE(it.not_equal(it2));
+  REQUIRE_FALSE(it != it2);
 }
 
 TEST_CASE("Can copy construct a BaseIterator with DifferentTypes",
@@ -160,9 +160,9 @@ TEST_CASE("Can copy construct a BaseIterator with DifferentTypes",
   DifferentTypes d;
   BI it(d.begin());
   BI it2(it);
-  REQUIRE_FALSE(it.not_equal(it2));
-  it.inc();
-  REQUIRE(it.not_equal(it2));
+  REQUIRE_FALSE(it != it2);
+  ++it;
+  REQUIRE(it != it2);
 }
 
 TEST_CASE("Can copy construct a BaseIterator with DifferenTypes",
@@ -173,16 +173,16 @@ TEST_CASE("Can copy construct a BaseIterator with DifferenTypes",
   BI it2(it);
   it = it2;
   // break assignment into a different test
-  REQUIRE_FALSE(it.not_equal(it2));
+  REQUIRE_FALSE(it != it2);
   BI it_end(d.end());
-  REQUIRE(it.not_equal(it_end));
+  REQUIRE(it != it_end);
   SECTION("normal = end") {
     it = it_end;
-    REQUIRE_FALSE(it.not_equal(it_end));
+    REQUIRE_FALSE(it != it_end);
   }
   SECTION("end = normal") {
     it_end = BI{d.begin()};
-    REQUIRE_FALSE(it.not_equal(it_end));
+    REQUIRE_FALSE(it != it_end);
   }
 }
   

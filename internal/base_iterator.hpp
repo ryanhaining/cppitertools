@@ -38,16 +38,17 @@ class iter::impl::BaseIteratorImpl<Container, true> {
 
   // I'm choosing to use named functions so that they aren't accidentally
   // used by subclasses
-  bool not_equal(const BaseIteratorImpl& other) const {
+  bool operator!=(const BaseIteratorImpl& other) const {
     return sub_iter_ != other.sub_iter_;
   }
 
-  void inc() {
+  BaseIteratorImpl& operator++() {
     ++sub_iter_;
+    return *this;
   }
 
   // TODO implement const deref?
-  decltype(auto) deref() {
+  decltype(auto) operator*() {
     return *sub_iter_;
   }
 };
@@ -139,18 +140,19 @@ class iter::impl::BaseIteratorImpl<Container, false> {
       : sub_end_(std::move(it)),
       state_{IterState::End} { }
 
-    void inc() {
+    BaseIteratorImpl& operator++() {
       assert(state_ == IterState::Normal); // because ++ing the end is UB
       ++sub_iter_;
+      return *this;
     }
 
     // TODO implement const deref?
-    decltype(auto) deref() {
+    decltype(auto) operator*() {
       assert(state_ == IterState::Normal); //because *ing the end is UB
       return *sub_iter_;
     }
 
-    bool not_equal(const BaseIteratorImpl& other) const {
+    bool operator!=(const BaseIteratorImpl& other) const {
       assert(state_ != IterState::Uninitialized
           && other.state_ != IterState::Uninitialized);
       if (state_ == other.state_) {
