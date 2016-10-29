@@ -57,8 +57,7 @@ struct DifferentTypes {
 
 // Explicit instatiations, which could cause failures if the implementation
 // details of the implementation details change.
-template class iter::impl::BaseIteratorImpl<SameTypes, true>;
-template class iter::impl::BaseIteratorImpl<DifferentTypes, false>;
+template class iter::impl::BaseIteratorImpl<DifferentTypes>;
 
 using iter::impl::BaseIterator;
 
@@ -82,21 +81,13 @@ TEST_CASE("ensure test type iterators are totally comparable", "[test_util") {
 }
 
 
-TEST_CASE("Same and different iterator types gets the correct BaseIterator",
-          "[base_iterator]") {
-  REQUIRE((
-        std::is_same<BaseIterator<SameTypes>,
-                     iter::impl::BaseIteratorImpl<SameTypes, true>>{}));
-  REQUIRE((
-        std::is_same<BaseIterator<DifferentTypes>,
-                     iter::impl::BaseIteratorImpl<DifferentTypes, false>>{}));
-}
-
 TEST_CASE("Operations on BaseIterators with SameTypes work",
     "[base_iterator]") {
   SameTypes s;
   BaseIterator<SameTypes> it(s.begin());
-  REQUIRE(it.same_iterator_types);
+  REQUIRE((std::is_same<
+        std::decay_t<decltype(it)>,
+        std::decay_t<decltype(s.begin())>>{}));
   REQUIRE(*it == 0);
   ++it;
   REQUIRE(*it == 1);
@@ -107,6 +98,9 @@ TEST_CASE("Operations on BaseIterators with DifferentTypes work",
   DifferentTypes d;
   using BI = BaseIterator<DifferentTypes>;
   BI it(d.begin());
+  REQUIRE((!std::is_same<
+        std::decay_t<decltype(it)>,
+        std::decay_t<decltype(d.begin())>>{}));
   REQUIRE(*it == 0);
   ++it;
   REQUIRE(*it == 1);

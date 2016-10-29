@@ -10,51 +10,33 @@ namespace impl {
 template <typename Container>
 using iterator_end_type = decltype(std::end(std::declval<Container&>()));
 
-template <typename Container, bool SameIteratorTypes>
+template <typename Container>
 class BaseIteratorImpl;
 
+
+// If begin and end return the same type, type will be iterator_type<Container>
+// If begin and end return different types, type will be BaseIteratorImpl
+template <typename Container, bool same_types>
+struct BaseIteratorImplType;
+
 template <typename Container>
-using BaseIterator = impl::BaseIteratorImpl<Container,
+struct BaseIteratorImplType<Container, true>
+: type_is<iterator_type<Container>>{};
+
+template <typename Container>
+struct BaseIteratorImplType<Container, false>
+: type_is<BaseIteratorImpl<Container>>{};
+
+template <typename Container>
+using BaseIterator = typename BaseIteratorImplType<Container,
       std::is_same<impl::iterator_type<Container>,
-                   impl::iterator_end_type<Container>>{}>;
+                   impl::iterator_end_type<Container>>{}>::type;
 }
 }
 
 
-// Container's begin() and end() are the same type.
 template <typename Container>
-class iter::impl::BaseIteratorImpl<Container, true> {
- private:
-  static_assert(
-      std::is_same<iterator_type<Container>, iterator_end_type<Container>>{},
-      "");
-  using SubIter = iterator_type<Container>;
-
-  SubIter sub_iter_;
- public:
-  static constexpr bool same_iterator_types = true;
-  BaseIteratorImpl() = default;
-  BaseIteratorImpl(SubIter&& it) : sub_iter_(std::move(it)) { }
-
-  // I'm choosing to use named functions so that they aren't accidentally
-  // used by subclasses
-  bool operator!=(const BaseIteratorImpl& other) const {
-    return sub_iter_ != other.sub_iter_;
-  }
-
-  BaseIteratorImpl& operator++() {
-    ++sub_iter_;
-    return *this;
-  }
-
-  // TODO implement const deref?
-  decltype(auto) operator*() {
-    return *sub_iter_;
-  }
-};
-
-template <typename Container>
-class iter::impl::BaseIteratorImpl<Container, false> {
+class iter::impl::BaseIteratorImpl {
   private:
     static_assert(
         !std::is_same<iterator_type<Container>, iterator_end_type<Container>>{},
