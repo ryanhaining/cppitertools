@@ -1,5 +1,5 @@
-#ifndef ITERTOOLS_BASE_ITERATOR_HPP_
-#define ITERTOOLS_BASE_ITERATOR_HPP_
+#ifndef ITERTOOLS_ITERATOR_WRAPPER_HPP_
+#define ITERTOOLS_ITERATOR_WRAPPER_HPP_
 
 #include "iterbase.hpp"
 #include <cassert>
@@ -11,24 +11,24 @@ template <typename Container>
 using iterator_end_type = decltype(std::end(std::declval<Container&>()));
 
 template <typename Container>
-class BaseIteratorImpl;
+class IteratorWrapperImpl;
 
 
 // If begin and end return the same type, type will be iterator_type<Container>
-// If begin and end return different types, type will be BaseIteratorImpl
+// If begin and end return different types, type will be IteratorWrapperImpl
 template <typename Container, bool same_types>
-struct BaseIteratorImplType;
+struct IteratorWrapperImplType;
 
 template <typename Container>
-struct BaseIteratorImplType<Container, true>
+struct IteratorWrapperImplType<Container, true>
 : type_is<iterator_type<Container>>{};
 
 template <typename Container>
-struct BaseIteratorImplType<Container, false>
-: type_is<BaseIteratorImpl<Container>>{};
+struct IteratorWrapperImplType<Container, false>
+: type_is<IteratorWrapperImpl<Container>>{};
 
 template <typename Container>
-using BaseIterator = typename BaseIteratorImplType<Container,
+using IteratorWrapper = typename IteratorWrapperImplType<Container,
       std::is_same<impl::iterator_type<Container>,
                    impl::iterator_end_type<Container>>{}>::type;
 }
@@ -36,7 +36,7 @@ using BaseIterator = typename BaseIteratorImplType<Container,
 
 
 template <typename Container>
-class iter::impl::BaseIteratorImpl {
+class iter::impl::IteratorWrapperImpl {
   private:
     static_assert(
         !std::is_same<iterator_type<Container>, iterator_end_type<Container>>{},
@@ -78,11 +78,11 @@ class iter::impl::BaseIteratorImpl {
     }
 
 
-    void copy_sub_from(const BaseIteratorImpl& other) {
+    void copy_sub_from(const IteratorWrapperImpl& other) {
       copy_or_move_sub_from(other);
     }
 
-    void move_sub_from(BaseIteratorImpl&& other) {
+    void move_sub_from(IteratorWrapperImpl&& other) {
       copy_or_move_sub_from(std::move(other));
     }
 
@@ -94,35 +94,35 @@ class iter::impl::BaseIteratorImpl {
     IterState state_{IterState::Uninitialized};
 
   public:
-    BaseIteratorImpl() {}
+    IteratorWrapperImpl() {}
 
-    BaseIteratorImpl(const BaseIteratorImpl& other) {
+    IteratorWrapperImpl(const IteratorWrapperImpl& other) {
       copy_sub_from(other);
     }
 
-    BaseIteratorImpl& operator=(const BaseIteratorImpl& other) {
+    IteratorWrapperImpl& operator=(const IteratorWrapperImpl& other) {
       copy_sub_from(other);
       return *this;
     }
 
-    BaseIteratorImpl(BaseIteratorImpl&& other) {
+    IteratorWrapperImpl(IteratorWrapperImpl&& other) {
       move_sub_from(std::move(other));
     }
 
-    BaseIteratorImpl& operator=(BaseIteratorImpl&& other) {
+    IteratorWrapperImpl& operator=(IteratorWrapperImpl&& other) {
       move_sub_from(std::move(other));
       return *this;
     }
 
-    BaseIteratorImpl(SubIter&& it)
+    IteratorWrapperImpl(SubIter&& it)
       : sub_iter_{std::move(it)},
       state_{IterState::Normal} { }
 
-    BaseIteratorImpl(SubEnd&& it)
+    IteratorWrapperImpl(SubEnd&& it)
       : sub_end_(std::move(it)),
       state_{IterState::End} { }
 
-    BaseIteratorImpl& operator++() {
+    IteratorWrapperImpl& operator++() {
       assert(state_ == IterState::Normal); // because ++ing the end is UB
       ++sub_iter_;
       return *this;
@@ -134,7 +134,7 @@ class iter::impl::BaseIteratorImpl {
       return *sub_iter_;
     }
 
-    bool operator!=(const BaseIteratorImpl& other) const {
+    bool operator!=(const IteratorWrapperImpl& other) const {
       assert(state_ != IterState::Uninitialized
           && other.state_ != IterState::Uninitialized);
       if (state_ == other.state_) {
@@ -152,12 +152,11 @@ class iter::impl::BaseIteratorImpl {
       }
     }
 
-    ~BaseIteratorImpl() {
+    ~IteratorWrapperImpl() {
       this->destroy_sub();
     }
 
 };
-
 
 
 #endif

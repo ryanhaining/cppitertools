@@ -43,6 +43,7 @@ progs = Split(
     zip
 
     iteratoriterator
+    iterator_wrapper
     iterbase
     mixed
     helpers

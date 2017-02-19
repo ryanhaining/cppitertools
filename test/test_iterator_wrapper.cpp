@@ -1,6 +1,6 @@
 // NOTE this header tests implementation details
 
-#include "internal/base_iterator.hpp"
+#include "internal/iterator_wrapper.hpp"
 #include "catch.hpp"
 
 
@@ -57,9 +57,9 @@ struct DifferentTypes {
 
 // Explicit instatiations, which could cause failures if the implementation
 // details of the implementation details change.
-template class iter::impl::BaseIteratorImpl<DifferentTypes>;
+template class iter::impl::IteratorWrapperImpl<DifferentTypes>;
 
-using iter::impl::BaseIterator;
+using iter::impl::IteratorWrapper;
 
 
 TEST_CASE("ensure test type iterators are totally comparable", "[test_util") {
@@ -81,10 +81,10 @@ TEST_CASE("ensure test type iterators are totally comparable", "[test_util") {
 }
 
 
-TEST_CASE("Operations on BaseIterators with SameTypes work",
+TEST_CASE("Operations on IteratorWrappers with SameTypes work",
     "[base_iterator]") {
   SameTypes s;
-  BaseIterator<SameTypes> it(s.begin());
+  IteratorWrapper<SameTypes> it(s.begin());
   REQUIRE((std::is_same<
         std::decay_t<decltype(it)>,
         std::decay_t<decltype(s.begin())>>{}));
@@ -93,10 +93,10 @@ TEST_CASE("Operations on BaseIterators with SameTypes work",
   REQUIRE(*it == 1);
 }
 
-TEST_CASE("Operations on BaseIterators with DifferentTypes work",
+TEST_CASE("Operations on IteratorWrappers with DifferentTypes work",
     "[base_iterator]") {
   DifferentTypes d;
-  using BI = BaseIterator<DifferentTypes>;
+  using BI = IteratorWrapper<DifferentTypes>;
   BI it(d.begin());
   REQUIRE((!std::is_same<
         std::decay_t<decltype(it)>,
@@ -124,10 +124,10 @@ TEST_CASE("Operations on BaseIterators with DifferentTypes work",
   REQUIRE_FALSE(bend != it);
 }
 
-TEST_CASE("Can copy construct a BaseIterator with SameTypes",
+TEST_CASE("Can copy construct a IteratorWrapper with SameTypes",
     "[base_iterator]") {
   SameTypes s;
-  using BI = BaseIterator<SameTypes>;
+  using BI = IteratorWrapper<SameTypes>;
   BI it(s.begin());
   BI it2(it);
   REQUIRE_FALSE(it != it2);
@@ -136,9 +136,9 @@ TEST_CASE("Can copy construct a BaseIterator with SameTypes",
 }
 
 
-TEST_CASE("Can copy assign a BaseIterator with SameTypes", "[base_iterator]") {
+TEST_CASE("Can copy assign a IteratorWrapper with SameTypes", "[base_iterator]") {
   SameTypes s;
-  using BI = BaseIterator<SameTypes>;
+  using BI = IteratorWrapper<SameTypes>;
   BI it(s.begin());
   BI it2(s.begin());
   REQUIRE_FALSE(it != it2);
@@ -148,9 +148,9 @@ TEST_CASE("Can copy assign a BaseIterator with SameTypes", "[base_iterator]") {
   REQUIRE_FALSE(it != it2);
 }
 
-TEST_CASE("Can copy construct a BaseIterator with DifferentTypes",
+TEST_CASE("Can copy construct a IteratorWrapper with DifferentTypes",
     "[base_iterator]") {
-  using BI = BaseIterator<DifferentTypes>;
+  using BI = IteratorWrapper<DifferentTypes>;
   DifferentTypes d;
   BI it(d.begin());
   BI it2(it);
@@ -159,9 +159,9 @@ TEST_CASE("Can copy construct a BaseIterator with DifferentTypes",
   REQUIRE(it != it2);
 }
 
-TEST_CASE("Can copy construct a BaseIterator with DifferenTypes",
+TEST_CASE("Can copy construct a IteratorWrapper with DifferenTypes",
     "[base_iterator]") {
-  using BI = BaseIterator<DifferentTypes>;
+  using BI = IteratorWrapper<DifferentTypes>;
   DifferentTypes d;
   BI it(d.begin());
   BI it2(it);
