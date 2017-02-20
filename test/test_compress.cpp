@@ -136,6 +136,15 @@ TEST_CASE("compress: iterator meets requirements", "[compress]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
 }
 
+TEST_CASE("compress: Works with different begin and end types",
+    "[compress]") {
+  CharRange cr{'d'};
+  auto c = compress(cr, std::vector<bool>{true, false, true});
+  Vec v(c.begin(), c.end());
+  Vec vc{'a', 'c'};
+  REQUIRE(v == vc);
+}
+
 template <typename T, typename U>
 using ImpT = decltype(compress(std::declval<T>(), std::declval<U>()));
 TEST_CASE("compress: has correct ctor and assign ops", "[compress]") {
