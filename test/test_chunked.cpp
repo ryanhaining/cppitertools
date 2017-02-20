@@ -60,6 +60,17 @@ TEST_CASE("chunked: size 0 is empty", "[chunked]") {
   REQUIRE(std::begin(g) == std::end(g));
 }
 
+TEST_CASE("chunked: Works with different begin and end types",
+    "[chunked]") {
+  CharRange cr{'f'};
+  std::vector<std::vector<char>> results;
+  for (auto&& g : chunked(cr, 3)) {
+    results.emplace_back(std::begin(g), std::end(g));
+  }
+  std::vector<std::vector<char>> rc = {{'a', 'b', 'c'}, {'d', 'e'}};
+  REQUIRE(results == rc);
+}
+
 TEST_CASE("chunked: empty iterable gives empty chunked", "[chunked]") {
   Vec ns{};
   auto g = chunked(ns, 1);
