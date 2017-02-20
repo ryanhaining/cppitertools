@@ -1,13 +1,43 @@
 #ifndef ITER_REVERSE_HPP_
 #define ITER_REVERSE_HPP_
 
+#include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
-#include <utility>
 #include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {
+    template <typename Container>
+    using reverse_iterator_type =
+        decltype(std::rbegin(std::declval<Container&>()));
+    template <typename Container>
+    using reverse_iterator_end_type =
+        decltype(std::rend(std::declval<Container&>()));
+
+    // If rbegin and rend return the same type, type will be
+    // reverse_iterator_type<Container>
+    // If rbegin and rend return different types, type will be
+    // IteratorWrapperImpl
+    template <typename Container, bool same_types>
+    struct ReverseIteratorWrapperImplType;
+
+    template <typename Container>
+    struct ReverseIteratorWrapperImplType<Container, true>
+        : type_is<reverse_iterator_type<Container>> {};
+
+    template <typename Container>
+    struct ReverseIteratorWrapperImplType<Container, false>
+        : type_is<IteratorWrapperImpl<reverse_iterator_type<Container>,
+              reverse_iterator_end_type<Container>>> {};
+
+    template <typename Container>
+    using ReverseIteratorWrapper =
+        typename ReverseIteratorWrapperImplType<Container,
+            std::is_same<impl::reverse_iterator_type<Container>,
+                impl::reverse_iterator_end_type<Container>>{}>::type;
+
     template <typename Container>
     class Reverser;
 
@@ -25,26 +55,25 @@ class iter::impl::Reverser {
   Reverser(Container&& in_container)
       : container(std::forward<Container>(in_container)) {}
 
-  using reverse_iterator_type =
-      decltype(std::rbegin(std::declval<Container&>()));
-
   using reverse_iterator_deref =
-      decltype(*std::declval<reverse_iterator_type&>());
+      decltype(*std::declval<reverse_iterator_type<Container>&>());
 
   using reverse_iterator_traits_deref =
       std::remove_reference_t<reverse_iterator_deref>;
 
-  using reverse_iterator_arrow = detail::arrow<reverse_iterator_type>;
+  using reverse_iterator_arrow =
+      detail::arrow<reverse_iterator_type<Container>>;
 
  public:
   Reverser(Reverser&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        reverse_iterator_traits_deref> {
    private:
-    reverse_iterator_type sub_iter;
+    ReverseIteratorWrapper<Container> sub_iter;
 
    public:
-    Iterator(reverse_iterator_type&& iter) : sub_iter{std::move(iter)} {}
+    Iterator(ReverseIteratorWrapper<Container>&& iter)
+        : sub_iter{std::move(iter)} {}
 
     reverse_iterator_deref operator*() {
       return *this->sub_iter;
