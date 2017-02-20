@@ -57,6 +57,18 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("starmap: Works with different begin and end types",
+    "[starmap]") {
+  IntCharPairRange icr{{3, 'd'}};
+  using Vec = std::vector<std::string>;
+  auto sm = starmap([](int i, char c) {
+      return std::to_string(i) + c;},
+      icr);
+  Vec v(sm.begin(), sm.end());
+  Vec vc{"0a", "1b", "2c"};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("starmap: list of tuples", "[starmap]") {
   using Vec = const std::vector<std::string>;
   using T = std::tuple<std::string, int, double>;
