@@ -2,6 +2,7 @@
 #define ITER_ACCUMULATE_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -39,13 +40,13 @@ class iter::impl::Accumulator {
 
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     AccumulateFunc* accumulate_func;
     std::unique_ptr<AccumVal> acc_val;
 
    public:
-    Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
+    Iterator(IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& end,
         AccumulateFunc& in_accumulate_fun)
         : sub_iter{std::move(iter)},
           sub_end{std::move(end)},
