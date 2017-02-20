@@ -44,6 +44,15 @@ TEST_CASE("slice: start and stop", "[slice]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("slice: Works with different begin and end types",
+    "[slice]") {
+  CharRange cr{'z'};
+  auto sl = slice(cr, 2, 5);
+  std::vector<char> v(std::begin(sl), std::end(sl));
+  const std::vector<char> vc = {'c', 'd', 'e'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("slice: start, stop, step", "[slice]") {
   Vec ns = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
   std::vector<int> v;
