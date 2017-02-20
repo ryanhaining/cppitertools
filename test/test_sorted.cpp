@@ -38,6 +38,20 @@ TEST_CASE("sorted: can modify elements through sorted", "[sorted]") {
   REQUIRE(ns == vc);
 }
 
+char inc_vowels(char c) {
+  return c == 'a' || c == 'e' ? c + 10 : c;
+}
+
+TEST_CASE("sorted: Works with different begin and end types",
+    "[sorted]") {
+  using Vec = std::vector<char>;
+  CharRange cr{'g'};
+  auto s = sorted(cr, [](char x, char y){return inc_vowels(x) < inc_vowels(y);});
+  Vec v(s.begin(), s.end());
+  Vec vc{'b', 'c', 'd', 'f', 'a', 'e'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("sorted: can iterate over unordered container", "[sorted]") {
   std::unordered_set<int> ns = {1, 3, 2, 0, 4};
   auto s = sorted(ns);
