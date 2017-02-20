@@ -4,6 +4,7 @@
 // this is easily the most functionally complex itertool
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <type_traits>
 #include <memory>
@@ -54,15 +55,15 @@ class iter::impl::GroupProducer {
  public:
   class Iterator : public std::iterator<std::input_iterator_tag, KeyGroupPair> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     Holder item;
     KeyFunc* key_func;
 
     std::unique_ptr<KeyGroupPair> current_key_group_pair;
 
    public:
-    Iterator(iterator_type<Container>&& si, iterator_type<Container>&& end,
+    Iterator(IteratorWrapper<Container>&& si, IteratorWrapper<Container>&& end,
         KeyFunc& in_key_func)
         : sub_iter{std::move(si)},
           sub_end{std::move(end)},
