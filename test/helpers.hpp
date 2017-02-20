@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 namespace itertest {
 
@@ -168,7 +169,7 @@ namespace itertest {
 #ifdef DECLARE_REVERSE_ITERATOR
     Iterator rbegin();
     Iterator rend();
-#endif // ifdef DECLARE_REVERSE_ITERATOR
+#endif  // ifdef DECLARE_REVERSE_ITERATOR
   };
 
   using iter::impl::void_t;
@@ -178,19 +179,16 @@ namespace itertest {
 
   template <typename T>
   struct IsIterator<T,
-      void_t<decltype(T(std::declval<const T&>())),  // copyctor
-                        decltype(std::declval<T&>() =
-                                     std::declval<const T&>()),  // copy =
-                        decltype(*std::declval<T&>()),           // operator*
-                        decltype(
-                            std::declval<T&>().operator->()),  // operator->
-                        decltype(++std::declval<T&>()),        // prefix ++
-                        decltype(std::declval<T&>()++),        // postfix ++
-                        decltype(std::declval<const T&>()
-                                 != std::declval<const T&>()),  //  !=
-                        decltype(std::declval<const T&>()
-                                 == std::declval<const T&>())  //  ==
-                        >> : std::true_type {};
+      void_t<decltype(T(std::declval<const T&>())),                 // copyctor
+          decltype(std::declval<T&>() = std::declval<const T&>()),  // copy =
+          decltype(*std::declval<T&>()),                            // operator*
+          decltype(std::declval<T&>().operator->()),  // operator->
+          decltype(++std::declval<T&>()),             // prefix ++
+          decltype(std::declval<T&>()++),             // postfix ++
+          decltype(
+              std::declval<const T&>() != std::declval<const T&>()),      //  !=
+          decltype(std::declval<const T&>() == std::declval<const T&>())  //  ==
+          >> : std::true_type {};
 
   template <typename T>
   struct IsForwardIterator
@@ -205,5 +203,197 @@ namespace itertest {
                 && !std::is_move_assignable<T>::value
                 && std::is_move_constructible<T>::value> {};
 }
+template <typename T, typename Inc>
+class DiffEndRange {
+ private:
+  T start_;
+  T stop_;
+  std::vector<T> all_results_;
+
+ public:
+  constexpr DiffEndRange(T start, T stop) : start_{start}, stop_{stop} {
+    while (start < stop_) {
+      all_results_.push_back(start);
+      Inc{}(start);
+    }
+  }
+
+  class Iterator;
+  class EndIterator;
+
+  class Iterator {
+    using SubIter = typename std::vector<T>::iterator;
+   private:
+    SubIter it_;
+    SubIter end_;
+
+   public:
+#ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
+    Iterator() = default;
+#endif
+    Iterator(SubIter it, SubIter end_it) : it_{it}, end_{end_it} {}
+
+    T& operator*() const {
+      return *it_;
+    }
+    T* operator->() const {
+      return &*it_;
+    }
+
+    Iterator& operator++() {
+      ++it_;
+      return *this;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return it_ != other.it_;
+    }
+
+    bool operator!=(const EndIterator&) const {
+      return it_ != end_;
+    }
+
+    friend bool operator!=(const EndIterator& lhs, const Iterator& rhs) {
+      return rhs != lhs;
+    }
+  };
+
+  class ReverseIterator {
+    using SubIter = typename std::vector<T>::reverse_iterator;
+   private:
+    SubIter it_;
+    SubIter end_;
+
+   public:
+#ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
+    ReverseIterator() = default;
+#endif
+    ReverseIterator(SubIter it, SubIter end_it) : it_{it}, end_{end_it} {}
+
+    T& operator*() const {
+      return *it_;
+    }
+    T* operator->() const {
+      return &*it_;
+    }
+
+    Iterator& operator++() {
+      ++it_;
+      return *this;
+    }
+
+    bool operator!=(const Iterator& other) const {
+      return it_ != other.it_;
+    }
+
+    bool operator!=(const EndIterator&) const {
+      return it_ != end_;
+    }
+
+    friend bool operator!=(const EndIterator& lhs, const Iterator& rhs) {
+      return rhs != lhs;
+    }
+  };
+
+  class EndIterator {};
+  class ReverseEndIterator {};
+
+  Iterator begin() {
+    return {std::begin(all_results_), std::end(all_results_)};
+  }
+
+  EndIterator end() {
+    return {};
+  }
+
+  ReverseIterator rbegin() {
+    return {std::rbegin(all_results_), std::rend(all_results_)};
+  }
+
+  ReverseEndIterator rend() {
+    return {};
+  }
+};
+
+struct CharInc {
+  void operator()(char& c) {
+    ++c;
+  }
+};
+
+// A range from 'a' to stop, begin() and end() are different
+class CharRange : public DiffEndRange<char, CharInc> {
+ public:
+  constexpr CharRange(char stop) : DiffEndRange<char, CharInc>('a', stop) {}
+};
+
+struct IncIntCharPair {
+  void operator()(std::pair<int, char>& p) {
+    ++p.first;
+    ++p.second;
+  }
+};
+
+class IntCharPairRange
+    : public DiffEndRange<std::pair<int, char>, IncIntCharPair> {
+ public:
+  IntCharPairRange(std::pair<int, char> stop)
+      : DiffEndRange<std::pair<int, char>, IncIntCharPair>({0, 'a'}, stop) {}
+};
+
+#if 0
+class CharRange {
+  private:
+    char stop_{};
+
+  public:
+    constexpr CharRange(char stop) : stop_{stop} {}
+
+    class Iterator;
+    class EndIterator;
+
+    class Iterator {
+      private:
+        char stop_{};
+        mutable char value_{'a'};
+      public:
+#ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
+        Iterator() = default;
+#endif
+        Iterator(char stop) : stop_{stop} {}
+
+        char& operator*() const { return value_; }
+        char* operator->() const { return &value_; }
+
+        Iterator& operator++() {
+          ++value_;
+          return *this;
+        }
+
+        bool operator!=(const Iterator& other) const {
+          return value_ != other.value_;
+        }
+
+        bool operator!=(const EndIterator&) const {
+          return value_ < stop_;
+        }
+
+        friend bool operator!=(const EndIterator& lhs, const Iterator& rhs) {
+          return rhs != lhs;
+        }
+
+    };
+
+    class EndIterator { };
+
+    Iterator begin() {
+      return {stop_};
+    }
+
+    EndIterator end() {
+      return {};
+    }
+};
+#endif
 
 #endif
