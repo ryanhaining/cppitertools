@@ -2,6 +2,7 @@
 #define ITER_TAKEWHILE_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 #include "filter.hpp"
 
 #include <utility>
@@ -36,8 +37,8 @@ class iter::impl::Taker {
                        iterator_traits_deref<Container>> {
    private:
     using Holder = DerefHolder<iterator_deref<Container>>;
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     Holder item;
     FilterFunc* filter_func;
 
@@ -56,7 +57,7 @@ class iter::impl::Taker {
     }
 
    public:
-    Iterator(iterator_type<Container>&& iter, iterator_type<Container>&& end,
+    Iterator(IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& end,
         FilterFunc& in_filter_func)
         : sub_iter{std::move(iter)},
           sub_end{std::move(end)},
