@@ -80,6 +80,22 @@ TEST_CASE(
   }
 }
 
+TEST_CASE("zip_longest: three sequences, one sequence has different begin and end", "[zip_longest]") {
+  //using TP = const_opt_tuple</*int,*/ char>;
+  using TP = std::tuple<int, char>;
+  using ResVec = std::vector<TP>;
+
+  std::vector<int> iv{10, 20};
+  CharRange cr('c');
+
+  ResVec v;
+  for (auto&& p : zip_longest(iv, cr)) {
+    v.push_back(TP{*std::get<0>(p), *std::get<1>(p)});
+  }
+  ResVec vc{TP{10, 'a'}, TP{20, 'b'}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE(
     "zip longest: when all are empty, terminates right away", "[zip_longest]") {
   const std::vector<int> ivec{};
