@@ -145,6 +145,15 @@ TEST_CASE("filter: using identity and pipe", "[filter]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("filter: Works with different begin and end types",
+    "[filter]") {
+  CharRange cr{'d'};
+  auto f = filter([](char c){return c != 'b';}, cr);
+  Vec v(f.begin(), f.end());
+  Vec vc{'a', 'c'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("filter: iterator meets requirements", "[filter]") {
   std::string s{};
   auto c = filter([] { return true; }, s);
