@@ -31,6 +31,17 @@ TEST_CASE("reversed: can reverse a vector", "[reversed]") {
   REQUIRE(v == vc);
 }
 
+#if 0
+TEST_CASE("reversed: Works with different begin and end types",
+    "[reversed]") {
+  CharRange cr{'d'};
+  auto r = reversed(cr);
+  Vec v(r.begin(), r.end());
+  Vec vc{'c', 'b', 'a'};
+  REQUIRE(v == vc);
+}
+#endif
+
 TEST_CASE("reversed: can reverse an array", "[reversed]") {
   int ns[] = {10, 20, 30, 40};
   auto r = reversed(ns);
