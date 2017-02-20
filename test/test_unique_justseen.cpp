@@ -35,6 +35,16 @@ TEST_CASE("unique justseen: some repeating values", "[unique_justseen]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("unique justseen: Works with different begin and end types",
+    "[unique_justseen]") {
+  CharRange cr{'d'};
+  using Vec = std::vector<char>;
+  auto uj = unique_justseen(cr);
+  Vec v(uj.begin(), uj.end());
+  Vec vc{'a', 'b', 'c'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("unique justseen: doesn't omit non-adjacent duplicates",
     "[unique_justseen]") {
   Vec ns = {1, 2, 3, 2, 1, 2, 3, 2, 1};
