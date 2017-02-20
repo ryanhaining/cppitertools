@@ -2,6 +2,7 @@
 #define ITER_FILTER_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -46,8 +47,8 @@ class iter::impl::Filtered {
                        iterator_traits_deref<Container>> {
    protected:
     using Holder = DerefHolder<iterator_deref<Container>>;
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     Holder item;
     FilterFunc* filter_func;
 
@@ -68,9 +69,9 @@ class iter::impl::Filtered {
     }
 
    public:
-    Iterator(iterator_type<Container> iter, iterator_type<Container> end,
+    Iterator(IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& end,
         FilterFunc& in_filter_func)
-        : sub_iter{iter}, sub_end{end}, filter_func(&in_filter_func) {
+        : sub_iter{std::move(iter)}, sub_end{std::move(end)}, filter_func(&in_filter_func) {
       if (this->sub_iter != this->sub_end) {
         this->item.reset(*this->sub_iter);
       }
