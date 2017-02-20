@@ -2,6 +2,7 @@
 #define ITER_SLICE_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <iterator>
 #include <type_traits>
@@ -37,14 +38,14 @@ class iter::impl::Sliced {
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     DifferenceType current;
     DifferenceType stop;
     DifferenceType step;
 
    public:
-    Iterator(iterator_type<Container>&& si, iterator_type<Container>&& se,
+    Iterator(IteratorWrapper<Container>&& si, IteratorWrapper<Container>&& se,
         DifferenceType in_start, DifferenceType in_stop, DifferenceType in_step)
         : sub_iter{std::move(si)},
           sub_end{std::move(se)},
