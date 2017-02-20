@@ -2,6 +2,7 @@
 #define ITERTOOLS_ITER_TUPLES_HPP_
 
 #include "iterbase.hpp"
+#include "iterator_wrapper.hpp"
 
 namespace iter {
   namespace impl {
@@ -13,7 +14,7 @@ namespace iter {
 
     namespace detail {
       template <typename... Ts>
-      std::tuple<iterator_type<Ts>...> iterator_tuple_type_helper(
+      std::tuple<IteratorWrapper<Ts>...> iterator_tuple_type_helper(
           const std::tuple<Ts...>&);
     }
     // Given a tuple template argument, evaluates to a tuple of iterators
@@ -28,8 +29,6 @@ namespace iter {
     template <typename TupleType>
     using iterator_deref_tuple = decltype(
         detail::iterator_tuple_deref_helper(std::declval<TupleType>()));
-
-    // ---- Tuple utilities ---- //
 
     // function absorbing all arguments passed to it. used when
     // applying a function to a parameter pack but not passing the evaluated
