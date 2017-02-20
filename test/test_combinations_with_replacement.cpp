@@ -5,7 +5,9 @@
 #include <set>
 #include <vector>
 
+#define CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #include "helpers.hpp"
+#undef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #include "catch.hpp"
 
 using iter::combinations_with_replacement;
@@ -28,6 +30,18 @@ TEST_CASE("combinations_with_replacement: Simple combination",
   }
   CharCombSet ans = {
       {'A', 'A'}, {'A', 'B'}, {'A', 'C'}, {'B', 'B'}, {'B', 'C'}, {'C', 'C'}};
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE("combinations_with_replacement: Works with different begin and end types",
+    "[combinations_with_replacement]") {
+  CharRange cr{'d'};
+  CharCombSet sc;
+  for (auto&& v : combinations_with_replacement(cr, 2)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+  CharCombSet ans = {
+      {'a', 'a'}, {'a', 'b'}, {'a', 'c'}, {'b', 'b'}, {'b', 'c'}, {'c', 'c'}};
   REQUIRE(ans == sc);
 }
 
