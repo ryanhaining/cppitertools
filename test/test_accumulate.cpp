@@ -102,6 +102,16 @@ TEST_CASE("accumulate: iterator meets requirements", "[accumulate]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(a))>::value);
 }
 
+TEST_CASE("accumulate: Works with different begin and end types",
+    "[accumulate]") {
+  CharRange cr{'d'};
+  auto a = accumulate(cr);
+  Vec v(a.begin(), a.end());
+  Vec vc{'a', 'a' + 'b', 'a' + 'b' + 'c'};
+  REQUIRE(v == vc);
+}
+
+
 template <typename T>
 using ImpT = decltype(accumulate(std::declval<T>()));
 TEST_CASE("accumulate: has correct ctor and assign ops", "[accumulate]") {
