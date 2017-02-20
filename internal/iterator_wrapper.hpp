@@ -94,7 +94,7 @@ class iter::impl::IteratorWrapperImpl {
     IterState state_{IterState::Uninitialized};
 
   public:
-    IteratorWrapperImpl() {}
+    IteratorWrapperImpl() : IteratorWrapperImpl(SubIter{}) {}
 
     IteratorWrapperImpl(const IteratorWrapperImpl& other) {
       copy_sub_from(other);

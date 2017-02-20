@@ -28,6 +28,7 @@ struct DifferentTypes {
   struct iterator;
   struct end_iterator;
   struct iterator {
+    iterator() : value_{} { REQUIRE(false); }
     iterator(int i) : value_(1, i) {}
 
     bool operator!=(const iterator& other) const { return value() != other.value(); }
@@ -40,6 +41,7 @@ struct DifferentTypes {
   };
 
   struct end_iterator {
+    end_iterator() { REQUIRE(false); }
     end_iterator(int){}
 
     bool operator!=(const end_iterator&) const { return false; }
