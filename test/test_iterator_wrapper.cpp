@@ -59,7 +59,9 @@ struct DifferentTypes {
 
 // Explicit instatiations, which could cause failures if the implementation
 // details of the implementation details change.
-template class iter::impl::IteratorWrapperImpl<DifferentTypes>;
+template class iter::impl::IteratorWrapperImpl<
+iter::impl::iterator_type<DifferentTypes>,
+  iter::impl::iterator_end_type<DifferentTypes>>;
 
 using iter::impl::IteratorWrapper;
 
