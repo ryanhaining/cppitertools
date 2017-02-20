@@ -1,14 +1,14 @@
 #ifndef ITER_UNIQUE_EVERSEEN_HPP_
 #define ITER_UNIQUE_EVERSEEN_HPP_
 
-#include "internal/iterbase.hpp"
 #include "filter.hpp"
+#include "internal/iterbase.hpp"
 
-#include <type_traits>
 #include <functional>
-#include <utility>
-#include <unordered_set>
 #include <iterator>
+#include <type_traits>
+#include <unordered_set>
+#include <utility>
 
 namespace iter {
   namespace impl {

@@ -1,12 +1,12 @@
 #ifndef ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 #define ITER_COMBINATIONS_WITH_REPLACEMENT_HPP_
 
-#include "internal/iterbase.hpp"
 #include "internal/iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
 
 #include <iterator>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 namespace iter {
   namespace impl {

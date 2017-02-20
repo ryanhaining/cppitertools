@@ -1,13 +1,13 @@
 #ifndef ITER_PRODUCT_HPP_
 #define ITER_PRODUCT_HPP_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
+#include <array>
 #include <iterator>
 #include <tuple>
 #include <utility>
-#include <array>
 
 namespace iter {
   namespace impl {

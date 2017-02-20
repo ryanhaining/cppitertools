@@ -3,10 +3,10 @@
 
 #include "internal/iterbase.hpp"
 
-#include <exception>
-#include <type_traits>
-#include <iterator>
 #include <cassert>
+#include <exception>
+#include <iterator>
+#include <type_traits>
 
 namespace iter {
   namespace impl {
@@ -37,8 +37,7 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_value, T in_step) noexcept
-          : value_{in_value},
-            step_{in_step} {}
+          : value_{in_value}, step_{in_step} {}
 
       constexpr T value() const noexcept {
         return this->value_;
@@ -73,9 +72,7 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_start, T in_step) noexcept
-          : start_{in_start},
-            value_{in_start},
-            step_{in_step} {}
+          : start_{in_start}, value_{in_start}, step_{in_step} {}
 
       constexpr T value() const noexcept {
         return this->value_;
@@ -124,9 +121,7 @@ class iter::impl::Range {
   constexpr Range(T in_stop) noexcept : start{0}, stop{in_stop}, step{1} {}
 
   constexpr Range(T in_start, T in_stop, T in_step = 1) noexcept
-      : start{in_start},
-        stop{in_stop},
-        step{in_step} {}
+      : start{in_start}, stop{in_stop}, step{in_step} {}
 
  public:
   // the reference type here is T, which doesn't strictly follow all
@@ -170,8 +165,7 @@ class iter::impl::Range {
     constexpr Iterator() noexcept = default;
 
     constexpr Iterator(T in_value, T in_step, bool in_is_end) noexcept
-        : data(in_value, in_step),
-          is_end{in_is_end} {}
+        : data(in_value, in_step), is_end{in_is_end} {}
 
     constexpr T operator*() const noexcept {
       return this->data.value();
@@ -186,7 +180,7 @@ class iter::impl::Range {
       return *this;
     }
 
-    Iterator operator++(int) noexcept {
+    Iterator operator++(int)noexcept {
       auto ret = *this;
       ++*this;
       return ret;

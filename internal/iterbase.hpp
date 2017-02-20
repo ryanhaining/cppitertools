@@ -7,13 +7,13 @@
 // also applies to the name of the file.  No user code should include
 // this file directly.
 
-#include <utility>
-#include <tuple>
-#include <iterator>
-#include <functional>
-#include <memory>
-#include <type_traits>
 #include <cstddef>
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -178,8 +178,7 @@ namespace iter {
     Distance dumb_size(Container&& container) {
       Distance d{0};
       auto end_it = std::end(container);
-      for (auto it = std::begin(container);
-           it != end_it; ++it) {
+      for (auto it = std::begin(container); it != end_it; ++it) {
         ++d;
       }
       return d;
@@ -335,7 +334,7 @@ namespace iter {
      protected:
       template <typename Container>
       auto operator()(Container&& container, std::false_type) const {
-        return static_cast<const Base&> (*this)(
+        return static_cast<const Base&>(*this)(
             std::forward<Container>(container));
       }
 

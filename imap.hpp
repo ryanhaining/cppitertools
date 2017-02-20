@@ -1,8 +1,8 @@
 #ifndef ITER_IMAP_H_
 #define ITER_IMAP_H_
 
-#include "zip.hpp"
 #include "starmap.hpp"
+#include "zip.hpp"
 
 #include <utility>
 

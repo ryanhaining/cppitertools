@@ -1,13 +1,13 @@
 #ifndef ITER_SLIDING_WINDOW_HPP_
 #define ITER_SLIDING_WINDOW_HPP_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
 
 #include <deque>
-#include <utility>
 #include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -41,7 +41,7 @@ class iter::impl::WindowSlider {
 
    public:
     Iterator(IteratorWrapper<Container>&& in_iter,
-         IteratorWrapper<Container>&& in_end, std::size_t window_sz)
+        IteratorWrapper<Container>&& in_end, std::size_t window_sz)
         : sub_iter(std::move(in_iter)) {
       std::size_t i{0};
       while (i < window_sz && this->sub_iter != in_end) {
@@ -84,8 +84,9 @@ class iter::impl::WindowSlider {
   };
 
   Iterator begin() {
-    return {(this->window_size != 0 ? IteratorWrapper<Container>{std::begin(this->container)}
-                                    : IteratorWrapper<Container>{std::end(this->container)}),
+    return {(this->window_size != 0
+                    ? IteratorWrapper<Container>{std::begin(this->container)}
+                    : IteratorWrapper<Container>{std::end(this->container)}),
         std::end(this->container), this->window_size};
   }
 

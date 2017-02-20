@@ -1,11 +1,11 @@
 #ifndef ITER_COMPRESS_H_
 #define ITER_COMPRESS_H_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <utility>
 #include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -15,7 +15,6 @@ namespace iter {
 
   template <typename Container, typename Selector>
   impl::Compressed<Container, Selector> compress(Container&&, Selector&&);
-
 }
 
 template <typename Container, typename Selector>

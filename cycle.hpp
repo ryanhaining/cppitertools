@@ -1,12 +1,12 @@
 #ifndef ITER_CYCLE_H_
 #define ITER_CYCLE_H_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <utility>
-#include <iterator>
 #include <initializer_list>
+#include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {

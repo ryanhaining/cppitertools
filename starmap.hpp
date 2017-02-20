@@ -1,15 +1,15 @@
 #ifndef ITER_STARMAP_H_
 #define ITER_STARMAP_H_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <utility>
-#include <iterator>
-#include <type_traits>
 #include <array>
 #include <cassert>
+#include <iterator>
 #include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -169,7 +169,8 @@ class iter::impl::TupleStarMapper {
 template <typename Func, typename TupType, std::size_t... Is>
 constexpr std::array<
     typename iter::impl::TupleStarMapper<Func, TupType, Is...>::CallerFunc,
-    sizeof...(Is)> iter::impl::TupleStarMapper<Func, TupType, Is...>::callers;
+    sizeof...(Is)>
+    iter::impl::TupleStarMapper<Func, TupType, Is...>::callers;
 
 struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  private:
@@ -184,7 +185,7 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
   auto helper(Func func, TupType&& tup, std::true_type) const {
     return helper_with_tuples(std::move(func), std::forward<TupType>(tup),
         std::make_index_sequence<std::tuple_size<std::decay_t<TupType>>::
-                                      value>{});
+                value>{});
   }
 
   // handles everything else

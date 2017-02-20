@@ -4,10 +4,10 @@
 #include "internal/iter_tuples.hpp"
 #include "internal/iterbase.hpp"
 
+#include <algorithm>
 #include <iterator>
 #include <tuple>
 #include <utility>
-#include <algorithm>
 
 namespace iter {
   namespace impl {

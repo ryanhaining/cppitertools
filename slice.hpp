@@ -1,8 +1,8 @@
 #ifndef ITER_SLICE_HPP_
 #define ITER_SLICE_HPP_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
 #include <iterator>
 #include <type_traits>
@@ -111,9 +111,8 @@ struct iter::impl::SliceFn {
    private:
     friend SliceFn;
     constexpr FnPartial(DifferenceType in_start, DifferenceType in_stop,
-        DifferenceType in_step) noexcept : start{in_start},
-                                           stop{in_stop},
-                                           step{in_step} {}
+        DifferenceType in_step) noexcept
+        : start{in_start}, stop{in_stop}, step{in_step} {}
     DifferenceType start;
     DifferenceType stop;
     DifferenceType step;

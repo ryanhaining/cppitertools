@@ -3,13 +3,13 @@
 
 // this is easily the most functionally complex itertool
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <type_traits>
-#include <memory>
-#include <utility>
 #include <iterator>
+#include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -193,9 +193,8 @@ class iter::impl::GroupProducer {
     }
 
     // move-constructible, non-copy-constructible, non-assignable
-    Group(Group&& other) noexcept : owner(other.owner),
-                                    key{other.key},
-                                    completed{other.completed} {
+    Group(Group&& other) noexcept
+        : owner(other.owner), key{other.key}, completed{other.completed} {
       other.completed = true;
     }
 

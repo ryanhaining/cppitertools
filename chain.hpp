@@ -1,9 +1,9 @@
 #ifndef ITER_CHAIN_HPP_
 #define ITER_CHAIN_HPP_
 
-#include "internal/iterbase.hpp"
-#include "internal/iterator_wrapper.hpp"
 #include "internal/iter_tuples.hpp"
+#include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
 #include <array>
 #include <iterator>
@@ -156,19 +156,23 @@ class iter::impl::Chained {
 
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::DerefFunc,
-    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::derefers;
+    sizeof...(Is)>
+    iter::impl::Chained<TupType, Is...>::derefers;
 
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::ArrowFunc,
-    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::arrowers;
+    sizeof...(Is)>
+    iter::impl::Chained<TupType, Is...>::arrowers;
 
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::IncFunc,
-    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::incrementers;
+    sizeof...(Is)>
+    iter::impl::Chained<TupType, Is...>::incrementers;
 
 template <typename TupType, std::size_t... Is>
 constexpr std::array<typename iter::impl::Chained<TupType, Is...>::NeqFunc,
-    sizeof...(Is)> iter::impl::Chained<TupType, Is...>::neq_comparers;
+    sizeof...(Is)>
+    iter::impl::Chained<TupType, Is...>::neq_comparers;
 
 template <typename Container>
 class iter::impl::ChainedFromIterable {
@@ -208,8 +212,8 @@ class iter::impl::ChainedFromIterable {
     }
 
    public:
-    Iterator(
-        IteratorWrapper<Container>&& top_iter, IteratorWrapper<Container>&& top_end)
+    Iterator(IteratorWrapper<Container>&& top_iter,
+        IteratorWrapper<Container>&& top_end)
         : top_level_iter{std::move(top_iter)},
           top_level_end{std::move(top_end)},
           sub_iter_p{!(top_iter != top_end)

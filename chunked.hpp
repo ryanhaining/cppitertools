@@ -1,16 +1,16 @@
 #ifndef ITER_CHUNKED_HPP_
 #define ITER_CHUNKED_HPP_
 
-#include "internal/iterbase.hpp"
-#include "internal/iteratoriterator.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
 
-#include <vector>
 #include <algorithm>
-#include <type_traits>
 #include <functional>
-#include <utility>
 #include <iterator>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace iter {
   namespace impl {

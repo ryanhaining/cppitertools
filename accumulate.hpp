@@ -1,14 +1,14 @@
 #ifndef ITER_ACCUMULATE_H_
 #define ITER_ACCUMULATE_H_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <utility>
-#include <iterator>
 #include <functional>
-#include <type_traits>
+#include <iterator>
 #include <memory>
+#include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -46,8 +46,8 @@ class iter::impl::Accumulator {
     std::unique_ptr<AccumVal> acc_val;
 
    public:
-    Iterator(IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& end,
-        AccumulateFunc& in_accumulate_fun)
+    Iterator(IteratorWrapper<Container>&& iter,
+        IteratorWrapper<Container>&& end, AccumulateFunc& in_accumulate_fun)
         : sub_iter{std::move(iter)},
           sub_end{std::move(end)},
           accumulate_func(&in_accumulate_fun),

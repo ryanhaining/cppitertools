@@ -1,15 +1,15 @@
 #ifndef ITER_PERMUTATIONS_HPP_
 #define ITER_PERMUTATIONS_HPP_
 
-#include "internal/iterbase.hpp"
-#include "internal/iteratoriterator.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
 
 #include <algorithm>
 #include <initializer_list>
-#include <vector>
-#include <utility>
 #include <iterator>
+#include <utility>
+#include <vector>
 
 namespace iter {
   namespace impl {
@@ -47,8 +47,7 @@ class iter::impl::Permuter {
     int steps{};
 
    public:
-    Iterator(
-        IteratorWrapper<Container>&& sub_iter,
+    Iterator(IteratorWrapper<Container>&& sub_iter,
         IteratorWrapper<Container>&& sub_end)
         : steps{sub_iter != sub_end ? 0 : COMPLETE} {
       // done like this instead of using vector ctor with

@@ -1,15 +1,15 @@
 #ifndef ITER_POWERSET_HPP_
 #define ITER_POWERSET_HPP_
 
-#include "internal/iterbase.hpp"
 #include "combinations.hpp"
+#include "internal/iterbase.hpp"
 
 #include <cassert>
-#include <memory>
 #include <initializer_list>
-#include <utility>
 #include <iterator>
+#include <memory>
 #include <type_traits>
+#include <utility>
 
 namespace iter {
   namespace impl {

@@ -1,8 +1,8 @@
 #ifndef ITERTOOLS_ITER_TUPLES_HPP_
 #define ITERTOOLS_ITER_TUPLES_HPP_
 
-#include "iterbase.hpp"
 #include "iterator_wrapper.hpp"
+#include "iterbase.hpp"
 
 namespace iter {
   namespace impl {

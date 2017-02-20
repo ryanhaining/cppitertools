@@ -1,10 +1,10 @@
 #ifndef ITERATOR_ITERATOR_HPP_
 #define ITERATOR_ITERATOR_HPP_
 
-#include "iterbase.hpp"
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#include "iterbase.hpp"
 
 // IterIterWrapper and IteratorIterator provide a means to have a container
 // of iterators act like a container of the pointed to objects. This is useful
@@ -25,11 +25,12 @@ namespace iter {
     template <typename TopIter>
     class IteratorIterator
         : public std::iterator<std::random_access_iterator_tag,
-                               typename std::remove_reference<decltype(
-                                   **std::declval<TopIter>())>::type> {
+              typename std::remove_reference<decltype(
+                  **std::declval<TopIter>())>::type> {
       using Diff = std::ptrdiff_t;
       static_assert(
-          std::is_same<typename std::iterator_traits<TopIter>::iterator_category,
+          std::is_same<
+              typename std::iterator_traits<TopIter>::iterator_category,
               std::random_access_iterator_tag>::value,
           "IteratorIterator only works with random access iterators");
 
@@ -74,7 +75,7 @@ namespace iter {
         return **this->sub_iter;
       }
 
-      auto operator -> () -> decltype(*sub_iter) {
+      auto operator-> () -> decltype(*sub_iter) {
         return *this->sub_iter;
       }
 

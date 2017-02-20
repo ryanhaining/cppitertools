@@ -1,11 +1,11 @@
 #ifndef ITER_SORTED_HPP_
 #define ITER_SORTED_HPP_
 
-#include "internal/iterbase.hpp"
 #include "internal/iteratoriterator.hpp"
+#include "internal/iterbase.hpp"
 
-#include <iterator>
 #include <algorithm>
+#include <iterator>
 #include <vector>
 
 namespace iter {
@@ -38,8 +38,7 @@ class iter::impl::SortedView {
     }
 
     // sort by comparing the elements that the iterators point to
-    std::sort(
-        std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
+    std::sort(std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
         [compare_func](iterator_type<Container> it1,
             iterator_type<Container> it2) { return compare_func(*it1, *it2); });
   }

@@ -1,12 +1,12 @@
 #ifndef ITER_FILTER_H_
 #define ITER_FILTER_H_
 
-#include "internal/iterbase.hpp"
 #include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
-#include <utility>
-#include <iterator>
 #include <initializer_list>
+#include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -69,9 +69,11 @@ class iter::impl::Filtered {
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& end,
-        FilterFunc& in_filter_func)
-        : sub_iter{std::move(iter)}, sub_end{std::move(end)}, filter_func(&in_filter_func) {
+    Iterator(IteratorWrapper<Container>&& iter,
+        IteratorWrapper<Container>&& end, FilterFunc& in_filter_func)
+        : sub_iter{std::move(iter)},
+          sub_end{std::move(end)},
+          filter_func(&in_filter_func) {
       if (this->sub_iter != this->sub_end) {
         this->item.reset(*this->sub_iter);
       }

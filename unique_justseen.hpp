@@ -4,8 +4,8 @@
 #include "groupby.hpp"
 #include "imap.hpp"
 
-#include <utility>
 #include <iterator>
+#include <utility>
 
 namespace iter {
   namespace impl {
@@ -13,9 +13,11 @@ namespace iter {
       template <typename Container>
       auto operator()(Container&& container) const {
         // explicit return type in lambda so reference types are preserved
-        return imap([](auto&& group) -> impl::iterator_deref<Container> {
-          return *std::begin(group.second);
-        }, groupby(std::forward<Container>(container)));
+        return imap(
+            [](auto&& group) -> impl::iterator_deref<Container> {
+              return *std::begin(group.second);
+            },
+            groupby(std::forward<Container>(container)));
       }
     };
   }
