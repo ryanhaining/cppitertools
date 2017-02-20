@@ -2,6 +2,7 @@
 #define ITER_CHAIN_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 #include "internal/iter_tuples.hpp"
 
 #include <array>
@@ -183,10 +184,10 @@ class iter::impl::ChainedFromIterable {
                        iterator_traits_deref<iterator_deref<Container>>> {
    private:
     using SubContainer = iterator_deref<Container>;
-    using SubIter = iterator_type<SubContainer>;
+    using SubIter = IteratorWrapper<SubContainer>;
 
-    iterator_type<Container> top_level_iter;
-    iterator_type<Container> top_level_end;
+    IteratorWrapper<Container> top_level_iter;
+    IteratorWrapper<Container> top_level_end;
     std::unique_ptr<SubIter> sub_iter_p;
     std::unique_ptr<SubIter> sub_end_p;
 
@@ -208,7 +209,7 @@ class iter::impl::ChainedFromIterable {
 
    public:
     Iterator(
-        iterator_type<Container>&& top_iter, iterator_type<Container>&& top_end)
+        IteratorWrapper<Container>&& top_iter, IteratorWrapper<Container>&& top_end)
         : top_level_iter{std::move(top_iter)},
           top_level_end{std::move(top_end)},
           sub_iter_p{!(top_iter != top_end)

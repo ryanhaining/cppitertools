@@ -39,6 +39,19 @@ TEST_CASE("chain: with different container types", "[chain]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("chain: where one container has different begin and end types",
+    "[chain]") {
+  std::string s1{"abc"};
+  std::list<char> li{'m', 'n', 'o'};
+  CharRange cr('e');
+  auto ch = chain(s1, li, cr);
+
+  Vec v(std::begin(ch), std::end(ch));
+  Vec vc{'a', 'b', 'c', 'm', 'n', 'o', 'a', 'b', 'c', 'd'};
+
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("chain: handles empty containers", "[chain]") {
   std::string emp;
   std::string a{"a"};
@@ -169,6 +182,15 @@ TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
   }
 
   std::vector<char> vc{'a', 'b', 'c', 'x', 'y', 'z'};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("chain.fromm_iterable: Works with different begin and end types",
+    "[chain.from_iterable]") {
+  std::vector<CharRange> crv = {{'c'}, {'d'}};
+  auto ch = chain.from_iterable(crv);
+  const std::vector<char> v(std::begin(ch), std::end(ch));
+  const std::vector<char> vc = {'a', 'b', 'a', 'b', 'c'};
   REQUIRE(v == vc);
 }
 
