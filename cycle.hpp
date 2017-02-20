@@ -2,6 +2,7 @@
 #define ITER_CYCLE_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -32,13 +33,13 @@ class iter::impl::Cycler {
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> begin;
-    iterator_type<Container> end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> begin;
+    IteratorWrapper<Container> end;
 
    public:
     Iterator(
-        const iterator_type<Container>& iter, iterator_type<Container>&& in_end)
+        IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& in_end)
         : sub_iter{iter}, begin{iter}, end{std::move(in_end)} {}
 
     iterator_deref<Container> operator*() {
