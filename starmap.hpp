@@ -1,6 +1,7 @@
 #ifndef ITER_STARMAP_H_
 #define ITER_STARMAP_H_
 
+#include "internal/iter_tuples.hpp"
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
