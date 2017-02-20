@@ -29,6 +29,19 @@ TEST_CASE("zip: Simple case, same length", "[zip]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("zip: three sequences, one sequence has different begin and end", "[zip]") {
+  using Tu = std::tuple<int, char, double>;
+  using ResVec = const std::vector<Tu>;
+  std::vector<int> iv{10, 20, 30};
+  CharRange cr('d');
+  double arr[] = {1.0, 2.0, 4.0};
+
+  auto z = zip(iv, cr, arr);
+  ResVec v(std::begin(z), std::end(z));
+  ResVec vc{Tu{10, 'a', 1.0}, Tu{20, 'b', 2.0}, Tu{30, 'c', 4.0}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("zip: One empty, all empty", "[zip]") {
   std::vector<int> iv = {1, 2, 3};
   std::string s{};
