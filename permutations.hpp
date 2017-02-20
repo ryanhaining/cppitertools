@@ -3,6 +3,7 @@
 
 #include "internal/iterbase.hpp"
 #include "internal/iteratoriterator.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <algorithm>
 #include <initializer_list>
@@ -25,7 +26,7 @@ class iter::impl::Permuter {
   friend PermutationsFn;
   Container container;
 
-  using IndexVector = std::vector<iterator_type<Container>>;
+  using IndexVector = std::vector<IteratorWrapper<Container>>;
   using Permutable = IterIterWrapper<IndexVector>;
 
   Permuter(Container&& in_container)
@@ -37,8 +38,8 @@ class iter::impl::Permuter {
   class Iterator : public std::iterator<std::input_iterator_tag, Permutable> {
    private:
     static constexpr const int COMPLETE = -1;
-    static bool cmp_iters(const iterator_type<Container>& lhs,
-        const iterator_type<Container>& rhs) noexcept {
+    static bool cmp_iters(IteratorWrapper<Container> lhs,
+        IteratorWrapper<Container> rhs) noexcept {
       return *lhs < *rhs;
     }
 
@@ -47,7 +48,8 @@ class iter::impl::Permuter {
 
    public:
     Iterator(
-        iterator_type<Container>&& sub_iter, iterator_type<Container>&& sub_end)
+        IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end)
         : steps{sub_iter != sub_end ? 0 : COMPLETE} {
       // done like this instead of using vector ctor with
       // two iterators because that causes a substitution
