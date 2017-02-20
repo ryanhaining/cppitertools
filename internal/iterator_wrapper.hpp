@@ -139,7 +139,10 @@ class iter::impl::IteratorWrapperImpl {
           && other.state_ != IterState::Uninitialized);
       if (state_ == other.state_) {
         if (state_ == IterState::End) {
-          return sub_end_ != other.sub_end_;
+          // NOTE this used to be return sub_end_ != other.sub_end_;
+          // but rangev3 sentinels aren't comparable
+          // https://github.com/ericniebler/range-v3/issues/564
+          return false;
         } else {
           return sub_iter_ != other.sub_iter_;
         }
