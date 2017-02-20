@@ -10,7 +10,7 @@ namespace impl {
 template <typename Container>
 using iterator_end_type = decltype(std::end(std::declval<Container&>()));
 
-template <typename Container>
+template <typename SubIter, typename SubEnd>
 class IteratorWrapperImpl;
 
 
@@ -25,7 +25,7 @@ struct IteratorWrapperImplType<Container, true>
 
 template <typename Container>
 struct IteratorWrapperImplType<Container, false>
-: type_is<IteratorWrapperImpl<Container>>{};
+: type_is<IteratorWrapperImpl<iterator_type<Container>, iterator_end_type<Container>>>{};
 
 template <typename Container>
 using IteratorWrapper = typename IteratorWrapperImplType<Container,
@@ -34,17 +34,12 @@ using IteratorWrapper = typename IteratorWrapperImplType<Container,
 }
 }
 
-
-template <typename Container>
+template <typename SubIter, typename SubEnd>
 class iter::impl::IteratorWrapperImpl {
   private:
     static_assert(
-        !std::is_same<iterator_type<Container>, iterator_end_type<Container>>{},
+        !std::is_same<SubIter, SubEnd>{},
         "");
-
-    using SubIter = iterator_type<Container>;
-    using SubEnd = iterator_end_type<Container>;
-
     enum class IterState { Normal, End, Uninitialized};
 
     void destroy_sub() {
@@ -128,10 +123,24 @@ class iter::impl::IteratorWrapperImpl {
       return *this;
     }
 
-    // TODO implement const deref?
     decltype(auto) operator*() {
       assert(state_ == IterState::Normal); //because *ing the end is UB
       return *sub_iter_;
+    }
+
+    decltype(auto) operator*() const {
+      assert(state_ == IterState::Normal); //because *ing the end is UB
+      return *sub_iter_;
+    }
+
+    decltype(auto) operator->() {
+      assert(state_ == IterState::Normal);
+      return apply_arrow(sub_iter_);
+    }
+
+    decltype(auto) operator->() const {
+      assert(state_ == IterState::Normal);
+      return apply_arrow(sub_iter_);
     }
 
     bool operator!=(const IteratorWrapperImpl& other) const {
