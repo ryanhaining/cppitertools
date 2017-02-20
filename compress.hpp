@@ -2,6 +2,7 @@
 #define ITER_COMPRESS_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -38,8 +39,8 @@ class iter::impl::Compressed {
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
 
     selector_iter_type selector_iter;
     selector_iter_type selector_end;
@@ -58,8 +59,8 @@ class iter::impl::Compressed {
     }
 
    public:
-    Iterator(iterator_type<Container>&& cont_iter,
-        iterator_type<Container>&& cont_end, selector_iter_type&& sel_iter,
+    Iterator(IteratorWrapper<Container>&& cont_iter,
+        IteratorWrapper<Container>&& cont_end, selector_iter_type&& sel_iter,
         selector_iter_type&& sel_end)
         : sub_iter{std::move(cont_iter)},
           sub_end{std::move(cont_end)},
