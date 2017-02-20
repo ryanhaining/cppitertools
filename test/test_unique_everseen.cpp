@@ -46,6 +46,16 @@ TEST_CASE(
   REQUIRE(bi.was_moved_from());
 }
 
+TEST_CASE("unique everseen: Works with different begin and end types",
+    "[unique_everseen]") {
+  CharRange cr{'d'};
+  using Vec = std::vector<char>;
+  auto ue = unique_everseen(cr);
+  Vec v(ue.begin(), ue.end());
+  Vec vc{'a', 'b', 'c'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("unique_everseen: iterator meets requirements", "[unique_everseen]") {
   std::string s{};
   auto c = unique_everseen(s);
