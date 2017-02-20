@@ -17,13 +17,31 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
   for (auto i : cycle(ns)) {
     v.push_back(i);
     ++count;
-    if (count == ns.size() * 2) break;
+    if (count == ns.size() * 2) { break; }
   }
 
   auto vc = ns;
   vc.insert(std::end(vc), std::begin(ns), std::end(ns));
   REQUIRE(v == vc);
 }
+
+TEST_CASE("cycle: Works with different begin and end types",
+    "[cycle]") {
+  constexpr auto sz = 'd' - 'a';
+  CharRange cr{'d'};
+  const std::vector<char> vc{'a', 'b', 'c', 'a', 'b', 'c'};
+  std::vector<char> v;
+  std::size_t count = 0;
+  for (auto i : cycle(cr)) {
+    v.push_back(i);
+    ++count;
+    if (count == sz * 2) { break; }
+  }
+
+  REQUIRE(v == vc);
+}
+
+
 
 TEST_CASE("cycle: with pipe", "[cycle]") {
   std::vector<int> ns{2, 4, 6};
@@ -32,7 +50,7 @@ TEST_CASE("cycle: with pipe", "[cycle]") {
   for (auto i : ns | cycle) {
     v.push_back(i);
     ++count;
-    if (count == ns.size() * 2) break;
+    if (count == ns.size() * 2) { break; } 
   }
 
   auto vc = ns;
