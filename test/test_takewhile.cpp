@@ -57,6 +57,15 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
   }
 }
 
+TEST_CASE("takewhile: Works with different begin and end types",
+    "[takewhile]") {
+  CharRange cr{'f'};
+  auto t = takewhile([](char c){return c < 'd';}, cr);
+  Vec v(t.begin(), t.end());
+  Vec vc{'a', 'b', 'c'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("takewhile: identity", "[takewhile]") {
   Vec ns{1, 2, 3, 0, 4, 5, 0};
   std::vector<int> v;
