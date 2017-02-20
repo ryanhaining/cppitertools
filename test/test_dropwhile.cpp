@@ -27,6 +27,15 @@ TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("dropwhile: Works with different begin and end types",
+    "[dropwhile]") {
+  CharRange cr{'f'};
+  auto d = dropwhile([](char c){return c < 'c';}, cr);
+  Vec v(d.begin(), d.end());
+  Vec vc{'c', 'd', 'e'};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("dropwhile: doesn't skip anything if it shouldn't", "[dropwhile]") {
   Vec ns{3, 4, 5, 6};
   auto d = dropwhile([](int i) { return i < 3; }, ns);
