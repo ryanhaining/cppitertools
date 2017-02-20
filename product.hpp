@@ -2,6 +2,7 @@
 #define ITER_PRODUCT_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <iterator>
 #include <tuple>
@@ -50,15 +51,15 @@ class iter::impl::Productor<Container, RestContainers...> {
    private:
     using RestIter = typename Productor<RestContainers...>::Iterator;
 
-    iterator_type<Container> iter;
-    iterator_type<Container> begin;
+    IteratorWrapper<Container> iter;
+    IteratorWrapper<Container> begin;
 
     RestIter rest_iter;
     RestIter rest_end;
 
    public:
     constexpr static const bool is_base_iter = false;
-    Iterator(const iterator_type<Container>& it, RestIter&& rest,
+    Iterator(IteratorWrapper<Container>&& it, RestIter&& rest,
         RestIter&& in_rest_end)
         : iter{it}, begin{it}, rest_iter{rest}, rest_end{in_rest_end} {}
 
