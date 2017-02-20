@@ -28,6 +28,20 @@ TEST_CASE("sliding_window: window of size 3", "[sliding_window]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("sliding_window: Works with different begin and end types",
+    "[sliding_window]") {
+  CharRange cr{'f'};
+  std::vector<std::vector<char>> results;
+  for (auto&& g : sliding_window(cr, 3)) {
+    results.emplace_back(std::begin(g), std::end(g));
+  }
+  std::vector<std::vector<char>> rc = {
+    {'a', 'b', 'c'},
+    {'b', 'c', 'd'},
+    {'c', 'd', 'e'}};
+  REQUIRE(results == rc);
+}
+
 TEST_CASE("sliding window: oversized window is empty", "[sliding_window]") {
   Vec ns = {10, 20, 30};
   auto sw = sliding_window(ns, 5);
