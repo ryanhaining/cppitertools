@@ -2,6 +2,7 @@
 #define ITER_SLIDING_WINDOW_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 #include "internal/iteratoriterator.hpp"
 
 #include <deque>
@@ -28,19 +29,19 @@ class iter::impl::WindowSlider {
   WindowSlider(Container&& in_container, std::size_t win_sz)
       : container(std::forward<Container>(in_container)), window_size{win_sz} {}
 
-  using IndexVector = std::deque<iterator_type<Container>>;
+  using IndexVector = std::deque<IteratorWrapper<Container>>;
   using DerefVec = IterIterWrapper<IndexVector>;
 
  public:
   WindowSlider(WindowSlider&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
-    iterator_type<Container> sub_iter;
+    IteratorWrapper<Container> sub_iter;
     DerefVec window;
 
    public:
-    Iterator(iterator_type<Container>&& in_iter,
-        const iterator_type<Container>& in_end, std::size_t window_sz)
+    Iterator(IteratorWrapper<Container>&& in_iter,
+         IteratorWrapper<Container>&& in_end, std::size_t window_sz)
         : sub_iter(std::move(in_iter)) {
       std::size_t i{0};
       while (i < window_sz && this->sub_iter != in_end) {
@@ -83,8 +84,8 @@ class iter::impl::WindowSlider {
   };
 
   Iterator begin() {
-    return {(this->window_size != 0 ? std::begin(this->container)
-                                    : std::end(this->container)),
+    return {(this->window_size != 0 ? IteratorWrapper<Container>{std::begin(this->container)}
+                                    : IteratorWrapper<Container>{std::end(this->container)}),
         std::end(this->container), this->window_size};
   }
 
