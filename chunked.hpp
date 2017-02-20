@@ -3,6 +3,7 @@
 
 #include "internal/iterbase.hpp"
 #include "internal/iteratoriterator.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <vector>
 #include <algorithm>
@@ -32,15 +33,15 @@ class iter::impl::Chunker {
 
   friend ChunkedFn;
 
-  using IndexVector = std::vector<iterator_type<Container>>;
+  using IndexVector = std::vector<IteratorWrapper<Container>>;
   using DerefVec = IterIterWrapper<IndexVector>;
 
  public:
   Chunker(Chunker&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
-    iterator_type<Container> sub_iter;
-    iterator_type<Container> sub_end;
+    IteratorWrapper<Container> sub_iter;
+    IteratorWrapper<Container> sub_end;
     DerefVec chunk;
     std::size_t chunk_size = 0;
 
@@ -59,8 +60,8 @@ class iter::impl::Chunker {
     }
 
    public:
-    Iterator(iterator_type<Container>&& in_iter,
-        iterator_type<Container>&& in_end, std::size_t s)
+    Iterator(IteratorWrapper<Container>&& in_iter,
+        IteratorWrapper<Container>&& in_end, std::size_t s)
         : sub_iter{std::move(in_iter)},
           sub_end{std::move(in_end)},
           chunk_size{s} {
