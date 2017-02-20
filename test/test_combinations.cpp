@@ -1,5 +1,7 @@
 #define DEFINE_DEFAULT_ITERATOR_CTOR
+#define CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #include "helpers.hpp"
+#undef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #undef DEFINE_DEFAULT_ITERATOR_CTOR
 
 #include <combinations.hpp>
@@ -32,6 +34,18 @@ TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
 
   CharCombSet ans = {
       {'A', 'B'}, {'A', 'C'}, {'A', 'D'}, {'B', 'C'}, {'B', 'D'}, {'C', 'D'}};
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE("combinations: Works with different begin and end types",
+    "[combinations]") {
+  CharRange cr{'e'};
+  CharCombSet sc;
+  for (auto&& v : combinations(cr, 2)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+  CharCombSet ans = {
+      {'a', 'b'}, {'a', 'c'}, {'a', 'd'}, {'b', 'c'}, {'b', 'd'}, {'c', 'd'}};
   REQUIRE(ans == sc);
 }
 
