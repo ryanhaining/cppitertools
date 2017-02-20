@@ -2,6 +2,7 @@
 #define ITER_ZIP_LONGEST_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iter_tuples.hpp"
 
 #include <boost/optional.hpp>
 #include <iterator>

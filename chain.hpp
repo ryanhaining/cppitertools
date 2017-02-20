@@ -2,6 +2,7 @@
 #define ITER_CHAIN_HPP_
 
 #include "internal/iterbase.hpp"
+#include "internal/iter_tuples.hpp"
 
 #include <array>
 #include <iterator>

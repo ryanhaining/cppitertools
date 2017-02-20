@@ -1,6 +1,7 @@
 #ifndef ITER_ZIP_HPP_
 #define ITER_ZIP_HPP_
 
+#include "internal/iter_tuples.hpp"
 #include "internal/iterbase.hpp"
 
 #include <iterator>
