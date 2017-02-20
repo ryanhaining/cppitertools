@@ -49,7 +49,7 @@ TEST_CASE("advance, next, size", "[iterbase]") {
   auto itr = std::begin(v);
   REQUIRE(it::apply_arrow(itr) == &v[0]);
 
-  it::dumb_advance(itr, 3);
+  it::dumb_advance_unsafe(itr, 3);
   REQUIRE(itr == (std::begin(v) + 3));
   REQUIRE(it::dumb_next(std::begin(v), 3) == std::begin(v) + 3);
   REQUIRE(it::dumb_size(v) == v.size());

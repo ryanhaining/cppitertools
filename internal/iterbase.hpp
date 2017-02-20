@@ -131,23 +131,23 @@ namespace iter {
 
     // version that will work with most things
     template <typename InputIt, typename Distance = std::size_t>
-    void dumb_advance(InputIt& iter, Distance distance = 1) {
+    void dumb_advance_unsafe(InputIt& iter, Distance distance) {
       for (Distance i(0); i < distance; ++i) {
         ++iter;
       }
     }
 
-    template <typename Iter, typename Distance>
+    template <typename Iter, typename EndIter, typename Distance>
     void dumb_advance_impl(
-        Iter& iter, const Iter& end, Distance distance, std::false_type) {
+        Iter& iter, const EndIter& end, Distance distance, std::false_type) {
       for (Distance i(0); i < distance && iter != end; ++i) {
         ++iter;
       }
     }
 
-    template <typename Iter, typename Distance>
+    template <typename Iter, typename EndIter, typename Distance>
     void dumb_advance_impl(
-        Iter& iter, const Iter& end, Distance distance, std::true_type) {
+        Iter& iter, const EndIter& end, Distance distance, std::true_type) {
       if (static_cast<Distance>(end - iter) < distance) {
         iter = end;
       } else {
@@ -156,14 +156,14 @@ namespace iter {
     }
 
     // iter will not be incremented past end
-    template <typename Iter, typename Distance = std::size_t>
-    void dumb_advance(Iter& iter, const Iter& end, Distance distance = 1) {
+    template <typename Iter, typename EndIter, typename Distance = std::size_t>
+    void dumb_advance(Iter& iter, const EndIter& end, Distance distance) {
       dumb_advance_impl(iter, end, distance, is_random_access_iter<Iter>{});
     }
 
     template <typename ForwardIt, typename Distance = std::size_t>
     ForwardIt dumb_next(ForwardIt it, Distance distance = 1) {
-      dumb_advance(it, distance);
+      dumb_advance_unsafe(it, distance);
       return it;
     }
 
