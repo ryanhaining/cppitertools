@@ -26,6 +26,21 @@ TEST_CASE("product: basic test, two sequences", "[product]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("product: two sequences where one has different begin and end", "[product]") {
+  using TP = std::tuple<int, char>;
+  using ResType = std::vector<TP>;
+
+  Vec n1 = {0, 1};
+  CharRange cr('d');
+
+  auto p = product(n1, cr);
+  ResType v(std::begin(p), std::end(p));
+  ResType vc = {
+      TP{0, 'a'}, TP{0, 'b'}, TP{0, 'c'}, TP{1, 'a'}, TP{1, 'b'}, TP{1, 'c'}};
+
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("product: three sequences", "[product]") {
   using TP = std::tuple<int, char, int>;
   using ResType = const std::vector<TP>;
