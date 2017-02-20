@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iterator>
+#include <cctype>
 
 #include "catch.hpp"
 
@@ -57,6 +58,15 @@ TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
   }
 
   Vec vc = {11, 21, 31};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("imap: Works with different begin and end types",
+    "[imap]") {
+  CharRange cr{'d'};
+  auto m = imap([](char c) { return std::toupper(c);}, cr);
+  Vec v(m.begin(), m.end());
+  Vec vc{'A', 'B', 'C'};
   REQUIRE(v == vc);
 }
 
