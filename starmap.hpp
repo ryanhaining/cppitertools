@@ -2,6 +2,7 @@
 #define ITER_STARMAP_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -45,10 +46,10 @@ class iter::impl::StarMapper {
       : public std::iterator<std::input_iterator_tag, StarIterDeref> {
    private:
     Func* func;
-    iterator_type<Container> sub_iter;
+    IteratorWrapper<Container> sub_iter;
 
    public:
-    Iterator(Func& f, iterator_type<Container>&& iter)
+    Iterator(Func& f, IteratorWrapper<Container>&& iter)
         : func(&f), sub_iter(std::move(iter)) {}
 
     bool operator!=(const Iterator& other) const {
