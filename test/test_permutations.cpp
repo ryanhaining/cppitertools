@@ -31,6 +31,22 @@ TEST_CASE("permutations: basic test, 3 element sequence", "[permutations]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("permutations: Works with different begin and end types",
+    "[permutations]") {
+  CharRange cr{'d'};
+  using CharPermSet = std::multiset<std::vector<char>>;
+  CharPermSet sc;
+  for (auto&& v : permutations(cr)) {
+    sc.emplace(std::begin(v), std::end(v));
+  }
+  const CharPermSet ans = {
+    {'a', 'b', 'c'}, {'a', 'c', 'b'},
+    {'b', 'a', 'c'}, {'b', 'c', 'a'},
+    {'c', 'a', 'b'}, {'c', 'b', 'a'}};
+    
+  REQUIRE(ans == sc);
+}
+
 TEST_CASE(
     "permutations: empty sequence has one empy permutation", "[permutations]") {
   const std::vector<int> ns{};
