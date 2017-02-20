@@ -2,6 +2,7 @@
 #define ITER_ENUMERATE_H_
 
 #include "internal/iterbase.hpp"
+#include "internal/iterator_wrapper.hpp"
 
 #include <utility>
 #include <iterator>
@@ -51,11 +52,11 @@ class iter::impl::Enumerable {
   //  Each dereference returns an IterYield.
   class Iterator : public std::iterator<std::input_iterator_tag, IterYield> {
    private:
-    iterator_type<Container> sub_iter;
+    IteratorWrapper<Container> sub_iter;
     Index index;
 
    public:
-    Iterator(iterator_type<Container>&& si, Index start)
+    Iterator(IteratorWrapper<Container>&& si, Index start)
         : sub_iter{std::move(si)}, index{start} {}
 
     IterYield operator*() {
