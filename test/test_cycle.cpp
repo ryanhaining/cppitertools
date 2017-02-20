@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -17,7 +17,9 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
   for (auto i : cycle(ns)) {
     v.push_back(i);
     ++count;
-    if (count == ns.size() * 2) { break; }
+    if (count == ns.size() * 2) {
+      break;
+    }
   }
 
   auto vc = ns;
@@ -25,8 +27,7 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("cycle: Works with different begin and end types",
-    "[cycle]") {
+TEST_CASE("cycle: Works with different begin and end types", "[cycle]") {
   constexpr auto sz = 'd' - 'a';
   CharRange cr{'d'};
   const std::vector<char> vc{'a', 'b', 'c', 'a', 'b', 'c'};
@@ -35,13 +36,13 @@ TEST_CASE("cycle: Works with different begin and end types",
   for (auto i : cycle(cr)) {
     v.push_back(i);
     ++count;
-    if (count == sz * 2) { break; }
+    if (count == sz * 2) {
+      break;
+    }
   }
 
   REQUIRE(v == vc);
 }
-
-
 
 TEST_CASE("cycle: with pipe", "[cycle]") {
   std::vector<int> ns{2, 4, 6};
@@ -50,7 +51,9 @@ TEST_CASE("cycle: with pipe", "[cycle]") {
   for (auto i : ns | cycle) {
     v.push_back(i);
     ++count;
-    if (count == ns.size() * 2) { break; } 
+    if (count == ns.size() * 2) {
+      break;
+    }
   }
 
   auto vc = ns;

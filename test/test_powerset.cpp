@@ -4,9 +4,9 @@
 #include "helpers.hpp"
 #undef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -28,25 +28,20 @@ TEST_CASE("powerset: basic test, [1, 2, 3]", "[powerset]") {
   }
 
   const IntPermSet vc = {
-    std::multiset<int>{}, {1}, {2}, {3},
-      {1, 2}, {1, 3}, {2, 3}, {1, 2, 3}};
+      std::multiset<int>{}, {1}, {2}, {3}, {1, 2}, {1, 3}, {2, 3}, {1, 2, 3}};
   REQUIRE(v == vc);
 }
 
-TEST_CASE("powerset: Works with different begin and end types",
-    "[powerset]") {
+TEST_CASE("powerset: Works with different begin and end types", "[powerset]") {
   CharRange cr{'d'};
   using CharPermSet = std::multiset<std::vector<char>>;
   CharPermSet sc;
   for (auto&& v : powerset(cr)) {
     sc.emplace(std::begin(v), std::end(v));
   }
-  const CharPermSet ans = {
-    {},
-    {'a'}, {'b'}, {'c'},
-    {'a', 'b'}, {'a', 'c'}, {'b', 'c'},
-    {'a', 'b', 'c'}};
-    
+  const CharPermSet ans = {{}, {'a'}, {'b'}, {'c'}, {'a', 'b'}, {'a', 'c'},
+      {'b', 'c'}, {'a', 'b', 'c'}};
+
   REQUIRE(ans == sc);
 }
 

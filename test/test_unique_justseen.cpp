@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 

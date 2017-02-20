@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -39,11 +39,9 @@ TEST_CASE("permutations: Works with different begin and end types",
   for (auto&& v : permutations(cr)) {
     sc.emplace(std::begin(v), std::end(v));
   }
-  const CharPermSet ans = {
-    {'a', 'b', 'c'}, {'a', 'c', 'b'},
-    {'b', 'a', 'c'}, {'b', 'c', 'a'},
-    {'c', 'a', 'b'}, {'c', 'b', 'a'}};
-    
+  const CharPermSet ans = {{'a', 'b', 'c'}, {'a', 'c', 'b'}, {'b', 'a', 'c'},
+      {'b', 'c', 'a'}, {'c', 'a', 'b'}, {'c', 'b', 'a'}};
+
   REQUIRE(ans == sc);
 }
 

@@ -1,12 +1,12 @@
 #include <takewhile.hpp>
 
-#include <vector>
 #include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::takewhile;
 using Vec = const std::vector<int>;
@@ -57,10 +57,10 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
   }
 }
 
-TEST_CASE("takewhile: Works with different begin and end types",
-    "[takewhile]") {
+TEST_CASE(
+    "takewhile: Works with different begin and end types", "[takewhile]") {
   CharRange cr{'f'};
-  auto t = takewhile([](char c){return c < 'd';}, cr);
+  auto t = takewhile([](char c) { return c < 'd'; }, cr);
   Vec v(t.begin(), t.end());
   Vec vc{'a', 'b', 'c'};
   REQUIRE(v == vc);
@@ -77,7 +77,7 @@ TEST_CASE("takewhile: identity", "[takewhile]") {
     auto tw = ns | takewhile;
     v.assign(std::begin(tw), std::end(tw));
   }
-  Vec vc = {1,2,3};
+  Vec vc = {1, 2, 3};
   REQUIRE(v == vc);
 }
 

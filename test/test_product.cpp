@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -26,7 +26,8 @@ TEST_CASE("product: basic test, two sequences", "[product]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("product: two sequences where one has different begin and end", "[product]") {
+TEST_CASE("product: two sequences where one has different begin and end",
+    "[product]") {
   using TP = std::tuple<int, char>;
   using ResType = std::vector<TP>;
 

@@ -1,11 +1,11 @@
 #include <slice.hpp>
 
-#include <vector>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::slice;
 using Vec = const std::vector<int>;
@@ -44,8 +44,7 @@ TEST_CASE("slice: start and stop", "[slice]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("slice: Works with different begin and end types",
-    "[slice]") {
+TEST_CASE("slice: Works with different begin and end types", "[slice]") {
   CharRange cr{'z'};
   auto sl = slice(cr, 2, 5);
   std::vector<char> v(std::begin(sl), std::end(sl));

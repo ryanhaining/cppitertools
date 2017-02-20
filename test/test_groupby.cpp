@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -69,17 +69,16 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
   REQUIRE(groups == gc);
 }
 
-TEST_CASE("groupby: Works with different begin and end types",
-    "[groupby]") {
+TEST_CASE("groupby: Works with different begin and end types", "[groupby]") {
   CharRange cr{'f'};
   std::vector<bool> keys;
   std::vector<std::vector<char>> groups;
-  for (auto&& gb : groupby(cr, [](char c){return c == 'c';})) {
+  for (auto&& gb : groupby(cr, [](char c) { return c == 'c'; })) {
     keys.push_back(gb.first);
     groups.emplace_back(std::begin(gb.second), std::end(gb.second));
   }
   const std::vector<bool> kc = {false, true, false};
-  const std::vector<std::vector<char>> gc = {{'a' ,'b'}, {'c'}, {'d', 'e'}};
+  const std::vector<std::vector<char>> gc = {{'a', 'b'}, {'c'}, {'d', 'e'}};
   REQUIRE(keys == kc);
   REQUIRE(groups == gc);
 }

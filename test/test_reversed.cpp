@@ -1,9 +1,9 @@
 #include <reversed.hpp>
 
-#include <vector>
 #include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "catch.hpp"
 

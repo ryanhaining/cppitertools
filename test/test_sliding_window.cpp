@@ -1,12 +1,12 @@
 #include <sliding_window.hpp>
 
-#include <vector>
 #include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::sliding_window;
 using Vec = const std::vector<int>;
@@ -36,9 +36,7 @@ TEST_CASE("sliding_window: Works with different begin and end types",
     results.emplace_back(std::begin(g), std::end(g));
   }
   std::vector<std::vector<char>> rc = {
-    {'a', 'b', 'c'},
-    {'b', 'c', 'd'},
-    {'c', 'd', 'e'}};
+      {'a', 'b', 'c'}, {'b', 'c', 'd'}, {'c', 'd', 'e'}};
   REQUIRE(results == rc);
 }
 

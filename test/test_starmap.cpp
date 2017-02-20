@@ -2,10 +2,10 @@
 
 #include "helpers.hpp"
 
-#include <vector>
+#include <iterator>
 #include <list>
 #include <string>
-#include <iterator>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -57,13 +57,10 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("starmap: Works with different begin and end types",
-    "[starmap]") {
+TEST_CASE("starmap: Works with different begin and end types", "[starmap]") {
   IntCharPairRange icr{{3, 'd'}};
   using Vec = std::vector<std::string>;
-  auto sm = starmap([](int i, char c) {
-      return std::to_string(i) + c;},
-      icr);
+  auto sm = starmap([](int i, char c) { return std::to_string(i) + c; }, icr);
   Vec v(sm.begin(), sm.end());
   Vec vc{"0a", "1b", "2c"};
   REQUIRE(v == vc);

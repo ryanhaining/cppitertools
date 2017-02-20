@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -27,10 +27,10 @@ TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("dropwhile: Works with different begin and end types",
-    "[dropwhile]") {
+TEST_CASE(
+    "dropwhile: Works with different begin and end types", "[dropwhile]") {
   CharRange cr{'f'};
-  auto d = dropwhile([](char c){return c < 'c';}, cr);
+  auto d = dropwhile([](char c) { return c < 'c'; }, cr);
   Vec v(d.begin(), d.end());
   Vec vc{'c', 'd', 'e'};
   REQUIRE(v == vc);
@@ -52,7 +52,7 @@ TEST_CASE("dropwhile: skips all elements when all are true under predicate",
 }
 
 TEST_CASE("dropwhile: identity", "[dropwhile]") {
-  Vec ns {1, 2, 0, 3, 1, 0};
+  Vec ns{1, 2, 0, 3, 1, 0};
   auto d = dropwhile(ns);
   Vec v(std::begin(d), std::end(d));
   Vec vc = {0, 3, 1, 0};

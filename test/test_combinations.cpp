@@ -6,10 +6,10 @@
 
 #include <combinations.hpp>
 
-#include <set>
-#include <vector>
-#include <string>
 #include <iterator>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 

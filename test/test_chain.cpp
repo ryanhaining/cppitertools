@@ -1,12 +1,11 @@
-#include "helpers.hpp"
 #include <chain.hpp>
+#include "helpers.hpp"
 
-#include <vector>
+#include <iterator>
 #include <list>
 #include <string>
-#include <vector>
-#include <iterator>
 #include <utility>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -39,8 +38,8 @@ TEST_CASE("chain: with different container types", "[chain]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("chain: where one container has different begin and end types",
-    "[chain]") {
+TEST_CASE(
+    "chain: where one container has different begin and end types", "[chain]") {
   std::string s1{"abc"};
   std::list<char> li{'m', 'n', 'o'};
   CharRange cr('e');

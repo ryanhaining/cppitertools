@@ -1,8 +1,8 @@
 #include <combinations_with_replacement.hpp>
 
 #include <iterator>
-#include <string>
 #include <set>
+#include <string>
 #include <vector>
 
 #define CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
@@ -33,7 +33,8 @@ TEST_CASE("combinations_with_replacement: Simple combination",
   REQUIRE(ans == sc);
 }
 
-TEST_CASE("combinations_with_replacement: Works with different begin and end types",
+TEST_CASE(
+    "combinations_with_replacement: Works with different begin and end types",
     "[combinations_with_replacement]") {
   CharRange cr{'d'};
   CharCombSet sc;

@@ -1,7 +1,7 @@
 #include <internal/iteratoriterator.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "catch.hpp"
 

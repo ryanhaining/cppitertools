@@ -2,13 +2,13 @@
 // on any of this.  Users of the library must consider all of this undocumented
 //
 
+#include <enumerate.hpp>
 #include <internal/iterbase.hpp>
+#include <iterator>
+#include <list>
+#include <string>
 #include <type_traits>
 #include <vector>
-#include <iterator>
-#include <string>
-#include <list>
-#include <enumerate.hpp>
 
 #include "catch.hpp"
 #include "helpers.hpp"

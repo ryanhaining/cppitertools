@@ -2,14 +2,13 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <tuple>
-#include <string>
-#include <iterator>
-#include <utility>
+#include <iostream>
 #include <iterator>
 #include <sstream>
-#include <iostream>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -80,8 +79,10 @@ TEST_CASE(
   }
 }
 
-TEST_CASE("zip_longest: three sequences, one sequence has different begin and end", "[zip_longest]") {
-  //using TP = const_opt_tuple</*int,*/ char>;
+TEST_CASE(
+    "zip_longest: three sequences, one sequence has different begin and end",
+    "[zip_longest]") {
+  // using TP = const_opt_tuple</*int,*/ char>;
   using TP = std::tuple<int, char>;
   using ResVec = std::vector<TP>;
 

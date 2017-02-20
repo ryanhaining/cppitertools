@@ -1,12 +1,12 @@
 #include <chunked.hpp>
 
-#include <vector>
 #include <array>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::chunked;
 using Vec = std::vector<int>;
@@ -60,8 +60,7 @@ TEST_CASE("chunked: size 0 is empty", "[chunked]") {
   REQUIRE(std::begin(g) == std::end(g));
 }
 
-TEST_CASE("chunked: Works with different begin and end types",
-    "[chunked]") {
+TEST_CASE("chunked: Works with different begin and end types", "[chunked]") {
   CharRange cr{'f'};
   std::vector<std::vector<char>> results;
   for (auto&& g : chunked(cr, 3)) {

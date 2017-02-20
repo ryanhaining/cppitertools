@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -60,10 +60,10 @@ TEST_CASE("filterfalse: handles different functor types", "[filterfalse]") {
   }
 }
 
-TEST_CASE("filterfalse: Works with different begin and end types",
-    "[filterfalse]") {
+TEST_CASE(
+    "filterfalse: Works with different begin and end types", "[filterfalse]") {
   CharRange cr{'d'};
-  auto f = filterfalse([](char c){return c == 'b';}, cr);
+  auto f = filterfalse([](char c) { return c == 'b'; }, cr);
   Vec v(f.begin(), f.end());
   Vec vc{'a', 'c'};
   REQUIRE(v == vc);

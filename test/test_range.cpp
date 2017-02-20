@@ -1,11 +1,11 @@
 #include "range.hpp"
 
-#include <vector>
-#include <iterator>
 #include <algorithm>
+#include <iterator>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using Vec = const std::vector<int>;
 using iter::range;

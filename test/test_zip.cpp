@@ -2,13 +2,12 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <tuple>
-#include <string>
 #include <iterator>
-#include <utility>
 #include <sstream>
-#include <iterator>
+#include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -29,7 +28,8 @@ TEST_CASE("zip: Simple case, same length", "[zip]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("zip: three sequences, one sequence has different begin and end", "[zip]") {
+TEST_CASE(
+    "zip: three sequences, one sequence has different begin and end", "[zip]") {
   using Tu = std::tuple<int, char, double>;
   using ResVec = const std::vector<Tu>;
   std::vector<int> iv{10, 20, 30};

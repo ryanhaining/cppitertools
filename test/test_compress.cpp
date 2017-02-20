@@ -1,11 +1,10 @@
-#include "helpers.hpp"
 #include <compress.hpp>
+#include "helpers.hpp"
 
-#include <vector>
-#include <string>
-#include <vector>
 #include <iterator>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -136,8 +135,7 @@ TEST_CASE("compress: iterator meets requirements", "[compress]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
 }
 
-TEST_CASE("compress: Works with different begin and end types",
-    "[compress]") {
+TEST_CASE("compress: Works with different begin and end types", "[compress]") {
   CharRange cr{'d'};
   auto c = compress(cr, std::vector<bool>{true, false, true});
   Vec v(c.begin(), c.end());

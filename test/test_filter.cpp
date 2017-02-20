@@ -2,9 +2,9 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "catch.hpp"
 
@@ -145,10 +145,9 @@ TEST_CASE("filter: using identity and pipe", "[filter]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("filter: Works with different begin and end types",
-    "[filter]") {
+TEST_CASE("filter: Works with different begin and end types", "[filter]") {
   CharRange cr{'d'};
-  auto f = filter([](char c){return c != 'b';}, cr);
+  auto f = filter([](char c) { return c != 'b'; }, cr);
   Vec v(f.begin(), f.end());
   Vec vc{'a', 'c'};
   REQUIRE(v == vc);

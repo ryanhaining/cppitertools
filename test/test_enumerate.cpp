@@ -2,11 +2,11 @@
 
 #include "helpers.hpp"
 
-#include <vector>
-#include <string>
 #include <iterator>
-#include <utility>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace Catch {
   template <typename A, typename B>
@@ -148,8 +148,8 @@ TEST_CASE("enumerate: works index and pipe", "[enumerate]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("enumerate: Works with different begin and end types",
-    "[enumerate]") {
+TEST_CASE(
+    "enumerate: Works with different begin and end types", "[enumerate]") {
   CharRange cr{'d'};
   auto e = enumerate(cr);
   Vec v(e.begin(), e.end());

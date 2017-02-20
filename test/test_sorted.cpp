@@ -1,14 +1,14 @@
 #include <sorted.hpp>
 
-#include <set>
-#include <unordered_set>
-#include <vector>
 #include <array>
+#include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
+#include <vector>
 
-#include "helpers.hpp"
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::sorted;
 
@@ -42,11 +42,11 @@ char inc_vowels(char c) {
   return c == 'a' || c == 'e' ? c + 10 : c;
 }
 
-TEST_CASE("sorted: Works with different begin and end types",
-    "[sorted]") {
+TEST_CASE("sorted: Works with different begin and end types", "[sorted]") {
   using Vec = std::vector<char>;
   CharRange cr{'g'};
-  auto s = sorted(cr, [](char x, char y){return inc_vowels(x) < inc_vowels(y);});
+  auto s =
+      sorted(cr, [](char x, char y) { return inc_vowels(x) < inc_vowels(y); });
   Vec v(s.begin(), s.end());
   Vec vc{'b', 'c', 'd', 'f', 'a', 'e'};
   REQUIRE(v == vc);
@@ -193,7 +193,7 @@ TEST_CASE("sorted: moves rvalues and binds to lvalues", "[sorted]") {
 TEST_CASE("sorted: doesn't move or copy elements of iterable", "[sorted]") {
   using itertest::SolidInt;
   constexpr SolidInt arr[] = {{6}, {7}, {8}};
-  for (auto &&i : sorted(arr, [](const SolidInt &lhs, const SolidInt &rhs) {
+  for (auto &&i : sorted(arr, [](const SolidInt&lhs, const SolidInt&rhs) {
          return lhs.getint() < rhs.getint();
        })) {
     (void)i;
