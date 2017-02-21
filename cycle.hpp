@@ -23,38 +23,40 @@ class iter::impl::Cycler {
  private:
   friend CycleFn;
 
-  Container container;
+  Container container_;
 
-  Cycler(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
+  Cycler(Container&& container)
+      : container_(std::forward<Container>(container)) {}
 
  public:
   Cycler(Cycler&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> begin;
-    IteratorWrapper<Container> end;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_begin_;
+    IteratorWrapper<Container> sub_end_;
 
    public:
-    Iterator(
-        IteratorWrapper<Container>&& iter, IteratorWrapper<Container>&& in_end)
-        : sub_iter{iter}, begin{iter}, end{std::move(in_end)} {}
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end)
+        : sub_iter_{sub_iter},
+          sub_begin_{sub_iter},
+          sub_end_{std::move(sub_end)} {}
 
     iterator_deref<Container> operator*() {
-      return *this->sub_iter;
+      return *sub_iter_;
     }
 
     iterator_arrow<Container> operator->() {
-      return apply_arrow(this->sub_iter);
+      return apply_arrow(sub_iter_);
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
-      // reset to beginning upon reaching the end
-      if (!(this->sub_iter != this->end)) {
-        this->sub_iter = this->begin;
+      ++sub_iter_;
+      // reset to beginning upon reaching the sub_end_
+      if (!(sub_iter_ != sub_end_)) {
+        sub_iter_ = sub_begin_;
       }
       return *this;
     }
@@ -66,7 +68,7 @@ class iter::impl::Cycler {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -75,11 +77,11 @@ class iter::impl::Cycler {
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container)};
+    return {std::begin(container_), std::end(container_)};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container)};
+    return {std::end(container_), std::end(container_)};
   }
 };
 
