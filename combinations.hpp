@@ -21,13 +21,13 @@ namespace iter {
 template <typename Container>
 class iter::impl::Combinator {
  private:
-  Container container;
-  std::size_t length;
+  Container container_;
+  std::size_t length_;
 
   friend CombinationsFn;
 
-  Combinator(Container&& in_container, std::size_t in_length)
-      : container(std::forward<Container>(in_container)), length{in_length} {}
+  Combinator(Container&& container, std::size_t length)
+      : container_(std::forward<Container>(container)), length_{length} {}
 
   using IndexVector = std::vector<iterator_type<Container>>;
   using CombIteratorDeref = IterIterWrapper<IndexVector>;
@@ -38,58 +38,59 @@ class iter::impl::Combinator {
       : public std::iterator<std::input_iterator_tag, CombIteratorDeref> {
    private:
     constexpr static const int COMPLETE = -1;
-    std::remove_reference_t<Container>* container_p;
-    CombIteratorDeref indices;
-    int steps{};
+    std::remove_reference_t<Container>* container_p_;
+    CombIteratorDeref indices_;
+    int steps_{};
 
    public:
-    Iterator(Container& in_container, std::size_t n)
-        : container_p{&in_container}, indices{n} {
+    Iterator(Container& container, std::size_t n)
+        : container_p_{&container}, indices_{n} {
       if (n == 0) {
-        this->steps = COMPLETE;
+        steps_ = COMPLETE;
         return;
       }
       size_t inc = 0;
-      for (auto& iter : this->indices.get()) {
-        auto it = std::begin(*this->container_p);
-        dumb_advance(it, std::end(*this->container_p), inc);
-        if (it != std::end(*this->container_p)) {
+      for (auto& iter : indices_.get()) {
+        auto it = std::begin(*container_p_);
+        dumb_advance(it, std::end(*container_p_), inc);
+        if (it != std::end(*container_p_)) {
           iter = it;
           ++inc;
         } else {
-          this->steps = COMPLETE;
+          steps_ = COMPLETE;
           break;
         }
       }
     }
 
     CombIteratorDeref& operator*() {
-      return this->indices;
+      return indices_;
     }
 
     CombIteratorDeref* operator->() {
-      return &this->indices;
+      return &indices_;
     }
 
     Iterator& operator++() {
-      for (auto iter = indices.get().rbegin(); iter != indices.get().rend();
+      for (auto iter = indices_.get().rbegin(); iter != indices_.get().rend();
            ++iter) {
         ++(*iter);
 
         // what we have to check here is if the distance between
-        // the index and the end of indices is >= the distance
+        // the index and the end of indices_ is >= the distance
         // between the item and end of item
-        auto dist = std::distance(this->indices.get().rbegin(), iter);
+        auto dist = std::distance(indices_.get().rbegin(), iter);
 
-        if (!(dumb_next(*iter, dist) != std::end(*this->container_p))) {
-          if ((iter + 1) != indices.get().rend()) {
+        if (!(dumb_next(*iter, dist) != std::end(*container_p_))) {
+          if ((iter + 1) != indices_.get().rend()) {
             size_t inc = 1;
-            for (auto down = iter; down != indices.get().rbegin() - 1; --down) {
+            for (auto down = iter; down != indices_.get().rbegin() - 1;
+                 --down) {
               (*down) = dumb_next(*(iter + 1), 1 + inc);
               ++inc;
             }
           } else {
-            this->steps = COMPLETE;
+            steps_ = COMPLETE;
             break;
           }
         } else {
@@ -98,8 +99,8 @@ class iter::impl::Combinator {
         // we break because none of the rest of the items need
         // to be incremented
       }
-      if (this->steps != COMPLETE) {
-        ++this->steps;
+      if (steps_ != COMPLETE) {
+        ++steps_;
       }
       return *this;
     }
@@ -115,16 +116,16 @@ class iter::impl::Combinator {
     }
 
     bool operator==(const Iterator& other) const {
-      return this->steps == other.steps;
+      return steps_ == other.steps_;
     }
   };
 
   Iterator begin() {
-    return {this->container, this->length};
+    return {container_, length_};
   }
 
   Iterator end() {
-    return {this->container, 0};
+    return {container_, 0};
   }
 };
 
