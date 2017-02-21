@@ -25,11 +25,11 @@ namespace iter {
 template <typename Container>
 class iter::impl::Chunker {
  private:
-  Container container;
-  std::size_t chunk_size;
+  Container container_;
+  std::size_t chunk_size_;
 
-  Chunker(Container&& c, std::size_t sz)
-      : container(std::forward<Container>(c)), chunk_size{sz} {}
+  Chunker(Container&& container, std::size_t sz)
+      : container_(std::forward<Container>(container)), chunk_size_{sz} {}
 
   friend ChunkedFn;
 
@@ -40,37 +40,37 @@ class iter::impl::Chunker {
   Chunker(Chunker&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> sub_end;
-    DerefVec chunk;
-    std::size_t chunk_size = 0;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_end_;
+    DerefVec chunk_;
+    std::size_t chunk_size_ = 0;
 
     bool done() const {
-      return this->chunk.empty();
+      return chunk_.empty();
     }
 
     void refill_chunk() {
-      this->chunk.get().clear();
+      chunk_.get().clear();
       std::size_t i{0};
-      while (i < chunk_size && this->sub_iter != this->sub_end) {
-        chunk.get().push_back(this->sub_iter);
-        ++this->sub_iter;
+      while (i < chunk_size_ && sub_iter_ != sub_end_) {
+        chunk_.get().push_back(sub_iter_);
+        ++sub_iter_;
         ++i;
       }
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& in_iter,
-        IteratorWrapper<Container>&& in_end, std::size_t s)
-        : sub_iter{std::move(in_iter)},
-          sub_end{std::move(in_end)},
-          chunk_size{s} {
-      this->chunk.get().reserve(this->chunk_size);
-      this->refill_chunk();
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, std::size_t s)
+        : sub_iter_{std::move(sub_iter)},
+          sub_end_{std::move(sub_end)},
+          chunk_size_{s} {
+      chunk_.get().reserve(chunk_size_);
+      refill_chunk();
     }
 
     Iterator& operator++() {
-      this->refill_chunk();
+      refill_chunk();
       return *this;
     }
 
@@ -85,25 +85,25 @@ class iter::impl::Chunker {
     }
 
     bool operator==(const Iterator& other) const {
-      return this->done() == other.done()
-             && (this->done() || !(this->sub_iter != other.sub_iter));
+      return done() == other.done()
+             && (done() || !(sub_iter_ != other.sub_iter_));
     }
 
     DerefVec& operator*() {
-      return this->chunk;
+      return chunk_;
     }
 
     DerefVec* operator->() {
-      return &this->chunk;
+      return &chunk_;
     }
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container), chunk_size};
+    return {std::begin(container_), std::end(container_), chunk_size_};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container), chunk_size};
+    return {std::end(container_), std::end(container_), chunk_size_};
   }
 };
 
