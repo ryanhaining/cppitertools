@@ -13,22 +13,22 @@ namespace iter {
     template <typename FilterFunc>
     class PredicateFlipper {
      private:
-      FilterFunc filter_func;
+      FilterFunc filter_func_;
 
      public:
-      PredicateFlipper(FilterFunc in_filter_func)
-          : filter_func(std::move(in_filter_func)) {}
+      PredicateFlipper(FilterFunc filter_func)
+          : filter_func_(std::move(filter_func)) {}
 
-      // Calls the filter_func
+      // Calls the filter_func_
       template <typename T>
       bool operator()(const T& item) const {
-        return !bool(filter_func(item));
+        return !bool(filter_func_(item));
       }
 
       // with non-const incase FilterFunc::operator() is non-const
       template <typename T>
       bool operator()(const T& item) {
-        return !bool(filter_func(item));
+        return !bool(filter_func_(item));
       }
     };
 
