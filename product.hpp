@@ -38,11 +38,11 @@ class iter::impl::Productor<Container, RestContainers...> {
       std::tuple<iterator_deref<Container>, iterator_deref<RestContainers>...>;
 
  private:
-  Container container;
-  Productor<RestContainers...> rest_products;
-  Productor(Container&& in_container, RestContainers&&... rest)
-      : container(std::forward<Container>(in_container)),
-        rest_products{std::forward<RestContainers>(rest)...} {}
+  Container container_;
+  Productor<RestContainers...> rest_products_;
+  Productor(Container&& container, RestContainers&&... rest)
+      : container_(std::forward<Container>(container)),
+        rest_products_{std::forward<RestContainers>(rest)...} {}
 
  public:
   Productor(Productor&&) = default;
@@ -51,27 +51,30 @@ class iter::impl::Productor<Container, RestContainers...> {
    private:
     using RestIter = typename Productor<RestContainers...>::Iterator;
 
-    IteratorWrapper<Container> iter;
-    IteratorWrapper<Container> begin;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_begin_;
 
-    RestIter rest_iter;
-    RestIter rest_end;
+    RestIter rest_iter_;
+    RestIter rest_end_;
 
    public:
     constexpr static const bool is_base_iter = false;
-    Iterator(IteratorWrapper<Container>&& it, RestIter&& rest,
-        RestIter&& in_rest_end)
-        : iter{it}, begin{it}, rest_iter{rest}, rest_end{in_rest_end} {}
+    Iterator(IteratorWrapper<Container>&& sub_iter, RestIter&& rest_iter,
+        RestIter&& rest_end)
+        : sub_iter_{sub_iter},
+          sub_begin_{sub_iter},
+          rest_iter_{rest_iter},
+          rest_end_{rest_end} {}
 
     void reset() {
-      this->iter = this->begin;
+      sub_iter_ = sub_begin_;
     }
 
     Iterator& operator++() {
-      ++this->rest_iter;
-      if (!(this->rest_iter != this->rest_end)) {
-        this->rest_iter.reset();
-        ++this->iter;
+      ++rest_iter_;
+      if (!(rest_iter_ != rest_end_)) {
+        rest_iter_.reset();
+        ++sub_iter_;
       }
       return *this;
     }
@@ -83,8 +86,8 @@ class iter::impl::Productor<Container, RestContainers...> {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->iter != other.iter
-             && (RestIter::is_base_iter || this->rest_iter != other.rest_iter);
+      return sub_iter_ != other.sub_iter_
+             && (RestIter::is_base_iter || rest_iter_ != other.rest_iter_);
     }
 
     bool operator==(const Iterator& other) const {
@@ -93,7 +96,7 @@ class iter::impl::Productor<Container, RestContainers...> {
 
     ProdIterDeref operator*() {
       return std::tuple_cat(
-          std::tuple<iterator_deref<Container>>{*this->iter}, *this->rest_iter);
+          std::tuple<iterator_deref<Container>>{*sub_iter_}, *rest_iter_);
     }
 
     ArrowProxy<ProdIterDeref> operator->() {
@@ -102,13 +105,13 @@ class iter::impl::Productor<Container, RestContainers...> {
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::begin(this->rest_products),
-        std::end(this->rest_products)};
+    return {std::begin(container_), std::begin(rest_products_),
+        std::end(rest_products_)};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->rest_products),
-        std::end(this->rest_products)};
+    return {std::end(container_), std::end(rest_products_),
+        std::end(rest_products_)};
   }
 };
 
