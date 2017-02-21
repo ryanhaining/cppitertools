@@ -24,13 +24,13 @@ template <typename Container>
 class iter::impl::Permuter {
  private:
   friend PermutationsFn;
-  Container container;
+  Container container_;
 
   using IndexVector = std::vector<IteratorWrapper<Container>>;
   using Permutable = IterIterWrapper<IndexVector>;
 
-  Permuter(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
+  Permuter(Container&& container)
+      : container_(std::forward<Container>(container)) {}
 
  public:
   Permuter(Permuter&&) = default;
@@ -43,37 +43,37 @@ class iter::impl::Permuter {
       return *lhs < *rhs;
     }
 
-    Permutable working_set;
-    int steps{};
+    Permutable working_set_;
+    int steps_{};
 
    public:
     Iterator(IteratorWrapper<Container>&& sub_iter,
         IteratorWrapper<Container>&& sub_end)
-        : steps{sub_iter != sub_end ? 0 : COMPLETE} {
+        : steps_{sub_iter != sub_end ? 0 : COMPLETE} {
       // done like this instead of using vector ctor with
       // two iterators because that causes a substitution
       // failure when the iterator is minimal
       while (sub_iter != sub_end) {
-        this->working_set.get().push_back(sub_iter);
+        working_set_.get().push_back(sub_iter);
         ++sub_iter;
       }
-      std::sort(std::begin(working_set.get()), std::end(working_set.get()),
+      std::sort(std::begin(working_set_.get()), std::end(working_set_.get()),
           cmp_iters);
     }
 
     Permutable& operator*() {
-      return this->working_set;
+      return working_set_;
     }
 
     Permutable* operator->() {
-      return &this->working_set;
+      return &working_set_;
     }
 
     Iterator& operator++() {
-      ++this->steps;
-      if (!std::next_permutation(std::begin(working_set.get()),
-              std::end(working_set.get()), cmp_iters)) {
-        this->steps = COMPLETE;
+      ++steps_;
+      if (!std::next_permutation(std::begin(working_set_.get()),
+              std::end(working_set_.get()), cmp_iters)) {
+        steps_ = COMPLETE;
       }
       return *this;
     }
@@ -89,16 +89,16 @@ class iter::impl::Permuter {
     }
 
     bool operator==(const Iterator& other) const {
-      return this->steps == other.steps;
+      return steps_ == other.steps_;
     }
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container)};
+    return {std::begin(container_), std::end(container_)};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container)};
+    return {std::end(container_), std::end(container_)};
   }
 };
 
