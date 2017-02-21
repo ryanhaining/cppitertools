@@ -24,21 +24,21 @@ namespace iter {
   }
 }
 
-// NOTE I don't know why, but clang gets very confused by having this-> in the
+// NOTE I don't know why, but clang gets very confused by having  in the
 // Iterators' member functions for these classes
 
-// starmap with a container<T> where T is one of tuple, pair, array
+// starmap with a container_<T> where T is one of tuple, pair, array
 template <typename Func, typename Container>
 class iter::impl::StarMapper {
  private:
-  Func func;
-  Container container;
+  Func func_;
+  Container container_;
 
   using StarIterDeref = std::remove_reference_t<decltype(
-      call_with_tuple(func, std::declval<iterator_deref<Container>>()))>;
+      call_with_tuple(func_, std::declval<iterator_deref<Container>>()))>;
 
   StarMapper(Func f, Container&& c)
-      : func(std::move(f)), container(std::forward<Container>(c)) {}
+      : func_(std::move(f)), container_(std::forward<Container>(c)) {}
 
   friend StarMapFn;
 
@@ -46,15 +46,15 @@ class iter::impl::StarMapper {
   class Iterator
       : public std::iterator<std::input_iterator_tag, StarIterDeref> {
    private:
-    Func* func;
-    IteratorWrapper<Container> sub_iter;
+    Func* func_;
+    IteratorWrapper<Container> sub_iter_;
 
    public:
-    Iterator(Func& f, IteratorWrapper<Container>&& iter)
-        : func(&f), sub_iter(std::move(iter)) {}
+    Iterator(Func& f, IteratorWrapper<Container>&& sub_iter)
+        : func_(&f), sub_iter_(std::move(sub_iter)) {}
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -62,7 +62,7 @@ class iter::impl::StarMapper {
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
+      ++sub_iter_;
       return *this;
     }
 
@@ -73,7 +73,7 @@ class iter::impl::StarMapper {
     }
 
     decltype(auto) operator*() {
-      return call_with_tuple(*func, *sub_iter);
+      return call_with_tuple(*func_, *sub_iter_);
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -82,11 +82,11 @@ class iter::impl::StarMapper {
   };
 
   Iterator begin() {
-    return {this->func, std::begin(this->container)};
+    return {func_, std::begin(container_)};
   }
 
   Iterator end() {
-    return {this->func, std::end(this->container)};
+    return {func_, std::end(container_)};
   }
 };
 
@@ -94,8 +94,8 @@ class iter::impl::StarMapper {
 template <typename Func, typename TupType, std::size_t... Is>
 class iter::impl::TupleStarMapper {
  private:
-  Func func;
-  TupType tup;
+  Func func_;
+  TupType tup_;
 
  private:
   static_assert(sizeof...(Is) == std::tuple_size<std::decay_t<TupType>>::value,
@@ -108,7 +108,7 @@ class iter::impl::TupleStarMapper {
     return call_with_tuple(f, std::get<Idx>(t));
   }
 
-  using ResultType = decltype(get_and_call_with_tuple<0>(func, tup));
+  using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
   using CallerFunc = ResultType (*)(Func&, TupType&);
 
   constexpr static std::array<CallerFunc, sizeof...(Is)> callers{
@@ -117,21 +117,21 @@ class iter::impl::TupleStarMapper {
   using TraitsValue = std::remove_reference_t<ResultType>;
 
   TupleStarMapper(Func f, TupType t)
-      : func(std::move(f)), tup(std::forward<TupType>(t)) {}
+      : func_(std::move(f)), tup_(std::forward<TupType>(t)) {}
 
  public:
   class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
    private:
-    Func* func;
-    std::remove_reference_t<TupType>* tup;
-    std::size_t index;
+    Func* func_;
+    std::remove_reference_t<TupType>* tup_;
+    std::size_t index_;
 
    public:
     Iterator(Func& f, TupType& t, std::size_t i)
-        : func{&f}, tup{&t}, index{i} {}
+        : func_{&f}, tup_{&t}, index_{i} {}
 
     decltype(auto) operator*() {
-      return callers[index](*func, *tup);
+      return callers[index_](*func_, *tup_);
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -139,7 +139,7 @@ class iter::impl::TupleStarMapper {
     }
 
     Iterator& operator++() {
-      ++index;
+      ++index_;
       return *this;
     }
 
@@ -150,7 +150,7 @@ class iter::impl::TupleStarMapper {
     }
 
     bool operator!=(const Iterator& other) const {
-      return index != other.index;
+      return index_ != other.index_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -159,11 +159,11 @@ class iter::impl::TupleStarMapper {
   };
 
   Iterator begin() {
-    return {this->func, this->tup, 0};
+    return {func_, tup_, 0};
   }
 
   Iterator end() {
-    return {this->func, this->tup, sizeof...(Is)};
+    return {func_, tup_, sizeof...(Is)};
   }
 };
 
