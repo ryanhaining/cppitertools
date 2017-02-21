@@ -15,8 +15,8 @@ namespace iter {
 
     struct BoolTester {
       template <typename T>
-      constexpr bool operator()(const T& item) const {
-        return bool(item);
+      constexpr bool operator()(const T& item_) const {
+        return bool(item_);
       }
     };
 
@@ -29,16 +29,16 @@ namespace iter {
 template <typename FilterFunc, typename Container>
 class iter::impl::Filtered {
  private:
-  Container container;
-  FilterFunc filter_func;
+  Container container_;
+  FilterFunc filter_func_;
 
   friend FilterFn;
 
  protected:
   // Value constructor for use only in the filter function
-  Filtered(FilterFunc in_filter_func, Container&& in_container)
-      : container(std::forward<Container>(in_container)),
-        filter_func(in_filter_func) {}
+  Filtered(FilterFunc filter_func, Container&& container)
+      : container_(std::forward<Container>(container)),
+        filter_func_(filter_func) {}
 
  public:
   Filtered(Filtered&&) = default;
@@ -47,50 +47,49 @@ class iter::impl::Filtered {
                        iterator_traits_deref<Container>> {
    protected:
     using Holder = DerefHolder<iterator_deref<Container>>;
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> sub_end;
-    Holder item;
-    FilterFunc* filter_func;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_end_;
+    Holder item_;
+    FilterFunc* filter_func_;
 
     void inc_sub_iter() {
-      ++this->sub_iter;
-      if (this->sub_iter != this->sub_end) {
-        this->item.reset(*this->sub_iter);
+      ++sub_iter_;
+      if (sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
       }
     }
 
     // increment until the iterator points to is true on the
     // predicate.  Called by constructor and operator++
     void skip_failures() {
-      while (this->sub_iter != this->sub_end
-             && !(*this->filter_func)(this->item.get())) {
-        this->inc_sub_iter();
+      while (sub_iter_ != sub_end_ && !(*filter_func_)(item_.get())) {
+        inc_sub_iter();
       }
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& iter,
-        IteratorWrapper<Container>&& end, FilterFunc& in_filter_func)
-        : sub_iter{std::move(iter)},
-          sub_end{std::move(end)},
-          filter_func(&in_filter_func) {
-      if (this->sub_iter != this->sub_end) {
-        this->item.reset(*this->sub_iter);
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, FilterFunc& filter_func)
+        : sub_iter_{std::move(sub_iter)},
+          sub_end_{std::move(sub_end)},
+          filter_func_(&filter_func) {
+      if (sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
       }
-      this->skip_failures();
+      skip_failures();
     }
 
     typename Holder::reference operator*() {
-      return this->item.get();
+      return item_.get();
     }
 
     typename Holder::pointer operator->() {
-      return this->item.get_ptr();
+      return item_.get_ptr();
     }
 
     Iterator& operator++() {
-      this->inc_sub_iter();
-      this->skip_failures();
+      inc_sub_iter();
+      skip_failures();
       return *this;
     }
 
@@ -101,7 +100,7 @@ class iter::impl::Filtered {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -110,13 +109,11 @@ class iter::impl::Filtered {
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container),
-        this->filter_func};
+    return {std::begin(container_), std::end(container_), filter_func_};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container),
-        this->filter_func};
+    return {std::end(container_), std::end(container_), filter_func_};
   }
 };
 
