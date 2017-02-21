@@ -21,13 +21,13 @@ namespace iter {
 template <typename Container>
 class iter::impl::WindowSlider {
  private:
-  Container container;
-  std::size_t window_size;
+  Container container_;
+  std::size_t window_size_;
 
   friend SlidingWindowFn;
 
-  WindowSlider(Container&& in_container, std::size_t win_sz)
-      : container(std::forward<Container>(in_container)), window_size{win_sz} {}
+  WindowSlider(Container&& container, std::size_t win_sz)
+      : container_(std::forward<Container>(container)), window_size_{win_sz} {}
 
   using IndexVector = std::deque<IteratorWrapper<Container>>;
   using DerefVec = IterIterWrapper<IndexVector>;
@@ -36,25 +36,25 @@ class iter::impl::WindowSlider {
   WindowSlider(WindowSlider&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    DerefVec window;
+    IteratorWrapper<Container> sub_iter_;
+    DerefVec window_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& in_iter,
-        IteratorWrapper<Container>&& in_end, std::size_t window_sz)
-        : sub_iter(std::move(in_iter)) {
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, std::size_t window_sz)
+        : sub_iter_(std::move(sub_iter)) {
       std::size_t i{0};
-      while (i < window_sz && this->sub_iter != in_end) {
-        this->window.get().push_back(this->sub_iter);
+      while (i < window_sz && sub_iter_ != sub_end) {
+        window_.get().push_back(sub_iter_);
         ++i;
         if (i != window_sz) {
-          ++this->sub_iter;
+          ++sub_iter_;
         }
       }
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -62,17 +62,17 @@ class iter::impl::WindowSlider {
     }
 
     DerefVec& operator*() {
-      return this->window;
+      return window_;
     }
 
     DerefVec* operator->() {
-      return this->window;
+      return window_;
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
-      this->window.get().pop_front();
-      this->window.get().push_back(this->sub_iter);
+      ++sub_iter_;
+      window_.get().pop_front();
+      window_.get().push_back(sub_iter_);
       return *this;
     }
 
@@ -84,15 +84,14 @@ class iter::impl::WindowSlider {
   };
 
   Iterator begin() {
-    return {(this->window_size != 0
-                    ? IteratorWrapper<Container>{std::begin(this->container)}
-                    : IteratorWrapper<Container>{std::end(this->container)}),
-        std::end(this->container), this->window_size};
+    return {
+        (window_size_ != 0 ? IteratorWrapper<Container>{std::begin(container_)}
+                           : IteratorWrapper<Container>{std::end(container_)}),
+        std::end(container_), window_size_};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container),
-        this->window_size};
+    return {std::end(container_), std::end(container_), window_size_};
   }
 };
 
