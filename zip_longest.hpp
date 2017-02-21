@@ -26,7 +26,7 @@ namespace iter {
 template <typename TupleType, std::size_t... Is>
 class iter::impl::ZippedLongest {
  private:
-  TupleType containers;
+  TupleType containers_;
   friend ZippedLongest zip_longest_impl<TupleType, Is...>(
       TupleType&&, std::index_sequence<Is...>);
 
@@ -36,26 +36,25 @@ class iter::impl::ZippedLongest {
 
   using ZipIterDeref = std::tuple<OptType<Is>...>;
 
-  ZippedLongest(TupleType&& in_containers)
-      : containers(std::move(in_containers)) {}
+  ZippedLongest(TupleType&& containers) : containers_(std::move(containers)) {}
 
  public:
   ZippedLongest(ZippedLongest&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
    private:
-    iterator_tuple_type<TupleType> iters;
-    iterator_tuple_type<TupleType> ends;
+    iterator_tuple_type<TupleType> iters_;
+    iterator_tuple_type<TupleType> ends_;
 
    public:
-    Iterator(iterator_tuple_type<TupleType>&& in_iters,
-        iterator_tuple_type<TupleType>&& in_ends)
-        : iters(std::move(in_iters)), ends(std::move(in_ends)) {}
+    Iterator(iterator_tuple_type<TupleType>&& iters,
+        iterator_tuple_type<TupleType>&& ends)
+        : iters_(std::move(iters)), ends_(std::move(ends)) {}
 
     Iterator& operator++() {
       // increment every iterator that's not already at
       // the end
-      absorb(((std::get<Is>(this->iters) != std::get<Is>(this->ends))
-                  ? (++std::get<Is>(this->iters), 0)
+      absorb(((std::get<Is>(iters_) != std::get<Is>(ends_))
+                  ? (++std::get<Is>(iters_), 0)
                   : 0)...);
       return *this;
     }
@@ -70,7 +69,7 @@ class iter::impl::ZippedLongest {
       if (sizeof...(Is) == 0) return false;
 
       bool results[] = {
-          false, (std::get<Is>(this->iters) != std::get<Is>(other.iters))...};
+          false, (std::get<Is>(iters_) != std::get<Is>(other.iters_))...};
       return std::any_of(
           std::begin(results), std::end(results), [](bool b) { return b; });
     }
@@ -80,10 +79,9 @@ class iter::impl::ZippedLongest {
     }
 
     ZipIterDeref operator*() {
-      return ZipIterDeref{
-          ((std::get<Is>(this->iters) != std::get<Is>(this->ends))
-                  ? OptType<Is>{*std::get<Is>(this->iters)}
-                  : OptType<Is>{})...};
+      return ZipIterDeref{((std::get<Is>(iters_) != std::get<Is>(ends_))
+                               ? OptType<Is>{*std::get<Is>(iters_)}
+                               : OptType<Is>{})...};
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -93,23 +91,21 @@ class iter::impl::ZippedLongest {
 
   Iterator begin() {
     return {iterator_tuple_type<TupleType>{
-                std::begin(std::get<Is>(this->containers))...},
-        iterator_tuple_type<TupleType>{
-            std::end(std::get<Is>(this->containers))...}};
+                std::begin(std::get<Is>(containers_))...},
+        iterator_tuple_type<TupleType>{std::end(std::get<Is>(containers_))...}};
   }
 
   Iterator end() {
-    return {iterator_tuple_type<TupleType>{
-                std::end(std::get<Is>(this->containers))...},
-        iterator_tuple_type<TupleType>{
-            std::end(std::get<Is>(this->containers))...}};
+    return {
+        iterator_tuple_type<TupleType>{std::end(std::get<Is>(containers_))...},
+        iterator_tuple_type<TupleType>{std::end(std::get<Is>(containers_))...}};
   }
 };
 
 template <typename TupleType, std::size_t... Is>
 iter::impl::ZippedLongest<TupleType, Is...> iter::impl::zip_longest_impl(
-    TupleType&& in_containers, std::index_sequence<Is...>) {
-  return {std::move(in_containers)};
+    TupleType&& containers, std::index_sequence<Is...>) {
+  return {std::move(containers)};
 }
 
 template <typename... Containers>
