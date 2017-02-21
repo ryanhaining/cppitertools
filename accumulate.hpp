@@ -23,52 +23,52 @@ namespace iter {
 template <typename Container, typename AccumulateFunc>
 class iter::impl::Accumulator {
  private:
-  Container container;
-  AccumulateFunc accumulate_func;
+  Container container_;
+  AccumulateFunc accumulate_func_;
 
   friend AccumulateFn;
 
   using AccumVal = std::remove_reference_t<std::result_of_t<AccumulateFunc(
       iterator_deref<Container>, iterator_deref<Container>)>>;
 
-  Accumulator(Container&& in_container, AccumulateFunc in_accumulate_func)
-      : container(std::forward<Container>(in_container)),
-        accumulate_func(in_accumulate_func) {}
+  Accumulator(Container&& container, AccumulateFunc accumulate_func)
+      : container_(std::forward<Container>(container)),
+        accumulate_func_(accumulate_func) {}
 
  public:
   Accumulator(Accumulator&&) = default;
 
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> sub_end;
-    AccumulateFunc* accumulate_func;
-    std::unique_ptr<AccumVal> acc_val;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_end_;
+    AccumulateFunc* accumulate_func_;
+    std::unique_ptr<AccumVal> acc_val_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& iter,
-        IteratorWrapper<Container>&& end, AccumulateFunc& in_accumulate_fun)
-        : sub_iter{std::move(iter)},
-          sub_end{std::move(end)},
-          accumulate_func(&in_accumulate_fun),
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, AccumulateFunc& accumulate_fun)
+        : sub_iter_{std::move(sub_iter)},
+          sub_end_{std::move(sub_end)},
+          accumulate_func_(&accumulate_fun),
           // only get first value if not an end iterator
-          acc_val{!(iter != end) ? nullptr : new AccumVal(*iter)} {}
+          acc_val_{
+              !(sub_iter_ != sub_end_) ? nullptr : new AccumVal(*sub_iter_)} {}
 
     Iterator(const Iterator& other)
-        : sub_iter{other.sub_iter},
-          sub_end{other.sub_end},
-          accumulate_func{other.accumulate_func},
-          acc_val{other.acc_val ? new AccumVal(*other.acc_val) : nullptr} {}
+        : sub_iter_{other.sub_iter_},
+          sub_end_{other.sub_end_},
+          accumulate_func_{other.accumulate_func_},
+          acc_val_{other.acc_val_ ? new AccumVal(*other.acc_val_) : nullptr} {}
 
     Iterator& operator=(const Iterator& other) {
       if (this == &other) {
         return *this;
       }
-      this->sub_iter = other.sub_iter;
-      this->sub_end = other.sub_end;
-      this->accumulate_func = other.accumulate_func;
-      this->acc_val.reset(
-          other.acc_val ? new AccumVal(*other.acc_val) : nullptr);
+      sub_iter_ = other.sub_iter_;
+      sub_end_ = other.sub_end_;
+      accumulate_func_ = other.accumulate_func_;
+      acc_val_.reset(other.acc_val_ ? new AccumVal(*other.acc_val_) : nullptr);
       return *this;
     }
 
@@ -76,17 +76,17 @@ class iter::impl::Accumulator {
     Iterator& operator=(Iterator&&) = default;
 
     const AccumVal& operator*() const {
-      return *this->acc_val;
+      return *acc_val_;
     }
 
     const AccumVal* operator->() const {
-      return this->acc_val.get();
+      return acc_val_.get();
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
-      if (this->sub_iter != this->sub_end) {
-        *this->acc_val = (*accumulate_func)(*this->acc_val, *this->sub_iter);
+      ++sub_iter_;
+      if (sub_iter_ != sub_end_) {
+        *acc_val_ = (*accumulate_func_)(*acc_val_, *sub_iter_);
       }
       return *this;
     }
@@ -98,7 +98,7 @@ class iter::impl::Accumulator {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -107,13 +107,11 @@ class iter::impl::Accumulator {
   };
 
   Iterator begin() {
-    return {std::begin(this->container), std::end(this->container),
-        this->accumulate_func};
+    return {std::begin(container_), std::end(container_), accumulate_func_};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container),
-        this->accumulate_func};
+    return {std::end(container_), std::end(container_), accumulate_func_};
   }
 };
 
