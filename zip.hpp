@@ -25,25 +25,26 @@ namespace iter {
 template <typename TupleType, std::size_t... Is>
 class iter::impl::Zipped {
  private:
-  TupleType containers;
+  TupleType containers_;
   friend Zipped iter::impl::zip_impl<TupleType, Is...>(
       TupleType&&, std::index_sequence<Is...>);
 
   using ZipIterDeref = iterator_deref_tuple<TupleType>;
 
-  Zipped(TupleType&& in_containers) : containers(std::move(in_containers)) {}
+  Zipped(TupleType&& containers) : containers_(std::move(containers)) {}
 
  public:
   Zipped(Zipped&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
    private:
-    iterator_tuple_type<TupleType> iters;
+    iterator_tuple_type<TupleType> iters_;
 
    public:
-    Iterator(iterator_tuple_type<TupleType>&& its) : iters(std::move(its)) {}
+    Iterator(iterator_tuple_type<TupleType>&& iters)
+        : iters_(std::move(iters)) {}
 
     Iterator& operator++() {
-      absorb(++std::get<Is>(this->iters)...);
+      absorb(++std::get<Is>(iters_)...);
       return *this;
     }
 
@@ -57,7 +58,7 @@ class iter::impl::Zipped {
       if (sizeof...(Is) == 0) return false;
 
       bool results[] = {
-          true, (std::get<Is>(this->iters) != std::get<Is>(other.iters))...};
+          true, (std::get<Is>(iters_) != std::get<Is>(other.iters_))...};
       return std::all_of(
           std::begin(results), std::end(results), [](bool b) { return b; });
     }
@@ -67,7 +68,7 @@ class iter::impl::Zipped {
     }
 
     ZipIterDeref operator*() {
-      return ZipIterDeref{(*std::get<Is>(this->iters))...};
+      return ZipIterDeref{(*std::get<Is>(iters_))...};
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -77,19 +78,19 @@ class iter::impl::Zipped {
 
   Iterator begin() {
     return {iterator_tuple_type<TupleType>{
-        std::begin(std::get<Is>(this->containers))...}};
+        std::begin(std::get<Is>(containers_))...}};
   }
 
   Iterator end() {
-    return {iterator_tuple_type<TupleType>{
-        std::end(std::get<Is>(this->containers))...}};
+    return {
+        iterator_tuple_type<TupleType>{std::end(std::get<Is>(containers_))...}};
   }
 };
 
 template <typename TupleType, std::size_t... Is>
 iter::impl::Zipped<TupleType, Is...> iter::impl::zip_impl(
-    TupleType&& in_containers, std::index_sequence<Is...>) {
-  return {std::move(in_containers)};
+    TupleType&& containers, std::index_sequence<Is...>) {
+  return {std::move(containers)};
 }
 
 template <typename... Containers>
