@@ -21,13 +21,13 @@ namespace iter {
 template <typename Container>
 class iter::impl::CombinatorWithReplacement {
  private:
-  Container container;
-  std::size_t length;
+  Container container_;
+  std::size_t length_;
 
   friend CombinationsWithReplacementFn;
 
-  CombinatorWithReplacement(Container&& in_container, std::size_t n)
-      : container(std::forward<Container>(in_container)), length{n} {}
+  CombinatorWithReplacement(Container&& container, std::size_t n)
+      : container_(std::forward<Container>(container)), length_{n} {}
 
   using IndexVector = std::vector<iterator_type<Container>>;
   using CombIteratorDeref = IterIterWrapper<IndexVector>;
@@ -38,37 +38,38 @@ class iter::impl::CombinatorWithReplacement {
       : public std::iterator<std::input_iterator_tag, CombIteratorDeref> {
    private:
     constexpr static const int COMPLETE = -1;
-    std::remove_reference_t<Container>* container_p;
-    CombIteratorDeref indices;
-    int steps;
+    std::remove_reference_t<Container>* container_p_;
+    CombIteratorDeref indices_;
+    int steps_;
 
    public:
     Iterator(Container& in_container, std::size_t n)
-        : container_p{&in_container},
-          indices(n, std::begin(in_container)),
-          steps{(std::begin(in_container) != std::end(in_container) && n)
-                    ? 0
-                    : COMPLETE} {}
+        : container_p_{&in_container},
+          indices_(n, std::begin(in_container)),
+          steps_{(std::begin(in_container) != std::end(in_container) && n)
+                     ? 0
+                     : COMPLETE} {}
 
     CombIteratorDeref& operator*() {
-      return this->indices;
+      return indices_;
     }
 
     CombIteratorDeref* operator->() {
-      return &this->indices;
+      return &indices_;
     }
 
     Iterator& operator++() {
-      for (auto iter = indices.get().rbegin(); iter != indices.get().rend();
+      for (auto iter = indices_.get().rbegin(); iter != indices_.get().rend();
            ++iter) {
         ++(*iter);
-        if (!(*iter != std::end(*this->container_p))) {
-          if ((iter + 1) != indices.get().rend()) {
-            for (auto down = iter; down != indices.get().rbegin() - 1; --down) {
+        if (!(*iter != std::end(*container_p_))) {
+          if ((iter + 1) != indices_.get().rend()) {
+            for (auto down = iter; down != indices_.get().rbegin() - 1;
+                 --down) {
               (*down) = dumb_next(*(iter + 1));
             }
           } else {
-            this->steps = COMPLETE;
+            steps_ = COMPLETE;
             break;
           }
         } else {
@@ -77,8 +78,8 @@ class iter::impl::CombinatorWithReplacement {
           break;
         }
       }
-      if (this->steps != COMPLETE) {
-        ++this->steps;
+      if (steps_ != COMPLETE) {
+        ++steps_;
       }
       return *this;
     }
@@ -94,16 +95,16 @@ class iter::impl::CombinatorWithReplacement {
     }
 
     bool operator==(const Iterator& other) const {
-      return this->steps == other.steps;
+      return steps_ == other.steps_;
     }
   };
 
   Iterator begin() {
-    return {this->container, this->length};
+    return {container_, length_};
   }
 
   Iterator end() {
-    return {this->container, 0};
+    return {container_, 0};
   }
 };
 
