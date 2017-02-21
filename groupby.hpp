@@ -31,16 +31,15 @@ namespace iter {
 template <typename Container, typename KeyFunc>
 class iter::impl::GroupProducer {
  private:
-  Container container;
-  KeyFunc key_func;
+  Container container_;
+  KeyFunc key_func_;
 
   friend GroupByFn;
 
   using key_func_ret = std::result_of_t<KeyFunc(iterator_deref<Container>)>;
 
-  GroupProducer(Container&& in_container, KeyFunc in_key_func)
-      : container(std::forward<Container>(in_container)),
-        key_func(in_key_func) {}
+  GroupProducer(Container&& container, KeyFunc key_func)
+      : container_(std::forward<Container>(container)), key_func_(key_func) {}
 
  public:
   GroupProducer(GroupProducer&&) = default;
@@ -55,39 +54,38 @@ class iter::impl::GroupProducer {
  public:
   class Iterator : public std::iterator<std::input_iterator_tag, KeyGroupPair> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> sub_end;
-    Holder item;
-    KeyFunc* key_func;
-
-    std::unique_ptr<KeyGroupPair> current_key_group_pair;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_end_;
+    Holder item_;
+    KeyFunc* key_func_;
+    std::unique_ptr<KeyGroupPair> current_key_group_pair_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& si, IteratorWrapper<Container>&& end,
-        KeyFunc& in_key_func)
-        : sub_iter{std::move(si)},
-          sub_end{std::move(end)},
-          key_func(&in_key_func) {
-      if (this->sub_iter != this->sub_end) {
-        this->item.reset(*this->sub_iter);
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, KeyFunc& key_func)
+        : sub_iter_{std::move(sub_iter)},
+          sub_end_{std::move(sub_end)},
+          key_func_(&key_func) {
+      if (sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
       }
     }
 
     Iterator(const Iterator& other)
-        : sub_iter{other.sub_iter},
-          sub_end{other.sub_end},
-          item{other.item},
-          key_func{other.key_func} {}
+        : sub_iter_{other.sub_iter_},
+          sub_end_{other.sub_end_},
+          item_{other.item_},
+          key_func_{other.key_func_} {}
 
     Iterator& operator=(const Iterator& other) {
       if (this == &other) {
         return *this;
       }
-      this->sub_iter = other.sub_iter;
-      this->sub_end = other.sub_end;
-      this->item = other.item;
-      this->key_func = other.key_func;
-      this->current_key_group_pair.reset();
+      sub_iter_ = other.sub_iter_;
+      sub_end_ = other.sub_end_;
+      item_ = other.item_;
+      key_func_ = other.key_func_;
+      current_key_group_pair_.reset();
       return *this;
     }
 
@@ -98,19 +96,19 @@ class iter::impl::GroupProducer {
 
     KeyGroupPair& operator*() {
       set_key_group_pair();
-      return *this->current_key_group_pair;
+      return *current_key_group_pair_;
     }
 
     KeyGroupPair* operator->() {
       set_key_group_pair();
-      return this->current_key_group_pair.get();
+      return current_key_group_pair_.get();
     }
 
     Iterator& operator++() {
-      if (!this->current_key_group_pair) {
-        this->set_key_group_pair();
+      if (!current_key_group_pair_) {
+        set_key_group_pair();
       }
-      this->current_key_group_pair.reset();
+      current_key_group_pair_.reset();
       return *this;
     }
 
@@ -121,7 +119,7 @@ class iter::impl::GroupProducer {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -129,35 +127,34 @@ class iter::impl::GroupProducer {
     }
 
     void increment_iterator() {
-      if (this->sub_iter != this->sub_end) {
-        ++this->sub_iter;
-        if (this->sub_iter != this->sub_end) {
-          this->item.reset(*this->sub_iter);
+      if (sub_iter_ != sub_end_) {
+        ++sub_iter_;
+        if (sub_iter_ != sub_end_) {
+          item_.reset(*sub_iter_);
         }
       }
     }
 
     bool exhausted() const {
-      return !(this->sub_iter != this->sub_end);
+      return !(sub_iter_ != sub_end_);
     }
 
     typename Holder::reference get() {
-      return this->item.get();
+      return item_.get();
     }
 
     typename Holder::pointer get_ptr() {
-      return this->item.get_ptr();
+      return item_.get_ptr();
     }
 
     key_func_ret next_key() {
-      return (*this->key_func)(this->item.get());
+      return (*key_func_)(item_.get());
     }
 
     void set_key_group_pair() {
-      if (!this->current_key_group_pair) {
-        this->current_key_group_pair =
-            std::make_unique<KeyGroupPair>((*this->key_func)(this->item.get()),
-                Group{*this, this->next_key()});
+      if (!current_key_group_pair_) {
+        current_key_group_pair_ = std::make_unique<KeyGroupPair>(
+            (*key_func_)(item_.get()), Group{*this, next_key()});
       }
     }
   };
@@ -166,8 +163,8 @@ class iter::impl::GroupProducer {
    private:
     friend Iterator;
     friend class GroupIterator;
-    Iterator& owner;
-    key_func_ret key;
+    Iterator& owner_;
+    key_func_ret key_;
 
     // completed is set if a Group is iterated through
     // completely.  It is checked in the destructor, and
@@ -180,52 +177,50 @@ class iter::impl::GroupProducer {
     // when called.
     bool completed = false;
 
-    Group(Iterator& in_owner, key_func_ret in_key)
-        : owner(in_owner), key(in_key) {}
+    Group(Iterator& owner, key_func_ret key) : owner_(owner), key_(key) {}
 
    public:
     ~Group() {
-      if (!this->completed) {
-        for (auto iter = this->begin(), end = this->end(); iter != end;
-             ++iter) {
+      if (!completed) {
+        for (auto iter = begin(), end_it = end(); iter != end_it; ++iter) {
         }
       }
     }
 
     // move-constructible, non-copy-constructible, non-assignable
     Group(Group&& other) noexcept
-        : owner(other.owner), key{other.key}, completed{other.completed} {
+        : owner_(other.owner_), key_{other.key_}, completed{other.completed} {
       other.completed = true;
     }
 
     class GroupIterator : public std::iterator<std::input_iterator_tag,
                               iterator_traits_deref<Container>> {
      private:
-      std::remove_reference_t<key_func_ret>* key;
-      Group* group_p;
+      std::remove_reference_t<key_func_ret>* key_;
+      Group* group_p_;
 
       bool not_at_end() {
-        return !this->group_p->owner.exhausted()
-               && this->group_p->owner.next_key() == *this->key;
+        return !group_p_->owner_.exhausted()
+               && group_p_->owner_.next_key() == *key_;
       }
 
      public:
-      GroupIterator(Group* in_group_p, key_func_ret& in_key)
-          : key{&in_key}, group_p{in_group_p} {}
+      GroupIterator(Group* group_p, key_func_ret& key)
+          : key_{&key}, group_p_{group_p} {}
 
       bool operator!=(const GroupIterator& other) const {
         return !(*this == other);
       }
 
       bool operator==(const GroupIterator& other) const {
-        return this->group_p == other.group_p;
+        return group_p_ == other.group_p_;
       }
 
       GroupIterator& operator++() {
-        this->group_p->owner.increment_iterator();
-        if (!this->not_at_end()) {
-          this->group_p->completed = true;
-          this->group_p = nullptr;
+        group_p_->owner_.increment_iterator();
+        if (!not_at_end()) {
+          group_p_->completed = true;
+          group_p_ = nullptr;
         }
         return *this;
       }
@@ -237,31 +232,29 @@ class iter::impl::GroupProducer {
       }
 
       iterator_deref<Container> operator*() {
-        return this->group_p->owner.get();
+        return group_p_->owner_.get();
       }
 
       typename Holder::pointer operator->() {
-        return this->group_p->owner.get_ptr();
+        return group_p_->owner_.get_ptr();
       }
     };
 
     GroupIterator begin() {
-      return {this, key};
+      return {this, key_};
     }
 
     GroupIterator end() {
-      return {nullptr, key};
+      return {nullptr, key_};
     }
   };
 
   Iterator begin() {
-    return {
-        std::begin(this->container), std::end(this->container), this->key_func};
+    return {std::begin(container_), std::end(container_), key_func_};
   }
 
   Iterator end() {
-    return {
-        std::end(this->container), std::end(this->container), this->key_func};
+    return {std::end(container_), std::end(container_), key_func_};
   }
 };
 
