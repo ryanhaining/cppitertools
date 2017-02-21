@@ -13,7 +13,7 @@ int main() {
     }
 
     std::cout << "Empty when window size is > length\n";
-    for (auto&& sec : iter::sliding_window({1,2,3}, 10)) {
+    for (auto&& sec : iter::sliding_window(std::vector<int>{1,2,3}, 10)) {
         for (auto&& i : sec) {
             std::cout << i << ' ';
         }
