@@ -49,11 +49,11 @@ namespace iter {
 template <typename Container>
 class iter::impl::Reverser {
  private:
-  Container container;
+  Container container_;
   friend ReversedFn;
 
-  Reverser(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
+  Reverser(Container&& container)
+      : container_(std::forward<Container>(container)) {}
 
   using reverse_iterator_deref =
       decltype(*std::declval<reverse_iterator_type<Container>&>());
@@ -69,22 +69,22 @@ class iter::impl::Reverser {
   class Iterator : public std::iterator<std::input_iterator_tag,
                        reverse_iterator_traits_deref> {
    private:
-    ReverseIteratorWrapper<Container> sub_iter;
+    ReverseIteratorWrapper<Container> sub_iter_;
 
    public:
-    Iterator(ReverseIteratorWrapper<Container>&& iter)
-        : sub_iter{std::move(iter)} {}
+    Iterator(ReverseIteratorWrapper<Container>&& sub_iter)
+        : sub_iter_{std::move(sub_iter)} {}
 
     reverse_iterator_deref operator*() {
-      return *this->sub_iter;
+      return *sub_iter_;
     }
 
     reverse_iterator_arrow operator->() {
-      return apply_arrow(this->sub_iter);
+      return apply_arrow(sub_iter_);
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
+      ++sub_iter_;
       return *this;
     }
 
@@ -95,7 +95,7 @@ class iter::impl::Reverser {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -104,11 +104,11 @@ class iter::impl::Reverser {
   };
 
   Iterator begin() {
-    return {std::rbegin(this->container)};
+    return {std::rbegin(container_)};
   }
 
   Iterator end() {
-    return {std::rend(this->container)};
+    return {std::rend(container_)};
   }
 };
 
