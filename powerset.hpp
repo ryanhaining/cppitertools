@@ -24,13 +24,13 @@ namespace iter {
 template <typename Container>
 class iter::impl::Powersetter {
  private:
-  Container container;
+  Container container_;
   using CombinatorType = decltype(combinations(std::declval<Container&>(), 0));
 
   friend PowersetFn;
 
-  Powersetter(Container&& in_container)
-      : container(std::forward<Container>(in_container)) {}
+  Powersetter(Container&& container)
+      : container_(std::forward<Container>(container)) {}
 
  public:
   Powersetter(Powersetter&&) = default;
@@ -38,30 +38,29 @@ class iter::impl::Powersetter {
   class Iterator
       : public std::iterator<std::input_iterator_tag, CombinatorType> {
    private:
-    std::remove_reference_t<Container>* container_p;
-    std::size_t set_size;
-    std::shared_ptr<CombinatorType> comb;
-    iterator_type<CombinatorType> comb_iter;
-    iterator_type<CombinatorType> comb_end;
+    std::remove_reference_t<Container>* container_p_;
+    std::size_t set_size_{};
+    std::shared_ptr<CombinatorType> comb_;
+    iterator_type<CombinatorType> comb_iter_;
+    iterator_type<CombinatorType> comb_end_;
 
    public:
-    Iterator(Container& in_container, std::size_t sz)
-        : container_p{&in_container},
-          set_size{sz},
-          comb{
-              std::make_shared<CombinatorType>(combinations(in_container, sz))},
-          comb_iter{std::begin(*comb)},
-          comb_end{std::end(*comb)} {}
+    Iterator(Container& container, std::size_t sz)
+        : container_p_{&container},
+          set_size_{sz},
+          comb_{std::make_shared<CombinatorType>(combinations(container, sz))},
+          comb_iter_{std::begin(*comb_)},
+          comb_end_{std::end(*comb_)} {}
 
     Iterator& operator++() {
-      ++this->comb_iter;
-      if (this->comb_iter == this->comb_end) {
-        ++this->set_size;
-        this->comb = std::make_shared<CombinatorType>(
-            combinations(*this->container_p, this->set_size));
+      ++comb_iter_;
+      if (comb_iter_ == comb_end_) {
+        ++set_size_;
+        comb_ = std::make_shared<CombinatorType>(
+            combinations(*container_p_, set_size_));
 
-        this->comb_iter = std::begin(*this->comb);
-        this->comb_end = std::end(*this->comb);
+        comb_iter_ = std::begin(*comb_);
+        comb_end_ = std::end(*comb_);
       }
       return *this;
     }
@@ -73,11 +72,11 @@ class iter::impl::Powersetter {
     }
 
     iterator_deref<CombinatorType> operator*() {
-      return *this->comb_iter;
+      return *comb_iter_;
     }
 
     iterator_arrow<CombinatorType> operator->() {
-      apply_arrow(this->comb_iter);
+      apply_arrow(comb_iter_);
     }
 
     bool operator!=(const Iterator& other) const {
@@ -85,17 +84,16 @@ class iter::impl::Powersetter {
     }
 
     bool operator==(const Iterator& other) const {
-      return this->set_size == other.set_size
-             && this->comb_iter == other.comb_iter;
+      return set_size_ == other.set_size_ && comb_iter_ == other.comb_iter_;
     }
   };
 
   Iterator begin() {
-    return {this->container, 0};
+    return {container_, 0};
   }
 
   Iterator end() {
-    return {this->container, dumb_size(this->container) + 1};
+    return {container_, dumb_size(container_) + 1};
   }
 };
 
