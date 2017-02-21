@@ -30,7 +30,7 @@ namespace {
   };
 }
 
-TEST_CASE("filter: handles different functor types", "[filter]") {
+TEST_CASE("filter: handles different callable types", "[filter]") {
   Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
   Vec vc = {1, 2, 3, 1, -1};
   SECTION("with function pointer") {
