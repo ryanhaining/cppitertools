@@ -23,8 +23,8 @@ namespace iter {
 template <typename Container, typename Index>
 class iter::impl::Enumerable {
  private:
-  Container container;
-  const Index start;
+  Container container_;
+  const Index start_;
 
   friend EnumerateFn;
 
@@ -32,8 +32,8 @@ class iter::impl::Enumerable {
   using BasePair = std::pair<Index, iterator_deref<Container>>;
 
   // Value constructor for use only in the enumerate function
-  Enumerable(Container&& in_container, Index in_start)
-      : container(std::forward<Container>(in_container)), start{in_start} {}
+  Enumerable(Container&& container, Index start)
+      : container_(std::forward<Container>(container)), start_{start} {}
 
  public:
   Enumerable(Enumerable&&) = default;
@@ -48,19 +48,19 @@ class iter::impl::Enumerable {
   };
 
   //  Holds an iterator of the contained type and an Index for the
-  //  index.  Each call to ++ increments both of these data members.
+  //  index_.  Each call to ++ increments both of these data members.
   //  Each dereference returns an IterYield.
   class Iterator : public std::iterator<std::input_iterator_tag, IterYield> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    Index index;
+    IteratorWrapper<Container> sub_iter_;
+    Index index_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& si, Index start)
-        : sub_iter{std::move(si)}, index{start} {}
+    Iterator(IteratorWrapper<Container>&& sub_iter, Index start)
+        : sub_iter_{std::move(sub_iter)}, index_{start} {}
 
     IterYield operator*() {
-      return {this->index, *this->sub_iter};
+      return {index_, *sub_iter_};
     }
 
     ArrowProxy<IterYield> operator->() {
@@ -68,8 +68,8 @@ class iter::impl::Enumerable {
     }
 
     Iterator& operator++() {
-      ++this->sub_iter;
-      ++this->index;
+      ++sub_iter_;
+      ++index_;
       return *this;
     }
 
@@ -80,7 +80,7 @@ class iter::impl::Enumerable {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter;
+      return sub_iter_ != other.sub_iter_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -89,11 +89,11 @@ class iter::impl::Enumerable {
   };
 
   Iterator begin() {
-    return {std::begin(this->container), start};
+    return {std::begin(container_), start_};
   }
 
   Iterator end() {
-    return {std::end(this->container), start};
+    return {std::end(container_), start_};
   }
 };
 
