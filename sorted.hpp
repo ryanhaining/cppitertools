@@ -25,20 +25,20 @@ class iter::impl::SortedView {
 
   friend SortedFn;
 
-  Container container;
-  IterIterWrap sorted_iters;
+  Container container_;
+  IterIterWrap sorted_iters_;
 
-  SortedView(Container&& in_container, CompareFunc compare_func)
-      : container(std::forward<Container>(in_container)) {
-    // Fill the sorted_iters vector with an iterator to each
-    // element in the container
-    for (auto iter = std::begin(this->container);
-         iter != std::end(this->container); ++iter) {
-      this->sorted_iters.get().push_back(iter);
+  SortedView(Container&& container, CompareFunc compare_func)
+      : container_(std::forward<Container>(container)) {
+    // Fill the sorted_iters_ vector with an iterator to each
+    // element in the container_
+    for (auto iter = std::begin(container_); iter != std::end(container_);
+         ++iter) {
+      sorted_iters_.get().push_back(iter);
     }
 
     // sort by comparing the elements that the iterators point to
-    std::sort(std::begin(sorted_iters.get()), std::end(sorted_iters.get()),
+    std::sort(std::begin(sorted_iters_.get()), std::end(sorted_iters_.get()),
         [compare_func](iterator_type<Container> it1,
             iterator_type<Container> it2) { return compare_func(*it1, *it2); });
   }
@@ -47,11 +47,11 @@ class iter::impl::SortedView {
   SortedView(SortedView&&) = default;
 
   ItIt begin() {
-    return std::begin(sorted_iters);
+    return std::begin(sorted_iters_);
   }
 
   ItIt end() {
-    return std::end(sorted_iters);
+    return std::end(sorted_iters_);
   }
 };
 
