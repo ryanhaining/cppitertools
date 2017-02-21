@@ -19,53 +19,54 @@ namespace iter {
 template <typename Container, typename DifferenceType>
 class iter::impl::Sliced {
  private:
-  Container container;
-  DifferenceType start;
-  DifferenceType stop;
-  DifferenceType step;
+  Container container_;
+  DifferenceType start_;
+  DifferenceType stop_;
+  DifferenceType step_;
 
   friend SliceFn;
 
-  Sliced(Container&& in_container, DifferenceType in_start,
-      DifferenceType in_stop, DifferenceType in_step)
-      : container(std::forward<Container>(in_container)),
-        start{in_start < in_stop && in_step > 0 ? in_start : in_stop},
-        stop{in_stop},
-        step{in_step} {}
+  Sliced(Container&& container, DifferenceType start, DifferenceType stop,
+      DifferenceType step)
+      : container_(std::forward<Container>(container)),
+        start_{start < stop && step > 0 ? start : stop},
+        stop_{stop},
+        step_{step} {}
 
  public:
   Sliced(Sliced&&) = default;
   class Iterator : public std::iterator<std::input_iterator_tag,
                        iterator_traits_deref<Container>> {
    private:
-    IteratorWrapper<Container> sub_iter;
-    IteratorWrapper<Container> sub_end;
-    DifferenceType current;
-    DifferenceType stop;
-    DifferenceType step;
+    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<Container> sub_end_;
+    DifferenceType current_;
+    DifferenceType stop_;
+    DifferenceType step_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& si, IteratorWrapper<Container>&& se,
-        DifferenceType in_start, DifferenceType in_stop, DifferenceType in_step)
-        : sub_iter{std::move(si)},
-          sub_end{std::move(se)},
-          current{in_start},
-          stop{in_stop},
-          step{in_step} {}
+    Iterator(IteratorWrapper<Container>&& sub_iter,
+        IteratorWrapper<Container>&& sub_end, DifferenceType start,
+        DifferenceType stop, DifferenceType step)
+        : sub_iter_{std::move(sub_iter)},
+          sub_end_{std::move(sub_end)},
+          current_{start},
+          stop_{stop},
+          step_{step} {}
 
     iterator_deref<Container> operator*() {
-      return *this->sub_iter;
+      return *sub_iter_;
     }
 
     iterator_arrow<Container> operator->() {
-      return apply_arrow(this->sub_iter);
+      return apply_arrow(sub_iter_);
     }
 
     Iterator& operator++() {
-      dumb_advance(this->sub_iter, this->sub_end, this->step);
-      this->current += this->step;
-      if (this->stop < this->current) {
-        this->current = this->stop;
+      dumb_advance(sub_iter_, sub_end_, step_);
+      current_ += step_;
+      if (stop_ < current_) {
+        current_ = stop_;
       }
       return *this;
     }
@@ -77,7 +78,7 @@ class iter::impl::Sliced {
     }
 
     bool operator!=(const Iterator& other) const {
-      return this->sub_iter != other.sub_iter && this->current != other.current;
+      return sub_iter_ != other.sub_iter_ && current_ != other.current_;
     }
 
     bool operator==(const Iterator& other) const {
@@ -86,15 +87,13 @@ class iter::impl::Sliced {
   };
 
   Iterator begin() {
-    auto it = std::begin(this->container);
-    dumb_advance(it, std::end(this->container), this->start);
-    return {std::move(it), std::end(this->container), this->start, this->stop,
-        this->step};
+    auto it = std::begin(container_);
+    dumb_advance(it, std::end(container_), start_);
+    return {std::move(it), std::end(container_), start_, stop_, step_};
   }
 
   Iterator end() {
-    return {std::end(this->container), std::end(this->container), this->stop,
-        this->stop, this->step};
+    return {std::end(container_), std::end(container_), stop_, stop_, step_};
   }
 };
 
@@ -105,17 +104,17 @@ struct iter::impl::SliceFn {
    public:
     template <typename Container>
     Sliced<Container, DifferenceType> operator()(Container&& container) const {
-      return {std::forward<Container>(container), start, stop, step};
+      return {std::forward<Container>(container), start_, stop_, step_};
     }
 
    private:
     friend SliceFn;
-    constexpr FnPartial(DifferenceType in_start, DifferenceType in_stop,
-        DifferenceType in_step) noexcept
-        : start{in_start}, stop{in_stop}, step{in_step} {}
-    DifferenceType start;
-    DifferenceType stop;
-    DifferenceType step;
+    constexpr FnPartial(
+        DifferenceType start, DifferenceType stop, DifferenceType step) noexcept
+        : start_{start}, stop_{stop}, step_{step} {}
+    DifferenceType start_;
+    DifferenceType stop_;
+    DifferenceType step_;
   };
 
  public:
@@ -127,7 +126,7 @@ struct iter::impl::SliceFn {
     return {std::forward<Container>(container), start, stop, step};
   }
 
-  // only given the end, assume step is 1 and begin is 0
+  // only given the end, assume step_ is 1 and begin is 0
   template <typename Container, typename DifferenceType,
       typename = std::enable_if_t<is_iterable<Container>>>
   iter::impl::Sliced<Container, DifferenceType> operator()(
