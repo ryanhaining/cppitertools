@@ -40,19 +40,19 @@ namespace iter {
           : value_{in_value}, step_{in_step} {}
 
       constexpr T value() const noexcept {
-        return this->value_;
+        return value_;
       }
 
       constexpr T step() const noexcept {
-        return this->step_;
+        return step_;
       }
 
       void inc() noexcept {
-        this->value_ += step_;
+        value_ += step_;
       }
 
       constexpr bool operator==(const RangeIterData& other) const noexcept {
-        return this->value_ == other.value_;
+        return value_ == other.value_;
       }
 
       constexpr bool operator!=(const RangeIterData& other) const noexcept {
@@ -67,7 +67,7 @@ namespace iter {
       T start_{};
       T value_{};
       T step_{};
-      std::size_t steps_taken{};
+      std::size_t steps_taken_{};
 
      public:
       constexpr RangeIterData() noexcept = default;
@@ -75,24 +75,24 @@ namespace iter {
           : start_{in_start}, value_{in_start}, step_{in_step} {}
 
       constexpr T value() const noexcept {
-        return this->value_;
+        return value_;
       }
 
       constexpr T step() const noexcept {
-        return this->step_;
+        return step_;
       }
 
       void inc() noexcept {
-        ++this->steps_taken;
-        value_ = this->start_ + (this->step_ * this->steps_taken);
+        ++steps_taken_;
+        value_ = start_ + (step_ * steps_taken_);
       }
 
       constexpr bool operator==(const RangeIterData& other) const noexcept {
         // if the difference between the two values is less than the
-        // step size, they are considered equal
-        return (this->value_ < other.value_ ? other.value_ - this->value_
-                                            : this->value_ - other.value_)
-               < this->step_;
+        // step_ size, they are considered equal
+        return (value_ < other.value_ ? other.value_ - value_
+                                      : value_ - other.value_)
+               < step_;
       }
 
       constexpr bool operator!=(const RangeIterData& other) const noexcept {
@@ -114,14 +114,14 @@ class iter::impl::Range {
   friend constexpr Range<U> iter::range(U, U, U) noexcept;
 
  private:
-  const T start;
-  const T stop;
-  const T step;
+  const T start_;
+  const T stop_;
+  const T step_;
 
-  constexpr Range(T in_stop) noexcept : start{0}, stop{in_stop}, step{1} {}
+  constexpr Range(T stop) noexcept : start_{0}, stop_{stop}, step_{1} {}
 
-  constexpr Range(T in_start, T in_stop, T in_step = 1) noexcept
-      : start{in_start}, stop{in_stop}, step{in_step} {}
+  constexpr Range(T start, T stop, T step = 1) noexcept
+      : start_{start}, stop_{stop}, step_{step} {}
 
  public:
   // the reference type here is T, which doesn't strictly follow all
@@ -168,7 +168,7 @@ class iter::impl::Range {
         : data(in_value, in_step), is_end{in_is_end} {}
 
     constexpr T operator*() const noexcept {
-      return this->data.value();
+      return data.value();
     }
 
     constexpr ArrowProxy<T> operator->() const noexcept {
@@ -176,7 +176,7 @@ class iter::impl::Range {
     }
 
     Iterator& operator++() noexcept {
-      this->data.inc();
+      data.inc();
       return *this;
     }
 
@@ -196,9 +196,9 @@ class iter::impl::Range {
     // infinitely (theoretically).  If this occurs, the Range
     // will instead effectively be empty
     //
-    // 2) (stop - start) % step != 0.  For
+    // 2) (stop_ - start_) % step_ != 0.  For
     // example Range(1, 10, 2).  The iterator will never be
-    // exactly equal to the stop value.
+    // exactly equal to the stop_ value.
     //
     // Another way to think about it is that the "end"
     // iterator represents the range of values that are invalid
@@ -208,12 +208,12 @@ class iter::impl::Range {
     //
     // Two non-end iterators will compare by their stored values
     bool operator!=(const Iterator& other) const noexcept {
-      if (this->is_end && other.is_end) {
+      if (is_end && other.is_end) {
         return false;
       }
 
-      if (!this->is_end && !other.is_end) {
-        return this->data != other.data;
+      if (!is_end && !other.is_end) {
+        return data != other.data;
       }
       return not_equal_to_end(*this, other);
     }
@@ -224,27 +224,29 @@ class iter::impl::Range {
   };
 
   constexpr Iterator begin() const noexcept {
-    return {start, step, false};
+    return {start_, step_, false};
   }
 
   constexpr Iterator end() const noexcept {
-    return {stop, step, true};
+    return {stop_, step_, true};
   }
 };
 
 template <typename T>
-constexpr iter::impl::Range<T> iter::range(T stop) noexcept {
-  return {stop};
+constexpr iter::impl::Range<T> iter::range(T stop_) noexcept {
+  return {stop_};
 }
 
 template <typename T>
-constexpr iter::impl::Range<T> iter::range(T start, T stop) noexcept {
-  return {start, stop};
+constexpr iter::impl::Range<T> iter::range(T start_, T stop_) noexcept {
+  return {start_, stop_};
 }
 
 template <typename T>
-constexpr iter::impl::Range<T> iter::range(T start, T stop, T step) noexcept {
-  return step == T(0) ? impl::Range<T>{0} : impl::Range<T>{start, stop, step};
+constexpr iter::impl::Range<T> iter::range(
+    T start_, T stop_, T step_) noexcept {
+  return step_ == T(0) ? impl::Range<T>{0}
+                       : impl::Range<T>{start_, stop_, step_};
 }
 
 #endif
