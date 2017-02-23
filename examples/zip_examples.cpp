@@ -10,8 +10,8 @@ int main() {
 
     // zip terminates on the shortest sequence, and is variadic
     std::cout << "zipping a vector of ints and a vector of strings\n";
-    for (auto&& e : iter::zip(ivec, svec)) {
-        std::cout << '(' << std::get<0>(e) << ", " << std::get<1>(e) << ")\n";
+    for (auto&& [i, s] : iter::zip(ivec, svec)) {
+        std::cout << '(' << i << ", " << s << ")\n";
     }
 }
 
