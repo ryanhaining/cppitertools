@@ -500,17 +500,14 @@ tuple of the elements the iterators were holding.
 
 Example usage:
 ```c++
-array<int,4> i{{1,2,3,4}};
-vector<float> f{1.2,1.4,12.3,4.5,9.9};
-vector<string> s{"i","like","apples","alot","dude"};
-array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};
+array<int,4> iseq{{1,2,3,4}};
+vector<float> fseq{1.2,1.4,12.3,4.5,9.9};
+vector<string> sseq{"i","like","apples","a lot","dude"};
+array<double,5> dseq{{1.2,1.2,1.2,1.2,1.2}};
 
-for (auto&& e : zip(i,f,s,d)) {
-    cout << std::get<0>(e) << ' '
-         << std::get<1>(e) << ' '
-         << std::get<2>(e) << ' '
-         << std::get<3>(e) << '\n';
-    std::get<1>(e)=2.2f; // modifies the underlying 'f' array
+for (auto&& [i, f, s, d] : zip(iseq, fseq, sseq, dseq)) {
+    cout << i << ' ' << f << ' ' << s << ' ' << d << '\n';
+    f = 2.2f; // modifies the underlying 'fseq' sequence
 }
 ```
 
