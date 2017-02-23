@@ -524,16 +524,16 @@ element in each tuple yielded.
 ```c++
 vector<int> v1 = {0, 1, 2, 3};
 vector<int> v2 = {10, 11};
-for (auto&& t : zip_longest(v1, v2)) {
+for (auto&& [x, y] : zip_longest(v1, v2)) {
     cout << '{';
-    if (std::get<0>(t)) {
-        cout << "Just " << *std::get<0>(t);
+    if (x) {
+        cout << "Just " << *x;
     } else {
         cout << "Nothing";
     }
     cout << ", ";
-    if (std::get<1>(t)) {
-        cout << "Just " << *std::get<1>(t);
+    if (y) {
+        cout << "Just " << *y;
     } else {
         cout << "Nothing";
     }
