@@ -22,8 +22,7 @@ int main() {
     std::vector<std::string> svec = {"hello", "good day", "goodbye"};
 
     std::cout << "zipping a vector of strings with a vector of ints:\n";
-    for (auto&& e : iter::zip_longest(ivec, svec)) {
-        std::cout << '(' << std::get<0>(e) << ", "
-            << std::get<1>(e)  << ")\n";
+    for (auto&& [i, s] : iter::zip_longest(ivec, svec)) {
+        std::cout << '(' << i << ", " << s  << ")\n";
     }
 }
