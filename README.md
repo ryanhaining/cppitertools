@@ -749,12 +749,9 @@ Example usage:
 vector<int> v1{1,2,3};
 vector<int> v2{7,8};
 vector<string> v3{"the","cat"};
-vector<string> v4{"hi","what","up","dude"};
-for (auto&& t : product(v1,v2,v3,v4)) {
-    cout << std::get<0>(t) << ", "
-        << std::get<1>(t) << ", "
-        << std::get<2>(t) << ", "
-        << std::get<3>(t) << '\n';
+vector<string> v4{"hi","what's","up","dude"};
+for (auto&& [a, b, c, d] : product(v1,v2,v3,v4)) {
+    cout << a << ", " << b << ", " << c << ", " << d << '\n';
 }
 ```
 
