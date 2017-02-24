@@ -90,8 +90,8 @@ TEST_CASE(
   CharRange cr('c');
 
   ResVec v;
-  for (auto&& p : zip_longest(iv, cr)) {
-    v.push_back(TP{*std::get<0>(p), *std::get<1>(p)});
+  for (auto&& [i, c] : zip_longest(iv, cr)) {
+    v.push_back(TP{*i, *c});
   }
   ResVec vc{TP{10, 'a'}, TP{20, 'b'}};
   REQUIRE(v == vc);
@@ -110,9 +110,9 @@ TEST_CASE(
 TEST_CASE("zip longest: can modify zipped sequences", "[zip_longest]") {
   std::vector<int> ns1 = {1, 2, 3};
   std::vector<int> ns2 = {10, 11, 12};
-  for (auto&& t : zip_longest(ns1, ns2)) {
-    *std::get<0>(t) = -1;
-    *std::get<1>(t) = -1;
+  for (auto&& [a, b] : zip_longest(ns1, ns2)) {
+    *a = -1;
+    *b = -1;
   }
 
   std::vector<int> vc = {-1, -1, -1};
