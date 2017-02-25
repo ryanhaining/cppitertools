@@ -15,7 +15,7 @@ namespace iter {
         // explicit return type in lambda so reference types are preserved
         return imap(
             [](auto&& group) -> impl::iterator_deref<Container> {
-              return *std::begin(group.second);
+              return *get_begin(group.second);
             },
             groupby(std::forward<Container>(container)));
       }

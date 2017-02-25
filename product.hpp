@@ -105,13 +105,13 @@ class iter::impl::Productor<Container, RestContainers...> {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::begin(rest_products_),
-        std::end(rest_products_)};
+    return {get_begin(container_), get_begin(rest_products_),
+        get_end(rest_products_)};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(rest_products_),
-        std::end(rest_products_)};
+    return {
+        get_end(container_), get_end(rest_products_), get_end(rest_products_)};
   }
 };
 

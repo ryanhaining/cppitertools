@@ -99,11 +99,11 @@ class iter::impl::Chunker {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_), chunk_size_};
+    return {get_begin(container_), get_end(container_), chunk_size_};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_), chunk_size_};
+    return {get_end(container_), get_end(container_), chunk_size_};
   }
 };
 

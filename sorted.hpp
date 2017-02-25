@@ -32,13 +32,13 @@ class iter::impl::SortedView {
       : container_(std::forward<Container>(container)) {
     // Fill the sorted_iters_ vector with an iterator to each
     // element in the container_
-    for (auto iter = std::begin(container_); iter != std::end(container_);
+    for (auto iter = get_begin(container_); iter != get_end(container_);
          ++iter) {
       sorted_iters_.get().push_back(iter);
     }
 
     // sort by comparing the elements that the iterators point to
-    std::sort(std::begin(sorted_iters_.get()), std::end(sorted_iters_.get()),
+    std::sort(get_begin(sorted_iters_.get()), get_end(sorted_iters_.get()),
         [compare_func](iterator_type<Container> it1,
             iterator_type<Container> it2) { return compare_func(*it1, *it2); });
   }
@@ -47,11 +47,11 @@ class iter::impl::SortedView {
   SortedView(SortedView&&) = default;
 
   ItIt begin() {
-    return std::begin(sorted_iters_);
+    return get_begin(sorted_iters_);
   }
 
   ItIt end() {
-    return std::end(sorted_iters_);
+    return get_end(sorted_iters_);
   }
 };
 

@@ -77,11 +77,11 @@ class iter::impl::Cycler {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_)};
+    return {get_begin(container_), get_end(container_)};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_)};
+    return {get_end(container_), get_end(container_)};
   }
 };
 

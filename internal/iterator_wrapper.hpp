@@ -8,7 +8,7 @@ namespace iter {
   namespace impl {
     // iterator_end_type<C> is the type of C's end iterator
     template <typename Container>
-    using iterator_end_type = decltype(std::end(std::declval<Container&>()));
+    using iterator_end_type = decltype(get_end(std::declval<Container&>()));
 
     template <typename SubIter, typename SubEnd>
     class IteratorWrapperImpl;

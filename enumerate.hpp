@@ -89,11 +89,11 @@ class iter::impl::Enumerable {
   };
 
   Iterator begin() {
-    return {std::begin(container_), start_};
+    return {get_begin(container_), start_};
   }
 
   Iterator end() {
-    return {std::end(container_), start_};
+    return {get_end(container_), start_};
   }
 };
 

@@ -51,9 +51,9 @@ class iter::impl::Combinator {
       }
       size_t inc = 0;
       for (auto& iter : indices_.get()) {
-        auto it = std::begin(*container_p_);
-        dumb_advance(it, std::end(*container_p_), inc);
-        if (it != std::end(*container_p_)) {
+        auto it = get_begin(*container_p_);
+        dumb_advance(it, get_end(*container_p_), inc);
+        if (it != get_end(*container_p_)) {
           iter = it;
           ++inc;
         } else {
@@ -81,7 +81,7 @@ class iter::impl::Combinator {
         // between the item and end of item
         auto dist = std::distance(indices_.get().rbegin(), iter);
 
-        if (!(dumb_next(*iter, dist) != std::end(*container_p_))) {
+        if (!(dumb_next(*iter, dist) != get_end(*container_p_))) {
           if ((iter + 1) != indices_.get().rend()) {
             size_t inc = 1;
             for (auto down = iter; down != indices_.get().rbegin() - 1;

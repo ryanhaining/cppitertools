@@ -57,7 +57,7 @@ class iter::impl::Permuter {
         working_set_.get().push_back(sub_iter);
         ++sub_iter;
       }
-      std::sort(std::begin(working_set_.get()), std::end(working_set_.get()),
+      std::sort(get_begin(working_set_.get()), get_end(working_set_.get()),
           cmp_iters);
     }
 
@@ -71,8 +71,8 @@ class iter::impl::Permuter {
 
     Iterator& operator++() {
       ++steps_;
-      if (!std::next_permutation(std::begin(working_set_.get()),
-              std::end(working_set_.get()), cmp_iters)) {
+      if (!std::next_permutation(get_begin(working_set_.get()),
+              get_end(working_set_.get()), cmp_iters)) {
         steps_ = COMPLETE;
       }
       return *this;
@@ -94,11 +94,11 @@ class iter::impl::Permuter {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_)};
+    return {get_begin(container_), get_end(container_)};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_)};
+    return {get_end(container_), get_end(container_)};
   }
 };
 

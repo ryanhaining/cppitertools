@@ -85,13 +85,13 @@ class iter::impl::WindowSlider {
 
   Iterator begin() {
     return {
-        (window_size_ != 0 ? IteratorWrapper<Container>{std::begin(container_)}
-                           : IteratorWrapper<Container>{std::end(container_)}),
-        std::end(container_), window_size_};
+        (window_size_ != 0 ? IteratorWrapper<Container>{get_begin(container_)}
+                           : IteratorWrapper<Container>{get_end(container_)}),
+        get_end(container_), window_size_};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_), window_size_};
+    return {get_end(container_), get_end(container_), window_size_};
   }
 };
 
