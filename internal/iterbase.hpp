@@ -17,6 +17,31 @@
 
 namespace iter {
   namespace impl {
+    namespace get_iters {
+      // This has to be set up in a really weird way.
+      // This looks at first as if it could be
+      // decltype(auto) get_begin(T& t) {
+      //     using std::begin;
+      //     return begin(t);
+      // }
+      // However, without return types in the declaration, SFINAE gets
+      // messed up everywhere.
+      using std::begin;
+      // TODO add constexpr for c++17
+      template <typename T>
+      auto get_begin(T& t) -> decltype(begin(t)) {
+        return begin(t);
+      }
+      using std::end;
+      // TODO add constexpr for c++17
+      template <typename T>
+      auto get_end(T& t) -> decltype(end(t)) {
+        return end(t);
+      }
+    }
+    using get_iters::get_begin;
+    using get_iters::get_end;
+
     template <typename T>
     struct type_is {
       using type = T;
@@ -32,7 +57,7 @@ namespace iter {
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
-    using iterator_type = decltype(std::begin(std::declval<Container&>()));
+    using iterator_type = decltype(get_begin(std::declval<Container&>()));
 
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
@@ -53,7 +78,7 @@ namespace iter {
     template <typename T, typename = void>
     struct IsIterable : std::false_type {};
 
-    // Assuming that if a type works with std::begin, it is an iterable.
+    // Assuming that if a type works with begin, it is an iterable.
     template <typename T>
     struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type {};
 
@@ -121,9 +146,9 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        std::enable_if_t<std::is_same<
-            typename std::iterator_traits<T>::iterator_category,
-            std::random_access_iterator_tag>::value>> : std::true_type {};
+        std::enable_if_t<
+            std::is_same<typename std::iterator_traits<T>::iterator_category,
+                std::random_access_iterator_tag>::value>> : std::true_type {};
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
@@ -177,8 +202,8 @@ namespace iter {
     template <typename Container, typename Distance = std::size_t>
     Distance dumb_size(Container&& container) {
       Distance d{0};
-      auto end_it = std::end(container);
-      for (auto it = std::begin(container); it != end_it; ++it) {
+      auto end_it = get_end(container);
+      for (auto it = get_begin(container); it != end_it; ++it) {
         ++d;
       }
       return d;
