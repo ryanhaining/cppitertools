@@ -87,13 +87,13 @@ class iter::impl::Sliced {
   };
 
   Iterator begin() {
-    auto it = std::begin(container_);
-    dumb_advance(it, std::end(container_), start_);
-    return {std::move(it), std::end(container_), start_, stop_, step_};
+    auto it = get_begin(container_);
+    dumb_advance(it, get_end(container_), start_);
+    return {std::move(it), get_end(container_), start_, stop_, step_};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_), stop_, stop_, step_};
+    return {get_end(container_), get_end(container_), stop_, stop_, step_};
   }
 };
 

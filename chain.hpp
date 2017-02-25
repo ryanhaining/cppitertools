@@ -144,13 +144,13 @@ class iter::impl::Chained {
   };
 
   Iterator begin() {
-    return {0, IterTupType{std::begin(std::get<Is>(tup_))...},
-        IterTupType{std::end(std::get<Is>(tup_))...}};
+    return {0, IterTupType{get_begin(std::get<Is>(tup_))...},
+        IterTupType{get_end(std::get<Is>(tup_))...}};
   }
 
   Iterator end() {
-    return {sizeof...(Is), IterTupType{std::end(std::get<Is>(tup_))...},
-        IterTupType{std::end(std::get<Is>(tup_))...}};
+    return {sizeof...(Is), IterTupType{get_end(std::get<Is>(tup_))...},
+        IterTupType{get_end(std::get<Is>(tup_))...}};
   }
 };
 
@@ -219,11 +219,11 @@ class iter::impl::ChainedFromIterable {
           sub_iter_p_{!(top_iter != top_end)
                           ?  // iter == end ?
                           nullptr
-                          : std::make_unique<SubIter>(std::begin(*top_iter))},
+                          : std::make_unique<SubIter>(get_begin(*top_iter))},
           sub_end_p_{!(top_iter != top_end)
                          ?  // iter == end ?
                          nullptr
-                         : std::make_unique<SubIter>(std::end(*top_iter))} {}
+                         : std::make_unique<SubIter>(get_end(*top_iter))} {}
 
     Iterator(const Iterator& other)
         : top_level_iter_{other.top_level_iter_},
@@ -253,8 +253,8 @@ class iter::impl::ChainedFromIterable {
       if (!(*sub_iter_p_ != *sub_end_p_)) {
         ++top_level_iter_;
         if (top_level_iter_ != top_level_end_) {
-          sub_iter_p_ = std::make_unique<SubIter>(std::begin(*top_level_iter_));
-          sub_end_p_ = std::make_unique<SubIter>(std::end(*top_level_iter_));
+          sub_iter_p_ = std::make_unique<SubIter>(get_begin(*top_level_iter_));
+          sub_end_p_ = std::make_unique<SubIter>(get_end(*top_level_iter_));
         } else {
           sub_iter_p_.reset();
           sub_end_p_.reset();
@@ -288,11 +288,11 @@ class iter::impl::ChainedFromIterable {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_)};
+    return {get_begin(container_), get_end(container_)};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_)};
+    return {get_end(container_), get_end(container_)};
   }
 };
 

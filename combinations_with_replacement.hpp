@@ -45,8 +45,8 @@ class iter::impl::CombinatorWithReplacement {
    public:
     Iterator(Container& in_container, std::size_t n)
         : container_p_{&in_container},
-          indices_(n, std::begin(in_container)),
-          steps_{(std::begin(in_container) != std::end(in_container) && n)
+          indices_(n, get_begin(in_container)),
+          steps_{(get_begin(in_container) != get_end(in_container) && n)
                      ? 0
                      : COMPLETE} {}
 
@@ -62,7 +62,7 @@ class iter::impl::CombinatorWithReplacement {
       for (auto iter = indices_.get().rbegin(); iter != indices_.get().rend();
            ++iter) {
         ++(*iter);
-        if (!(*iter != std::end(*container_p_))) {
+        if (!(*iter != get_end(*container_p_))) {
           if ((iter + 1) != indices_.get().rend()) {
             for (auto down = iter; down != indices_.get().rbegin() - 1;
                  --down) {

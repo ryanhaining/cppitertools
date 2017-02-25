@@ -82,11 +82,11 @@ class iter::impl::StarMapper {
   };
 
   Iterator begin() {
-    return {func_, std::begin(container_)};
+    return {func_, get_begin(container_)};
   }
 
   Iterator end() {
-    return {func_, std::end(container_)};
+    return {func_, get_end(container_)};
   }
 };
 
@@ -185,8 +185,8 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
   template <typename Func, typename TupType>
   auto helper(Func func, TupType&& tup, std::true_type) const {
     return helper_with_tuples(std::move(func), std::forward<TupType>(tup),
-        std::make_index_sequence<std::tuple_size<std::decay_t<TupType>>::
-                value>{});
+        std::make_index_sequence<
+            std::tuple_size<std::decay_t<TupType>>::value>{});
   }
 
   // handles everything else

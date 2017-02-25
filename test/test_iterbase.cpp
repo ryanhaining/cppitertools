@@ -89,3 +89,8 @@ TEST_CASE("DerefHolder non-reference", "[iterbase]") {
   dh.reset(std::move(b));
   REQUIRE(dh.get() == 5);
 }
+
+TEST_CASE("get_begin returns correct type", "[iterbase]") {
+  std::vector<int> v;
+  REQUIRE((std::is_same<decltype(it::get_begin(v)), decltype(v.begin())>{}));
+}

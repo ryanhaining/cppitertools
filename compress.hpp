@@ -27,7 +27,7 @@ class iter::impl::Compressed {
       Container&&, Selector&&);
 
   // Selector::Iterator type
-  using selector_iter_type = decltype(std::begin(selectors_));
+  using selector_iter_type = decltype(get_begin(selectors_));
 
   Compressed(Container&& in_container, Selector&& in_selectors)
       : container_(std::forward<Container>(in_container)),
@@ -98,13 +98,13 @@ class iter::impl::Compressed {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_),
-        std::begin(selectors_), std::end(selectors_)};
+    return {get_begin(container_), get_end(container_), get_begin(selectors_),
+        get_end(selectors_)};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_), std::end(selectors_),
-        std::end(selectors_)};
+    return {get_end(container_), get_end(container_), get_end(selectors_),
+        get_end(selectors_)};
   }
 };
 

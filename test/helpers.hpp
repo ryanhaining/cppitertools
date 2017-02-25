@@ -158,20 +158,20 @@ namespace itertest {
       }
     };
 
-    Iterator begin() {
-      return {this->data};
+    friend BasicIterable::Iterator begin(BasicIterable& b) {
+      return {b.data};
     }
 
-    Iterator end() {
-      return {this->data + this->size};
+    friend BasicIterable::Iterator end(BasicIterable& b) {
+      return {b.data + b.size};
     }
+
 
 #ifdef DECLARE_REVERSE_ITERATOR
     Iterator rbegin();
     Iterator rend();
 #endif  // ifdef DECLARE_REVERSE_ITERATOR
   };
-
   using iter::impl::void_t;
 
   template <typename, typename = void>
@@ -340,60 +340,5 @@ class IntCharPairRange
   IntCharPairRange(std::pair<int, char> stop)
       : DiffEndRange<std::pair<int, char>, IncIntCharPair>({0, 'a'}, stop) {}
 };
-
-#if 0
-class CharRange {
-  private:
-    char stop_{};
-
-  public:
-    constexpr CharRange(char stop) : stop_{stop} {}
-
-    class Iterator;
-    class EndIterator;
-
-    class Iterator {
-      private:
-        char stop_{};
-        mutable char value_{'a'};
-      public:
-#ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
-        Iterator() = default;
-#endif
-        Iterator(char stop) : stop_{stop} {}
-
-        char& operator*() const { return value_; }
-        char* operator->() const { return &value_; }
-
-        Iterator& operator++() {
-          ++value_;
-          return *this;
-        }
-
-        bool operator!=(const Iterator& other) const {
-          return value_ != other.value_;
-        }
-
-        bool operator!=(const EndIterator&) const {
-          return value_ < stop_;
-        }
-
-        friend bool operator!=(const EndIterator& lhs, const Iterator& rhs) {
-          return rhs != lhs;
-        }
-
-    };
-
-    class EndIterator { };
-
-    Iterator begin() {
-      return {stop_};
-    }
-
-    EndIterator end() {
-      return {};
-    }
-};
-#endif
 
 #endif

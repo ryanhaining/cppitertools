@@ -60,7 +60,7 @@ class iter::impl::Zipped {
       bool results[] = {
           true, (std::get<Is>(iters_) != std::get<Is>(other.iters_))...};
       return std::all_of(
-          std::begin(results), std::end(results), [](bool b) { return b; });
+          get_begin(results), get_end(results), [](bool b) { return b; });
     }
 
     bool operator==(const Iterator& other) const {
@@ -78,12 +78,12 @@ class iter::impl::Zipped {
 
   Iterator begin() {
     return {iterator_tuple_type<TupleType>{
-        std::begin(std::get<Is>(containers_))...}};
+        get_begin(std::get<Is>(containers_))...}};
   }
 
   Iterator end() {
     return {
-        iterator_tuple_type<TupleType>{std::end(std::get<Is>(containers_))...}};
+        iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...}};
   }
 };
 

@@ -49,8 +49,8 @@ class iter::impl::Powersetter {
         : container_p_{&container},
           set_size_{sz},
           comb_{std::make_shared<CombinatorType>(combinations(container, sz))},
-          comb_iter_{std::begin(*comb_)},
-          comb_end_{std::end(*comb_)} {}
+          comb_iter_{get_begin(*comb_)},
+          comb_end_{get_end(*comb_)} {}
 
     Iterator& operator++() {
       ++comb_iter_;
@@ -59,8 +59,8 @@ class iter::impl::Powersetter {
         comb_ = std::make_shared<CombinatorType>(
             combinations(*container_p_, set_size_));
 
-        comb_iter_ = std::begin(*comb_);
-        comb_end_ = std::end(*comb_);
+        comb_iter_ = get_begin(*comb_);
+        comb_end_ = get_end(*comb_);
       }
       return *this;
     }

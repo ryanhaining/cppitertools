@@ -107,11 +107,11 @@ class iter::impl::Accumulator {
   };
 
   Iterator begin() {
-    return {std::begin(container_), std::end(container_), accumulate_func_};
+    return {get_begin(container_), get_end(container_), accumulate_func_};
   }
 
   Iterator end() {
-    return {std::end(container_), std::end(container_), accumulate_func_};
+    return {get_end(container_), get_end(container_), accumulate_func_};
   }
 };
 
