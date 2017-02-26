@@ -166,20 +166,18 @@ namespace itertest {
       return {b.data + b.size};
     }
 
-
 #ifdef DECLARE_REVERSE_ITERATOR
     Iterator rbegin();
     Iterator rend();
 #endif  // ifdef DECLARE_REVERSE_ITERATOR
   };
-  using iter::impl::void_t;
 
   template <typename, typename = void>
   struct IsIterator : std::false_type {};
 
   template <typename T>
   struct IsIterator<T,
-      void_t<decltype(T(std::declval<const T&>())),                 // copyctor
+      std::void_t<decltype(T(std::declval<const T&>())),            // copyctor
           decltype(std::declval<T&>() = std::declval<const T&>()),  // copy =
           decltype(*std::declval<T&>()),                            // operator*
           decltype(std::declval<T&>().operator->()),  // operator->
@@ -223,6 +221,7 @@ class DiffEndRange {
 
   class Iterator {
     using SubIter = typename std::vector<T>::iterator;
+
    private:
     SubIter it_;
     SubIter end_;
@@ -260,6 +259,7 @@ class DiffEndRange {
 
   class ReverseIterator {
     using SubIter = typename std::vector<T>::reverse_iterator;
+
    private:
     SubIter it_;
     SubIter end_;

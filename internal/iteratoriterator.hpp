@@ -19,7 +19,7 @@ namespace iter {
     struct HasConstDeref : std::false_type {};
 
     template <typename T>
-    struct HasConstDeref<T, void_t<decltype(*std::declval<const T&>())>>
+    struct HasConstDeref<T, std::void_t<decltype(*std::declval<const T&>())>>
         : std::true_type {};
 
     template <typename TopIter>
@@ -156,7 +156,7 @@ namespace iter {
 
       template <typename U>
       struct ConstAtTypeOrVoid<U,
-          void_t<decltype(*std::declval<const U&>().at(0))>>
+          std::void_t<decltype(*std::declval<const U&>().at(0))>>
           : type_is<decltype(*std::declval<const U&>().at(0))> {};
 
       using const_at_type_or_void_t = typename ConstAtTypeOrVoid<>::type;
@@ -166,7 +166,7 @@ namespace iter {
 
       template <typename U>
       struct ConstIndexTypeOrVoid<U,
-          void_t<decltype(*std::declval<const U&>()[0])>>
+          std::void_t<decltype(*std::declval<const U&>()[0])>>
           : type_is<decltype(*std::declval<const U&>()[0])> {};
 
       using const_index_type_or_void_t = typename ConstIndexTypeOrVoid<>::type;

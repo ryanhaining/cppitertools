@@ -201,7 +201,7 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
 
   template <typename T>
   struct is_tuple_like<T,
-      void_t<decltype(std::tuple_size<std::decay_t<T>>::value)>>
+      std::void_t<decltype(std::tuple_size<std::decay_t<T>>::value)>>
       : public std::true_type {};
 
  public:

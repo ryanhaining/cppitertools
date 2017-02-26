@@ -47,14 +47,6 @@ namespace iter {
       using type = T;
     };
 
-    // gcc CWG 1558
-    template <typename...>
-    struct void_t_help {
-      using type = void;
-    };
-    template <typename... Ts>
-    using void_t = typename void_t_help<Ts...>::type;
-
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
     using iterator_type = decltype(get_begin(std::declval<Container&>()));
@@ -80,7 +72,7 @@ namespace iter {
 
     // Assuming that if a type works with begin, it is an iterable.
     template <typename T>
-    struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type {};
+    struct IsIterable<T, std::void_t<iterator_type<T>>> : std::true_type {};
 
     template <typename T>
     constexpr bool is_iterable = IsIterable<T>::value;
@@ -101,7 +93,8 @@ namespace iter {
       };
 
       template <typename T>
-      struct ArrowHelper<T, void_t<decltype(std::declval<T&>().operator->())>> {
+      struct ArrowHelper<T,
+          std::void_t<decltype(std::declval<T&>().operator->())>> {
         using type = decltype(std::declval<T&>().operator->());
         type operator()(T& t) const {
           return t.operator->();
