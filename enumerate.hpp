@@ -9,9 +9,23 @@
 #include <iterator>
 #include <type_traits>
 #include <utility>
+#include <tuple>
 
 namespace iter {
   namespace impl {
+    template <typename Index, typename Elem>
+    using EnumBasePair = std::pair<Index, Elem>;
+
+    // "yielded" by the Enumerable::Iterator.  Has a .index, and a
+    // .element referencing the value yielded by the subiterator
+    template <typename Index, typename Elem>
+    class EnumIterYield : public EnumBasePair<Index, Elem> {
+      using BasePair =  EnumBasePair<Index, Elem>;
+      using BasePair::BasePair;
+      typename BasePair::first_type& index = BasePair::first;
+      typename BasePair::second_type& element = BasePair::second;
+    };
+
     template <typename Container, typename Index>
     class Enumerable;
 
@@ -28,9 +42,6 @@ class iter::impl::Enumerable {
 
   friend EnumerateFn;
 
-  // for IterYield
-  using BasePair = std::pair<Index, iterator_deref<Container>>;
-
   // Value constructor for use only in the enumerate function
   Enumerable(Container&& container, Index start)
       : container_(std::forward<Container>(container)), start_{start} {}
@@ -38,14 +49,7 @@ class iter::impl::Enumerable {
  public:
   Enumerable(Enumerable&&) = default;
 
-  // "yielded" by the Enumerable::Iterator.  Has a .index, and a
-  // .element referencing the value yielded by the subiterator
-  class IterYield : public BasePair {
-   public:
-    using BasePair::BasePair;
-    typename BasePair::first_type& index = BasePair::first;
-    typename BasePair::second_type& element = BasePair::second;
-  };
+  using IterYield = EnumIterYield<Index, iterator_deref<Container>>;
 
   //  Holds an iterator of the contained type and an Index for the
   //  index_.  Each call to ++ increments both of these data members.
@@ -96,5 +100,4 @@ class iter::impl::Enumerable {
     return {get_end(container_), start_};
   }
 };
-
 #endif
