@@ -48,6 +48,13 @@ TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
   REQUIRE((*it).first == 1);
 }
 
+TEST_CASE("enumerate: structured bindings", "[enumerate]") {
+  std::string s{"amz"};
+  auto e = enumerate(s);
+  auto it = std::begin(e);
+  REQUIRE(std::tuple_size<std::decay_t<decltype(*it)>>{} == 2);
+}
+
 TEST_CASE("enumerate: with starting value", "[enumerate]") {
   std::string str = "hey";
   auto e = enumerate(str, 5u);
