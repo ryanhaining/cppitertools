@@ -34,6 +34,12 @@ namespace iter {
   constexpr impl::EnumerateFn enumerate{};
 }
 
+namespace std {
+  template <typename Container, typename Index>
+  class tuple_size<iter::impl::EnumIterYield<Index, Container>>
+    : public tuple_size<iter::impl::EnumBasePair<Index, Container>> { };
+}
+
 template <typename Container, typename Index>
 class iter::impl::Enumerable {
  private:
