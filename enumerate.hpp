@@ -7,9 +7,9 @@
 #include <functional>
 #include <initializer_list>
 #include <iterator>
+#include <tuple>
 #include <type_traits>
 #include <utility>
-#include <tuple>
 
 namespace iter {
   namespace impl {
@@ -20,7 +20,7 @@ namespace iter {
     // .element referencing the value yielded by the subiterator
     template <typename Index, typename Elem>
     class EnumIterYield : public EnumBasePair<Index, Elem> {
-      using BasePair =  EnumBasePair<Index, Elem>;
+      using BasePair = EnumBasePair<Index, Elem>;
       using BasePair::BasePair;
       typename BasePair::first_type& index = BasePair::first;
       typename BasePair::second_type& element = BasePair::second;
@@ -35,9 +35,13 @@ namespace iter {
 }
 
 namespace std {
-  template <typename Container, typename Index>
-  class tuple_size<iter::impl::EnumIterYield<Index, Container>>
-    : public tuple_size<iter::impl::EnumBasePair<Index, Container>> { };
+  template <typename Index, typename Elem>
+  class tuple_size<iter::impl::EnumIterYield<Index, Elem>>
+      : public tuple_size<iter::impl::EnumBasePair<Index, Elem>> {};
+
+  template <std::size_t N, typename Index, typename Elem>
+  class tuple_element<N, iter::impl::EnumIterYield<Index, Elem>>
+      : public tuple_element<N, iter::impl::EnumBasePair<Index, Elem>> {};
 }
 
 template <typename Container, typename Index>
