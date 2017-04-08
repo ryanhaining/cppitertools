@@ -49,10 +49,20 @@ TEST_CASE("Postfix ++ enumerate", "[enumerate]") {
 }
 
 TEST_CASE("enumerate: structured bindings", "[enumerate]") {
-  std::string s{"amz"};
-  auto e = enumerate(s);
-  auto it = std::begin(e);
-  REQUIRE(std::tuple_size<std::decay_t<decltype(*it)>>{} == 2);
+  {
+    std::string s{"amz"};
+    auto e = enumerate(s);
+    auto it = std::begin(e);
+    REQUIRE(std::tuple_size<std::decay_t<decltype(*it)>>{} == 2);
+    REQUIRE(std::get<0>(*it) == it->first);
+  }
+
+  Vec v;
+  for (auto && [ i, c ] : enumerate(std::string{"xyz"})) {
+    v.emplace_back(i, c);
+  }
+  const Vec vc{{0, 'x'}, {1, 'y'}, {2, 'z'}};
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("enumerate: with starting value", "[enumerate]") {
