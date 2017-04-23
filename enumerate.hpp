@@ -22,8 +22,9 @@ namespace iter {
     class EnumIterYield : public EnumBasePair<Index, Elem> {
       using BasePair = EnumBasePair<Index, Elem>;
       using BasePair::BasePair;
+
      public:
-      typename BasePair::first_type& index = BasePair::first;
+      typename BasePair::first_type index = BasePair::first;
       typename BasePair::second_type& element = BasePair::second;
     };
 
