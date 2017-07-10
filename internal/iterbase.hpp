@@ -47,6 +47,21 @@ namespace iter {
       using type = T;
     };
 
+    // TODO use std::as_const for c++17
+    template <typename T>
+    const T& as_const(T& t) {
+      return t;
+    }
+    template <typename T>
+    const T& as_const(const T& t) {
+      return t;
+    }
+    template <typename T>
+    void as_const(T&&) = delete;
+
+    template <typename T>
+    using AsConst = decltype(as_const(std::declval<T&>()));
+
     // gcc CWG 1558
     template <typename...>
     struct void_t_help {
@@ -146,9 +161,9 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        std::enable_if_t<
-            std::is_same<typename std::iterator_traits<T>::iterator_category,
-                std::random_access_iterator_tag>::value>> : std::true_type {};
+        std::enable_if_t<std::is_same<
+            typename std::iterator_traits<T>::iterator_category,
+            std::random_access_iterator_tag>::value>> : std::true_type {};
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
