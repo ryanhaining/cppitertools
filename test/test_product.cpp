@@ -1,6 +1,10 @@
 #include <product.hpp>
 
+#define DEFINE_BASIC_ITERABLE_COPY_CTOR
+#define DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END
 #include "helpers.hpp"
+#undef DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END
+#undef DEFINE_BASIC_ITERABLE_COPY_CTOR
 
 #include <iterator>
 #include <string>
@@ -128,13 +132,34 @@ TEST_CASE("product: binds to lvalues and moves rvalues", "[product]") {
   SECTION("First ref'd, second moved") {
     product(bi, std::move(bi2));
     REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
     REQUIRE(bi2.was_moved_from());
   }
 
   SECTION("First moved, second ref'd") {
     product(std::move(bi), bi2);
     REQUIRE(bi.was_moved_from());
+    REQUIRE_FALSE(bi2.was_copied_from());
     REQUIRE_FALSE(bi2.was_moved_from());
+  }
+
+  SECTION("repeat, lvalue not moved or copied") {
+    product<2>(bi);
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
+  }
+
+  SECTION("repeat, const lvalue not moved or copied") {
+    const auto& r = bi;
+    product<2>(r);
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
+  }
+
+  SECTION("repeat, rvalue copied") {
+    product<2>(std::move(bi));
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE(bi.was_copied_from());
   }
 }
 

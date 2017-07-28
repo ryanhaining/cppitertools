@@ -87,7 +87,7 @@ namespace itertest {
     T* data;
     std::size_t size;
     bool was_moved_from_ = false;
-    bool was_copied_from_ = false;
+    mutable bool was_copied_from_ = false;
 
    public:
     BasicIterable(std::initializer_list<T> il)
@@ -104,18 +104,17 @@ namespace itertest {
     BasicIterable& operator=(BasicIterable&&) = delete;
     BasicIterable& operator=(const BasicIterable&) = delete;
 
+#ifndef DEFINE_BASIC_ITERABLE_COPY_CTOR
     BasicIterable(const BasicIterable&) = delete;
-#if 0
-        BasicIterable(const BasicIterable& other)
-            : data{new T[other.size()]},
-            size{other.size}
-        { 
-            for (auto it = this->begin(), o_it = other.begin();
-                    o_it != other.end();
-                    ++it, ++o_it) {
-                *it = *o_it;
-            }
-        }
+#else
+    BasicIterable(const BasicIterable& other)
+        : data{new T[other.size]}, size{other.size} {
+      other.was_copied_from_ = true;
+      for (auto it = begin(*this), o_it = begin(other); o_it != end(other);
+           ++it, ++o_it) {
+        *it = *o_it;
+      }
+    }
 #endif
 
     BasicIterable(BasicIterable&& other) : data{other.data}, size{other.size} {
@@ -135,15 +134,16 @@ namespace itertest {
       delete[] this->data;
     }
 
+    template <typename U>
     class Iterator {
      private:
-      T* p;
+      U* p;
 
      public:
 #ifdef DEFINE_DEFAULT_ITERATOR_CTOR
       Iterator() = default;
 #endif
-      Iterator(T* b) : p{b} {}
+      Iterator(U* b) : p{b} {}
       bool operator!=(const Iterator& other) const {
         return this->p != other.p;
       }
@@ -153,25 +153,35 @@ namespace itertest {
         return *this;
       }
 
-      T& operator*() {
+      U& operator*() {
         return *this->p;
       }
     };
 
-    friend BasicIterable::Iterator begin(BasicIterable& b) {
+    friend BasicIterable::Iterator<T> begin(BasicIterable& b) {
       return {b.data};
     }
 
-    friend BasicIterable::Iterator end(BasicIterable& b) {
+    friend BasicIterable::Iterator<T> end(BasicIterable& b) {
       return {b.data + b.size};
     }
 
+#ifdef DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END
+    friend BasicIterable::Iterator<const T> begin(const BasicIterable& b) {
+      return {b.data};
+    }
+
+    friend BasicIterable::Iterator<const T> end(const BasicIterable& b) {
+      return {b.data + b.size};
+    }
+#endif
 
 #ifdef DECLARE_REVERSE_ITERATOR
-    Iterator rbegin();
-    Iterator rend();
+    Iterator<T> rbegin();
+    Iterator<T> rend();
 #endif  // ifdef DECLARE_REVERSE_ITERATOR
   };
+
   using iter::impl::void_t;
 
   template <typename, typename = void>
@@ -223,6 +233,7 @@ class DiffEndRange {
 
   class Iterator {
     using SubIter = typename std::vector<T>::iterator;
+
    private:
     SubIter it_;
     SubIter end_;
@@ -260,6 +271,7 @@ class DiffEndRange {
 
   class ReverseIterator {
     using SubIter = typename std::vector<T>::reverse_iterator;
+
    private:
     SubIter it_;
     SubIter end_;
