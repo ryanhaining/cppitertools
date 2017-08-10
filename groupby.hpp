@@ -102,7 +102,7 @@ class iter::impl::GroupProducer {
 
     KeyGroupPair* operator->() {
       set_key_group_pair();
-      return current_key_group_pair_.operator->();
+      return &*current_key_group_pair_;
     }
 
     Iterator& operator++() {

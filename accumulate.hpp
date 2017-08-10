@@ -66,7 +66,7 @@ class iter::impl::Accumulator {
     }
 
     const AccumVal* operator->() const {
-      return acc_val_.operator->();
+      return &*acc_val_;
     }
 
     Iterator& operator++() {

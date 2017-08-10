@@ -233,13 +233,8 @@ namespace iter {
 
       DerefHolder() = default;
 
-      DerefHolder(const DerefHolder& other) : item_p{other.item_p} {}
-
-      DerefHolder& operator=(const DerefHolder& other) {
-        this->item_p = other.item_p;
-        return *this;
-      }
-
+      DerefHolder(const DerefHolder& other) = default;
+      DerefHolder& operator=(const DerefHolder& other) = default;
       DerefHolder(DerefHolder&&) = default;
       DerefHolder& operator=(DerefHolder&&) = default;
       ~DerefHolder() = default;
