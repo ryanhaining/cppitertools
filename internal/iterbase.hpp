@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
-#include <memory>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -225,7 +225,7 @@ namespace iter {
       // it could still be an rvalue reference
       using TPlain = std::remove_reference_t<T>;
 
-      std::unique_ptr<TPlain> item_p;
+      std::optional<TPlain> item_p;
 
      public:
       using reference = TPlain&;
@@ -233,16 +233,8 @@ namespace iter {
 
       DerefHolder() = default;
 
-      DerefHolder(const DerefHolder& other)
-          : item_p{other.item_p ? std::make_unique<TPlain>(*other.item_p)
-                                : nullptr} {}
-
-      DerefHolder& operator=(const DerefHolder& other) {
-        this->item_p =
-            other.item_p ? std::make_unique<TPlain>(*other.item_p) : nullptr;
-        return *this;
-      }
-
+      DerefHolder(const DerefHolder& other) = default;
+      DerefHolder& operator=(const DerefHolder& other) = default;
       DerefHolder(DerefHolder&&) = default;
       DerefHolder& operator=(DerefHolder&&) = default;
       ~DerefHolder() = default;
@@ -256,7 +248,7 @@ namespace iter {
       }
 
       void reset(T&& item) {
-        item_p = std::make_unique<TPlain>(std::move(item));
+        item_p = std::move(item);
       }
 
       explicit operator bool() const {

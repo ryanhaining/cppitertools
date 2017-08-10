@@ -6,7 +6,7 @@
 
 #include <functional>
 #include <iterator>
-#include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -43,7 +43,7 @@ class iter::impl::Accumulator {
     IteratorWrapper<Container> sub_iter_;
     IteratorWrapper<Container> sub_end_;
     AccumulateFunc* accumulate_func_;
-    std::unique_ptr<AccumVal> acc_val_;
+    std::optional<AccumVal> acc_val_;
 
    public:
     Iterator(IteratorWrapper<Container>&& sub_iter,
@@ -52,26 +52,12 @@ class iter::impl::Accumulator {
           sub_end_{std::move(sub_end)},
           accumulate_func_(&accumulate_fun),
           // only get first value if not an end iterator
-          acc_val_{
-              !(sub_iter_ != sub_end_) ? nullptr : new AccumVal(*sub_iter_)} {}
+          acc_val_{!(sub_iter_ != sub_end_)
+                       ? std::nullopt
+                       : std::make_optional<AccumVal>(*sub_iter_)} {}
 
-    Iterator(const Iterator& other)
-        : sub_iter_{other.sub_iter_},
-          sub_end_{other.sub_end_},
-          accumulate_func_{other.accumulate_func_},
-          acc_val_{other.acc_val_ ? new AccumVal(*other.acc_val_) : nullptr} {}
-
-    Iterator& operator=(const Iterator& other) {
-      if (this == &other) {
-        return *this;
-      }
-      sub_iter_ = other.sub_iter_;
-      sub_end_ = other.sub_end_;
-      accumulate_func_ = other.accumulate_func_;
-      acc_val_.reset(other.acc_val_ ? new AccumVal(*other.acc_val_) : nullptr);
-      return *this;
-    }
-
+    Iterator(const Iterator& other) = default;
+    Iterator& operator=(const Iterator& other) = default;
     Iterator(Iterator&&) = default;
     Iterator& operator=(Iterator&&) = default;
 
@@ -80,7 +66,7 @@ class iter::impl::Accumulator {
     }
 
     const AccumVal* operator->() const {
-      return acc_val_.get();
+      return &*acc_val_;
     }
 
     Iterator& operator++() {
