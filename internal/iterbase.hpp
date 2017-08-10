@@ -233,12 +233,6 @@ namespace iter {
 
       DerefHolder() = default;
 
-      DerefHolder(const DerefHolder& other) = default;
-      DerefHolder& operator=(const DerefHolder& other) = default;
-      DerefHolder(DerefHolder&&) = default;
-      DerefHolder& operator=(DerefHolder&&) = default;
-      ~DerefHolder() = default;
-
       reference get() {
         return *this->item_p;
       }
