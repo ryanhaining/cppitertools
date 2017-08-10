@@ -56,23 +56,8 @@ class iter::impl::Accumulator {
                        ? std::nullopt
                        : std::make_optional<AccumVal>(*sub_iter_)} {}
 
-    Iterator(const Iterator& other)
-        : sub_iter_{other.sub_iter_},
-          sub_end_{other.sub_end_},
-          accumulate_func_{other.accumulate_func_},
-          acc_val_{other.acc_val_} {}
-
-    Iterator& operator=(const Iterator& other) {
-      if (this == &other) {
-        return *this;
-      }
-      sub_iter_ = other.sub_iter_;
-      sub_end_ = other.sub_end_;
-      accumulate_func_ = other.accumulate_func_;
-      acc_val_ = other.acc_val_;
-      return *this;
-    }
-
+    Iterator(const Iterator& other) = default;
+    Iterator& operator=(const Iterator& other) = default;
     Iterator(Iterator&&) = default;
     Iterator& operator=(Iterator&&) = default;
 

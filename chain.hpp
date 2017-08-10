@@ -209,25 +209,8 @@ class iter::impl::ChainedFromIterable {
                          std::nullopt
                          : std::make_optional<SubIter>(get_end(*top_iter))} {}
 
-    Iterator(const Iterator& other)
-        : top_level_iter_{other.top_level_iter_},
-          top_level_end_{other.top_level_end_},
-          sub_iter_p_{other.sub_iter_p_},
-          sub_end_p_{other.sub_end_p_} {}
-
-    Iterator& operator=(const Iterator& other) {
-      if (this == &other) {
-        return *this;
-      }
-
-      top_level_iter_ = other.top_level_iter_;
-      top_level_end_ = other.top_level_end_;
-      sub_iter_p_ = other.sub_iter_p_;
-      sub_end_p_ = other.sub_end_p_;
-
-      return *this;
-    }
-
+    Iterator(const Iterator& other) = default;
+    Iterator& operator=(const Iterator& other) = default;
     Iterator(Iterator&&) = default;
     Iterator& operator=(Iterator&&) = default;
     ~Iterator() = default;
