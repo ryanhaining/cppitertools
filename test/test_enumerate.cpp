@@ -34,6 +34,14 @@ TEST_CASE("Basic Functioning enumerate", "[enumerate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("enumerate: has .index, .element, .first, and .second") {
+  std::string s = "abc";
+  auto e = enumerate(s);
+  auto it = std::begin(e);
+  REQUIRE(it->index == it->first);
+  REQUIRE(&it->element == &it->second);
+}
+
 TEST_CASE("Empty enumerate", "[enumerate]") {
   std::string emp{};
   auto e = enumerate(emp);
