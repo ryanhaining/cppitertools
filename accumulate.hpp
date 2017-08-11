@@ -56,11 +56,6 @@ class iter::impl::Accumulator {
                        ? std::nullopt
                        : std::make_optional<AccumVal>(*sub_iter_)} {}
 
-    Iterator(const Iterator& other) = default;
-    Iterator& operator=(const Iterator& other) = default;
-    Iterator(Iterator&&) = default;
-    Iterator& operator=(Iterator&&) = default;
-
     const AccumVal& operator*() const {
       return *acc_val_;
     }
