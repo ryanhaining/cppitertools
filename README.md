@@ -755,6 +755,17 @@ for (auto&& [a, b, c, d] : product(v1,v2,v3,v4)) {
 }
 ```
 
+Product also accepts a "repeat" as a template argument. Currently this is the only way to do repeats. **If you are reading this and need `product(seq, 3)` instead of `product<3>(seq)` please open an issue**.
+
+Example usage:
+```c++
+std::string s = "abc";
+// equivalent of product(s, s, s);
+for (auto&& t : product<3>(s)) {
+   // ...
+}
+```
+
 combinations
 -----------
 *Additional Requirements*: Input must have a ForwardIterator

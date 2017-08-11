@@ -24,7 +24,7 @@ namespace iter {
       using BasePair::BasePair;
 
      public:
-      typename BasePair::first_type& index = BasePair::first;
+      typename BasePair::first_type index = BasePair::first;
       typename BasePair::second_type& element = BasePair::second;
     };
 

@@ -2,16 +2,12 @@ import os
 
 env = Environment(
     ENV=os.environ,
-    CXX='clang++',
     CXXFLAGS= ['-g', '-Wall', '-Wextra',
-               '-stdlib=libc++',
-               '-pedantic', '-std=c++1z',
+               '-pedantic', '-std=c++14',
                '-I/usr/local/include'
     ],
     CPPPATH='..',
-    LINKFLAGS=['-L/usr/local/lib',
-    '-lc++', '-lc++abi',
-    ])
+    LINKFLAGS=['-L/usr/local/lib'])
 
 # allows highighting to print to terminal from compiler output
 env['ENV']['TERM'] = os.environ['TERM']

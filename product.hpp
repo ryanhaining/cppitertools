@@ -164,6 +164,32 @@ iter::impl::Productor<Containers...> iter::product(Containers&&... containers) {
 }
 
 namespace iter {
+  namespace impl {
+    // rvalue must be copied, lvalue and const lvalue references can be bound
+    template <std::size_t... Is, typename Container>
+    decltype(auto) product_repeat(
+        std::index_sequence<Is...>, Container&& container) {
+      return product(((void)Is, Container(container))...);
+    }
+
+    template <std::size_t... Is, typename Container>
+    decltype(auto) product_repeat(
+        std::index_sequence<Is...>, Container& container) {
+      return product(((void)Is, container)...);
+    }
+
+    template <std::size_t... Is, typename Container>
+    decltype(auto) product_repeat(
+        std::index_sequence<Is...>, const Container& container) {
+      return product(((void)Is, container)...);
+    }
+  }
+  template <std::size_t N, typename Container>
+  decltype(auto) product(Container&& container) {
+    return impl::product_repeat(
+        std::make_index_sequence<N>{}, std::forward<Container>(container));
+  }
+
   constexpr std::array<std::tuple<>, 1> product() {
     return {{}};
   }
