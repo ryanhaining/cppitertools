@@ -745,7 +745,7 @@ product
 ------
 *Additional Requirements*: Input must have a ForwardIterator
 
-Generates the cartesian project of the given ranges put together
+Generates the cartesian product of the given ranges put together.
 
 Example usage:
 ```c++
