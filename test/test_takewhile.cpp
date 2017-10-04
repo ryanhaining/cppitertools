@@ -57,6 +57,21 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
   }
 }
 
+TEST_CASE("takewhile: supports const iteration", "[takewhile][const]") {
+  Vec ns = {1, 3, 5, 20, 2, 4, 6, 8};
+  const auto tw = takewhile(UnderTen{}, ns);
+  Vec v(std::begin(tw), std::end(tw));
+  Vec vc = {1, 3, 5};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("takewhile: const iterator and non-const iterator are comparable",
+    "[takewhile][const]") {
+  auto tw = takewhile(UnderTen{}, Vec{});
+  const auto& ctw = tw;
+  std::begin(tw) == std::end(ctw);
+}
+
 TEST_CASE(
     "takewhile: Works with different begin and end types", "[takewhile]") {
   CharRange cr{'f'};
