@@ -69,6 +69,8 @@ class iter::impl::Enumerable {
   class Iterator
       : public std::iterator<std::input_iterator_tag, IterYield<ContainerT>> {
    private:
+    template <typename>
+    friend class Iterator;
     IteratorWrapper<ContainerT> sub_iter_;
     Index index_;
 
@@ -96,11 +98,13 @@ class iter::impl::Enumerable {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
