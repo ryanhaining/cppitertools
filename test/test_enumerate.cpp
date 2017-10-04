@@ -51,10 +51,15 @@ TEST_CASE("const enumerate", "[enumerate][const]") {
     v.assign(std::begin(e), std::end(e));
   }
 
-
   Vec vc{{0, 'a'}, {1, 'b'}, {2, 'c'}};
 
   REQUIRE(v == vc);
+}
+
+TEST_CASE("enumerate: const iterators can be compared", "[enumerate][const]") {
+  auto e = enumerate(std::string("hello"));
+  const auto& ce = e;
+  std::begin(e) == std::end(ce);
 }
 
 TEST_CASE("Empty enumerate", "[enumerate]") {
