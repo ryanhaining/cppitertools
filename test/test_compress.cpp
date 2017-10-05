@@ -23,6 +23,23 @@ TEST_CASE("compress: alternating", "[compress]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("compress: const iteration ", "[compress][const]") {
+  std::vector<int> ivec{1, 2, 3, 4, 5, 6};
+  std::vector<bool> bvec{true, false, true, false, true, false};
+  const auto c = compress(ivec, bvec);
+  Vec v(std::begin(c), std::end(c));
+  Vec vc = {1, 3, 5};
+
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("compress: const iterators can be compared to non-const iterators",
+    "[compress][const]") {
+  auto c = compress(std::vector<int>{}, std::vector<bool>{});
+  const auto& cc = c;
+  (void)(std::begin(c) == std::end(cc));
+}
+
 TEST_CASE("compress: consecutive falses", "[compress]") {
   std::vector<int> ivec{1, 2, 3, 4, 5};
   std::vector<bool> bvec{true, false, false, false, true};
