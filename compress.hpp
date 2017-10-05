@@ -26,23 +26,23 @@ class iter::impl::Compressed {
   friend Compressed iter::compress<Container, Selector>(
       Container&&, Selector&&);
 
-  // Selector::Iterator type
-  using selector_iter_type = decltype(get_begin(selectors_));
-
   Compressed(Container&& in_container, Selector&& in_selectors)
       : container_(std::forward<Container>(in_container)),
         selectors_(std::forward<Selector>(in_selectors)) {}
 
  public:
   Compressed(Compressed&&) = default;
+  template <typename ContainerT, typename SelectorT>
   class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
+                       iterator_traits_deref<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_end_;
+    template <typename, typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_end_;
 
-    selector_iter_type selector_iter_;
-    selector_iter_type selector_end_;
+    IteratorWrapper<SelectorT> selector_iter_;
+    IteratorWrapper<SelectorT> selector_end_;
 
     void increment_iterators() {
       ++sub_iter_;
@@ -57,9 +57,10 @@ class iter::impl::Compressed {
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& cont_iter,
-        IteratorWrapper<Container>&& cont_end, selector_iter_type&& sel_iter,
-        selector_iter_type&& sel_end)
+    Iterator(IteratorWrapper<ContainerT>&& cont_iter,
+        IteratorWrapper<ContainerT>&& cont_end,
+        IteratorWrapper<SelectorT>&& sel_iter,
+        IteratorWrapper<SelectorT>&& sel_end)
         : sub_iter_{std::move(cont_iter)},
           sub_end_{std::move(cont_end)},
           selector_iter_{std::move(sel_iter)},
@@ -67,11 +68,11 @@ class iter::impl::Compressed {
       skip_failures();
     }
 
-    iterator_deref<Container> operator*() {
+    iterator_deref<ContainerT> operator*() {
       return *sub_iter_;
     }
 
-    iterator_arrow<Container> operator->() {
+    iterator_arrow<ContainerT> operator->() {
       return apply_arrow(sub_iter_);
     }
 
@@ -87,24 +88,36 @@ class iter::impl::Compressed {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T, typename U>
+    bool operator!=(const Iterator<T, U>& other) const {
       return sub_iter_ != other.sub_iter_
              && selector_iter_ != other.selector_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T, typename U>
+    bool operator==(const Iterator<T, U>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container, Selector> begin() {
     return {get_begin(container_), get_end(container_), get_begin(selectors_),
         get_end(selectors_)};
   }
 
-  Iterator end() {
+  Iterator<Container, Selector> end() {
     return {get_end(container_), get_end(container_), get_end(selectors_),
         get_end(selectors_)};
+  }
+
+  Iterator<AsConst<Container>, AsConst<Selector>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_)),
+        get_begin(as_const(selectors_)), get_end(as_const(selectors_))};
+  }
+
+  Iterator<AsConst<Container>, AsConst<Selector>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        get_end(as_const(selectors_)), get_end(as_const(selectors_))};
   }
 };
 
