@@ -66,6 +66,24 @@ TEST_CASE("starmap: Works with different begin and end types", "[starmap]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("starmap: tuple of tuples const iteration", "[starmap][const]") {
+  using Vec = const std::vector<int>;
+  auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
+  const auto sm = starmap(Callable{}, tup);
+  Vec v(std::begin(sm), std::end(sm));
+}
+
+TEST_CASE(
+    "starmap: tuple of tuples const iterators can be compared to non-const "
+    "iterator",
+    "[starmap][const]") {
+  auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
+  auto sm = starmap(Callable{}, tup);
+  const auto& csm = sm;
+  std::begin(sm) == std::end(csm);
+  std::begin(csm) == std::end(sm);
+}
+
 TEST_CASE("starmap: list of tuples", "[starmap]") {
   using Vec = const std::vector<std::string>;
   using T = std::tuple<std::string, int, double>;
