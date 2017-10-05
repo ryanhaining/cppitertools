@@ -37,9 +37,11 @@ class iter::impl::WindowSlider {
  public:
   WindowSlider(WindowSlider&&) = default;
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag, DerefVec<ContainerT>> {
+  class Iterator
+      : public std::iterator<std::input_iterator_tag, DerefVec<ContainerT>> {
    private:
-     template <typename> friend class Iterator;
+    template <typename>
+    friend class Iterator;
     IteratorWrapper<ContainerT> sub_iter_;
     DerefVec<ContainerT> window_;
 
@@ -101,14 +103,16 @@ class iter::impl::WindowSlider {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {
-        (window_size_ != 0 ? IteratorWrapper<AsConst<Container>>{get_begin(as_const(container_))}
-                           : IteratorWrapper<AsConst<Container>>{get_end(as_const(container_))}),
+    return {(window_size_ != 0 ? IteratorWrapper<AsConst<Container>>{get_begin(
+                                     as_const(container_))}
+                               : IteratorWrapper<AsConst<Container>>{get_end(
+                                     as_const(container_))}),
         get_end(as_const(container_)), window_size_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(as_const(container_)), get_end(as_const(container_)), window_size_};
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        window_size_};
   }
 };
 

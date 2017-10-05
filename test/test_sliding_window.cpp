@@ -39,7 +39,9 @@ TEST_CASE("sliding_window: const iteration", "[sliding_window][const]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("sliding_window: const iterators can be compared to non-const iterators", "[sliding_window][const]") {
+TEST_CASE(
+    "sliding_window: const iterators can be compared to non-const iterators",
+    "[sliding_window][const]") {
   auto sw = sliding_window(Vec{}, 2);
   const auto& csw = sw;
   (void)(std::begin(sw) == std::end(csw));
