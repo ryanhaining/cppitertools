@@ -31,6 +31,21 @@ TEST_CASE("reversed: can reverse a vector", "[reversed]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("reversed: const iteration", "[reversed][const]") {
+  Vec ns = {10, 20, 30, 40};
+  const auto r = reversed(ns);
+  Vec v(std::begin(r), std::end(r));
+  Vec vc = {40, 30, 20, 10};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("reversed: const iterators can be compared to non-const iterators",
+    "[reversed][const]") {
+  auto r = reversed(Vec{});
+  const auto& cr = r;
+  (void)(std::begin(r) == std::end(cr));
+}
+
 #if 0
 TEST_CASE("reversed: Works with different begin and end types",
     "[reversed]") {
