@@ -31,7 +31,7 @@ namespace iter {
 template <typename Func, typename Container>
 class iter::impl::StarMapper {
  private:
-  Func func_;
+  mutable Func func_;
   Container container_;
 
   using StarIterDeref = std::remove_reference_t<decltype(
@@ -43,21 +43,26 @@ class iter::impl::StarMapper {
   friend StarMapFn;
 
  public:
+  template <typename ContainerT>
   class Iterator
       : public std::iterator<std::input_iterator_tag, StarIterDeref> {
    private:
+    template <typename>
+    friend class Iterator;
     Func* func_;
-    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<ContainerT> sub_iter_;
 
    public:
-    Iterator(Func& f, IteratorWrapper<Container>&& sub_iter)
+    Iterator(Func& f, IteratorWrapper<ContainerT>&& sub_iter)
         : func_(&f), sub_iter_(std::move(sub_iter)) {}
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
@@ -81,12 +86,20 @@ class iter::impl::StarMapper {
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {func_, get_begin(container_)};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {func_, get_end(container_)};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {func_, get_begin(as_const(container_))};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {func_, get_end(as_const(container_))};
   }
 };
 
