@@ -30,25 +30,28 @@ class iter::impl::Cycler {
 
  public:
   Cycler(Cycler&&) = default;
+  template <typename ContainerT>
   class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
+                       iterator_traits_deref<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_begin_;
-    IteratorWrapper<Container> sub_end_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_begin_;
+    IteratorWrapper<ContainerT> sub_end_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end)
         : sub_iter_{sub_iter},
           sub_begin_{sub_iter},
           sub_end_{std::move(sub_end)} {}
 
-    iterator_deref<Container> operator*() {
+    iterator_deref<ContainerT> operator*() {
       return *sub_iter_;
     }
 
-    iterator_arrow<Container> operator->() {
+    iterator_arrow<ContainerT> operator->() {
       return apply_arrow(sub_iter_);
     }
 
@@ -67,21 +70,31 @@ class iter::impl::Cycler {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_)};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_)};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_))};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_))};
   }
 };
 
