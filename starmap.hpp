@@ -94,7 +94,7 @@ class iter::impl::StarMapper {
 template <typename Func, typename TupType, std::size_t... Is>
 class iter::impl::TupleStarMapper {
  private:
-  Func func_;
+  mutable Func func_;
   TupType tup_;
 
  private:
@@ -103,60 +103,77 @@ class iter::impl::TupleStarMapper {
 
   friend StarMapFn;
 
-  template <std::size_t Idx>
-  static decltype(auto) get_and_call_with_tuple(Func& f, TupType& t) {
-    return call_with_tuple(f, std::get<Idx>(t));
-  }
-
-  using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
-  using CallerFunc = ResultType (*)(Func&, TupType&);
-
-  constexpr static std::array<CallerFunc, sizeof...(Is)> callers{
-      {get_and_call_with_tuple<Is>...}};
-
-  using TraitsValue = std::remove_reference_t<ResultType>;
-
   TupleStarMapper(Func f, TupType t)
       : func_(std::move(f)), tup_(std::forward<TupType>(t)) {}
 
  public:
-  class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
-   private:
-    Func* func_;
-    std::remove_reference_t<TupType>* tup_;
-    std::size_t index_;
+  // this is a wrapper class to hold the aliases and functions needed for the Iterator.
+  // the bool IsConst is needed so I can define the operator== and operator!= outside of IteratorData. I have to have the two types of iterators compare equal to each other, but also can't rely on AsConst<TupType> and TupType being different types, the IsConst distinguishes them. Without it, I risk redefining operator== and operator!= with the same iterator types
+  template <typename TupTypeT, bool IsConst>
+  class IteratorData { 
+    private:
+      template <std::size_t Idx>
+      static decltype(auto) get_and_call_with_tuple(Func& f, TupTypeT& t) {
+        return call_with_tuple(f, std::get<Idx>(t));
+      }
 
+      using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
+      using CallerFunc = ResultType (*)(Func&, TupTypeT&);
+
+      constexpr static std::array<CallerFunc, sizeof...(Is)> callers{
+          {get_and_call_with_tuple<Is>...}};
+
+      using TraitsValue = std::remove_reference_t<ResultType>;
+
+      IteratorData() = delete;
    public:
-    Iterator(Func& f, TupType& t, std::size_t i)
-        : func_{&f}, tup_{&t}, index_{i} {}
+    class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
+     private:
+      Func* func_;
+      std::remove_reference_t<TupTypeT>* tup_;
+      std::size_t index_;
 
-    decltype(auto) operator*() {
-      return callers[index_](*func_, *tup_);
-    }
+     public:
+      Iterator(Func& f, TupTypeT& t, std::size_t i)
+          : func_{&f}, tup_{&t}, index_{i} {}
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
-      return {**this};
-    }
+      decltype(auto) operator*() {
+        return callers[index_](*func_, *tup_);
+      }
 
-    Iterator& operator++() {
-      ++index_;
-      return *this;
-    }
+      auto operator-> () -> ArrowProxy<decltype(**this)> {
+        return {**this};
+      }
 
-    Iterator operator++(int) {
-      auto ret = *this;
-      ++*this;
-      return ret;
-    }
+      Iterator& operator++() {
+        ++index_;
+        return *this;
+      }
 
-    bool operator!=(const Iterator& other) const {
-      return index_ != other.index_;
-    }
+      Iterator operator++(int) {
+        auto ret = *this;
+        ++*this;
+        return ret;
+      }
 
-    bool operator==(const Iterator& other) const {
-      return !(*this != other);
-    }
+      
+      // TODO
+      bool operator!=(const Iterator& other) const {
+        return index_ != other.index_;
+      }
+
+      bool operator==(const Iterator& other) const {
+        return !(*this != other);
+      }
+    };
   };
+
+  using Iterator = typename IteratorData<TupType, false>::Iterator;
+  using ConstIterator = typename IteratorData<AsConst<TupType>, true>::Iterator;
+
+  friend bool operator==(const Iterator& lhs, const ConstIterator& rhs) {
+    return lhs.index_ == rhs.index_;
+  }
 
   Iterator begin() {
     return {func_, tup_, 0};
@@ -165,13 +182,22 @@ class iter::impl::TupleStarMapper {
   Iterator end() {
     return {func_, tup_, sizeof...(Is)};
   }
+
+  ConstIterator begin() const {
+    return {func_, as_const(tup_), 0};
+  }
+
+  ConstIterator end() const {
+    return {func_, as_const(tup_), sizeof...(Is)};
+  }
 };
 
 template <typename Func, typename TupType, std::size_t... Is>
+template <typename T, bool B>
 constexpr std::array<
-    typename iter::impl::TupleStarMapper<Func, TupType, Is...>::CallerFunc,
+    typename iter::impl::TupleStarMapper<Func, TupType, Is...>::template IteratorData<T, B>::CallerFunc,
     sizeof...(Is)>
-    iter::impl::TupleStarMapper<Func, TupType, Is...>::callers;
+    iter::impl::TupleStarMapper<Func, TupType, Is...>::IteratorData<T, B>::callers;
 
 struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  private:
