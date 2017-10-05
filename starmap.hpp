@@ -146,8 +146,8 @@ class iter::impl::TupleStarMapper {
       return IteratorData<TupTypeT>::callers[index_](*func_, *tup_);
     }
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
-      return {**this};
+    auto operator-> () {
+      return ArrowProxy<decltype(**this)>{**this};
     }
 
     Iterator& operator++() {
