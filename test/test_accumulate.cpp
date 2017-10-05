@@ -68,7 +68,7 @@ TEST_CASE("accumulate: const iterators", "[accumulate][const]") {
 TEST_CASE("accumulate: const iterators can be compared", "[accumulate][const]") {
   auto e = accumulate(std::string("hello"));
   const auto& ce = e;
-  std::begin(e) == std::end(ce);
+  (void)(std::begin(e) == std::end(ce));
 }
 
 struct Integer {

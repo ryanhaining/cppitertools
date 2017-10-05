@@ -69,7 +69,7 @@ TEST_CASE("takewhile: const iterator and non-const iterator are comparable",
     "[takewhile][const]") {
   auto tw = takewhile(UnderTen{}, Vec{});
   const auto& ctw = tw;
-  std::begin(tw) == std::end(ctw);
+  (void)(std::begin(tw) == std::end(ctw));
 }
 
 TEST_CASE(

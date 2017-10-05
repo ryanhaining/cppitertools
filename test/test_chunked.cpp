@@ -49,7 +49,7 @@ TEST_CASE("chunked: const iterators can be compared to non-const iterators",
     "[chunked][const]") {
   auto c = chunked(Vec{}, 1);
   const auto& cc = c;
-  std::begin(c) == std::end(cc);
+  (void)(std::begin(c) == std::end(cc));
 }
 
 TEST_CASE("chunked: len(iterable) % groupsize != 0", "[chunked]") {

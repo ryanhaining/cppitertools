@@ -65,7 +65,7 @@ TEST_CASE("filter: const iterator can be compared to non-const iterator",
     "[filter][const]") {
   auto f = filter(LessThanValue{5}, Vec{});
   const auto& cf = f;
-  std::begin(f) == std::end(cf);
+  (void)(std::begin(f) == std::end(cf));
 }
 
 TEST_CASE("filter: iterator with lambda can be assigned", "[filter]") {

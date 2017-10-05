@@ -53,7 +53,7 @@ TEST_CASE("dropwhile: const iterators can be compared to non-const iterators",
     "[dropwhile][const]") {
   auto d = dropwhile(LessThanValue{5}, Vec{});
   const auto& cd = d;
-  std::begin(d) == std::end(cd);
+  (void)(std::begin(d) == std::end(cd));
 }
 
 TEST_CASE(

@@ -80,8 +80,8 @@ TEST_CASE(
   auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
   auto sm = starmap(Callable{}, tup);
   const auto& csm = sm;
-  std::begin(sm) == std::end(csm);
-  std::begin(csm) == std::end(sm);
+  (void)(std::begin(sm) == std::end(csm));
+  (void)(std::begin(csm) == std::end(sm));
 }
 
 TEST_CASE("starmap: list of tuples", "[starmap]") {

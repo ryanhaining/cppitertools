@@ -72,7 +72,7 @@ TEST_CASE("filterfalse: const iterator and non-const iterator can be compared",
     "[filterfalse][const]") {
   auto f = filterfalse(LessThanValue{5}, Vec{});
   const auto& cf = f;
-  std::begin(f) == std::end(cf);
+  (void)(std::begin(f) == std::end(cf));
 }
 
 TEST_CASE(

@@ -59,7 +59,7 @@ TEST_CASE("const enumerate", "[enumerate][const]") {
 TEST_CASE("enumerate: const iterators can be compared", "[enumerate][const]") {
   auto e = enumerate(std::string("hello"));
   const auto& ce = e;
-  std::begin(e) == std::end(ce);
+  (void)(std::begin(e) == std::end(ce));
 }
 
 TEST_CASE("Empty enumerate", "[enumerate]") {
