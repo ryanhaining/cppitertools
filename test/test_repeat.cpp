@@ -50,6 +50,12 @@ TEST_CASE("repeat: can be used as constexpr", "[repeat]") {
   }
 }
 
+TEST_CASE("repeat: iterators compare to const iterators", "[repeat]") {
+  auto r = repeat(1);
+  const auto& cr = r;
+  (void)(std::begin(r) == std::end(cr));
+}
+
 TEST_CASE("repeat: two argument repeats a number of times", "[repeat]") {
   auto r = repeat('a', 3);
   std::string s(std::begin(r), std::end(r));
