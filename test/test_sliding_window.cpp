@@ -28,6 +28,23 @@ TEST_CASE("sliding_window: window of size 3", "[sliding_window]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("sliding_window: const iteration", "[sliding_window][const]") {
+  Vec ns = {10, 20, 30, 40, 50};
+  std::vector<std::vector<int>> vc = {{10, 20, 30}, {20, 30, 40}, {30, 40, 50}};
+  std::vector<std::vector<int>> v;
+  const auto sw = sliding_window(ns, 3);
+  for (auto&& win : sw) {
+    v.emplace_back(std::begin(win), std::end(win));
+  }
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("sliding_window: const iterators can be compared to non-const iterators", "[sliding_window][const]") {
+  auto sw = sliding_window(Vec{}, 2);
+  const auto& csw = sw;
+  (void)(std::begin(sw) == std::end(csw));
+}
+
 TEST_CASE("sliding_window: Works with different begin and end types",
     "[sliding_window]") {
   CharRange cr{'f'};
