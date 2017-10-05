@@ -27,6 +27,10 @@ namespace {
       return a + b + c;
     }
 
+    int operator()(int a, int b) {
+      return a + b;
+    }
+
     int operator()(int a) {
       return a;
     }
@@ -55,6 +59,26 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
     v.assign(std::begin(sm), std::end(sm));
   }
   REQUIRE(v == vc);
+}
+
+TEST_CASE("starmap: vector of pairs const iteration", "[starmap][const]") {
+  using Vec = const std::vector<int>;
+  const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
+
+  const auto sm = starmap(Callable{}, v1);
+  std::vector<int> v(std::begin(sm), std::end(sm));
+  Vec vc = {3, 14, 13};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE(
+    "starmap: vector of pairs const iterators can be compared to non-const "
+    "iterators",
+    "[starmap][const]") {
+  const std::vector<std::pair<double, int>> v1;
+  auto sm = starmap(Callable{}, v1);
+  const auto& csm = sm;
+  (void)(std::begin(sm) == std::end(csm));
 }
 
 TEST_CASE("starmap: Works with different begin and end types", "[starmap]") {
