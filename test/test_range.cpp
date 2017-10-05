@@ -112,6 +112,12 @@ TEST_CASE("range: can create constexpr ranges", "[range]") {
   static_assert(f == 0.0, "range's begin has tho wrong value (float)");
 }
 
+TEST_CASE("range: const iterators compare to non-const iterators", "[range]") {
+  auto r = range(0);
+  const auto& cr = r;
+  (void)(std::begin(r) == std::end(cr));
+}
+
 TEST_CASE("range: works with a variable start, stop, and step", "[range]") {
   constexpr int a = 10;
   constexpr int b = 100;
