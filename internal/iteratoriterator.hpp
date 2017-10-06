@@ -27,6 +27,7 @@ namespace iter {
         : public std::iterator<std::random_access_iterator_tag,
               typename std::remove_reference<decltype(
                   **std::declval<TopIter>())>::type> {
+      template <typename> friend class IteratorIterator;
       using Diff = std::ptrdiff_t;
       static_assert(
           std::is_same<
@@ -41,11 +42,17 @@ namespace iter {
       IteratorIterator() = default;
       IteratorIterator(const TopIter& it) : sub_iter{it} {}
 
-      bool operator==(const IteratorIterator& other) const {
+      const TopIter& get() const {
+        return sub_iter;
+      }
+
+      template <typename T>
+      bool operator==(const IteratorIterator<T>& other) const {
         return !(*this != other);
       }
 
-      bool operator!=(const IteratorIterator& other) const {
+      template <typename T>
+      bool operator!=(const IteratorIterator<T>& other) const {
         return this->sub_iter != other.sub_iter;
       }
 
