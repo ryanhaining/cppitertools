@@ -41,7 +41,8 @@ TEST_CASE("zip: const iteration", "[zip][const]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("zip: const iterators can be compared to non-const iterators", "[zip][const]") {
+TEST_CASE("zip: const iterators can be compared to non-const iterators",
+    "[zip][const]") {
   std::vector<int> v;
   std::string s;
   auto z = zip(v, s);
