@@ -29,18 +29,21 @@ class iter::impl::Zipped {
   friend Zipped iter::impl::zip_impl<TupleType, Is...>(
       TupleType&&, std::index_sequence<Is...>);
 
-  using ZipIterDeref = iterator_deref_tuple<TupleType>;
+  template <typename TupleTypeT>
+  using ZipIterDeref = iterator_deref_tuple<TupleTypeT>;
 
   Zipped(TupleType&& containers) : containers_(std::move(containers)) {}
 
  public:
   Zipped(Zipped&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref> {
+  template <typename TupleTypeT>
+  class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref<TupleTypeT>> {
    private:
-    iterator_tuple_type<TupleType> iters_;
+    template <typename> friend class Iterator;
+    iterator_tuple_type<TupleTypeT> iters_;
 
    public:
-    Iterator(iterator_tuple_type<TupleType>&& iters)
+    Iterator(iterator_tuple_type<TupleTypeT>&& iters)
         : iters_(std::move(iters)) {}
 
     Iterator& operator++() {
@@ -54,7 +57,8 @@ class iter::impl::Zipped {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       if (sizeof...(Is) == 0) return false;
 
       bool results[] = {
@@ -63,12 +67,13 @@ class iter::impl::Zipped {
           get_begin(results), get_end(results), [](bool b) { return b; });
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
-    ZipIterDeref operator*() {
-      return ZipIterDeref{(*std::get<Is>(iters_))...};
+    ZipIterDeref<TupleTypeT> operator*() {
+      return ZipIterDeref<TupleTypeT>{(*std::get<Is>(iters_))...};
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -76,14 +81,24 @@ class iter::impl::Zipped {
     }
   };
 
-  Iterator begin() {
+  Iterator<TupleType> begin() {
     return {iterator_tuple_type<TupleType>{
         get_begin(std::get<Is>(containers_))...}};
   }
 
-  Iterator end() {
+  Iterator<TupleType> end() {
     return {
         iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...}};
+  }
+
+  Iterator<AsConst<TupleType>> begin() const {
+    return {iterator_tuple_type<AsConst<TupleType>>{
+        get_begin(std::get<Is>(as_const(containers_)))...}};
+  }
+
+  Iterator<AsConst<TupleType>> end() const {
+    return {
+        iterator_tuple_type<AsConst<TupleType>>{get_end(std::get<Is>(as_const(containers_)))...}};
   }
 };
 
