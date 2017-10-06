@@ -37,9 +37,11 @@ class iter::impl::Zipped {
  public:
   Zipped(Zipped&&) = default;
   template <typename TupleTypeT>
-  class Iterator : public std::iterator<std::input_iterator_tag, ZipIterDeref<TupleTypeT>> {
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       ZipIterDeref<TupleTypeT>> {
    private:
-    template <typename> friend class Iterator;
+    template <typename>
+    friend class Iterator;
     iterator_tuple_type<TupleTypeT> iters_;
 
    public:
@@ -97,8 +99,8 @@ class iter::impl::Zipped {
   }
 
   Iterator<AsConst<TupleType>> end() const {
-    return {
-        iterator_tuple_type<AsConst<TupleType>>{get_end(std::get<Is>(as_const(containers_)))...}};
+    return {iterator_tuple_type<AsConst<TupleType>>{
+        get_end(std::get<Is>(as_const(containers_)))...}};
   }
 };
 
