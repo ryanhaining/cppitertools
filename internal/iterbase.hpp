@@ -74,6 +74,11 @@ namespace iter {
     template <typename Container>
     using iterator_type = decltype(get_begin(std::declval<Container&>()));
 
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using const_iterator_type = decltype(
+        get_begin(std::declval<const std::remove_reference_t<Container>&>()));
+
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
     template <typename Container>
@@ -85,6 +90,11 @@ namespace iter {
     template <typename Container>
     using const_iterator_deref =
         decltype(*std::declval<const iterator_type<Container>&>());
+
+    // the type of dereferencing a const_iterator
+    template <typename Container>
+    using const_iterator_type_deref =
+        decltype(*std::declval<const_iterator_type<Container>&>());
 
     template <typename Container>
     using iterator_traits_deref =
