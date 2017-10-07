@@ -97,6 +97,32 @@ TEST_CASE(
   REQUIRE(v == vc);
 }
 
+TEST_CASE("zip_longest: const iteration", "[zip_longest][const]") {
+  // using TP = const_opt_tuple</*int,*/ char>;
+  using TP = std::tuple<int, char>;
+  using ResVec = std::vector<TP>;
+
+  char cr[] = {'a', 'b'};
+
+  ResVec v;
+  const auto zl = zip_longest(std::vector<int>{10, 20}, cr);
+
+  for (auto&& p : zl) {
+    v.push_back(TP{*std::get<0>(p), *std::get<1>(p)});
+  }
+  ResVec vc{TP{10, 'a'}, TP{20, 'b'}};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("zip_longest: const iterators can be compared to non-const iterators",
+    "[zip_longest][const]") {
+  auto zl = zip_longest(std::vector<int>{});
+  const auto& czl = zl;
+  std::begin(zl);
+  std::begin(czl);
+  (void)(std::begin(zl) == std::end(czl));
+}
+
 TEST_CASE(
     "zip longest: when all are empty, terminates right away", "[zip_longest]") {
   const std::vector<int> ivec{};
