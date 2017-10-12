@@ -69,17 +69,19 @@ class iter::impl::SortedView {
 
     using ConstIterIterWrap =
         IterIterWrapper<std::vector<iterator_type<AsConst<ContainerT>>>>;
-    using ConstItIt = iterator_type<AsConst<ConstIterIterWrap>>;
+    using ConstItIt = iterator_type<ConstIterIterWrap>;
 
    private:
     ContainerT container_;
+    mutable CompareFunc compare_func_;
     IterIterWrap sorted_iters_;
-    ConstIterIterWrap const_sorted_iters_;
+    mutable ConstIterIterWrap const_sorted_iters_;
 
-   public:
-    SortedItersHolder(ContainerT&& container, CompareFunc compare_func)
-        : container_(std::forward<ContainerT>(container)) {
-      // TODO sort lazily
+    void populate_sorted_iters() const = delete;
+    void populate_sorted_iters() {
+      if (!sorted_iters_.empty()) {
+        return;
+      }
       // Fill the sorted_iters_ vector with an iterator to each
       // element in the container_
       for (auto iter = get_begin(container_); iter != get_end(container_);
@@ -89,11 +91,16 @@ class iter::impl::SortedView {
 
       // sort by comparing the elements that the iterators point to
       std::sort(get_begin(sorted_iters_.get()), get_end(sorted_iters_.get()),
-          [compare_func](iterator_type<ContainerT> it1,
-                    iterator_type<ContainerT> it2) {
-            return compare_func(*it1, *it2);
+          [this](iterator_type<ContainerT> it1, iterator_type<ContainerT> it2) {
+            return compare_func_(*it1, *it2);
           });
+    }
 
+    void populate_const_sorted_iters() = delete;
+    void populate_const_sorted_iters() const {
+      if (!const_sorted_iters_.empty()) {
+        return;
+      }
       for (auto iter = get_begin(as_const(container_));
            iter != get_end(as_const(container_)); ++iter) {
         const_sorted_iters_.get().push_back(iter);
@@ -102,25 +109,34 @@ class iter::impl::SortedView {
       // sort by comparing the elements that the iterators point to
       std::sort(get_begin(const_sorted_iters_.get()),
           get_end(const_sorted_iters_.get()),
-          [compare_func](iterator_type<AsConst<ContainerT>> it1,
+          [this](iterator_type<AsConst<ContainerT>> it1,
                     iterator_type<AsConst<ContainerT>> it2) {
-            return compare_func(*it1, *it2);
+            return compare_func_(*it1, *it2);
           });
     }
 
+   public:
+    SortedItersHolder(ContainerT&& container, CompareFunc compare_func)
+        : container_(std::forward<ContainerT>(container)),
+          compare_func_(std::move(compare_func)) {}
+
     ItIt begin() {
+      populate_sorted_iters();
       return sorted_iters_.begin();
     }
 
     ItIt end() {
+      populate_sorted_iters();
       return sorted_iters_.end();
     }
 
     ConstItIt begin() const {
+      populate_const_sorted_iters();
       return const_sorted_iters_.begin();
     }
 
     ConstItIt end() const {
+      populate_const_sorted_iters();
       return const_sorted_iters_.end();
     }
   };
