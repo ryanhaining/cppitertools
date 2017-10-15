@@ -29,32 +29,37 @@ class iter::impl::CombinatorWithReplacement {
   CombinatorWithReplacement(Container&& container, std::size_t n)
       : container_(std::forward<Container>(container)), length_{n} {}
 
-  using IndexVector = std::vector<iterator_type<Container>>;
-  using CombIteratorDeref = IterIterWrapper<IndexVector>;
+  template <typename T>
+  using IndexVector = std::vector<iterator_type<T>>;
+  template <typename T>
+  using CombIteratorDeref = IterIterWrapper<IndexVector<T>>;
 
  public:
   CombinatorWithReplacement(CombinatorWithReplacement&&) = default;
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, CombIteratorDeref> {
+  template <typename ContainerT>
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       CombIteratorDeref<ContainerT>> {
    private:
+    template <typename>
+    friend class Iterator;
     constexpr static const int COMPLETE = -1;
-    std::remove_reference_t<Container>* container_p_;
-    CombIteratorDeref indices_;
+    std::remove_reference_t<ContainerT>* container_p_;
+    CombIteratorDeref<ContainerT> indices_;
     int steps_;
 
    public:
-    Iterator(Container& in_container, std::size_t n)
+    Iterator(ContainerT& in_container, std::size_t n)
         : container_p_{&in_container},
           indices_(n, get_begin(in_container)),
           steps_{(get_begin(in_container) != get_end(in_container) && n)
                      ? 0
                      : COMPLETE} {}
 
-    CombIteratorDeref& operator*() {
+    CombIteratorDeref<ContainerT>& operator*() {
       return indices_;
     }
 
-    CombIteratorDeref* operator->() {
+    CombIteratorDeref<ContainerT>* operator->() {
       return &indices_;
     }
 
@@ -90,21 +95,31 @@ class iter::impl::CombinatorWithReplacement {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return !(*this == other);
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return steps_ == other.steps_;
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {container_, length_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {container_, 0};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {as_const(container_), length_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {as_const(container_), 0};
   }
 };
 
