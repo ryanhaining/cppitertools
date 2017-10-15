@@ -31,6 +31,27 @@ TEST_CASE("permutations: basic test, 3 element sequence", "[permutations]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("permutations: const iteration", "[permutations][const]") {
+  const std::vector<int> ns = {1, 7, 9};
+
+  IntPermSet v;
+  const auto perm = permutations(ns);
+  for (auto&& st : perm) {
+    v.emplace(std::begin(st), std::end(st));
+  }
+  const IntPermSet vc = {
+      {1, 7, 9}, {1, 9, 7}, {7, 1, 9}, {7, 9, 1}, {9, 1, 7}, {9, 7, 1}};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE(
+    "permutations: const iterators can be compared to non-const iteration",
+    "[permutations][const]") {
+  auto p = permutations(std::vector<int>{});
+  const auto& cp = p;
+  (void)(std::begin(p) == std::end(cp));
+}
+
 TEST_CASE("permutations: Works with different begin and end types",
     "[permutations]") {
   CharRange cr{'d'};
