@@ -33,6 +33,29 @@ TEST_CASE("combinations_with_replacement: Simple combination",
   REQUIRE(ans == sc);
 }
 
+TEST_CASE("combinations_with_replacement: const iteration",
+    "[combinations_with_replacement]") {
+  std::string s{"ABC"};
+  CharCombSet sc;
+  const auto cwr = combinations_with_replacement(s, 2);
+  for (auto v : cwr) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+  CharCombSet ans = {
+      {'A', 'A'}, {'A', 'B'}, {'A', 'C'}, {'B', 'B'}, {'B', 'C'}, {'C', 'C'}};
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE(
+    "combinations_with_replacement: const iterators can be compared to "
+    "non-const iterators",
+    "[combinations_with_replacement][const]") {
+  std::string s{"AB"};
+  auto cwr = combinations_with_replacement(s, 2);
+  const auto& ccwr = cwr;
+  (void)(std::begin(cwr) == std::end(ccwr));
+}
+
 TEST_CASE(
     "combinations_with_replacement: Works with different begin and end types",
     "[combinations_with_replacement]") {
