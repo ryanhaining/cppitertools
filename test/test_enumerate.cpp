@@ -62,6 +62,14 @@ TEST_CASE("enumerate: const iterators can be compared", "[enumerate][const]") {
   (void)(std::begin(e) == std::end(ce));
 }
 
+TEST_CASE("enumerate: has .index, .element, .first, and .second") {
+  std::string s = "abc";
+  auto e = enumerate(s);
+  auto it = std::begin(e);
+  REQUIRE(it->index == it->first);
+  REQUIRE(&it->element == &it->second);
+}
+
 TEST_CASE("Empty enumerate", "[enumerate]") {
   std::string emp{};
   auto e = enumerate(emp);
@@ -142,6 +150,40 @@ TEST_CASE("enumerate: operator->", "[enumerate]") {
   auto it = std::begin(e);
   REQUIRE(it->first == 0);
   REQUIRE(it->second == 50);
+}
+
+TEST_CASE("enumerate: index and element", "[enumerate]") {
+  std::string s{"ace"};
+  auto e = enumerate(s);
+  auto it = std::begin(e);
+  REQUIRE((*it).index == 0);
+  REQUIRE((*it).element == 'a');
+
+  Vec v;
+  for (auto&& p : enumerate(s)) {
+    v.emplace_back(p.index, p.element);
+  }
+  Vec vc{{0, 'a'}, {1, 'c'}, {2, 'e'}};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("enumerate: index and element through arrow", "[enumerate]") {
+  std::string s{"ace"};
+  auto e = enumerate(s);
+  SECTION("One inspection") {
+    auto it = std::begin(e);
+    REQUIRE(it->index == 0);
+    REQUIRE(it->element == 'a');
+  }
+
+  SECTION("full loop") {
+    Vec v;
+    for (auto it = std::begin(e), end_it = std::end(e); it != end_it; ++it) {
+      v.emplace_back(it->index, it->element);
+    }
+    Vec vc{{0, 'a'}, {1, 'c'}, {2, 'e'}};
+    REQUIRE(v == vc);
+  }
 }
 
 TEST_CASE("Works with const iterable", "[enumerate]") {

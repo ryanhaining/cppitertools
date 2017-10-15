@@ -1,6 +1,10 @@
 #include <product.hpp>
 
+#define DEFINE_BASIC_ITERABLE_COPY_CTOR
+#define DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END
 #include "helpers.hpp"
+#undef DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END
+#undef DEFINE_BASIC_ITERABLE_COPY_CTOR
 
 #include <iterator>
 #include <string>
@@ -58,6 +62,27 @@ TEST_CASE("product: three sequences", "[product]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("product: with repeat", "[product]") {
+  using TP = std::tuple<char, char, char>;
+  using ResType = const std::vector<TP>;
+  const std::string s = "hop";
+  auto p = product<3>(s);
+  ResType v(std::begin(p), std::end(p));
+
+  ResType vc = {
+      TP{'h', 'h', 'h'}, TP{'h', 'h', 'o'}, TP{'h', 'h', 'p'},
+      TP{'h', 'o', 'h'}, TP{'h', 'o', 'o'}, TP{'h', 'o', 'p'},
+      TP{'h', 'p', 'h'}, TP{'h', 'p', 'o'}, TP{'h', 'p', 'p'},
+      TP{'o', 'h', 'h'}, TP{'o', 'h', 'o'}, TP{'o', 'h', 'p'},
+      TP{'o', 'o', 'h'}, TP{'o', 'o', 'o'}, TP{'o', 'o', 'p'},
+      TP{'o', 'p', 'h'}, TP{'o', 'p', 'o'}, TP{'o', 'p', 'p'},
+      TP{'p', 'h', 'h'}, TP{'p', 'h', 'o'}, TP{'p', 'h', 'p'},
+      TP{'p', 'o', 'h'}, TP{'p', 'o', 'o'}, TP{'p', 'o', 'p'},
+      TP{'p', 'p', 'h'}, TP{'p', 'p', 'o'}, TP{'p', 'p', 'p'},
+  };
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("product: empty when any iterable is empty", "[product]") {
   Vec n1 = {0, 1};
   Vec n2 = {0, 1, 2};
@@ -107,13 +132,34 @@ TEST_CASE("product: binds to lvalues and moves rvalues", "[product]") {
   SECTION("First ref'd, second moved") {
     product(bi, std::move(bi2));
     REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
     REQUIRE(bi2.was_moved_from());
   }
 
   SECTION("First moved, second ref'd") {
     product(std::move(bi), bi2);
     REQUIRE(bi.was_moved_from());
+    REQUIRE_FALSE(bi2.was_copied_from());
     REQUIRE_FALSE(bi2.was_moved_from());
+  }
+
+  SECTION("repeat, lvalue not moved or copied") {
+    product<2>(bi);
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
+  }
+
+  SECTION("repeat, const lvalue not moved or copied") {
+    const auto& r = bi;
+    product<2>(r);
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE_FALSE(bi.was_copied_from());
+  }
+
+  SECTION("repeat, rvalue copied") {
+    product<2>(std::move(bi));
+    REQUIRE_FALSE(bi.was_moved_from());
+    REQUIRE(bi.was_copied_from());
   }
 }
 
