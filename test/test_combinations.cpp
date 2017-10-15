@@ -37,6 +37,28 @@ TEST_CASE("combinations: Simple combination of 4", "[combinations]") {
   REQUIRE(ans == sc);
 }
 
+TEST_CASE("combinations: const iteration", "[combinations][const]") {
+  std::string s{"ABCD"};
+  CharCombSet sc;
+  const auto comb = combinations(s, 2);
+  for (auto&& v : comb) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+
+  CharCombSet ans = {
+      {'A', 'B'}, {'A', 'C'}, {'A', 'D'}, {'B', 'C'}, {'B', 'D'}, {'C', 'D'}};
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE(
+    "combinations: const iterators can be compared to non-const iterators",
+    "[combinations][const]") {
+  std::string s{"ABC"};
+  auto c = combinations(s, 2);
+  const auto& cc = c;
+  (void)(std::begin(c) == std::end(cc));
+}
+
 TEST_CASE("combinations: Works with different begin and end types",
     "[combinations]") {
   CharRange cr{'e'};
