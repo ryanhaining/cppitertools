@@ -12,11 +12,9 @@ namespace iter {
     struct UniqueJustseenFn : Pipeable<UniqueJustseenFn> {
       template <typename Container>
       auto operator()(Container&& container) const {
-        // explicit return type in lambda so reference types are preserved
-        return imap(
-            [](auto&& group) -> impl::iterator_deref<Container> {
-              return *get_begin(group.second);
-            },
+        // decltype(auto) return type in lambda so reference types are preserved
+        return imap([](auto&& group) -> decltype(
+                        auto) { return *get_begin(group.second); },
             groupby(std::forward<Container>(container)));
       }
     };
