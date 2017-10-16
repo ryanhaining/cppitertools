@@ -37,6 +37,7 @@ TEST_CASE("chain: const iteration", "[chain][const]") {
   REQUIRE(v == vc);
 }
 
+// TODO make this work
 #if 0
 TEST_CASE("chain: const iterators can be compared to non-const itertors", "[chain][const]") {
   auto ch = chain(std::string{}, std::string{});

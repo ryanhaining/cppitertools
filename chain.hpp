@@ -33,95 +33,105 @@ class iter::impl::Chained {
  private:
   friend ChainMaker;
 
-  static_assert(std::tuple_size<std::decay_t<TupType>>::value == sizeof...(Is),
-      "tuple size != sizeof Is");
+  template <typename TupTypeT>
+  class IteratorData {
+    IteratorData() = delete;
+    static_assert(
+        std::tuple_size<std::decay_t<TupTypeT>>::value == sizeof...(Is),
+        "tuple size != sizeof Is");
 
-  static_assert(
-      are_same<iterator_deref<std::tuple_element_t<Is, TupType>>...>::value,
-      "All chained iterables must have iterators that "
-      "dereference to the same type, including cv-qualifiers "
-      "and references.");
+    static_assert(
+        are_same<iterator_deref<std::tuple_element_t<Is, TupTypeT>>...>::value,
+        "All chained iterables must have iterators that "
+        "dereference to the same type, including cv-qualifiers "
+        "and references.");
 
-  using IterTupType = iterator_tuple_type<TupType>;
-  using DerefType = iterator_deref<std::tuple_element_t<0, TupType>>;
-  using ArrowType = iterator_arrow<std::tuple_element_t<0, TupType>>;
+   public:
+    using IterTupType = iterator_tuple_type<TupTypeT>;
+    using DerefType = iterator_deref<std::tuple_element_t<0, TupTypeT>>;
+    using ArrowType = iterator_arrow<std::tuple_element_t<0, TupTypeT>>;
 
-  template <std::size_t Idx>
-  static DerefType get_and_deref(IterTupType& iters) {
-    return *std::get<Idx>(iters);
-  }
+    template <std::size_t Idx>
+    static DerefType get_and_deref(IterTupType& iters) {
+      return *std::get<Idx>(iters);
+    }
 
-  template <std::size_t Idx>
-  static ArrowType get_and_arrow(IterTupType& iters) {
-    return apply_arrow(std::get<Idx>(iters));
-  }
+    template <std::size_t Idx>
+    static ArrowType get_and_arrow(IterTupType& iters) {
+      return apply_arrow(std::get<Idx>(iters));
+    }
 
-  template <std::size_t Idx>
-  static void get_and_increment(IterTupType& iters) {
-    ++std::get<Idx>(iters);
-  }
+    template <std::size_t Idx>
+    static void get_and_increment(IterTupType& iters) {
+      ++std::get<Idx>(iters);
+    }
 
-  template <std::size_t Idx>
-  static bool get_and_check_not_equal(
-      const IterTupType& lhs, const IterTupType& rhs) {
-    return std::get<Idx>(lhs) != std::get<Idx>(rhs);
-  }
+    template <std::size_t Idx>
+    static bool get_and_check_not_equal(
+        const IterTupType& lhs, const IterTupType& rhs) {
+      return std::get<Idx>(lhs) != std::get<Idx>(rhs);
+    }
 
-  using DerefFunc = DerefType (*)(IterTupType&);
-  using ArrowFunc = ArrowType (*)(IterTupType&);
-  using IncFunc = void (*)(IterTupType&);
-  using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
+    using DerefFunc = DerefType (*)(IterTupType&);
+    using ArrowFunc = ArrowType (*)(IterTupType&);
+    using IncFunc = void (*)(IterTupType&);
+    using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
 
-  constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{
-      {get_and_deref<Is>...}};
+    constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{
+        {get_and_deref<Is>...}};
 
-  constexpr static std::array<ArrowFunc, sizeof...(Is)> arrowers{
-      {get_and_arrow<Is>...}};
+    constexpr static std::array<ArrowFunc, sizeof...(Is)> arrowers{
+        {get_and_arrow<Is>...}};
 
-  constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{
-      {get_and_increment<Is>...}};
+    constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{
+        {get_and_increment<Is>...}};
 
-  constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{
-      {get_and_check_not_equal<Is>...}};
+    constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{
+        {get_and_check_not_equal<Is>...}};
 
-  using TraitsValue = iterator_traits_deref<std::tuple_element_t<0, TupType>>;
+    using TraitsValue =
+        iterator_traits_deref<std::tuple_element_t<0, TupTypeT>>;
+  };
 
- private:
   Chained(TupType&& t) : tup_(std::move(t)) {}
   TupType tup_;
 
  public:
   Chained(Chained&&) = default;
 
-  class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
+  template <typename TupTypeT>
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       typename IteratorData<TupTypeT>::TraitsValue> {
    private:
+    using IterData = IteratorData<TupTypeT>;
     std::size_t index_;
-    IterTupType iters_;
-    IterTupType ends_;
+    typename IterData::IterTupType iters_;
+    typename IterData::IterTupType ends_;
 
     void check_for_end_and_adjust() {
-      while (
-          index_ < sizeof...(Is) && !(neq_comparers[index_](iters_, ends_))) {
+      while (index_ < sizeof...(Is)
+             && !(IterData::neq_comparers[index_](iters_, ends_))) {
         ++index_;
       }
     }
 
    public:
-    Iterator(std::size_t i, IterTupType&& iters, IterTupType&& ends)
+    Iterator(std::size_t i, typename IterData::IterTupType&& iters,
+        typename IterData::IterTupType&& ends)
         : index_{i}, iters_(std::move(iters)), ends_(std::move(ends)) {
       check_for_end_and_adjust();
     }
 
     decltype(auto) operator*() {
-      return derefers[index_](iters_);
+      return IterData::derefers[index_](iters_);
     }
 
     decltype(auto) operator-> () {
-      return arrowers[index_](iters_);
+      return IterData::arrowers[index_](iters_);
     }
 
     Iterator& operator++() {
-      incrementers[index_](iters_);
+      IterData::incrementers[index_](iters_);
       check_for_end_and_adjust();
       return *this;
     }
@@ -132,10 +142,11 @@ class iter::impl::Chained {
       return ret;
     }
 
+    // TODO make const and non-const iterators comparable
     bool operator!=(const Iterator& other) const {
       return index_ != other.index_
              || (index_ != sizeof...(Is)
-                    && neq_comparers[index_](iters_, other.iters_));
+                    && IterData::neq_comparers[index_](iters_, other.iters_));
     }
 
     bool operator==(const Iterator& other) const {
@@ -143,36 +154,64 @@ class iter::impl::Chained {
     }
   };
 
-  Iterator begin() {
-    return {0, IterTupType{get_begin(std::get<Is>(tup_))...},
-        IterTupType{get_end(std::get<Is>(tup_))...}};
+  Iterator<TupType> begin() {
+    return {0, typename IteratorData<TupType>::IterTupType{get_begin(
+                   std::get<Is>(tup_))...},
+        typename IteratorData<TupType>::IterTupType{
+            get_end(std::get<Is>(tup_))...}};
   }
 
-  Iterator end() {
-    return {sizeof...(Is), IterTupType{get_end(std::get<Is>(tup_))...},
-        IterTupType{get_end(std::get<Is>(tup_))...}};
+  Iterator<TupType> end() {
+    return {sizeof...(Is), typename IteratorData<TupType>::IterTupType{get_end(
+                               std::get<Is>(tup_))...},
+        typename IteratorData<TupType>::IterTupType{
+            get_end(std::get<Is>(tup_))...}};
+  }
+
+  Iterator<AsConst<TupType>> begin() const {
+    return {0, typename IteratorData<AsConst<TupType>>::IterTupType{get_begin(
+                   as_const(std::get<Is>(tup_)))...},
+        typename IteratorData<AsConst<TupType>>::IterTupType{
+            get_end(as_const(std::get<Is>(tup_)))...}};
+  }
+
+  Iterator<AsConst<TupType>> end() const {
+    return {sizeof...(Is),
+        typename IteratorData<AsConst<TupType>>::IterTupType{
+            get_end(as_const(std::get<Is>(tup_)))...},
+        typename IteratorData<AsConst<TupType>>::IterTupType{
+            get_end(as_const(std::get<Is>(tup_)))...}};
   }
 };
 
+// jesus christ. what have I done.
 template <typename TupType, std::size_t... Is>
-constexpr std::array<typename iter::impl::Chained<TupType, Is...>::DerefFunc,
+template <typename TupTypeT>
+constexpr std::array<typename iter::impl::Chained<TupType,
+                         Is...>::template IteratorData<TupTypeT>::DerefFunc,
     sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::derefers;
+    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::derefers;
 
 template <typename TupType, std::size_t... Is>
-constexpr std::array<typename iter::impl::Chained<TupType, Is...>::ArrowFunc,
+template <typename TupTypeT>
+constexpr std::array<typename iter::impl::Chained<TupType,
+                         Is...>::template IteratorData<TupTypeT>::ArrowFunc,
     sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::arrowers;
+    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::arrowers;
 
 template <typename TupType, std::size_t... Is>
-constexpr std::array<typename iter::impl::Chained<TupType, Is...>::IncFunc,
+template <typename TupTypeT>
+constexpr std::array<typename iter::impl::Chained<TupType,
+                         Is...>::template IteratorData<TupTypeT>::IncFunc,
     sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::incrementers;
+    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::incrementers;
 
 template <typename TupType, std::size_t... Is>
-constexpr std::array<typename iter::impl::Chained<TupType, Is...>::NeqFunc,
+template <typename TupTypeT>
+constexpr std::array<typename iter::impl::Chained<TupType,
+                         Is...>::template IteratorData<TupTypeT>::NeqFunc,
     sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::neq_comparers;
+    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::neq_comparers;
 
 template <typename Container>
 class iter::impl::ChainedFromIterable {
