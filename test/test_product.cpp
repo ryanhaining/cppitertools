@@ -30,6 +30,29 @@ TEST_CASE("product: basic test, two sequences", "[product]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("product: const iteration", "[product][const]") {
+  using TP = std::tuple<int, char>;
+  using ResType = std::vector<TP>;
+
+  Vec n1 = {0, 1};
+  const std::string s{"abc"};
+
+  const auto p = product(n1, s);
+  ResType v(std::begin(p), std::end(p));
+  ResType vc = {
+      TP{0, 'a'}, TP{0, 'b'}, TP{0, 'c'}, TP{1, 'a'}, TP{1, 'b'}, TP{1, 'c'}};
+
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("product: const iterators can be compared to non-const iterators",
+    "[product][const]") {
+  std::string s;
+  auto p = product(Vec{}, s);
+  const auto& cp = p;
+  (void)(std::begin(p) == std::end(cp));
+}
+
 TEST_CASE("product: two sequences where one has different begin and end",
     "[product]") {
   using TP = std::tuple<int, char>;
