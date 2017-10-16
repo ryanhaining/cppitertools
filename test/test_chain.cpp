@@ -26,6 +26,25 @@ TEST_CASE("chain: three strings", "[chain]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("chain: const iteration", "[chain][const]") {
+  std::string s1{"abc"};
+  /* const */ std::string s2{"mno"};
+  auto ch = chain(s1, s2, std::string{"xyz"});
+
+  Vec v(std::begin(ch), std::end(ch));
+  Vec vc{'a', 'b', 'c', 'm', 'n', 'o', 'x', 'y', 'z'};
+
+  REQUIRE(v == vc);
+}
+
+#if 0
+TEST_CASE("chain: const iterators can be compared to non-const itertors", "[chain][const]") {
+  auto ch = chain(std::string{}, std::string{});
+  const auto& cch = ch;
+  (void)(std::begin(ch) == std::end(cch));
+}
+#endif
+
 TEST_CASE("chain: with different container types", "[chain]") {
   std::string s1{"abc"};
   std::list<char> li{'m', 'n', 'o'};
@@ -183,6 +202,23 @@ TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
   std::vector<char> vc{'a', 'b', 'c', 'x', 'y', 'z'};
   REQUIRE(v == vc);
 }
+
+#if 0
+TEST_CASE("chain.from_iterable: const iteration", "[chain.from_iterable][const]") {
+  std::vector<std::string> sv{"abc", "xyz"};
+  const auto ch = chain.from_iterable(sv);
+  std::vector<char> v(std::begin(ch), std::end(ch));
+
+  std::vector<char> vc{'a', 'b', 'c', 'x', 'y', 'z'};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("chain.from_iterable: const iterators can be compared to non-const iterators", "[chain.from_iterable][const]") {
+  auto ch = chain.from_iterable(std::vector<int>{});
+  const auto& cch = ch;
+  (void)(std::begin(ch) == std::end(cch));
+}
+#endif
 
 TEST_CASE("chain.fromm_iterable: Works with different begin and end types",
     "[chain.from_iterable]") {
