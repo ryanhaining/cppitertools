@@ -34,8 +34,9 @@ class iter::impl::Productor<Container, RestContainers...> {
   template <typename... RC>
   friend class Productor;
 
+  template <typename T>
   using ProdIterDeref =
-      std::tuple<iterator_deref<Container>, iterator_deref<RestContainers>...>;
+      std::tuple<iterator_deref<T>, iterator_deref<RestContainers>...>;
 
  private:
   Container container_;
@@ -46,20 +47,23 @@ class iter::impl::Productor<Container, RestContainers...> {
 
  public:
   Productor(Productor&&) = default;
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, ProdIterDeref> {
-   private:
-    using RestIter = typename Productor<RestContainers...>::Iterator;
 
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_begin_;
+ private:
+  template <typename ContainerT, typename RestIter>
+  class IteratorTempl : public std::iterator<std::input_iterator_tag,
+                            ProdIterDeref<ContainerT>> {
+   private:
+    template <typename, typename>
+    friend class IteratorTempl;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_begin_;
 
     RestIter rest_iter_;
     RestIter rest_end_;
 
    public:
     constexpr static const bool is_base_iter = false;
-    Iterator(IteratorWrapper<Container>&& sub_iter, RestIter&& rest_iter,
+    IteratorTempl(IteratorWrapper<ContainerT>&& sub_iter, RestIter&& rest_iter,
         RestIter&& rest_end)
         : sub_iter_{sub_iter},
           sub_begin_{sub_iter},
@@ -70,7 +74,7 @@ class iter::impl::Productor<Container, RestContainers...> {
       sub_iter_ = sub_begin_;
     }
 
-    Iterator& operator++() {
+    IteratorTempl& operator++() {
       ++rest_iter_;
       if (!(rest_iter_ != rest_end_)) {
         rest_iter_.reset();
@@ -79,30 +83,39 @@ class iter::impl::Productor<Container, RestContainers...> {
       return *this;
     }
 
-    Iterator operator++(int) {
+    IteratorTempl operator++(int) {
       auto ret = *this;
       ++*this;
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T, typename U>
+    bool operator!=(const IteratorTempl<T, U>& other) const {
       return sub_iter_ != other.sub_iter_
              && (RestIter::is_base_iter || rest_iter_ != other.rest_iter_);
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T, typename U>
+    bool operator==(const IteratorTempl<T, U>& other) const {
       return !(*this != other);
     }
 
-    ProdIterDeref operator*() {
+    ProdIterDeref<ContainerT> operator*() {
       return std::tuple_cat(
-          std::tuple<iterator_deref<Container>>{*sub_iter_}, *rest_iter_);
+          std::tuple<iterator_deref<ContainerT>>{*sub_iter_}, *rest_iter_);
     }
 
-    ArrowProxy<ProdIterDeref> operator->() {
+    ArrowProxy<ProdIterDeref<ContainerT>> operator->() {
       return {**this};
     }
   };
+
+  using RestIter = typename Productor<RestContainers...>::Iterator;
+  using RestConstIter = typename Productor<RestContainers...>::ConstIterator;
+
+ public:
+  using Iterator = IteratorTempl<Container, RestIter>;
+  using ConstIterator = IteratorTempl<AsConst<Container>, RestConstIter>;
 
   Iterator begin() {
     return {get_begin(container_), get_begin(rest_products_),
@@ -112,6 +125,16 @@ class iter::impl::Productor<Container, RestContainers...> {
   Iterator end() {
     return {
         get_end(container_), get_end(rest_products_), get_end(rest_products_)};
+  }
+
+  ConstIterator begin() const {
+    return {get_begin(as_const(container_)),
+        get_begin(as_const(rest_products_)), get_end(as_const(rest_products_))};
+  }
+
+  ConstIterator end() const {
+    return {get_end(as_const(container_)), get_end(as_const(rest_products_)),
+        get_end(as_const(rest_products_))};
   }
 };
 
@@ -148,12 +171,21 @@ class iter::impl::Productor<> {
       return {};
     }
   };
+  using ConstIterator = Iterator;
 
   Iterator begin() {
     return {};
   }
 
   Iterator end() {
+    return {};
+  }
+
+  ConstIterator begin() const {
+    return {};
+  }
+
+  ConstIterator end() const {
     return {};
   }
 };
