@@ -69,6 +69,53 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
   REQUIRE(groups == gc);
 }
 
+TEST_CASE("groupby: const iteration", "[groupby][const]") {
+  std::vector<int> keys;
+  std::vector<std::vector<std::string>> groups;
+
+  SECTION("Function pointer") {
+    SECTION("lvalue") {
+      const auto g = groupby(vec, length);
+      for (auto&& gb : g) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("rvalue") {
+      const auto g = groupby(std::vector<std::string>(vec), length);
+      for (auto&& gb : g) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+  }
+
+  SECTION("Callable object") {
+    const auto g = groupby(vec, Sizer{});
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  SECTION("lambda function") {
+    const auto g = groupby(vec, [](const std::string& s) { return s.size(); });
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  const std::vector<int> kc = {2, 3, 5};
+  REQUIRE(keys == kc);
+
+  const std::vector<std::vector<std::string>> gc = {
+      {"hi", "ab", "ho"}, {"abc", "def"}, {"abcde", "efghi"},
+  };
+
+  REQUIRE(groups == gc);
+}
+
 TEST_CASE("groupby: Works with different begin and end types", "[groupby]") {
   CharRange cr{'f'};
   std::vector<bool> keys;
