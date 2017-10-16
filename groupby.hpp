@@ -61,6 +61,8 @@ class iter::impl::GroupProducer {
   class Iterator : public std::iterator<std::input_iterator_tag,
                        KeyGroupPair<ContainerT>> {
    private:
+    template <typename>
+    friend class Iterator;
     IteratorWrapper<ContainerT> sub_iter_;
     IteratorWrapper<ContainerT> sub_end_;
     Holder<ContainerT> item_;
@@ -125,12 +127,13 @@ class iter::impl::GroupProducer {
       return ret;
     }
 
-    // TODO template
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
