@@ -75,7 +75,8 @@ TEST_CASE("groupby: const iteration", "[groupby][const]") {
 
   SECTION("Function pointer") {
     SECTION("lvalue") {
-      const auto g = groupby(vec, length);
+      std::vector<std::string> local_vec(vec);
+      const auto g = groupby(local_vec, length);
       for (auto&& gb : g) {
         keys.push_back(gb.first);
         groups.emplace_back(std::begin(gb.second), std::end(gb.second));
@@ -114,6 +115,23 @@ TEST_CASE("groupby: const iteration", "[groupby][const]") {
   };
 
   REQUIRE(groups == gc);
+}
+
+TEST_CASE("groupby: iterators compare equal to non-const iterators",
+    "[groupby][const]") {
+  auto gb = groupby(std::vector<std::string>{"hi"}, length);
+  const auto& cgb = gb;
+
+  auto gb_it = std::begin(gb);
+  (void)(gb_it == std::end(cgb));
+
+// TODO figure out how to make GroupIterator<Container> and
+// GroupIterator<AsConst<Container>> comparable
+#if 0
+  auto group = std::begin(gb_it->second);
+  const auto& cgroup = group;
+  (void)(std::begin(group) == std::begin(cgroup));
+#endif
 }
 
 TEST_CASE("groupby: Works with different begin and end types", "[groupby]") {
