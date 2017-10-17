@@ -223,14 +223,17 @@ class iter::impl::ChainedFromIterable {
 
  public:
   ChainedFromIterable(ChainedFromIterable&&) = default;
+  template <typename ContainerT>
   class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<iterator_deref<Container>>> {
+                       iterator_traits_deref<iterator_deref<ContainerT>>> {
    private:
-    using SubContainer = iterator_deref<Container>;
+    template <typename>
+    friend class Iterator;
+    using SubContainer = iterator_deref<ContainerT>;
     using SubIter = IteratorWrapper<SubContainer>;
 
-    IteratorWrapper<Container> top_level_iter_;
-    IteratorWrapper<Container> top_level_end_;
+    IteratorWrapper<ContainerT> top_level_iter_;
+    IteratorWrapper<ContainerT> top_level_end_;
     std::unique_ptr<SubIter> sub_iter_p_;
     std::unique_ptr<SubIter> sub_end_p_;
 
@@ -238,8 +241,11 @@ class iter::impl::ChainedFromIterable {
       return sub_iter ? std::make_unique<SubIter>(*sub_iter) : nullptr;
     }
 
-    bool sub_iters_differ(const Iterator& other) const {
-      if (sub_iter_p_ == other.sub_iter_p_) {
+    template <typename T>
+    bool sub_iters_differ(const Iterator<T>& other) const {
+      // checking if they're the same also handles them both being nullptr
+      if (static_cast<const void*>(sub_iter_p_.get())
+          == static_cast<const void*>(other.sub_iter_p_.get())) {
         return false;
       }
       if (sub_iter_p_ == nullptr || other.sub_iter_p_ == nullptr) {
@@ -251,8 +257,8 @@ class iter::impl::ChainedFromIterable {
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& top_iter,
-        IteratorWrapper<Container>&& top_end)
+    Iterator(IteratorWrapper<ContainerT>&& top_iter,
+        IteratorWrapper<ContainerT>&& top_end)
         : top_level_iter_{std::move(top_iter)},
           top_level_end_{std::move(top_end)},
           sub_iter_p_{!(top_iter != top_end)
@@ -308,30 +314,40 @@ class iter::impl::ChainedFromIterable {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return top_level_iter_ != other.top_level_iter_
              || sub_iters_differ(other);
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
-    iterator_deref<iterator_deref<Container>> operator*() {
+    iterator_deref<iterator_deref<ContainerT>> operator*() {
       return **sub_iter_p_;
     }
 
-    iterator_arrow<iterator_deref<Container>> operator->() {
+    iterator_arrow<iterator_deref<ContainerT>> operator->() {
       return apply_arrow(*sub_iter_p_);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_)};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_)};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_))};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_))};
   }
 };
 
