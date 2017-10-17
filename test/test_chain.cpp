@@ -204,8 +204,8 @@ TEST_CASE("chain.from_iterable: basic test", "[chain.from_iterable]") {
   REQUIRE(v == vc);
 }
 
-#if 0
-TEST_CASE("chain.from_iterable: const iteration", "[chain.from_iterable][const]") {
+TEST_CASE(
+    "chain.from_iterable: const iteration", "[chain.from_iterable][const]") {
   std::vector<std::string> sv{"abc", "xyz"};
   const auto ch = chain.from_iterable(sv);
   std::vector<char> v(std::begin(ch), std::end(ch));
@@ -214,12 +214,15 @@ TEST_CASE("chain.from_iterable: const iteration", "[chain.from_iterable][const]"
   REQUIRE(v == vc);
 }
 
-TEST_CASE("chain.from_iterable: const iterators can be compared to non-const iterators", "[chain.from_iterable][const]") {
-  auto ch = chain.from_iterable(std::vector<int>{});
+TEST_CASE(
+    "chain.from_iterable: const iterators can be compared to non-const "
+    "iterators",
+    "[chain.from_iterable][const]") {
+  std::vector<std::vector<int>> v{};
+  auto ch = chain.from_iterable(v);
   const auto& cch = ch;
   (void)(std::begin(ch) == std::end(cch));
 }
-#endif
 
 TEST_CASE("chain.fromm_iterable: Works with different begin and end types",
     "[chain.from_iterable]") {
