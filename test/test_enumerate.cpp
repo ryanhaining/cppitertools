@@ -34,6 +34,34 @@ TEST_CASE("Basic Functioning enumerate", "[enumerate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("const enumerate", "[enumerate][const]") {
+  Vec v;
+  SECTION("lvalue") {
+    std::string str = "abc";
+    const auto e = enumerate(str);
+    v.assign(std::begin(e), std::end(e));
+  }
+  SECTION("rvalue") {
+    const auto e = enumerate(std::string("abc"));
+    v.assign(std::begin(e), std::end(e));
+  }
+  SECTION("const lvalue") {
+    const std::string str = "abc";
+    const auto e = enumerate(str);
+    v.assign(std::begin(e), std::end(e));
+  }
+
+  Vec vc{{0, 'a'}, {1, 'b'}, {2, 'c'}};
+
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("enumerate: const iterators can be compared", "[enumerate][const]") {
+  auto e = enumerate(std::string("hello"));
+  const auto& ce = e;
+  (void)(std::begin(e) == std::end(ce));
+}
+
 TEST_CASE("enumerate: has .index, .element, .first, and .second") {
   std::string s = "abc";
   auto e = enumerate(s);

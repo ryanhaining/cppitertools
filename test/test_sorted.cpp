@@ -29,6 +29,21 @@ TEST_CASE("sorted: iterates through a vector in sorted order", "[sorted]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("sorted: const iteration", "[sorted][const]") {
+  Vec ns = {4, 0, 5, 1, 6, 7, 9, 3, 2, 8};
+  const auto s = sorted(ns);
+  Vec v(std::begin(s), std::end(s));
+  Vec vc = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("sorted: const iterators can be compared to non-const iterators",
+    "[sorted][const]") {
+  auto s = sorted(Vec{});
+  const auto& cs = s;
+  (void)(std::begin(s) == std::end(cs));
+}
+
 TEST_CASE("sorted: can modify elements through sorted", "[sorted]") {
   std::vector<int> ns(3, 9);
   for (auto&& n : sorted(ns)) {
@@ -193,7 +208,7 @@ TEST_CASE("sorted: moves rvalues and binds to lvalues", "[sorted]") {
 TEST_CASE("sorted: doesn't move or copy elements of iterable", "[sorted]") {
   using itertest::SolidInt;
   constexpr SolidInt arr[] = {{6}, {7}, {8}};
-  for (auto &&i : sorted(arr, [](const SolidInt&lhs, const SolidInt&rhs) {
+  for (auto &&i : sorted(arr, [](const SolidInt &lhs, const SolidInt &rhs) {
          return lhs.getint() < rhs.getint();
        })) {
     (void)i;

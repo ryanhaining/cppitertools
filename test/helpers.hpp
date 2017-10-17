@@ -110,7 +110,8 @@ namespace itertest {
     BasicIterable(const BasicIterable& other)
         : data{new T[other.size]}, size{other.size} {
       other.was_copied_from_ = true;
-      for (auto it = begin(*this), o_it = begin(other); o_it != end(other);
+      auto o_it = begin(other);
+      for (auto it = begin(*this); o_it != end(other);
            ++it, ++o_it) {
         *it = *o_it;
       }

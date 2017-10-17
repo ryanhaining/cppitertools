@@ -27,6 +27,31 @@ TEST_CASE("cycle: iterate twice", "[cycle]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("cycle: const iteration, iterate twice", "[cycle][const]") {
+  std::vector<int> ns{2, 4, 6};
+  std::vector<int> v{};
+  std::size_t count = 0;
+  const auto c = cycle(ns);
+  for (auto i : c) {
+    v.push_back(i);
+    ++count;
+    if (count == ns.size() * 2) {
+      break;
+    }
+  }
+
+  auto vc = ns;
+  vc.insert(std::end(vc), std::begin(ns), std::end(ns));
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("cycle: const iterators can be compared to non-const iterators",
+    "[cycle][const]") {
+  auto c = cycle(std::vector<int>{});
+  const auto& cc = c;
+  (void)(std::begin(c) == std::end(cc));
+}
+
 TEST_CASE("cycle: Works with different begin and end types", "[cycle]") {
   constexpr auto sz = 'd' - 'a';
   CharRange cr{'d'};

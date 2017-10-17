@@ -45,6 +45,32 @@ TEST_CASE("accumulate: With subtraction lambda", "[accumulate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("accumulate: const iterators", "[accumulate][const]") {
+  std::vector<int> v;
+  SECTION("lvalue") {
+    Vec ns{1, 2, 3, 4, 5};
+    const auto a = accumulate(ns);
+    v.assign(std::begin(a), std::end(a));
+  }
+  SECTION("rvalue") {
+    const auto a = accumulate(Vec{1, 2, 3, 4, 5});
+    v.assign(std::begin(a), std::end(a));
+  }
+  SECTION("const lvalue") {
+    const Vec ns{1, 2, 3, 4, 5};
+    const auto a = accumulate(ns);
+    v.assign(std::begin(a), std::end(a));
+  }
+  Vec vc{1, 3, 6, 10, 15};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("accumulate: const iterators can be compared", "[accumulate][const]") {
+  auto e = accumulate(std::string("hello"));
+  const auto& ce = e;
+  (void)(std::begin(e) == std::end(ce));
+}
+
 struct Integer {
   const int value;
   constexpr Integer(int i) : value{i} {}

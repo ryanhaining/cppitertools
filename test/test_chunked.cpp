@@ -31,6 +31,27 @@ TEST_CASE("chunked: basic test", "[chunked]") {
   REQUIRE(results == rc);
 }
 
+TEST_CASE("chunked: const chunked", "[chunked][const]") {
+  Vec ns = {1, 2, 3, 4, 5, 6};
+  ResVec results;
+  SECTION("Normal call") {
+    const auto& ch = chunked(ns, 2);
+    for (auto&& g : ch) {
+      results.emplace_back(std::begin(g), std::end(g));
+    }
+  }
+  ResVec rc = {{1, 2}, {3, 4}, {5, 6}};
+
+  REQUIRE(results == rc);
+}
+
+TEST_CASE("chunked: const iterators can be compared to non-const iterators",
+    "[chunked][const]") {
+  auto c = chunked(Vec{}, 1);
+  const auto& cc = c;
+  (void)(std::begin(c) == std::end(cc));
+}
+
 TEST_CASE("chunked: len(iterable) % groupsize != 0", "[chunked]") {
   Vec ns = {1, 2, 3, 4, 5, 6, 7};
   ResVec results;

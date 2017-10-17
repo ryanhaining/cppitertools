@@ -10,7 +10,7 @@
 
 using iter::unique_justseen;
 
-using Vec = const std::vector<int>;
+using Vec = std::vector<int>;
 
 TEST_CASE("unique justseen: adjacent repeating values", "[unique_justseen]") {
   Vec ns = {1, 1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 8, 8, 9, 9};
@@ -18,6 +18,22 @@ TEST_CASE("unique justseen: adjacent repeating values", "[unique_justseen]") {
   Vec v(std::begin(ue), std::end(ue));
   Vec vc = {1, 2, 3, 4, 5, 6, 7, 8, 9};
   REQUIRE(v == vc);
+}
+
+TEST_CASE("unique justseen: const iteration", "[unique_justseen][const]") {
+  Vec ns = {1, 1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 8, 8, 9, 9};
+  const auto uj = unique_justseen(ns);
+  Vec v(std::begin(uj), std::end(uj));
+  Vec vc = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE(
+    "unique justseen: const iterator can be compared to non-const iterators",
+    "[unique_justseen][const]") {
+  auto uj = unique_justseen(Vec{});
+  const auto& cuj = uj;
+  (void)(std::begin(uj) == std::begin(cuj));
 }
 
 TEST_CASE("unique justseen: some repeating values", "[unique_justseen]") {

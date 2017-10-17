@@ -32,6 +32,29 @@ TEST_CASE("powerset: basic test, [1, 2, 3]", "[powerset]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("powerset: const iteration", "[powerset][const]") {
+  const std::vector<int> ns = {1, 2, 3};
+  IntPermSet v;
+  const auto ps = powerset(ns);
+  for (auto&& st : ps) {
+    v.emplace(std::begin(st), std::end(st));
+  }
+
+  const IntPermSet vc = {
+      std::multiset<int>{}, {1}, {2}, {3}, {1, 2}, {1, 3}, {2, 3}, {1, 2, 3}};
+  REQUIRE(v == vc);
+}
+
+// TODO this doesn't work because two different Powersetter::Iterator types use
+// two different Combinator types
+#if 0
+TEST_CASE("powerset: const iterators can be compared to non-const iterators", "[powerset][const]") {
+  auto ps = powerset(std::vector<int>{});
+  const auto& cps = ps;
+  (void)(std::begin(ps) == std::end(cps));
+}
+#endif
+
 TEST_CASE("powerset: Works with different begin and end types", "[powerset]") {
   CharRange cr{'d'};
   using CharPermSet = std::multiset<std::vector<char>>;

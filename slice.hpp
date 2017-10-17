@@ -35,18 +35,21 @@ class iter::impl::Sliced {
 
  public:
   Sliced(Sliced&&) = default;
+  template <typename ContainerT>
   class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
+                       iterator_traits_deref<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_end_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_end_;
     DifferenceType current_;
     DifferenceType stop_;
     DifferenceType step_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end, DifferenceType start,
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end, DifferenceType start,
         DifferenceType stop, DifferenceType step)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
@@ -54,11 +57,11 @@ class iter::impl::Sliced {
           stop_{stop},
           step_{step} {}
 
-    iterator_deref<Container> operator*() {
+    iterator_deref<ContainerT> operator*() {
       return *sub_iter_;
     }
 
-    iterator_arrow<Container> operator->() {
+    iterator_arrow<ContainerT> operator->() {
       return apply_arrow(sub_iter_);
     }
 
@@ -77,23 +80,36 @@ class iter::impl::Sliced {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_ && current_ != other.current_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     auto it = get_begin(container_);
     dumb_advance(it, get_end(container_), start_);
     return {std::move(it), get_end(container_), start_, stop_, step_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_), stop_, stop_, step_};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    auto it = get_begin(as_const(container_));
+    dumb_advance(it, get_end(as_const(container_)), start_);
+    return {std::move(it), get_end(as_const(container_)), start_, stop_, step_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)), stop_,
+        stop_, step_};
   }
 };
 
@@ -109,9 +125,10 @@ struct iter::impl::SliceFn {
 
    private:
     friend SliceFn;
-    constexpr FnPartial(
-        DifferenceType start, DifferenceType stop, DifferenceType step) noexcept
-        : start_{start}, stop_{stop}, step_{step} {}
+    constexpr FnPartial(DifferenceType start, DifferenceType stop,
+        DifferenceType step) noexcept : start_{start},
+                                        stop_{stop},
+                                        step_{step} {}
     DifferenceType start_;
     DifferenceType stop_;
     DifferenceType step_;

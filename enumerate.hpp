@@ -61,25 +61,30 @@ class iter::impl::Enumerable {
  public:
   Enumerable(Enumerable&&) = default;
 
-  using IterYield = EnumIterYield<Index, iterator_deref<Container>>;
+  template <typename T>
+  using IterYield = EnumIterYield<Index, iterator_deref<T>>;
 
   //  Holds an iterator of the contained type and an Index for the
   //  index_.  Each call to ++ increments both of these data members.
   //  Each dereference returns an IterYield.
-  class Iterator : public std::iterator<std::input_iterator_tag, IterYield> {
+  template <typename ContainerT>
+  class Iterator
+      : public std::iterator<std::input_iterator_tag, IterYield<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
     Index index_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter, Index start)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter, Index start)
         : sub_iter_{std::move(sub_iter)}, index_{start} {}
 
-    IterYield operator*() {
+    IterYield<ContainerT> operator*() {
       return {index_, *sub_iter_};
     }
 
-    ArrowProxy<IterYield> operator->() {
+    ArrowProxy<IterYield<ContainerT>> operator->() {
       return {**this};
     }
 
@@ -95,21 +100,31 @@ class iter::impl::Enumerable {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), start_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), start_};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), start_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), start_};
   }
 };
 #endif

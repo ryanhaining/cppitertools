@@ -12,6 +12,20 @@ using iter::dropwhile;
 
 using Vec = const std::vector<int>;
 
+namespace {
+  class LessThanValue {
+   private:
+    int compare_val;
+
+   public:
+    LessThanValue(int v) : compare_val(v) {}
+
+    bool operator()(int i) {
+      return i < this->compare_val;
+    }
+  };
+}
+
 TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
   std::vector<int> v;
@@ -25,6 +39,21 @@ TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   }
   Vec vc = {5, 6, 7, 8};
   REQUIRE(v == vc);
+}
+
+TEST_CASE("dropwhile: const iteration", "[dropwhile][const]") {
+  Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
+  const auto d = dropwhile(LessThanValue{5}, ns);
+  Vec v(std::begin(d), std::end(d));
+  Vec vc = {5, 6, 7, 8};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("dropwhile: const iterators can be compared to non-const iterators",
+    "[dropwhile][const]") {
+  auto d = dropwhile(LessThanValue{5}, Vec{});
+  const auto& cd = d;
+  (void)(std::begin(d) == std::end(cd));
 }
 
 TEST_CASE(

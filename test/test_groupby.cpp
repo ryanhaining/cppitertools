@@ -69,6 +69,71 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
   REQUIRE(groups == gc);
 }
 
+TEST_CASE("groupby: const iteration", "[groupby][const]") {
+  std::vector<int> keys;
+  std::vector<std::vector<std::string>> groups;
+
+  SECTION("Function pointer") {
+    SECTION("lvalue") {
+      std::vector<std::string> local_vec(vec);
+      const auto g = groupby(local_vec, length);
+      for (auto&& gb : g) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("rvalue") {
+      const auto g = groupby(std::vector<std::string>(vec), length);
+      for (auto&& gb : g) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+  }
+
+  SECTION("Callable object") {
+    const auto g = groupby(vec, Sizer{});
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  SECTION("lambda function") {
+    const auto g = groupby(vec, [](const std::string& s) { return s.size(); });
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  const std::vector<int> kc = {2, 3, 5};
+  REQUIRE(keys == kc);
+
+  const std::vector<std::vector<std::string>> gc = {
+      {"hi", "ab", "ho"}, {"abc", "def"}, {"abcde", "efghi"},
+  };
+
+  REQUIRE(groups == gc);
+}
+
+TEST_CASE("groupby: iterators compare equal to non-const iterators",
+    "[groupby][const]") {
+  auto gb = groupby(std::vector<std::string>{"hi"}, length);
+  const auto& cgb = gb;
+
+  auto gb_it = std::begin(gb);
+  (void)(gb_it == std::end(cgb));
+
+// TODO figure out how to make GroupIterator<Container> and
+// GroupIterator<AsConst<Container>> comparable
+#if 0
+  auto group = std::begin(gb_it->second);
+  const auto& cgroup = group;
+  (void)(std::begin(group) == std::begin(cgroup));
+#endif
+}
+
 TEST_CASE("groupby: Works with different begin and end types", "[groupby]") {
   CharRange cr{'f'};
   std::vector<bool> keys;

@@ -28,6 +28,29 @@ TEST_CASE("zip: Simple case, same length", "[zip]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("zip: const iteration", "[zip][const]") {
+  using Tu = std::tuple<int, char, double>;
+  using ResVec = const std::vector<Tu>;
+  std::vector<int> iv{10, 20, 30};
+  std::string s{"hey"};
+  double arr[] = {1.0, 2.0, 4.0};
+
+  const auto z = zip(iv, s, arr);
+
+  ResVec v(std::begin(z), std::end(z));
+  ResVec vc{Tu{10, 'h', 1.0}, Tu{20, 'e', 2.0}, Tu{30, 'y', 4.0}};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("zip: const iterators can be compared to non-const iterators",
+    "[zip][const]") {
+  std::vector<int> v;
+  std::string s;
+  auto z = zip(std::vector<int>{}, s);
+  const auto& cz = z;
+  (void)(std::begin(z) == std::end(cz));
+}
+
 TEST_CASE(
     "zip: three sequences, one sequence has different begin and end", "[zip]") {
   using Tu = std::tuple<int, char, double>;

@@ -22,7 +22,7 @@ template <typename FilterFunc, typename Container>
 class iter::impl::Dropper {
  private:
   Container container_;
-  FilterFunc filter_func_;
+  mutable FilterFunc filter_func_;
 
   friend DropWhileFn;
 
@@ -32,12 +32,15 @@ class iter::impl::Dropper {
 
  public:
   Dropper(Dropper&&) = default;
+  template <typename ContainerT>
   class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<Container>> {
+                       iterator_traits_deref<ContainerT>> {
    private:
-    using Holder = DerefHolder<iterator_deref<Container>>;
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_end_;
+    template <typename>
+    friend class Iterator;
+    using Holder = DerefHolder<iterator_deref<ContainerT>>;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_end_;
     Holder item_;
     FilterFunc* filter_func_;
 
@@ -56,8 +59,8 @@ class iter::impl::Dropper {
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end, FilterFunc& filter_func)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
           filter_func_(&filter_func) {
@@ -86,21 +89,33 @@ class iter::impl::Dropper {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_), filter_func_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_), filter_func_};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_)),
+        filter_func_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        filter_func_};
   }
 };
 

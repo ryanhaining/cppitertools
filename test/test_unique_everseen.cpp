@@ -20,6 +20,22 @@ TEST_CASE("unique everseen: adjacent repeating values", "[unique_everseen]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("unique everseen: const iteration", "[unique_everseen][const]") {
+  Vec ns = {1, 1, 1, 2, 2, 3, 4, 4, 5, 6, 7, 8, 8, 8, 8, 9, 9};
+  const auto ue = unique_everseen(ns);
+  Vec v(std::begin(ue), std::end(ue));
+  Vec vc = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE(
+    "unique everseen: const iterators can be compared to non-const iterators",
+    "[unique_everseen][const]") {
+  auto ue = unique_everseen(std::vector<int>{});
+  const auto& cue = ue;
+  (void)(std::begin(ue) == std::end(cue));
+}
+
 TEST_CASE(
     "unique everseen: nonadjacent repeating values", "[unique_everseen]") {
   Vec ns = {1, 2, 3, 4, 3, 2, 1, 5, 6};

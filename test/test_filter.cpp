@@ -53,6 +53,21 @@ TEST_CASE("filter: handles different callable types", "[filter]") {
   }
 }
 
+TEST_CASE("filter: const iteration", "[filter][const]") {
+  Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
+  const auto f = filter(LessThanValue{5}, ns);
+  Vec v(std::begin(f), std::end(f));
+  Vec vc = {1, 2, 3, 1, -1};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("filter: const iterator can be compared to non-const iterator",
+    "[filter][const]") {
+  auto f = filter(LessThanValue{5}, Vec{});
+  const auto& cf = f;
+  (void)(std::begin(f) == std::end(cf));
+}
+
 TEST_CASE("filter: iterator with lambda can be assigned", "[filter]") {
   Vec ns{};
   auto ltf = [](int i) { return i < 5; };

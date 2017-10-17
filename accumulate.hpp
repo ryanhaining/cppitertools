@@ -24,7 +24,7 @@ template <typename Container, typename AccumulateFunc>
 class iter::impl::Accumulator {
  private:
   Container container_;
-  AccumulateFunc accumulate_func_;
+  mutable AccumulateFunc accumulate_func_;
 
   friend AccumulateFn;
 
@@ -38,16 +38,19 @@ class iter::impl::Accumulator {
  public:
   Accumulator(Accumulator&&) = default;
 
+  template <typename ContainerT>
   class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_end_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_end_;
     AccumulateFunc* accumulate_func_;
     std::optional<AccumVal> acc_val_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end, AccumulateFunc& accumulate_fun)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end, AccumulateFunc& accumulate_fun)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
           accumulate_func_(&accumulate_fun),
@@ -78,21 +81,32 @@ class iter::impl::Accumulator {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_), accumulate_func_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_), accumulate_func_};
+  }
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_)),
+        accumulate_func_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        accumulate_func_};
   }
 };
 

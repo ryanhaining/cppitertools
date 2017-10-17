@@ -27,6 +27,10 @@ namespace {
       return a + b + c;
     }
 
+    int operator()(int a, int b) {
+      return a + b;
+    }
+
     int operator()(int a) {
       return a;
     }
@@ -57,6 +61,26 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("starmap: vector of pairs const iteration", "[starmap][const]") {
+  using Vec = const std::vector<int>;
+  const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
+
+  const auto sm = starmap(Callable{}, v1);
+  std::vector<int> v(std::begin(sm), std::end(sm));
+  Vec vc = {3, 14, 13};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE(
+    "starmap: vector of pairs const iterators can be compared to non-const "
+    "iterators",
+    "[starmap][const]") {
+  const std::vector<std::pair<double, int>> v1;
+  auto sm = starmap(Callable{}, v1);
+  const auto& csm = sm;
+  (void)(std::begin(sm) == std::end(csm));
+}
+
 TEST_CASE("starmap: Works with different begin and end types", "[starmap]") {
   IntCharPairRange icr{{3, 'd'}};
   using Vec = std::vector<std::string>;
@@ -64,6 +88,24 @@ TEST_CASE("starmap: Works with different begin and end types", "[starmap]") {
   Vec v(sm.begin(), sm.end());
   Vec vc{"0a", "1b", "2c"};
   REQUIRE(v == vc);
+}
+
+TEST_CASE("starmap: tuple of tuples const iteration", "[starmap][const]") {
+  using Vec = const std::vector<int>;
+  auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
+  const auto sm = starmap(Callable{}, tup);
+  Vec v(std::begin(sm), std::end(sm));
+}
+
+TEST_CASE(
+    "starmap: tuple of tuples const iterators can be compared to non-const "
+    "iterator",
+    "[starmap][const]") {
+  auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
+  auto sm = starmap(Callable{}, tup);
+  const auto& csm = sm;
+  (void)(std::begin(sm) == std::end(csm));
+  (void)(std::begin(csm) == std::end(sm));
 }
 
 TEST_CASE("starmap: list of tuples", "[starmap]") {

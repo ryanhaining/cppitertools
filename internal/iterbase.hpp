@@ -47,9 +47,22 @@ namespace iter {
       using type = T;
     };
 
+    // TODO get rid of these and explicitly use std:: everywhere once master is
+    // on C++17
+    using std::as_const;
+    using std::void_t;
+
+    template <typename T>
+    using AsConst = decltype(as_const(std::declval<T&>()));
+
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
     using iterator_type = decltype(get_begin(std::declval<Container&>()));
+
+    // iterator_type<C> is the type of C's iterator
+    template <typename Container>
+    using const_iterator_type = decltype(
+        get_begin(std::declval<const std::remove_reference_t<Container>&>()));
 
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
@@ -62,6 +75,11 @@ namespace iter {
     template <typename Container>
     using const_iterator_deref =
         decltype(*std::declval<const iterator_type<Container>&>());
+
+    // the type of dereferencing a const_iterator
+    template <typename Container>
+    using const_iterator_type_deref =
+        decltype(*std::declval<const_iterator_type<Container>&>());
 
     template <typename Container>
     using iterator_traits_deref =
@@ -139,9 +157,9 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        std::enable_if_t<
-            std::is_same<typename std::iterator_traits<T>::iterator_category,
-                std::random_access_iterator_tag>::value>> : std::true_type {};
+        std::enable_if_t<std::is_same<
+            typename std::iterator_traits<T>::iterator_category,
+            std::random_access_iterator_tag>::value>> : std::true_type {};
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;

@@ -31,7 +31,7 @@ namespace iter {
 template <typename Func, typename Container>
 class iter::impl::StarMapper {
  private:
-  Func func_;
+  mutable Func func_;
   Container container_;
 
   using StarIterDeref = std::remove_reference_t<decltype(
@@ -43,21 +43,26 @@ class iter::impl::StarMapper {
   friend StarMapFn;
 
  public:
+  template <typename ContainerT>
   class Iterator
       : public std::iterator<std::input_iterator_tag, StarIterDeref> {
    private:
+    template <typename>
+    friend class Iterator;
     Func* func_;
-    IteratorWrapper<Container> sub_iter_;
+    IteratorWrapper<ContainerT> sub_iter_;
 
    public:
-    Iterator(Func& f, IteratorWrapper<Container>&& sub_iter)
+    Iterator(Func& f, IteratorWrapper<ContainerT>&& sub_iter)
         : func_(&f), sub_iter_(std::move(sub_iter)) {}
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
@@ -81,12 +86,20 @@ class iter::impl::StarMapper {
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {func_, get_begin(container_)};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {func_, get_end(container_)};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {func_, get_begin(as_const(container_))};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {func_, get_end(as_const(container_))};
   }
 };
 
@@ -94,7 +107,7 @@ class iter::impl::StarMapper {
 template <typename Func, typename TupType, std::size_t... Is>
 class iter::impl::TupleStarMapper {
  private:
-  Func func_;
+  mutable Func func_;
   TupType tup_;
 
  private:
@@ -103,39 +116,51 @@ class iter::impl::TupleStarMapper {
 
   friend StarMapFn;
 
-  template <std::size_t Idx>
-  static decltype(auto) get_and_call_with_tuple(Func& f, TupType& t) {
-    return call_with_tuple(f, std::get<Idx>(t));
-  }
-
-  using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
-  using CallerFunc = ResultType (*)(Func&, TupType&);
-
-  constexpr static std::array<CallerFunc, sizeof...(Is)> callers{
-      {get_and_call_with_tuple<Is>...}};
-
-  using TraitsValue = std::remove_reference_t<ResultType>;
-
   TupleStarMapper(Func f, TupType t)
       : func_(std::move(f)), tup_(std::forward<TupType>(t)) {}
 
+  // this is a wrapper class to hold the aliases and functions needed for the
+  // Iterator.
+  template <typename TupTypeT>
+  class IteratorData {
+   public:
+    template <std::size_t Idx>
+    static decltype(auto) get_and_call_with_tuple(Func& f, TupTypeT& t) {
+      return call_with_tuple(f, std::get<Idx>(t));
+    }
+
+    using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
+    using CallerFunc = ResultType (*)(Func&, TupTypeT&);
+
+    constexpr static std::array<CallerFunc, sizeof...(Is)> callers{
+        {get_and_call_with_tuple<Is>...}};
+
+    using TraitsValue = std::remove_reference_t<ResultType>;
+
+    IteratorData() = delete;
+  };
+
  public:
-  class Iterator : public std::iterator<std::input_iterator_tag, TraitsValue> {
+  template <typename TupTypeT>
+  class Iterator : public std::iterator<std::input_iterator_tag,
+                       typename IteratorData<TupTypeT>::TraitsValue> {
    private:
+    template <typename>
+    friend class Iterator;
     Func* func_;
-    std::remove_reference_t<TupType>* tup_;
+    std::remove_reference_t<TupTypeT>* tup_;
     std::size_t index_;
 
    public:
-    Iterator(Func& f, TupType& t, std::size_t i)
+    Iterator(Func& f, TupTypeT& t, std::size_t i)
         : func_{&f}, tup_{&t}, index_{i} {}
 
     decltype(auto) operator*() {
-      return callers[index_](*func_, *tup_);
+      return IteratorData<TupTypeT>::callers[index_](*func_, *tup_);
     }
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
-      return {**this};
+    auto operator-> () {
+      return ArrowProxy<decltype(**this)>{**this};
     }
 
     Iterator& operator++() {
@@ -149,29 +174,40 @@ class iter::impl::TupleStarMapper {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return index_ != other.index_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };
 
-  Iterator begin() {
+  Iterator<TupType> begin() {
     return {func_, tup_, 0};
   }
 
-  Iterator end() {
+  Iterator<TupType> end() {
     return {func_, tup_, sizeof...(Is)};
+  }
+
+  Iterator<AsConst<TupType>> begin() const {
+    return {func_, as_const(tup_), 0};
+  }
+
+  Iterator<AsConst<TupType>> end() const {
+    return {func_, as_const(tup_), sizeof...(Is)};
   }
 };
 
 template <typename Func, typename TupType, std::size_t... Is>
-constexpr std::array<
-    typename iter::impl::TupleStarMapper<Func, TupType, Is...>::CallerFunc,
+template <typename T>
+constexpr std::array<typename iter::impl::TupleStarMapper<Func, TupType,
+                         Is...>::template IteratorData<T>::CallerFunc,
     sizeof...(Is)>
-    iter::impl::TupleStarMapper<Func, TupType, Is...>::callers;
+    iter::impl::TupleStarMapper<Func, TupType, Is...>::IteratorData<T>::callers;
 
 struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  private:
@@ -185,8 +221,8 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
   template <typename Func, typename TupType>
   auto helper(Func func, TupType&& tup, std::true_type) const {
     return helper_with_tuples(std::move(func), std::forward<TupType>(tup),
-        std::make_index_sequence<
-            std::tuple_size<std::decay_t<TupType>>::value>{});
+        std::make_index_sequence<std::tuple_size<std::decay_t<TupType>>::
+                                      value>{});
   }
 
   // handles everything else

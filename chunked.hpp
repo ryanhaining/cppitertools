@@ -33,16 +33,22 @@ class iter::impl::Chunker {
 
   friend ChunkedFn;
 
-  using IndexVector = std::vector<IteratorWrapper<Container>>;
-  using DerefVec = IterIterWrapper<IndexVector>;
+  template <typename T>
+  using IndexVector = std::vector<IteratorWrapper<T>>;
+  template <typename T>
+  using DerefVec = IterIterWrapper<IndexVector<T>>;
 
  public:
   Chunker(Chunker&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
+  template <typename ContainerT>
+  class Iterator
+      : public std::iterator<std::input_iterator_tag, DerefVec<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    IteratorWrapper<Container> sub_end_;
-    DerefVec chunk_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    IteratorWrapper<ContainerT> sub_end_;
+    DerefVec<ContainerT> chunk_;
     std::size_t chunk_size_ = 0;
 
     bool done() const {
@@ -60,8 +66,8 @@ class iter::impl::Chunker {
     }
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end, std::size_t s)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end, std::size_t s)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
           chunk_size_{s} {
@@ -80,30 +86,42 @@ class iter::impl::Chunker {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return !(*this == other);
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return done() == other.done()
              && (done() || !(sub_iter_ != other.sub_iter_));
     }
 
-    DerefVec& operator*() {
+    DerefVec<ContainerT>& operator*() {
       return chunk_;
     }
 
-    DerefVec* operator->() {
+    DerefVec<ContainerT>* operator->() {
       return &chunk_;
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_), chunk_size_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_), chunk_size_};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_)),
+        chunk_size_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        chunk_size_};
   }
 };
 

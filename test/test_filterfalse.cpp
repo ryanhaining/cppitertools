@@ -60,6 +60,21 @@ TEST_CASE("filterfalse: handles different callable types", "[filterfalse]") {
   }
 }
 
+TEST_CASE("filterfalse: const iteration", "[filterfalse][const]") {
+  Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
+  const auto f = filterfalse(LessThanValue{5}, ns);
+  Vec v(std::begin(f), std::end(f));
+  Vec vc = {5, 6, 7, 5};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("filterfalse: const iterator and non-const iterator can be compared",
+    "[filterfalse][const]") {
+  auto f = filterfalse(LessThanValue{5}, Vec{});
+  const auto& cf = f;
+  (void)(std::begin(f) == std::end(cf));
+}
+
 TEST_CASE(
     "filterfalse: Works with different begin and end types", "[filterfalse]") {
   CharRange cr{'d'};

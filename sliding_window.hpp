@@ -29,19 +29,25 @@ class iter::impl::WindowSlider {
   WindowSlider(Container&& container, std::size_t win_sz)
       : container_(std::forward<Container>(container)), window_size_{win_sz} {}
 
-  using IndexVector = std::deque<IteratorWrapper<Container>>;
-  using DerefVec = IterIterWrapper<IndexVector>;
+  template <typename T>
+  using IndexVector = std::deque<IteratorWrapper<T>>;
+  template <typename T>
+  using DerefVec = IterIterWrapper<IndexVector<T>>;
 
  public:
   WindowSlider(WindowSlider&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag, DerefVec> {
+  template <typename ContainerT>
+  class Iterator
+      : public std::iterator<std::input_iterator_tag, DerefVec<ContainerT>> {
    private:
-    IteratorWrapper<Container> sub_iter_;
-    DerefVec window_;
+    template <typename>
+    friend class Iterator;
+    IteratorWrapper<ContainerT> sub_iter_;
+    DerefVec<ContainerT> window_;
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end, std::size_t window_sz)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end, std::size_t window_sz)
         : sub_iter_(std::move(sub_iter)) {
       std::size_t i{0};
       while (i < window_sz && sub_iter_ != sub_end) {
@@ -53,19 +59,21 @@ class iter::impl::WindowSlider {
       }
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return sub_iter_ != other.sub_iter_;
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
 
-    DerefVec& operator*() {
+    DerefVec<ContainerT>& operator*() {
       return window_;
     }
 
-    DerefVec* operator->() {
+    DerefVec<ContainerT>* operator->() {
       return window_;
     }
 
@@ -83,15 +91,28 @@ class iter::impl::WindowSlider {
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {
         (window_size_ != 0 ? IteratorWrapper<Container>{get_begin(container_)}
                            : IteratorWrapper<Container>{get_end(container_)}),
         get_end(container_), window_size_};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_), window_size_};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {(window_size_ != 0 ? IteratorWrapper<AsConst<Container>>{get_begin(
+                                     as_const(container_))}
+                               : IteratorWrapper<AsConst<Container>>{get_end(
+                                     as_const(container_))}),
+        get_end(as_const(container_)), window_size_};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_)),
+        window_size_};
   }
 };
 

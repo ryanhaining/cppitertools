@@ -26,8 +26,10 @@ class iter::impl::Permuter {
   friend PermutationsFn;
   Container container_;
 
-  using IndexVector = std::vector<IteratorWrapper<Container>>;
-  using Permutable = IterIterWrapper<IndexVector>;
+  template <typename T>
+  using IndexVector = std::vector<IteratorWrapper<T>>;
+  template <typename T>
+  using Permutable = IterIterWrapper<IndexVector<T>>;
 
   Permuter(Container&& container)
       : container_(std::forward<Container>(container)) {}
@@ -35,20 +37,24 @@ class iter::impl::Permuter {
  public:
   Permuter(Permuter&&) = default;
 
-  class Iterator : public std::iterator<std::input_iterator_tag, Permutable> {
+  template <typename ContainerT>
+  class Iterator
+      : public std::iterator<std::input_iterator_tag, Permutable<ContainerT>> {
    private:
+    template <typename>
+    friend class Iterator;
     static constexpr const int COMPLETE = -1;
-    static bool cmp_iters(IteratorWrapper<Container> lhs,
-        IteratorWrapper<Container> rhs) noexcept {
+    static bool cmp_iters(IteratorWrapper<ContainerT> lhs,
+        IteratorWrapper<ContainerT> rhs) noexcept {
       return *lhs < *rhs;
     }
 
-    Permutable working_set_;
+    Permutable<ContainerT> working_set_;
     int steps_{};
 
    public:
-    Iterator(IteratorWrapper<Container>&& sub_iter,
-        IteratorWrapper<Container>&& sub_end)
+    Iterator(IteratorWrapper<ContainerT>&& sub_iter,
+        IteratorWrapper<ContainerT>&& sub_end)
         : steps_{sub_iter != sub_end ? 0 : COMPLETE} {
       // done like this instead of using vector ctor with
       // two iterators because that causes a substitution
@@ -61,11 +67,11 @@ class iter::impl::Permuter {
           cmp_iters);
     }
 
-    Permutable& operator*() {
+    Permutable<ContainerT>& operator*() {
       return working_set_;
     }
 
-    Permutable* operator->() {
+    Permutable<ContainerT>* operator->() {
       return &working_set_;
     }
 
@@ -84,21 +90,31 @@ class iter::impl::Permuter {
       return ret;
     }
 
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return !(*this == other);
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return steps_ == other.steps_;
     }
   };
 
-  Iterator begin() {
+  Iterator<Container> begin() {
     return {get_begin(container_), get_end(container_)};
   }
 
-  Iterator end() {
+  Iterator<Container> end() {
     return {get_end(container_), get_end(container_)};
+  }
+
+  Iterator<AsConst<Container>> begin() const {
+    return {get_begin(as_const(container_)), get_end(as_const(container_))};
+  }
+
+  Iterator<AsConst<Container>> end() const {
+    return {get_end(as_const(container_)), get_end(as_const(container_))};
   }
 };
 

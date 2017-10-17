@@ -61,6 +61,24 @@ TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
   REQUIRE(v == vc);
 }
 
+// TODO enable once zip supports const
+#if 0
+TEST_CASE("imap: supports const iteration", "[imap][const]") {
+  Vec ns = {10, 20, 30};
+  const auto m = imap(PlusOner{}, ns);
+  Vec v(std::begin(m), std::end(m));
+  Vec vc = {11, 21, 31};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("imap: const iterators can be compared to non-const iterators", "[imap][const]") {
+  auto m = imap(PlusOner{}, Vec{});
+  const auto& cm = m;
+  (void)(std::begin(m) == std::end(cm));
+}
+#endif
+  
+
 TEST_CASE("imap: Works with different begin and end types", "[imap]") {
   CharRange cr{'d'};
   auto m = imap([](char c) { return std::toupper(c); }, cr);
