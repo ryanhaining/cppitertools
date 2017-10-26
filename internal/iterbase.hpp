@@ -60,7 +60,7 @@ namespace iter {
     void as_const(T&&) = delete;
 
     template <typename T>
-    using AsConst = decltype(as_const(std::declval<T&>()));
+    using AsConst = decltype(impl::as_const(std::declval<T&>()));
 
     // gcc CWG 1558
     template <typename...>

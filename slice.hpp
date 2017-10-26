@@ -102,13 +102,13 @@ class iter::impl::Sliced {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    auto it = get_begin(as_const(container_));
-    dumb_advance(it, get_end(as_const(container_)), start_);
-    return {std::move(it), get_end(as_const(container_)), start_, stop_, step_};
+    auto it = get_begin(impl::as_const(container_));
+    dumb_advance(it, get_end(impl::as_const(container_)), start_);
+    return {std::move(it), get_end(impl::as_const(container_)), start_, stop_, step_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(as_const(container_)), get_end(as_const(container_)), stop_,
+    return {get_end(impl::as_const(container_)), get_end(impl::as_const(container_)), stop_,
         stop_, step_};
   }
 };

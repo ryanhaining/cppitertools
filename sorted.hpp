@@ -101,8 +101,8 @@ class iter::impl::SortedView {
       if (!const_sorted_iters_.empty()) {
         return;
       }
-      for (auto iter = get_begin(as_const(container_));
-           iter != get_end(as_const(container_)); ++iter) {
+      for (auto iter = get_begin(impl::as_const(container_));
+           iter != get_end(impl::as_const(container_)); ++iter) {
         const_sorted_iters_.get().push_back(iter);
       }
 
