@@ -118,7 +118,8 @@ class iter::impl::Powersetter {
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {impl::as_const(container_), dumb_size(impl::as_const(container_)) + 1};
+    return {
+        impl::as_const(container_), dumb_size(impl::as_const(container_)) + 1};
   }
 };
 

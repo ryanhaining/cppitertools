@@ -122,13 +122,13 @@ class iter::impl::Filtered {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {get_begin(impl::as_const(container_)), get_end(impl::as_const(container_)),
-        filter_func_};
+    return {get_begin(impl::as_const(container_)),
+        get_end(impl::as_const(container_)), filter_func_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(impl::as_const(container_)), get_end(impl::as_const(container_)),
-        filter_func_};
+    return {get_end(impl::as_const(container_)),
+        get_end(impl::as_const(container_)), filter_func_};
   }
 };
 
