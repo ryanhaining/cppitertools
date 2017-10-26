@@ -95,11 +95,11 @@ class iter::impl::StarMapper {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {func_, get_begin(as_const(container_))};
+    return {func_, get_begin(impl::as_const(container_))};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {func_, get_end(as_const(container_))};
+    return {func_, get_end(impl::as_const(container_))};
   }
 };
 
@@ -194,11 +194,11 @@ class iter::impl::TupleStarMapper {
   }
 
   Iterator<AsConst<TupType>> begin() const {
-    return {func_, as_const(tup_), 0};
+    return {func_, impl::as_const(tup_), 0};
   }
 
   Iterator<AsConst<TupType>> end() const {
-    return {func_, as_const(tup_), sizeof...(Is)};
+    return {func_, impl::as_const(tup_), sizeof...(Is)};
   }
 };
 

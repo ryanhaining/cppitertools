@@ -110,11 +110,11 @@ class iter::impl::Permuter {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {get_begin(as_const(container_)), get_end(as_const(container_))};
+    return {get_begin(impl::as_const(container_)), get_end(impl::as_const(container_))};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(as_const(container_)), get_end(as_const(container_))};
+    return {get_end(impl::as_const(container_)), get_end(impl::as_const(container_))};
   }
 };
 

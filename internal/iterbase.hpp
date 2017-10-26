@@ -53,7 +53,7 @@ namespace iter {
     using std::void_t;
 
     template <typename T>
-    using AsConst = decltype(as_const(std::declval<T&>()));
+    using AsConst = decltype(impl::as_const(std::declval<T&>()));
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>

@@ -136,11 +136,11 @@ class iter::impl::Combinator {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {as_const(container_), length_};
+    return {impl::as_const(container_), length_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {as_const(container_), 0};
+    return {impl::as_const(container_), 0};
   }
 };
 
