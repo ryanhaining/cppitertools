@@ -111,8 +111,8 @@ class iter::impl::WindowSlider {
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(impl::as_const(container_)), get_end(impl::as_const(container_)),
-        window_size_};
+    return {get_end(impl::as_const(container_)),
+        get_end(impl::as_const(container_)), window_size_};
   }
 };
 

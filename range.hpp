@@ -37,7 +37,8 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_value, T in_step) noexcept
-          : value_{in_value}, step_{in_step} {}
+          : value_{in_value},
+            step_{in_step} {}
 
       constexpr T value() const noexcept {
         return value_;
@@ -72,7 +73,9 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_start, T in_step) noexcept
-          : start_{in_start}, value_{in_start}, step_{in_step} {}
+          : start_{in_start},
+            value_{in_start},
+            step_{in_step} {}
 
       constexpr T value() const noexcept {
         return value_;
@@ -120,8 +123,9 @@ class iter::impl::Range {
 
   constexpr Range(T stop) noexcept : start_{0}, stop_{stop}, step_{1} {}
 
-  constexpr Range(T start, T stop, T step = 1) noexcept
-      : start_{start}, stop_{stop}, step_{step} {}
+  constexpr Range(T start, T stop, T step = 1) noexcept : start_{start},
+                                                          stop_{stop},
+                                                          step_{step} {}
 
  public:
   // the reference type here is T, which doesn't strictly follow all
@@ -165,7 +169,8 @@ class iter::impl::Range {
     constexpr Iterator() noexcept = default;
 
     constexpr Iterator(T in_value, T in_step, bool in_is_end) noexcept
-        : data(in_value, in_step), is_end{in_is_end} {}
+        : data(in_value, in_step),
+          is_end{in_is_end} {}
 
     constexpr T operator*() const noexcept {
       return data.value();
