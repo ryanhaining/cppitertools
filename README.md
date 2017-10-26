@@ -221,15 +221,13 @@ enumerate
 ---------
 
 Continually "yields" containers similar to pairs.  They are basic structs with a
-.index and a .element.  Usage appears as:
+.index and a .element, and also work with structured binding declarations.
+Usage appears as:
 
 ```c++
 vector<int> vec{2, 4, 6, 8};
-for (auto&& e : enumerate(vec)) {
-    cout << e.index
-         << ": "
-         << e.element
-         << '\n';
+for (auto&& [i, e] : enumerate(vec)) {
+    cout << i << ": " << e << '\n';
 }
 ```
 
