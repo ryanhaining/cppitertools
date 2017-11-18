@@ -380,11 +380,11 @@ step of 1.<br />
 `count(i, st)` will start counting from `i` with a step of `st`.
 
 *Technical limitations*: Unlike Python which can use its long integer
-types when needed, count() will eventually exceed the
+types when needed, count() would eventually exceed the
 maximum possible value for its type (or minimum with a negative step).
-When using a signed type it is up to the API user to ensure this does
-not happen.  If the limit is exceeded for signed types, the result is
-undefined (as per the C++ standard).
+`count` is actually implemented as a `range` with the stopping point
+being the `std::numeric_limits<T>::max()` for the integral type (`long`
+by default)
 
 The below will print `0 1 2` ... etc
 ```c++
