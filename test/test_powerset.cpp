@@ -5,6 +5,7 @@
 #undef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 
 #include <iterator>
+#include <set>
 #include <string>
 #include <vector>
 
