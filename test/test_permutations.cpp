@@ -3,6 +3,7 @@
 #include "helpers.hpp"
 
 #include <iterator>
+#include <set>
 #include <string>
 #include <vector>
 
