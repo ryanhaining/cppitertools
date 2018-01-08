@@ -37,8 +37,7 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_value, T in_step) noexcept
-          : value_{in_value},
-            step_{in_step} {}
+          : value_{in_value}, step_{in_step} {}
 
       constexpr T value() const noexcept {
         return value_;
@@ -73,9 +72,7 @@ namespace iter {
      public:
       constexpr RangeIterData() noexcept = default;
       constexpr RangeIterData(T in_start, T in_step) noexcept
-          : start_{in_start},
-            value_{in_start},
-            step_{in_step} {}
+          : start_{in_start}, value_{in_start}, step_{in_step} {}
 
       constexpr T value() const noexcept {
         return value_;
@@ -123,9 +120,8 @@ class iter::impl::Range {
 
   constexpr Range(T stop) noexcept : start_{0}, stop_{stop}, step_{1} {}
 
-  constexpr Range(T start, T stop, T step = 1) noexcept : start_{start},
-                                                          stop_{stop},
-                                                          step_{step} {}
+  constexpr Range(T start, T stop, T step = 1) noexcept
+      : start_{start}, stop_{stop}, step_{step} {}
 
  public:
   // the reference type here is T, which doesn't strictly follow all
@@ -138,39 +134,36 @@ class iter::impl::Range {
     iter::detail::RangeIterData<T> data;
     bool is_end;
 
-    // compare unsigned values
-    static bool not_equal_to_impl(const Iterator& iter,
-        const Iterator& end_iter, std::true_type) noexcept {
-      assert(!iter.is_end);
-      assert(end_iter.is_end);
-      return iter.data.value() < end_iter.data.value();
-    }
-
-    // compare signed values
-    static bool not_equal_to_impl(const Iterator& iter,
-        const Iterator& end_iter, std::false_type) noexcept {
-      assert(!iter.is_end);
-      assert(end_iter.is_end);
-      return !(iter.data.step() > 0
-                 && iter.data.value() >= end_iter.data.value())
-             && !(iter.data.step() < 0
-                    && iter.data.value() <= end_iter.data.value());
+    // first argument must be regular iterator
+    // second argument must be end iterator
+    static bool not_equal_to_impl(
+        const Iterator& lhs, const Iterator& rhs) noexcept {
+      assert(!lhs.is_end);
+      assert(rhs.is_end);
+      if
+        constexpr(std::is_unsigned<T>{}) {
+          return lhs.data.value() < rhs.data.value();
+        }
+      else {
+        return !(lhs.data.step() > 0 && lhs.data.value() >= rhs.data.value())
+               && !(lhs.data.step() < 0
+                      && lhs.data.value() <= rhs.data.value());
+      }
     }
 
     static bool not_equal_to_end(
         const Iterator& lhs, const Iterator& rhs) noexcept {
       if (rhs.is_end) {
-        return not_equal_to_impl(lhs, rhs, std::is_unsigned<T>{});
+        return not_equal_to_impl(lhs, rhs);
       }
-      return not_equal_to_impl(rhs, lhs, std::is_unsigned<T>{});
+      return not_equal_to_impl(rhs, lhs);
     }
 
    public:
     constexpr Iterator() noexcept = default;
 
     constexpr Iterator(T in_value, T in_step, bool in_is_end) noexcept
-        : data(in_value, in_step),
-          is_end{in_is_end} {}
+        : data(in_value, in_step), is_end{in_is_end} {}
 
     constexpr T operator*() const noexcept {
       return data.value();
