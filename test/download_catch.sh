@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-wget -c https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
+wget -c https://github.com/catchorg/Catch2/releases/download/v2.0.1/catch.hpp
