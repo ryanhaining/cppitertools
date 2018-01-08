@@ -217,34 +217,25 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
     return {std::move(func), std::forward<TupType>(tup)};
   }
 
-  // handles tuple-like types
-  template <typename Func, typename TupType>
-  auto helper(Func func, TupType&& tup, std::true_type) const {
-    return helper_with_tuples(std::move(func), std::forward<TupType>(tup),
-        std::make_index_sequence<std::tuple_size<std::decay_t<TupType>>::
-                                      value>{});
-  }
-
-  // handles everything else
-  template <typename Func, typename Container>
-  StarMapper<Func, Container> helper(
-      Func func, Container&& container, std::false_type) const {
-    return {std::move(func), std::forward<Container>(container)};
-  }
-
   template <typename T, typename = void>
-  struct is_tuple_like : public std::false_type {};
+  struct is_tuple_like : std::false_type {};
 
   template <typename T>
   struct is_tuple_like<T,
       std::void_t<decltype(std::tuple_size<std::decay_t<T>>::value)>>
-      : public std::true_type {};
+      : std::true_type {};
 
  public:
   template <typename Func, typename Seq>
   auto operator()(Func func, Seq&& sequence) const {
-    return helper(
-        std::move(func), std::forward<Seq>(sequence), is_tuple_like<Seq>{});
+    if constexpr (is_tuple_like<Seq>{}) {
+      return helper_with_tuples(std::move(func), std::forward<Seq>(sequence),
+          std::make_index_sequence<std::tuple_size<std::decay_t<Seq>>::
+                  value>{});
+    } else {
+      return StarMapper<Func, Seq>{
+          std::move(func), std::forward<Seq>(sequence)};
+    }
   }
 
   using PipeableAndBindFirst<StarMapFn>::operator();
