@@ -49,8 +49,7 @@ class iter::impl::ZippedLongest {
   ZippedLongest(ZippedLongest&&) = default;
   template <typename TupleTypeT, template <typename> class IterTuple,
       template <std::size_t, typename> class OptTempl>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       ZipIterDeref<TupleTypeT, OptTempl>> {
+  class Iterator {
    private:
     template <typename, template <typename> class,
         template <std::size_t, typename> class>
@@ -59,6 +58,12 @@ class iter::impl::ZippedLongest {
     IterTuple<TupleTypeT> ends_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = ZipIterDeref<TupleTypeT, OptTempl>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IterTuple<TupleTypeT>&& iters, IterTuple<TupleTypeT>&& ends)
         : iters_(std::move(iters)), ends_(std::move(ends)) {}
 

@@ -39,7 +39,7 @@ class iter::impl::Accumulator {
   Accumulator(Accumulator&&) = default;
 
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag, AccumVal> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -49,6 +49,12 @@ class iter::impl::Accumulator {
     std::unique_ptr<AccumVal> acc_val_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = AccumVal;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, AccumulateFunc& accumulate_fun)
         : sub_iter_{std::move(sub_iter)},

@@ -34,8 +34,7 @@ class iter::impl::Taker {
   Taker(Taker&&) = default;
 
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -59,6 +58,12 @@ class iter::impl::Taker {
     }
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = iterator_traits_deref<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)
         : sub_iter_{std::move(sub_iter)},

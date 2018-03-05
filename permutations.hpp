@@ -38,8 +38,7 @@ class iter::impl::Permuter {
   Permuter(Permuter&&) = default;
 
   template <typename ContainerT>
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, Permutable<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -53,6 +52,12 @@ class iter::impl::Permuter {
     int steps_{};
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = Permutable<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end)
         : steps_{sub_iter != sub_end ? 0 : COMPLETE} {

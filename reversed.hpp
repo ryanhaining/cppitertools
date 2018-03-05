@@ -71,14 +71,19 @@ class iter::impl::Reverser {
  public:
   Reverser(Reverser&&) = default;
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       reverse_iterator_traits_deref<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
     ReverseIteratorWrapper<ContainerT> sub_iter_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = reverse_iterator_traits_deref<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(ReverseIteratorWrapper<ContainerT>&& sub_iter)
         : sub_iter_{std::move(sub_iter)} {}
 
