@@ -1,4 +1,4 @@
-load("make_tests", "itertools_tests")
+load(":make_tests.bzl", "itertools_tests")
 
 progs = [
     "accumulate",
