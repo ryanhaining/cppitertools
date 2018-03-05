@@ -40,14 +40,19 @@ class iter::impl::Zipped {
   // deref they'd need to be known in the function declarations below.
   template <typename TupleTypeT, template <typename> class IteratorTuple,
       template <typename> class TupleDeref>
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, TupleDeref<TupleTypeT>> {
+  class Iterator {
    private:
     template <typename, template <typename> class, template <typename> class>
     friend class Iterator;
     IteratorTuple<TupleTypeT> iters_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = TupleDeref<TupleTypeT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorTuple<TupleTypeT>&& iters) : iters_(std::move(iters)) {}
 
     Iterator& operator++() {

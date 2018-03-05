@@ -37,8 +37,7 @@ class iter::impl::Powersetter {
   Powersetter(Powersetter&&) = default;
 
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       CombinatorType<ContainerT>> {
+  class Iterator {
    private:
 #if 0
     template <typename> friend class Iterator;
@@ -50,6 +49,12 @@ class iter::impl::Powersetter {
     iterator_type<CombinatorType<ContainerT>> comb_end_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = CombinatorType<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(ContainerT& container, std::size_t sz)
         : container_p_{&container},
           set_size_{sz},

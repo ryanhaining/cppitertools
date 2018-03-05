@@ -33,8 +33,7 @@ class iter::impl::Compressed {
  public:
   Compressed(Compressed&&) = default;
   template <typename ContainerT, typename SelectorT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<ContainerT>> {
+  class Iterator {
    private:
     template <typename, typename>
     friend class Iterator;
@@ -57,6 +56,12 @@ class iter::impl::Compressed {
     }
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = iterator_traits_deref<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& cont_iter,
         IteratorWrapper<ContainerT>&& cont_end,
         IteratorWrapper<SelectorT>&& sel_iter,

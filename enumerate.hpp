@@ -68,8 +68,7 @@ class iter::impl::Enumerable {
   //  index_.  Each call to ++ increments both of these data members.
   //  Each dereference returns an IterYield.
   template <typename ContainerT>
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, IterYield<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -77,6 +76,12 @@ class iter::impl::Enumerable {
     Index index_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = IterYield<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter, Index start)
         : sub_iter_{std::move(sub_iter)}, index_{start} {}
 

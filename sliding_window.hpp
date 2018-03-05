@@ -37,8 +37,7 @@ class iter::impl::WindowSlider {
  public:
   WindowSlider(WindowSlider&&) = default;
   template <typename ContainerT>
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, DerefVec<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -46,6 +45,12 @@ class iter::impl::WindowSlider {
     DerefVec<ContainerT> window_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = DerefVec<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, std::size_t window_sz)
         : sub_iter_(std::move(sub_iter)) {
