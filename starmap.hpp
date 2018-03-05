@@ -44,8 +44,7 @@ class iter::impl::StarMapper {
 
  public:
   template <typename ContainerT>
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, StarIterDeref> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -53,6 +52,12 @@ class iter::impl::StarMapper {
     IteratorWrapper<ContainerT> sub_iter_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = StarIterDeref;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(Func& f, IteratorWrapper<ContainerT>&& sub_iter)
         : func_(&f), sub_iter_(std::move(sub_iter)) {}
 
@@ -142,8 +147,7 @@ class iter::impl::TupleStarMapper {
 
  public:
   template <typename TupTypeT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       typename IteratorData<TupTypeT>::TraitsValue> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -152,6 +156,12 @@ class iter::impl::TupleStarMapper {
     std::size_t index_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = typename IteratorData<TupTypeT>::TraitsValue;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(Func& f, TupTypeT& t, std::size_t i)
         : func_{&f}, tup_{&t}, index_{i} {}
 

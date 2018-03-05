@@ -37,8 +37,7 @@ class iter::impl::Combinator {
  public:
   Combinator(Combinator&&) = default;
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       CombIteratorDeref<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -48,6 +47,12 @@ class iter::impl::Combinator {
     int steps_{};
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = CombIteratorDeref<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(ContainerT& container, std::size_t n)
         : container_p_{&container}, indices_{n} {
       if (n == 0) {

@@ -128,8 +128,7 @@ class iter::impl::Range {
   // of the rules, but std::vector<bool>::iterator::reference isn't
   // a reference type either, this isn't any worse
 
-  class Iterator : public std::iterator<std::forward_iterator_tag, T,
-                       std::ptrdiff_t, T*, T> {
+  class Iterator {
    private:
     iter::detail::RangeIterData<T> data;
     bool is_end;
@@ -160,6 +159,12 @@ class iter::impl::Range {
     }
 
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     constexpr Iterator() noexcept = default;
 
     constexpr Iterator(T in_value, T in_step, bool in_is_end) noexcept

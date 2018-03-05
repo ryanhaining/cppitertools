@@ -100,8 +100,7 @@ class iter::impl::Chained {
   Chained(Chained&&) = default;
 
   template <typename TupTypeT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       typename IteratorData<TupTypeT>::TraitsValue> {
+  class Iterator {
    private:
     using IterData = IteratorData<TupTypeT>;
     std::size_t index_;
@@ -116,6 +115,12 @@ class iter::impl::Chained {
     }
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = typename IteratorData<TupTypeT>::TraitsValue;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(std::size_t i, typename IterData::IterTupType&& iters,
         typename IterData::IterTupType&& ends)
         : index_{i}, iters_(std::move(iters)), ends_(std::move(ends)) {
@@ -224,8 +229,7 @@ class iter::impl::ChainedFromIterable {
  public:
   ChainedFromIterable(ChainedFromIterable&&) = default;
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       iterator_traits_deref<iterator_deref<ContainerT>>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -238,6 +242,12 @@ class iter::impl::ChainedFromIterable {
     std::optional<SubIter> sub_end_p_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = iterator_traits_deref<iterator_deref<ContainerT>>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& top_iter,
         IteratorWrapper<ContainerT>&& top_end)
         : top_level_iter_{std::move(top_iter)},

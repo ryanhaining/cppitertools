@@ -34,12 +34,18 @@ class iter::impl::RepeaterWithCount {
  public:
   RepeaterWithCount(RepeaterWithCount&&) = default;
 
-  class Iterator : public std::iterator<std::input_iterator_tag, const TPlain> {
+  class Iterator {
    private:
     const TPlain* elem_;
     int count_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = const TPlain;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     constexpr Iterator(const TPlain* e, int c) : elem_{e}, count_{c} {}
 
     Iterator& operator++() {
@@ -108,11 +114,17 @@ class iter::impl::Repeater {
  public:
   Repeater(Repeater&&) = default;
 
-  class Iterator : public std::iterator<std::input_iterator_tag, const TPlain> {
+  class Iterator {
    private:
     const TPlain* elem_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = const TPlain;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     constexpr Iterator(const TPlain* e) : elem_{e} {}
 
     constexpr const Iterator& operator++() const {

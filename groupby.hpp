@@ -59,8 +59,7 @@ class iter::impl::GroupProducer {
 
  public:
   template <typename ContainerT>
-  class Iterator : public std::iterator<std::input_iterator_tag,
-                       KeyGroupPair<ContainerT>> {
+  class Iterator {
    private:
     template <typename>
     friend class Iterator;
@@ -71,6 +70,12 @@ class iter::impl::GroupProducer {
     std::optional<KeyGroupPair<ContainerT>> current_key_group_pair_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = KeyGroupPair<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, KeyFunc& key_func)
         : sub_iter_{std::move(sub_iter)},
@@ -209,8 +214,7 @@ class iter::impl::GroupProducer {
       other.completed = true;
     }
 
-    class GroupIterator : public std::iterator<std::input_iterator_tag,
-                              iterator_traits_deref<ContainerT>> {
+    class GroupIterator {
      private:
       std::remove_reference_t<key_func_ret<ContainerT>>* key_;
       Group* group_p_;
@@ -221,6 +225,12 @@ class iter::impl::GroupProducer {
       }
 
      public:
+      using iterator_category = std::input_iterator_tag;
+      using value_type = iterator_traits_deref<ContainerT>;
+      using difference_type = std::ptrdiff_t;
+      using pointer = value_type*;
+      using reference = value_type&;
+
       // TODO template this? idk if it's relevant here
       GroupIterator(Group* group_p, key_func_ret<ContainerT>& key)
           : key_{&key}, group_p_{group_p} {}

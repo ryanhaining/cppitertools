@@ -23,10 +23,7 @@ namespace iter {
         : std::true_type {};
 
     template <typename TopIter>
-    class IteratorIterator
-        : public std::iterator<std::random_access_iterator_tag,
-              typename std::remove_reference<decltype(
-                  **std::declval<TopIter>())>::type> {
+    class IteratorIterator {
       template <typename> friend class IteratorIterator;
       using Diff = std::ptrdiff_t;
       static_assert(
@@ -39,6 +36,11 @@ namespace iter {
       TopIter sub_iter;
 
      public:
+      using iterator_category = std::random_access_iterator_tag;
+      using value_type = std::remove_reference_t<decltype(**std::declval<TopIter>())>;
+      using difference_type = std::ptrdiff_t;
+      using pointer = value_type*;
+      using reference = value_type&;
       IteratorIterator() = default;
       IteratorIterator(const TopIter& it) : sub_iter{it} {}
 

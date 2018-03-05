@@ -50,8 +50,7 @@ class iter::impl::Productor<Container, RestContainers...> {
 
  private:
   template <typename ContainerT, typename RestIter>
-  class IteratorTempl : public std::iterator<std::input_iterator_tag,
-                            ProdIterDeref<ContainerT>> {
+  class IteratorTempl {
    private:
     template <typename, typename>
     friend class IteratorTempl;
@@ -62,6 +61,12 @@ class iter::impl::Productor<Container, RestContainers...> {
     RestIter rest_end_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = ProdIterDeref<ContainerT>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     constexpr static const bool is_base_iter = false;
     IteratorTempl(IteratorWrapper<ContainerT>&& sub_iter, RestIter&& rest_iter,
         RestIter&& rest_end)
@@ -144,8 +149,14 @@ template <>
 class iter::impl::Productor<> {
  public:
   Productor(Productor&&) = default;
-  class Iterator : public std::iterator<std::input_iterator_tag, std::tuple<>> {
+  class Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = std::tuple<>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     constexpr static const bool is_base_iter = true;
 
     void reset() {}
