@@ -169,7 +169,7 @@ class iter::impl::Range {
     using value_type = T;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
-    using reference = value_type&;
+    using reference = value_type;
 
     constexpr Iterator() noexcept = default;
 
