@@ -41,6 +41,33 @@ TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("dropwhile: handles pointer to member", "[dropwhile]") {
+  using itertest::Point;
+  const std::vector<Point> ps = {
+      {5, 0}, {3, 5}, {2, 1}, {0, 1}, {2, 2}, {6, 0}};
+  std::vector<Point> v;
+  SECTION("with pointer to data member") {
+    auto dw = dropwhile(&Point::x, ps);
+    v.assign(std::begin(dw), std::end(dw));
+  }
+
+  SECTION("with pointer to member function") {
+    auto dw = dropwhile(&Point::get_x, ps);
+    v.assign(std::begin(dw), std::end(dw));
+  }
+
+  const std::vector<Point> vc = {{0, 1}, {2, 2}, {6, 0}};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("dropwhile: drop empty strings at front", "[dropwhile]") {
+  const std::vector<std::string> words = {"", "", "check", "", "test"};
+  auto dw = dropwhile(&std::string::empty, words);
+  const std::vector<std::string> v(std::begin(dw), std::end(dw));
+  const std::vector<std::string> vc = {"check", "", "test"};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("dropwhile: const iteration", "[dropwhile][const]") {
   Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
   const auto d = dropwhile(LessThanValue{5}, ns);
