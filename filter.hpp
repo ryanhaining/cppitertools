@@ -4,6 +4,7 @@
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <utility>
@@ -64,7 +65,8 @@ class iter::impl::Filtered {
     // increment until the iterator points to is true on the
     // predicate.  Called by constructor and operator++
     void skip_failures() {
-      while (sub_iter_ != sub_end_ && !(*filter_func_)(item_.get())) {
+      while (
+          sub_iter_ != sub_end_ && !std::invoke(*filter_func_, item_.get())) {
         inc_sub_iter();
       }
     }
