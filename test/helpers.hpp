@@ -227,6 +227,14 @@ namespace itertest {
       ss << str << "(" << x << ", " << y << ")";
       return ss.str();
     }
+
+    bool operator==(Point other) const {
+      return x == other.x && y == other.y;
+    }
+
+    bool operator!=(Point other) const {
+      return !(*this == other);
+    }
   };
 }
 template <typename T, typename Inc>
