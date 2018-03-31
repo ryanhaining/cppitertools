@@ -126,17 +126,17 @@ class iter::impl::ZippedLongest {
   Iterator<AsConst<TupleType>, const_iterator_tuple_type, ConstOptType> begin()
       const {
     return {const_iterator_tuple_type<AsConst<TupleType>>{
-                get_begin(impl::as_const(std::get<Is>(containers_)))...},
+                get_begin(std::as_const(std::get<Is>(containers_)))...},
         const_iterator_tuple_type<AsConst<TupleType>>{
-            get_end(impl::as_const(std::get<Is>(containers_)))...}};
+            get_end(std::as_const(std::get<Is>(containers_)))...}};
   }
 
   Iterator<AsConst<TupleType>, const_iterator_tuple_type, ConstOptType> end()
       const {
     return {const_iterator_tuple_type<AsConst<TupleType>>{
-                get_end(impl::as_const(std::get<Is>(containers_)))...},
+                get_end(std::as_const(std::get<Is>(containers_)))...},
         const_iterator_tuple_type<AsConst<TupleType>>{
-            get_end(impl::as_const(std::get<Is>(containers_)))...}};
+            get_end(std::as_const(std::get<Is>(containers_)))...}};
   }
 };
 

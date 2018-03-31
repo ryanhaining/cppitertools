@@ -61,7 +61,7 @@ class iter::impl::SortedView {
 
   template <typename ContainerT>
   class SortedItersHolder<ContainerT,
-      void_t<decltype(std::begin(std::declval<AsConst<ContainerT>&>()))>> {
+      std::void_t<decltype(std::begin(std::declval<AsConst<ContainerT>&>()))>> {
    public:
     using IterIterWrap =
         IterIterWrapper<std::vector<iterator_type<ContainerT>>>;
@@ -101,8 +101,8 @@ class iter::impl::SortedView {
       if (!const_sorted_iters_.empty()) {
         return;
       }
-      for (auto iter = get_begin(impl::as_const(container_));
-           iter != get_end(impl::as_const(container_)); ++iter) {
+      for (auto iter = get_begin(std::as_const(container_));
+           iter != get_end(std::as_const(container_)); ++iter) {
         const_sorted_iters_.get().push_back(iter);
       }
 

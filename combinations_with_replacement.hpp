@@ -120,11 +120,11 @@ class iter::impl::CombinatorWithReplacement {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {impl::as_const(container_), length_};
+    return {std::as_const(container_), length_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {impl::as_const(container_), 0};
+    return {std::as_const(container_), 0};
   }
 };
 

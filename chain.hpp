@@ -175,17 +175,17 @@ class iter::impl::Chained {
 
   Iterator<AsConst<TupType>> begin() const {
     return {0, typename IteratorData<AsConst<TupType>>::IterTupType{get_begin(
-                   impl::as_const(std::get<Is>(tup_)))...},
+                   std::as_const(std::get<Is>(tup_)))...},
         typename IteratorData<AsConst<TupType>>::IterTupType{
-            get_end(impl::as_const(std::get<Is>(tup_)))...}};
+            get_end(std::as_const(std::get<Is>(tup_)))...}};
   }
 
   Iterator<AsConst<TupType>> end() const {
     return {sizeof...(Is),
         typename IteratorData<AsConst<TupType>>::IterTupType{
-            get_end(impl::as_const(std::get<Is>(tup_)))...},
+            get_end(std::as_const(std::get<Is>(tup_)))...},
         typename IteratorData<AsConst<TupType>>::IterTupType{
-            get_end(impl::as_const(std::get<Is>(tup_)))...}};
+            get_end(std::as_const(std::get<Is>(tup_)))...}};
   }
 };
 
@@ -311,13 +311,13 @@ class iter::impl::ChainedFromIterable {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {get_begin(impl::as_const(container_)),
-        get_end(impl::as_const(container_))};
+    return {get_begin(std::as_const(container_)),
+        get_end(std::as_const(container_))};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(impl::as_const(container_)),
-        get_end(impl::as_const(container_))};
+    return {get_end(std::as_const(container_)),
+        get_end(std::as_const(container_))};
   }
 };
 

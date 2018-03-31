@@ -116,17 +116,17 @@ class iter::impl::Compressed {
   }
 
   Iterator<AsConst<Container>, AsConst<Selector>> begin() const {
-    return {get_begin(impl::as_const(container_)),
-        get_end(impl::as_const(container_)),
-        get_begin(impl::as_const(selectors_)),
-        get_end(impl::as_const(selectors_))};
+    return {get_begin(std::as_const(container_)),
+        get_end(std::as_const(container_)),
+        get_begin(std::as_const(selectors_)),
+        get_end(std::as_const(selectors_))};
   }
 
   Iterator<AsConst<Container>, AsConst<Selector>> end() const {
-    return {get_end(impl::as_const(container_)),
-        get_end(impl::as_const(container_)),
-        get_end(impl::as_const(selectors_)),
-        get_end(impl::as_const(selectors_))};
+    return {get_end(std::as_const(container_)),
+        get_end(std::as_const(container_)),
+        get_end(std::as_const(selectors_)),
+        get_end(std::as_const(selectors_))};
   }
 };
 

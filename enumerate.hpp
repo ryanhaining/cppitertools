@@ -125,11 +125,11 @@ class iter::impl::Enumerable {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {get_begin(impl::as_const(container_)), start_};
+    return {get_begin(std::as_const(container_)), start_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(impl::as_const(container_)), start_};
+    return {get_end(std::as_const(container_)), start_};
   }
 };
 #endif

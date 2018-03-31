@@ -109,15 +109,15 @@ class iter::impl::WindowSlider {
 
   Iterator<AsConst<Container>> begin() const {
     return {(window_size_ != 0 ? IteratorWrapper<AsConst<Container>>{get_begin(
-                                     impl::as_const(container_))}
+                                     std::as_const(container_))}
                                : IteratorWrapper<AsConst<Container>>{get_end(
-                                     impl::as_const(container_))}),
-        get_end(impl::as_const(container_)), window_size_};
+                                     std::as_const(container_))}),
+        get_end(std::as_const(container_)), window_size_};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(impl::as_const(container_)),
-        get_end(impl::as_const(container_)), window_size_};
+    return {get_end(std::as_const(container_)),
+        get_end(std::as_const(container_)), window_size_};
   }
 };
 

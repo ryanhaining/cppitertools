@@ -119,12 +119,12 @@ class iter::impl::Powersetter {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {impl::as_const(container_), 0};
+    return {std::as_const(container_), 0};
   }
 
   Iterator<AsConst<Container>> end() const {
     return {
-        impl::as_const(container_), dumb_size(impl::as_const(container_)) + 1};
+        std::as_const(container_), dumb_size(std::as_const(container_)) + 1};
   }
 };
 

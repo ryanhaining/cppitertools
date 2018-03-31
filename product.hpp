@@ -133,15 +133,15 @@ class iter::impl::Productor<Container, RestContainers...> {
   }
 
   ConstIterator begin() const {
-    return {get_begin(impl::as_const(container_)),
-        get_begin(impl::as_const(rest_products_)),
-        get_end(impl::as_const(rest_products_))};
+    return {get_begin(std::as_const(container_)),
+        get_begin(std::as_const(rest_products_)),
+        get_end(std::as_const(rest_products_))};
   }
 
   ConstIterator end() const {
-    return {get_end(impl::as_const(container_)),
-        get_end(impl::as_const(rest_products_)),
-        get_end(impl::as_const(rest_products_))};
+    return {get_end(std::as_const(container_)),
+        get_end(std::as_const(rest_products_)),
+        get_end(std::as_const(rest_products_))};
   }
 };
 

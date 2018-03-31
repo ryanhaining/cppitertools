@@ -126,11 +126,11 @@ class iter::impl::Reverser {
   }
 
   Iterator<AsConst<Container>> begin() const {
-    return {std::rbegin(impl::as_const(container_))};
+    return {std::rbegin(std::as_const(container_))};
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {std::rend(impl::as_const(container_))};
+    return {std::rend(std::as_const(container_))};
   }
 };
 
