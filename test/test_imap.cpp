@@ -61,6 +61,38 @@ TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("imap: works with pointer to member", "[imap]") {
+  using itertest::Point;
+  std::vector<Point> ps = {{3, 6}, {20, 25}};
+  std::vector<int> v;
+  SECTION("with pointer to member function") {
+    auto im = imap(&Point::get_y, ps);
+    v.assign(std::begin(im), std::end(im));
+  }
+
+  SECTION("with pointer to data member") {
+    auto im = imap(&Point::y, ps);
+    v.assign(std::begin(im), std::end(im));
+  }
+
+  Vec vc = {6, 25};
+  REQUIRE(v == vc);
+}
+
+TEST_CASE("imap: works with pointer to member function taking argument") {
+  using itertest::Point;
+  std::vector<Point> ps = {{10, 20}, {6, 8}, {3, 15}};
+  std::vector<std::string> strs = {"a", "point", "pos"};
+
+  auto im = imap(&Point::prefix, ps, strs);
+
+  std::vector<std::string> v(std::begin(im), std::end(im));
+  const std::vector<std::string> vc = {
+      "a(10, 20)", "point(6, 8)", "pos(3, 15)"};
+
+  REQUIRE(v == vc);
+}
+
 // TODO enable once zip supports const
 #if 0
 TEST_CASE("imap: supports const iteration", "[imap][const]") {
@@ -77,7 +109,6 @@ TEST_CASE("imap: const iterators can be compared to non-const iterators", "[imap
   (void)(std::begin(m) == std::end(cm));
 }
 #endif
-  
 
 TEST_CASE("imap: Works with different begin and end types", "[imap]") {
   CharRange cr{'d'};
