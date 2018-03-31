@@ -61,6 +61,17 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("starmap: works with pointer to member function", "[starmap]") {
+  using itertest::Point;
+  std::vector<std::pair<Point, std::string>> tup = {
+      {{10, 20}, "a"}, {{6, 8}, "point"}, {{3, 15}, "pos"}};
+  auto sm = starmap(&Point::prefix, tup);
+  std::vector<std::string> v(std::begin(sm), std::end(sm));
+  const std::vector<std::string> vc = {
+      "a(10, 20)", "point(6, 8)", "pos(3, 15)"};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("starmap: vector of pairs const iteration", "[starmap][const]") {
   using Vec = const std::vector<int>;
   const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
