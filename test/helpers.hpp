@@ -3,6 +3,7 @@
 
 #include <internal/iterbase.hpp>
 
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <type_traits>
@@ -222,7 +223,7 @@ namespace itertest {
       return y;
     }
 
-    std::string prefix(const std::string& str) {
+    std::string prefix(const std::string& str) const {
       std::ostringstream ss;
       ss << str << "(" << x << ", " << y << ")";
       return ss.str();
@@ -234,6 +235,10 @@ namespace itertest {
 
     bool operator!=(Point other) const {
       return !(*this == other);
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const Point& p) {
+      return out << p.prefix("");
     }
   };
 }
