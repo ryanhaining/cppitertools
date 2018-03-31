@@ -5,6 +5,7 @@
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
+#include <functional>
 #include <iterator>
 #include <utility>
 
@@ -52,7 +53,7 @@ class iter::impl::Dropper {
 
     // skip all values for which the predicate is true
     void skip_passes() {
-      while (sub_iter_ != sub_end_ && (*filter_func_)(item_.get())) {
+      while (sub_iter_ != sub_end_ && std::invoke(*filter_func_, item_.get())) {
         inc_sub_iter();
       }
     }
