@@ -90,9 +90,9 @@ TEST_CASE("zip: Empty", "[zip]") {
 TEST_CASE("zip: Modify sequence through zip", "[zip]") {
   std::vector<int> iv{1, 2, 3};
   std::vector<int> iv2{1, 2, 3, 4};
-  for (auto&& t : zip(iv, iv2)) {
-    std::get<0>(t) = -1;
-    std::get<1>(t) = -1;
+  for (auto&& [a, b] : zip(iv, iv2)) {
+    a = -1;
+    b = -1;
   }
 
   const std::vector<int> vc{-1, -1, -1};

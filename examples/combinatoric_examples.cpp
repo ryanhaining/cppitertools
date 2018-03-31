@@ -45,11 +45,8 @@ int main() {
 
     std::vector<std::string> v3 = {"abc", "def"};
     std::cout << "product of three vectors (int, int, string):\n";
-    for (auto&& t : iter::product(v1,v2,v3)) {
-        std::cout << "{ "
-            << std::get<0>(t) << ' '
-            << std::get<1>(t) << ' '
-            << std::get<2>(t) << " }\n";
+    for (auto&& [a, b, c] : iter::product(v1,v2,v3)) {
+        std::cout << "{ " << a << ' ' << b << ' ' << c << " }\n";
     }
 
     std::cout << "powerset({1,2,3,4,5}):\n";

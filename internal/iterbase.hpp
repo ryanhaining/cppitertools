@@ -10,7 +10,7 @@
 #include <cstddef>
 #include <functional>
 #include <iterator>
-#include <memory>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -47,28 +47,13 @@ namespace iter {
       using type = T;
     };
 
-    // TODO use std::as_const for c++17
-    template <typename T>
-    const T& as_const(T& t) {
-      return t;
-    }
-    template <typename T>
-    const T& as_const(const T& t) {
-      return t;
-    }
-    template <typename T>
-    void as_const(T&&) = delete;
+    // TODO get rid of these and explicitly use std:: everywhere once master is
+    // on C++17
+    using std::as_const;
+    using std::void_t;
 
     template <typename T>
     using AsConst = decltype(impl::as_const(std::declval<T&>()));
-
-    // gcc CWG 1558
-    template <typename...>
-    struct void_t_help {
-      using type = void;
-    };
-    template <typename... Ts>
-    using void_t = typename void_t_help<Ts...>::type;
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
@@ -105,7 +90,7 @@ namespace iter {
 
     // Assuming that if a type works with begin, it is an iterable.
     template <typename T>
-    struct IsIterable<T, void_t<iterator_type<T>>> : std::true_type {};
+    struct IsIterable<T, std::void_t<iterator_type<T>>> : std::true_type {};
 
     template <typename T>
     constexpr bool is_iterable = IsIterable<T>::value;
@@ -126,7 +111,8 @@ namespace iter {
       };
 
       template <typename T>
-      struct ArrowHelper<T, void_t<decltype(std::declval<T&>().operator->())>> {
+      struct ArrowHelper<T,
+          std::void_t<decltype(std::declval<T&>().operator->())>> {
         using type = decltype(std::declval<T&>().operator->());
         type operator()(T& t) const {
           return t.operator->();
@@ -257,27 +243,13 @@ namespace iter {
       // it could still be an rvalue reference
       using TPlain = std::remove_reference_t<T>;
 
-      std::unique_ptr<TPlain> item_p;
+      std::optional<TPlain> item_p;
 
      public:
       using reference = TPlain&;
       using pointer = TPlain*;
 
       DerefHolder() = default;
-
-      DerefHolder(const DerefHolder& other)
-          : item_p{other.item_p ? std::make_unique<TPlain>(*other.item_p)
-                                : nullptr} {}
-
-      DerefHolder& operator=(const DerefHolder& other) {
-        this->item_p =
-            other.item_p ? std::make_unique<TPlain>(*other.item_p) : nullptr;
-        return *this;
-      }
-
-      DerefHolder(DerefHolder&&) = default;
-      DerefHolder& operator=(DerefHolder&&) = default;
-      ~DerefHolder() = default;
 
       reference get() {
         return *this->item_p;
@@ -288,7 +260,7 @@ namespace iter {
       }
 
       void reset(T&& item) {
-        item_p = std::make_unique<TPlain>(std::move(item));
+        item_p = std::move(item);
       }
 
       explicit operator bool() const {

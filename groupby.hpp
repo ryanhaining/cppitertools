@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 
@@ -66,7 +67,7 @@ class iter::impl::GroupProducer {
     IteratorWrapper<ContainerT> sub_end_;
     Holder<ContainerT> item_;
     KeyFunc* key_func_;
-    std::unique_ptr<KeyGroupPair<ContainerT>> current_key_group_pair_;
+    std::optional<KeyGroupPair<ContainerT>> current_key_group_pair_;
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -115,7 +116,7 @@ class iter::impl::GroupProducer {
 
     KeyGroupPair<ContainerT>* operator->() {
       set_key_group_pair();
-      return current_key_group_pair_.get();
+      return &*current_key_group_pair_;
     }
 
     Iterator& operator++() {
@@ -169,7 +170,7 @@ class iter::impl::GroupProducer {
 
     void set_key_group_pair() {
       if (!current_key_group_pair_) {
-        current_key_group_pair_ = std::make_unique<KeyGroupPair<ContainerT>>(
+        current_key_group_pair_.emplace(
             (*key_func_)(item_.get()), Group<ContainerT>{*this, next_key()});
       }
     }

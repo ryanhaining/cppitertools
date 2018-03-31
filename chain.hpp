@@ -7,7 +7,7 @@
 
 #include <array>
 #include <iterator>
-#include <memory>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -238,27 +238,8 @@ class iter::impl::ChainedFromIterable {
 
     IteratorWrapper<ContainerT> top_level_iter_;
     IteratorWrapper<ContainerT> top_level_end_;
-    std::unique_ptr<SubIter> sub_iter_p_;
-    std::unique_ptr<SubIter> sub_end_p_;
-
-    static std::unique_ptr<SubIter> clone_sub_pointer(const SubIter* sub_iter) {
-      return sub_iter ? std::make_unique<SubIter>(*sub_iter) : nullptr;
-    }
-
-    template <typename T>
-    bool sub_iters_differ(const Iterator<T>& other) const {
-      // checking if they're the same also handles them both being nullptr
-      if (static_cast<const void*>(sub_iter_p_.get())
-          == static_cast<const void*>(other.sub_iter_p_.get())) {
-        return false;
-      }
-      if (sub_iter_p_ == nullptr || other.sub_iter_p_ == nullptr) {
-        // since the first check tests if they're the same,
-        // this will return if only one is nullptr
-        return true;
-      }
-      return *sub_iter_p_ != *other.sub_iter_p_;
-    }
+    std::optional<SubIter> sub_iter_p_;
+    std::optional<SubIter> sub_end_p_;
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -273,43 +254,20 @@ class iter::impl::ChainedFromIterable {
           top_level_end_{std::move(top_end)},
           sub_iter_p_{!(top_iter != top_end)
                           ?  // iter == end ?
-                          nullptr
-                          : std::make_unique<SubIter>(get_begin(*top_iter))},
+                          std::nullopt
+                          : std::make_optional<SubIter>(get_begin(*top_iter))},
           sub_end_p_{!(top_iter != top_end)
                          ?  // iter == end ?
-                         nullptr
-                         : std::make_unique<SubIter>(get_end(*top_iter))} {}
-
-    Iterator(const Iterator& other)
-        : top_level_iter_{other.top_level_iter_},
-          top_level_end_{other.top_level_end_},
-          sub_iter_p_{clone_sub_pointer(other.sub_iter_p_.get())},
-          sub_end_p_{clone_sub_pointer(other.sub_end_p_.get())} {}
-
-    Iterator& operator=(const Iterator& other) {
-      if (this == &other) {
-        return *this;
-      }
-
-      top_level_iter_ = other.top_level_iter_;
-      top_level_end_ = other.top_level_end_;
-      sub_iter_p_ = clone_sub_pointer(other.sub_iter_p_.get());
-      sub_end_p_ = clone_sub_pointer(other.sub_end_p_.get());
-
-      return *this;
-    }
-
-    Iterator(Iterator&&) = default;
-    Iterator& operator=(Iterator&&) = default;
-    ~Iterator() = default;
+                         std::nullopt
+                         : std::make_optional<SubIter>(get_end(*top_iter))} {}
 
     Iterator& operator++() {
       ++*sub_iter_p_;
       if (!(*sub_iter_p_ != *sub_end_p_)) {
         ++top_level_iter_;
         if (top_level_iter_ != top_level_end_) {
-          sub_iter_p_ = std::make_unique<SubIter>(get_begin(*top_level_iter_));
-          sub_end_p_ = std::make_unique<SubIter>(get_end(*top_level_iter_));
+          sub_iter_p_ = get_begin(*top_level_iter_);
+          sub_end_p_ = get_end(*top_level_iter_);
         } else {
           sub_iter_p_.reset();
           sub_end_p_.reset();
@@ -327,7 +285,7 @@ class iter::impl::ChainedFromIterable {
     template <typename T>
     bool operator!=(const Iterator<T>& other) const {
       return top_level_iter_ != other.top_level_iter_
-             || sub_iters_differ(other);
+             || sub_iter_p_ != other.sub_iter_p_;
     }
 
     template <typename T>

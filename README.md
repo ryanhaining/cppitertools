@@ -221,15 +221,13 @@ enumerate
 ---------
 
 Continually "yields" containers similar to pairs.  They are basic structs with a
-.index and a .element.  Usage appears as:
+.index and a .element, and also work with structured binding declarations.
+Usage appears as:
 
 ```c++
 vector<int> vec{2, 4, 6, 8};
-for (auto&& e : enumerate(vec)) {
-    cout << e.index
-         << ": "
-         << e.element
-         << '\n';
+for (auto&& [i, e] : enumerate(vec)) {
+    cout << i << ": " << e << '\n';
 }
 ```
 
@@ -500,17 +498,14 @@ tuple of the elements the iterators were holding.
 
 Example usage:
 ```c++
-array<int,4> i{{1,2,3,4}};
-vector<float> f{1.2,1.4,12.3,4.5,9.9};
-vector<string> s{"i","like","apples","alot","dude"};
-array<double,5> d{{1.2,1.2,1.2,1.2,1.2}};
+array<int,4> iseq{{1,2,3,4}};
+vector<float> fseq{1.2,1.4,12.3,4.5,9.9};
+vector<string> sseq{"i","like","apples","a lot","dude"};
+array<double,5> dseq{{1.2,1.2,1.2,1.2,1.2}};
 
-for (auto&& e : zip(i,f,s,d)) {
-    cout << std::get<0>(e) << ' '
-         << std::get<1>(e) << ' '
-         << std::get<2>(e) << ' '
-         << std::get<3>(e) << '\n';
-    std::get<1>(e)=2.2f; // modifies the underlying 'f' array
+for (auto&& [i, f, s, d] : zip(iseq, fseq, sseq, dseq)) {
+    cout << i << ' ' << f << ' ' << s << ' ' << d << '\n';
+    f = 2.2f; // modifies the underlying 'fseq' sequence
 }
 ```
 
@@ -527,16 +522,16 @@ element in each tuple yielded.
 ```c++
 vector<int> v1 = {0, 1, 2, 3};
 vector<int> v2 = {10, 11};
-for (auto&& t : zip_longest(v1, v2)) {
+for (auto&& [x, y] : zip_longest(v1, v2)) {
     cout << '{';
-    if (std::get<0>(t)) {
-        cout << "Just " << *std::get<0>(t);
+    if (x) {
+        cout << "Just " << *x;
     } else {
         cout << "Nothing";
     }
     cout << ", ";
-    if (std::get<1>(t)) {
-        cout << "Just " << *std::get<1>(t);
+    if (y) {
+        cout << "Just " << *y;
     } else {
         cout << "Nothing";
     }
@@ -752,12 +747,9 @@ Example usage:
 vector<int> v1{1,2,3};
 vector<int> v2{7,8};
 vector<string> v3{"the","cat"};
-vector<string> v4{"hi","what","up","dude"};
-for (auto&& t : product(v1,v2,v3,v4)) {
-    cout << std::get<0>(t) << ", "
-        << std::get<1>(t) << ", "
-        << std::get<2>(t) << ", "
-        << std::get<3>(t) << '\n';
+vector<string> v4{"hi","what's","up","dude"};
+for (auto&& [a, b, c, d] : product(v1,v2,v3,v4)) {
+    cout << a << ", " << b << ", " << c << ", " << d << '\n';
 }
 ```
 
