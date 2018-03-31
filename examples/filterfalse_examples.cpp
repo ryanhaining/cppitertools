@@ -26,4 +26,10 @@ int main() {
     for (auto&& i : iter::filterfalse(ns)) {
         std::cout << i << '\n';
     }
+
+    // only print non-empty strings
+    std::vector<std::string> words {"hello", "", "", "world", "", "goodbye", ""};
+    for (auto&& s : iter::filterfalse(&std::string::empty, words)) {
+      std::cout << s << '\n';
+    }
 }
