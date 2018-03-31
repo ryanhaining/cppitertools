@@ -5,6 +5,7 @@
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
+#include <functional>
 #include <iterator>
 #include <utility>
 
@@ -52,7 +53,7 @@ class iter::impl::Taker {
     }
 
     void check_current() {
-      if (sub_iter_ != sub_end_ && !(*filter_func_)(item_.get())) {
+      if (sub_iter_ != sub_end_ && !std::invoke(*filter_func_, item_.get())) {
         sub_iter_ = sub_end_;
       }
     }
