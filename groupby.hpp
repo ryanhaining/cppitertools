@@ -6,6 +6,7 @@
 #include "internal/iterator_wrapper.hpp"
 #include "internal/iterbase.hpp"
 
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -165,13 +166,13 @@ class iter::impl::GroupProducer {
     }
 
     key_func_ret<ContainerT> next_key() {
-      return (*key_func_)(item_.get());
+      return std::invoke(*key_func_, item_.get());
     }
 
     void set_key_group_pair() {
       if (!current_key_group_pair_) {
-        current_key_group_pair_.emplace(
-            (*key_func_)(item_.get()), Group<ContainerT>{*this, next_key()});
+        current_key_group_pair_.emplace(std::invoke(*key_func_, item_.get()),
+            Group<ContainerT>{*this, next_key()});
       }
     }
   };
@@ -208,9 +209,8 @@ class iter::impl::GroupProducer {
     }
 
     // move-constructible, non-copy-constructible, non-assignable
-    Group(Group&& other) noexcept : owner_(other.owner_),
-                                    key_{other.key_},
-                                    completed{other.completed} {
+    Group(Group&& other) noexcept
+        : owner_(other.owner_), key_{other.key_}, completed{other.completed} {
       other.completed = true;
     }
 
