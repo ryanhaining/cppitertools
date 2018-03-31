@@ -57,6 +57,25 @@ TEST_CASE("takewhile: works with lambda, callable, and function pointer",
   }
 }
 
+TEST_CASE("takewhile: handles pointer to member", "[takewhile]") {
+  using itertest::Point;
+  const std::vector<Point> ps = {
+      {5, 0}, {3, 5}, {2, 1}, {0, 1}, {2, 2}, {6, 0}};
+  std::vector<Point> v;
+  SECTION("with pointer to data member") {
+    auto tw = takewhile(&Point::x, ps);
+    v.assign(std::begin(tw), std::end(tw));
+  }
+
+  SECTION("with pointer to member function") {
+    auto tw = takewhile(&Point::get_x, ps);
+    v.assign(std::begin(tw), std::end(tw));
+  }
+
+  const std::vector<Point> vc = {{5, 0}, {3, 5}, {2, 1}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("takewhile: supports const iteration", "[takewhile][const]") {
   Vec ns = {1, 3, 5, 20, 2, 4, 6, 8};
   const auto tw = takewhile(UnderTen{}, ns);
