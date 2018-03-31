@@ -3,6 +3,7 @@
 
 #include <internal/iterbase.hpp>
 
+#include <sstream>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
@@ -111,8 +112,7 @@ namespace itertest {
         : data{new T[other.size]}, size{other.size} {
       other.was_copied_from_ = true;
       auto o_it = begin(other);
-      for (auto it = begin(*this); o_it != end(other);
-           ++it, ++o_it) {
+      for (auto it = begin(*this); o_it != end(other); ++it, ++o_it) {
         *it = *o_it;
       }
     }
@@ -211,6 +211,23 @@ namespace itertest {
                 && !std::is_copy_assignable<T>::value
                 && !std::is_move_assignable<T>::value
                 && std::is_move_constructible<T>::value> {};
+
+  struct Point {
+    int x;
+    int y;
+    int get_x() const {
+      return x;
+    }
+    int get_y() const {
+      return y;
+    }
+
+    std::string prefix(const std::string& str) {
+      std::ostringstream ss;
+      ss << str << "(" << x << ", " << y << ")";
+      return ss.str();
+    }
+  };
 }
 template <typename T, typename Inc>
 class DiffEndRange {
