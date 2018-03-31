@@ -59,12 +59,52 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
     }
   }
 
+  SECTION("pointer to member") {
+    for (auto&& gb : groupby(vec, &std::string::size)) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
   const std::vector<int> kc = {2, 3, 5};
   REQUIRE(keys == kc);
 
   const std::vector<std::vector<std::string>> gc = {
       {"hi", "ab", "ho"}, {"abc", "def"}, {"abcde", "efghi"},
   };
+
+  REQUIRE(groups == gc);
+}
+
+TEST_CASE("groupby: handles pointer to member", "[groupby]") {
+  using itertest::Point;
+  const std::vector<Point> ps = {
+      {0, 2}, {0, 4}, {1, 3}, {1, 7}, {1, 10}, {1, 12}, {3, 5}};
+
+  std::vector<std::vector<Point>> groups;
+  std::vector<int> keys;
+
+  SECTION("with pointer to data member") {
+    auto g = groupby(ps, &Point::x);
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  SECTION("with pointer member function") {
+    auto g = groupby(ps, &Point::get_x);
+    for (auto&& gb : g) {
+      keys.push_back(gb.first);
+      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+    }
+  }
+
+  const std::vector<int> kc = {0, 1, 3};
+  REQUIRE(keys == kc);
+
+  const std::vector<std::vector<Point>> gc = {
+      {{0, 2}, {0, 4}}, {{1, 3}, {1, 7}, {1, 10}, {1, 12}}, {{3, 5}}};
 
   REQUIRE(groups == gc);
 }
