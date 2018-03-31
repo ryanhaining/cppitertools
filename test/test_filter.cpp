@@ -53,6 +53,24 @@ TEST_CASE("filter: handles different callable types", "[filter]") {
   }
 }
 
+TEST_CASE("filter: handles pointer to member", "[filter]") {
+  using itertest::Point;
+  const std::vector<Point> ps = {{0, 3}, {4, 0}, {0, 1}, {-1, -1}};
+  std::vector<Point> v;
+  SECTION("with pointer to data member") {
+    auto f = filter(&Point::x, ps);
+    v.assign(std::begin(f), std::end(f));
+  }
+
+  SECTION("with pointer to member function") {
+    auto f = filter(&Point::get_x, ps);
+    v.assign(std::begin(f), std::end(f));
+  }
+
+  const std::vector<Point> vc = {{4, 0}, {-1, -1}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("filter: const iteration", "[filter][const]") {
   Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
   const auto f = filter(LessThanValue{5}, ns);
