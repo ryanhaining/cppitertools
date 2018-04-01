@@ -45,6 +45,15 @@ TEST_CASE("accumulate: With subtraction lambda", "[accumulate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("accumulate: handles pointer to member function", "[accumulate]") {
+  using itertest::Point;
+  std::vector<Point> ps = {{1, 2}, {10, 50}, {300, 600}};
+  auto a = accumulate(ps, &Point::add);
+  const std::vector<Point> v(std::begin(a), std::end(a));
+  const std::vector<Point> vc = {{1, 2}, {11, 52}, {311, 652}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("accumulate: const iterators", "[accumulate][const]") {
   std::vector<int> v;
   SECTION("lvalue") {
@@ -65,7 +74,8 @@ TEST_CASE("accumulate: const iterators", "[accumulate][const]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("accumulate: const iterators can be compared", "[accumulate][const]") {
+TEST_CASE(
+    "accumulate: const iterators can be compared", "[accumulate][const]") {
   auto e = accumulate(std::string("hello"));
   const auto& ce = e;
   (void)(std::begin(e) == std::end(ce));
