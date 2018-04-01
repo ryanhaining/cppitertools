@@ -76,7 +76,7 @@ class iter::impl::Accumulator {
     Iterator& operator++() {
       ++sub_iter_;
       if (sub_iter_ != sub_end_) {
-        *acc_val_ = (*accumulate_func_)(*acc_val_, *sub_iter_);
+        *acc_val_ = std::invoke(*accumulate_func_, *acc_val_, *sub_iter_);
       }
       return *this;
     }
