@@ -5,6 +5,7 @@
 #include "internal/iterbase.hpp"
 
 #include <algorithm>
+#include <functional>
 #include <iterator>
 #include <vector>
 
@@ -44,9 +45,9 @@ class iter::impl::SortedView {
 
       // sort by comparing the elements that the iterators point to
       std::sort(get_begin(sorted_iters_.get()), get_end(sorted_iters_.get()),
-          [compare_func](iterator_type<Container> it1,
-                    iterator_type<Container> it2) {
-            return compare_func(*it1, *it2);
+          [compare_func](
+              iterator_type<Container> it1, iterator_type<Container> it2) {
+            return std::invoke(compare_func, *it1, *it2);
           });
     }
 
@@ -92,7 +93,7 @@ class iter::impl::SortedView {
       // sort by comparing the elements that the iterators point to
       std::sort(get_begin(sorted_iters_.get()), get_end(sorted_iters_.get()),
           [this](iterator_type<ContainerT> it1, iterator_type<ContainerT> it2) {
-            return compare_func_(*it1, *it2);
+            return std::invoke(compare_func_, *it1, *it2);
           });
     }
 
@@ -110,7 +111,7 @@ class iter::impl::SortedView {
       std::sort(get_begin(const_sorted_iters_.get()),
           get_end(const_sorted_iters_.get()),
           [this](iterator_type<AsConst<ContainerT>> it1,
-                    iterator_type<AsConst<ContainerT>> it2) {
+              iterator_type<AsConst<ContainerT>> it2) {
             return compare_func_(*it1, *it2);
           });
     }
