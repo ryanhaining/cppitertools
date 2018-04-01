@@ -29,6 +29,15 @@ TEST_CASE("sorted: iterates through a vector in sorted order", "[sorted]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("sorted: handles pointer to member function", "[sorted]") {
+  using itertest::Point;
+  const std::vector<Point> ps = {{5, 0}, {3, 0}, {10, 0}, {6, 0}};
+  auto s = sorted(ps, &Point::left_of);
+  const std::vector<Point> v(std::begin(s), std::end(s));
+  const std::vector<Point> vc = {{3, 0}, {5, 0}, {6, 0}, {10, 0}};
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("sorted: const iteration", "[sorted][const]") {
   Vec ns = {4, 0, 5, 1, 6, 7, 9, 3, 2, 8};
   const auto s = sorted(ns);
@@ -208,7 +217,7 @@ TEST_CASE("sorted: moves rvalues and binds to lvalues", "[sorted]") {
 TEST_CASE("sorted: doesn't move or copy elements of iterable", "[sorted]") {
   using itertest::SolidInt;
   constexpr SolidInt arr[] = {{6}, {7}, {8}};
-  for (auto &&i : sorted(arr, [](const SolidInt &lhs, const SolidInt &rhs) {
+  for (auto &&i : sorted(arr, [](const SolidInt&lhs, const SolidInt&rhs) {
          return lhs.getint() < rhs.getint();
        })) {
     (void)i;
