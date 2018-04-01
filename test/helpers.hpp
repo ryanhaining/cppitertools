@@ -244,6 +244,10 @@ namespace itertest {
     bool left_of(Point other) const {
       return x < other.x;
     }
+
+    Point add(Point other) const {
+      return {x + other.x, y + other.y};
+    }
   };
 }
 template <typename T, typename Inc>
