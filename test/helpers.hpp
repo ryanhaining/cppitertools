@@ -240,6 +240,10 @@ namespace itertest {
     friend std::ostream& operator<<(std::ostream& out, const Point& p) {
       return out << p.prefix("");
     }
+
+    bool left_of(Point other) const {
+      return x < other.x;
+    }
   };
 }
 template <typename T, typename Inc>
