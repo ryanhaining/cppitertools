@@ -35,7 +35,7 @@ class iter::impl::StarMapper {
   Container container_;
 
   using StarIterDeref = std::remove_reference_t<decltype(
-      call_with_tuple(func_, std::declval<iterator_deref<Container>>()))>;
+      std::apply(func_, std::declval<iterator_deref<Container>>()))>;
 
   StarMapper(Func f, Container&& c)
       : func_(std::move(f)), container_(std::forward<Container>(c)) {}
@@ -83,7 +83,7 @@ class iter::impl::StarMapper {
     }
 
     decltype(auto) operator*() {
-      return call_with_tuple(*func_, *sub_iter_);
+      return std::apply(*func_, *sub_iter_);
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -131,7 +131,7 @@ class iter::impl::TupleStarMapper {
    public:
     template <std::size_t Idx>
     static decltype(auto) get_and_call_with_tuple(Func& f, TupTypeT& t) {
-      return call_with_tuple(f, std::get<Idx>(t));
+      return std::apply(f, std::get<Idx>(t));
     }
 
     using ResultType = decltype(get_and_call_with_tuple<0>(func_, tup_));
@@ -238,11 +238,13 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  public:
   template <typename Func, typename Seq>
   auto operator()(Func func, Seq&& sequence) const {
-    if constexpr (is_tuple_like<Seq>{}) {
-      return helper_with_tuples(std::move(func), std::forward<Seq>(sequence),
-          std::make_index_sequence<std::tuple_size<std::decay_t<Seq>>::
-                  value>{});
-    } else {
+    if
+      constexpr(is_tuple_like<Seq>{}) {
+        return helper_with_tuples(std::move(func), std::forward<Seq>(sequence),
+            std::make_index_sequence<std::tuple_size<std::decay_t<Seq>>::
+                    value>{});
+      }
+    else {
       return StarMapper<Func, Seq>{
           std::move(func), std::forward<Seq>(sequence)};
     }
