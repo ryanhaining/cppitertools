@@ -231,13 +231,11 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  public:
   template <typename Func, typename Seq>
   auto operator()(Func func, Seq&& sequence) const {
-    if
-      constexpr(is_tuple_like<Seq>{}) {
-        return helper_with_tuples(std::move(func), std::forward<Seq>(sequence),
-            std::make_index_sequence<std::tuple_size<std::decay_t<Seq>>::
-                    value>{});
-      }
-    else {
+    if constexpr (is_tuple_like<Seq>{}) {
+      return helper_with_tuples(std::move(func), std::forward<Seq>(sequence),
+          std::make_index_sequence<
+              std::tuple_size<std::decay_t<Seq>>::value>{});
+    } else {
       return StarMapper<Func, Seq>{
           std::move(func), std::forward<Seq>(sequence)};
     }
