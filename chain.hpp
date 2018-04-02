@@ -189,35 +189,6 @@ class iter::impl::Chained {
   }
 };
 
-// jesus christ. what have I done.
-template <typename TupType, std::size_t... Is>
-template <typename TupTypeT>
-constexpr std::array<typename iter::impl::Chained<TupType,
-                         Is...>::template IteratorData<TupTypeT>::DerefFunc,
-    sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::derefers;
-
-template <typename TupType, std::size_t... Is>
-template <typename TupTypeT>
-constexpr std::array<typename iter::impl::Chained<TupType,
-                         Is...>::template IteratorData<TupTypeT>::ArrowFunc,
-    sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::arrowers;
-
-template <typename TupType, std::size_t... Is>
-template <typename TupTypeT>
-constexpr std::array<typename iter::impl::Chained<TupType,
-                         Is...>::template IteratorData<TupTypeT>::IncFunc,
-    sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::incrementers;
-
-template <typename TupType, std::size_t... Is>
-template <typename TupTypeT>
-constexpr std::array<typename iter::impl::Chained<TupType,
-                         Is...>::template IteratorData<TupTypeT>::NeqFunc,
-    sizeof...(Is)>
-    iter::impl::Chained<TupType, Is...>::IteratorData<TupTypeT>::neq_comparers;
-
 template <typename Container>
 class iter::impl::ChainedFromIterable {
  private:
@@ -316,8 +287,8 @@ class iter::impl::ChainedFromIterable {
   }
 
   Iterator<AsConst<Container>> end() const {
-    return {get_end(std::as_const(container_)),
-        get_end(std::as_const(container_))};
+    return {
+        get_end(std::as_const(container_)), get_end(std::as_const(container_))};
   }
 };
 

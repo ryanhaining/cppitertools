@@ -212,13 +212,6 @@ class iter::impl::TupleStarMapper {
   }
 };
 
-template <typename Func, typename TupType, std::size_t... Is>
-template <typename T>
-constexpr std::array<typename iter::impl::TupleStarMapper<Func, TupType,
-                         Is...>::template IteratorData<T>::CallerFunc,
-    sizeof...(Is)>
-    iter::impl::TupleStarMapper<Func, TupType, Is...>::IteratorData<T>::callers;
-
 struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
  private:
   template <typename Func, typename TupType, std::size_t... Is>
