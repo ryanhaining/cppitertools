@@ -7,5 +7,6 @@ AllowShortLoopsOnASingleLine: false
 BreakBeforeBinaryOperators: NonAssignment
 DerivePointerAlignment: false
 NamespaceIndentation: All
+FixNamespaceComments: false
 ...
 
