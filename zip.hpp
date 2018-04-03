@@ -84,7 +84,7 @@ class iter::impl::Zipped {
     }
 
     TupleDeref<TupleTypeT> operator*() {
-      return TupleDeref<TupleTypeT>{(*std::get<Is>(iters_))...};
+      return {(*std::get<Is>(iters_))...};
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -93,27 +93,23 @@ class iter::impl::Zipped {
   };
 
   Iterator<TupleType, iterator_tuple_type, iterator_deref_tuple> begin() {
-    return {iterator_tuple_type<TupleType>{
-        get_begin(std::get<Is>(containers_))...}};
+    return {{get_begin(std::get<Is>(containers_))...}};
   }
 
   Iterator<TupleType, iterator_tuple_type, iterator_deref_tuple> end() {
-    return {
-        iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...}};
+    return {{get_end(std::get<Is>(containers_))...}};
   }
 
   Iterator<AsConst<TupleType>, const_iterator_tuple_type,
       const_iterator_deref_tuple>
   begin() const {
-    return {const_iterator_tuple_type<AsConst<TupleType>>{
-        get_begin(std::as_const(std::get<Is>(containers_)))...}};
+    return {{get_begin(std::as_const(std::get<Is>(containers_)))...}};
   }
 
   Iterator<AsConst<TupleType>, const_iterator_tuple_type,
       const_iterator_deref_tuple>
   end() const {
-    return {const_iterator_tuple_type<AsConst<TupleType>>{
-        get_end(std::as_const(std::get<Is>(containers_)))...}};
+    return {{get_end(std::as_const(std::get<Is>(containers_)))...}};
   }
 };
 
