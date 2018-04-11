@@ -31,13 +31,12 @@ class iter::impl::ZippedLongest {
       TupleType&&, std::index_sequence<Is...>);
 
   template <std::size_t I, typename TupleTypeT>
-  using OptType = boost::optional<iterator_deref<std::tuple_element_t<I,
-      std::remove_reference_t<TupleTypeT>>>>;
+  using OptType = boost::optional<iterator_deref<
+      std::tuple_element_t<I, std::remove_reference_t<TupleTypeT>>>>;
 
   template <std::size_t I, typename TupleTypeT>
-  using ConstOptType =
-      boost::optional<const_iterator_type_deref<std::tuple_element_t<I,
-          std::remove_reference_t<TupleTypeT>>>>;
+  using ConstOptType = boost::optional<const_iterator_type_deref<
+      std::tuple_element_t<I, std::remove_reference_t<TupleTypeT>>>>;
 
   template <typename TupleTypeT,
       template <std::size_t, typename> class OptTempl>
@@ -100,10 +99,9 @@ class iter::impl::ZippedLongest {
     }
 
     ZipIterDeref<TupleTypeT, OptTempl> operator*() {
-      return ZipIterDeref<TupleTypeT, OptTempl>{
-          ((std::get<Is>(iters_) != std::get<Is>(ends_))
-                  ? OptTempl<Is, TupleTypeT>{*std::get<Is>(iters_)}
-                  : OptTempl<Is, TupleTypeT>{})...};
+      return {((std::get<Is>(iters_) != std::get<Is>(ends_))
+                   ? OptTempl<Is, TupleTypeT>{*std::get<Is>(iters_)}
+                   : OptTempl<Is, TupleTypeT>{})...};
     }
 
     auto operator-> () -> ArrowProxy<decltype(**this)> {
@@ -112,31 +110,25 @@ class iter::impl::ZippedLongest {
   };
 
   Iterator<TupleType, iterator_tuple_type, OptType> begin() {
-    return {
-        iterator_tuple_type<TupleType>{get_begin(std::get<Is>(containers_))...},
-        iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...}};
+    return {{get_begin(std::get<Is>(containers_))...},
+        {get_end(std::get<Is>(containers_))...}};
   }
 
   Iterator<TupleType, iterator_tuple_type, OptType> end() {
-    return {
-        iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...},
-        iterator_tuple_type<TupleType>{get_end(std::get<Is>(containers_))...}};
+    return {{get_end(std::get<Is>(containers_))...},
+        {get_end(std::get<Is>(containers_))...}};
   }
 
   Iterator<AsConst<TupleType>, const_iterator_tuple_type, ConstOptType> begin()
       const {
-    return {const_iterator_tuple_type<AsConst<TupleType>>{
-                get_begin(std::as_const(std::get<Is>(containers_)))...},
-        const_iterator_tuple_type<AsConst<TupleType>>{
-            get_end(std::as_const(std::get<Is>(containers_)))...}};
+    return {{get_begin(std::as_const(std::get<Is>(containers_)))...},
+        {get_end(std::as_const(std::get<Is>(containers_)))...}};
   }
 
   Iterator<AsConst<TupleType>, const_iterator_tuple_type, ConstOptType> end()
       const {
-    return {const_iterator_tuple_type<AsConst<TupleType>>{
-                get_end(std::as_const(std::get<Is>(containers_)))...},
-        const_iterator_tuple_type<AsConst<TupleType>>{
-            get_end(std::as_const(std::get<Is>(containers_)))...}};
+    return {{get_end(std::as_const(std::get<Is>(containers_)))...},
+        {get_end(std::as_const(std::get<Is>(containers_)))...}};
   }
 };
 
