@@ -56,6 +56,14 @@ TEST_CASE("const enumerate", "[enumerate][const]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("enumerate: can modify underlying sequence", "[enumerate]") {
+  std::string s = "abc";
+  for (auto&& [i, c] : enumerate(s)) {
+    c = '-';
+  }
+  REQUIRE(s == "---");
+}
+
 TEST_CASE("enumerate: const iterators can be compared", "[enumerate][const]") {
   auto e = enumerate(std::string("hello"));
   const auto& ce = e;
