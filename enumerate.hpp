@@ -25,7 +25,7 @@ namespace iter {
 
      public:
       typename BasePair::first_type index = BasePair::first;
-      typename BasePair::second_type& element = BasePair::second;
+      typename BasePair::second_type element = BasePair::second;
     };
 
     template <typename Container, typename Index>
