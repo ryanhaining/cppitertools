@@ -50,6 +50,31 @@ tools except for `zip_longest` which must be included separately.  You may
 also include individual pieces with the relevant header
 (`#include <cppitertools/enumerate.hpp>` for example).
 
+
+### Running tests
+You may use either `scons` or `bazel` to build the tests. `scons` seems
+to work better with viewing the test output, but the same `bazel` command
+can be run from any directory.
+
+To run tests with scons you must be within the `test` directory
+
+```sh
+test$ # build and run all tests
+test$ scons
+test$ ./test_all
+test$ # build and run a specific test
+test$ scons test_enumerate
+test$ ./test_enumerate
+test$ valgrind ./test_enumerate
+```
+
+`bazel` absolute commands can be run from any directory inside the project
+
+```sh
+$ bazel test //test:all # runs all tests
+$ bazel test //test:test_enumerate # runs a specific test
+```
+
 #### Requirements of passed objects
 Most itertools will work with iterables using InputIterators and not copy
 or move any underlying elements.  The itertools that need ForwardIterators or
