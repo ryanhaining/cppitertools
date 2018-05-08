@@ -93,15 +93,33 @@ TEST_CASE("product: with repeat", "[product]") {
   ResType v(std::begin(p), std::end(p));
 
   ResType vc = {
-      TP{'h', 'h', 'h'}, TP{'h', 'h', 'o'}, TP{'h', 'h', 'p'},
-      TP{'h', 'o', 'h'}, TP{'h', 'o', 'o'}, TP{'h', 'o', 'p'},
-      TP{'h', 'p', 'h'}, TP{'h', 'p', 'o'}, TP{'h', 'p', 'p'},
-      TP{'o', 'h', 'h'}, TP{'o', 'h', 'o'}, TP{'o', 'h', 'p'},
-      TP{'o', 'o', 'h'}, TP{'o', 'o', 'o'}, TP{'o', 'o', 'p'},
-      TP{'o', 'p', 'h'}, TP{'o', 'p', 'o'}, TP{'o', 'p', 'p'},
-      TP{'p', 'h', 'h'}, TP{'p', 'h', 'o'}, TP{'p', 'h', 'p'},
-      TP{'p', 'o', 'h'}, TP{'p', 'o', 'o'}, TP{'p', 'o', 'p'},
-      TP{'p', 'p', 'h'}, TP{'p', 'p', 'o'}, TP{'p', 'p', 'p'},
+      TP{'h', 'h', 'h'},
+      TP{'h', 'h', 'o'},
+      TP{'h', 'h', 'p'},
+      TP{'h', 'o', 'h'},
+      TP{'h', 'o', 'o'},
+      TP{'h', 'o', 'p'},
+      TP{'h', 'p', 'h'},
+      TP{'h', 'p', 'o'},
+      TP{'h', 'p', 'p'},
+      TP{'o', 'h', 'h'},
+      TP{'o', 'h', 'o'},
+      TP{'o', 'h', 'p'},
+      TP{'o', 'o', 'h'},
+      TP{'o', 'o', 'o'},
+      TP{'o', 'o', 'p'},
+      TP{'o', 'p', 'h'},
+      TP{'o', 'p', 'o'},
+      TP{'o', 'p', 'p'},
+      TP{'p', 'h', 'h'},
+      TP{'p', 'h', 'o'},
+      TP{'p', 'h', 'p'},
+      TP{'p', 'o', 'h'},
+      TP{'p', 'o', 'o'},
+      TP{'p', 'o', 'p'},
+      TP{'p', 'p', 'h'},
+      TP{'p', 'p', 'o'},
+      TP{'p', 'p', 'p'},
   };
   REQUIRE(v == vc);
 }
@@ -184,6 +202,12 @@ TEST_CASE("product: binds to lvalues and moves rvalues", "[product]") {
     REQUIRE_FALSE(bi.was_moved_from());
     REQUIRE(bi.was_copied_from());
   }
+}
+
+TEST_CASE("product: handles a lot of containers values", "[product]") {
+  constexpr char str[] = "";
+  auto p = product<50>(str);
+  p.begin();
 }
 
 TEST_CASE("product: doesn't move or copy elements of iterable", "[product]") {
