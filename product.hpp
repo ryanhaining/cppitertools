@@ -103,17 +103,15 @@ class iter::impl::Productor {
 
     IteratorTempl& operator++() {
       static constexpr int NUM_ELEMENTS = sizeof...(Is);
-      int i = NUM_ELEMENTS - 1;
-      bool done = false;
-      while (i >= 0) {
+      bool performed_increment = false;
+      for (int i = NUM_ELEMENTS - 1; i >= 0; --i) {
         if (IteratorData<IterTupType>::incrementers[i](
                 iters_, begin_iters_, end_iters_)) {
-          done = true;
+          performed_increment = true;
           break;
         }
-        --i;
       }
-      if (i < 0 && !done) {
+      if (!performed_increment) {
         iters_ = end_iters_;
       }
       return *this;
