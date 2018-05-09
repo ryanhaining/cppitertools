@@ -35,16 +35,14 @@ class iter::impl::Productor {
   Productor(Productor&&) = default;
 
  private:
-  template <typename TupTypeT>
+  template <typename IterTupType>
   class IteratorData {
     IteratorData() = delete;
     static_assert(
-        std::tuple_size<std::decay_t<TupTypeT>>::value == sizeof...(Is),
+        std::tuple_size<std::decay_t<IterTupType>>::value == sizeof...(Is),
         "tuple size != sizeof Is");
 
    public:
-    using IterTupType = iterator_tuple_type<TupTypeT>;
-
     template <std::size_t Idx>
     static bool equal(const IterTupType& lhs, const IterTupType& rhs) {
       return !(std::get<Idx>(lhs) != std::get<Idx>(rhs));
@@ -85,9 +83,10 @@ class iter::impl::Productor {
    private:
     template <typename, template <typename> class, template <typename> class>
     friend class IteratorTempl;
-    IteratorTuple<TupleTypeT> iters_;
-    IteratorTuple<TupleTypeT> begin_iters_;
-    IteratorTuple<TupleTypeT> end_iters_;
+    using IterTupType = IteratorTuple<TupleTypeT>;
+    IterTupType iters_;
+    IterTupType begin_iters_;
+    IterTupType end_iters_;
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -107,7 +106,7 @@ class iter::impl::Productor {
       int i = NUM_ELEMENTS - 1;
       bool done = false;
       while (i >= 0) {
-        if (IteratorData<TupleTypeT>::incrementers[i](
+        if (IteratorData<IterTupType>::incrementers[i](
                 iters_, begin_iters_, end_iters_)) {
           done = true;
           break;
