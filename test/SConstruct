@@ -1,15 +1,15 @@
 import os
+import platform
+
+cc_flags = ["-I.",  "-std=c++17", "-Wall",]
+
+if platform != "Windows":
+    cc_flags += ["-Wextra", "-pedantic", "-g", '-I/usr/local/include']
 
 env = Environment(
     ENV = os.environ,
-    CXXFLAGS= ['-g', '-Wall', '-Wextra',
-               '-pedantic', '-std=c++17',
-               '-I/usr/local/include', '-I.'],
-    CPPPATH='..',
-    LINKFLAGS=['-L/usr/local/lib'])
-
-# allows highighting to print to terminal from compiler output
-env['ENV']['TERM'] = os.environ['TERM']
+    CXXFLAGS= cc_flags,
+    CPPPATH='..')
 
 progs = Split(
     '''
