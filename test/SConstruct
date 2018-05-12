@@ -53,7 +53,7 @@ progs = Split(
 conf = Configure(env)
 
 # if catch isn't available, exit
-if not conf.CheckCXXHeader('catch.hpp'):
+if platform != 'Windows' and not conf.CheckCXXHeader('catch.hpp'):
     print("WARNING: catch.hpp not found, run ./download_catch.sh first")
     print("note: you may receive this warning if the c++ compiler specified "
           "by CXX  at the top of the SConstruct file is invalid.")
