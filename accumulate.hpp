@@ -28,8 +28,8 @@ class iter::impl::Accumulator {
 
   friend AccumulateFn;
 
-  using AccumVal = std::remove_reference_t<std::result_of_t<AccumulateFunc(
-      iterator_deref<Container>, iterator_deref<Container>)>>;
+  using AccumVal = std::remove_reference_t<std::invoke_result_t<AccumulateFunc,
+      iterator_deref<Container>, iterator_deref<Container>>>;
 
   Accumulator(Container&& container, AccumulateFunc accumulate_func)
       : container_(std::forward<Container>(container)),

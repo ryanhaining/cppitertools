@@ -39,7 +39,7 @@ class iter::impl::GroupProducer {
   friend GroupByFn;
 
   template <typename T>
-  using key_func_ret = std::result_of_t<KeyFunc(iterator_deref<T>)>;
+  using key_func_ret = std::invoke_result_t<KeyFunc, iterator_deref<T>>;
 
   GroupProducer(Container&& container, KeyFunc key_func)
       : container_(std::forward<Container>(container)), key_func_(key_func) {}
