@@ -1,14 +1,12 @@
 import os
 import platform
 
-print("platform:", platform.system())
+print('platform:', platform.system())
 
-cc_flags = ["-I.", "-Wall",]
+cc_flags = ["-I.",  "-std=c++17", "-Wall",]
 
-if platform.system() == "Windows":
-    cc_flags += ["-std:c++17"]
-else:
-    cc_flags += ["-Wextra", "-std=c++17", "-pedantic", "-g", '-I/usr/local/include']
+if platform.system() != "Windows":
+    cc_flags += ["-Wextra", "-pedantic", "-g", '-I/usr/local/include']
 
 env = Environment(
     ENV = os.environ,
