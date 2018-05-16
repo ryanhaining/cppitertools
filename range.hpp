@@ -131,7 +131,7 @@ class iter::impl::Range {
   class Iterator {
    private:
     iter::detail::RangeIterData<T> data;
-    bool is_end;
+    bool is_end{};
 
     // first argument must be regular iterator
     // second argument must be end iterator
