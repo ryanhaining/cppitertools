@@ -200,8 +200,21 @@ class iter::impl::ChainedFromIterable {
 
     IteratorWrapper<ContainerT> top_level_iter_;
     IteratorWrapper<ContainerT> top_level_end_;
+    DerefHolder<SubContainer> sub_iterable_;
     std::optional<SubIter> sub_iter_p_;
     std::optional<SubIter> sub_end_p_;
+
+    void next_sub_iterable() {
+      if (top_level_iter_ != top_level_end_) {
+        sub_iterable_.reset(*top_level_iter_);
+        sub_iter_p_ =
+            std::make_optional<SubIter>(get_begin(sub_iterable_.get()));
+        sub_end_p_ = std::make_optional<SubIter>(get_end(sub_iterable_.get()));
+      } else {
+        sub_iter_p_.reset();
+        sub_end_p_.reset();
+      }
+    }
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -213,27 +226,15 @@ class iter::impl::ChainedFromIterable {
     Iterator(IteratorWrapper<ContainerT>&& top_iter,
         IteratorWrapper<ContainerT>&& top_end)
         : top_level_iter_{std::move(top_iter)},
-          top_level_end_{std::move(top_end)},
-          sub_iter_p_{!(top_iter != top_end)
-                          ?  // iter == end ?
-                          std::nullopt
-                          : std::make_optional<SubIter>(get_begin(*top_iter))},
-          sub_end_p_{!(top_iter != top_end)
-                         ?  // iter == end ?
-                         std::nullopt
-                         : std::make_optional<SubIter>(get_end(*top_iter))} {}
+          top_level_end_{std::move(top_end)} {
+      next_sub_iterable();
+    }
 
     Iterator& operator++() {
       ++*sub_iter_p_;
       if (!(*sub_iter_p_ != *sub_end_p_)) {
         ++top_level_iter_;
-        if (top_level_iter_ != top_level_end_) {
-          sub_iter_p_ = get_begin(*top_level_iter_);
-          sub_end_p_ = get_end(*top_level_iter_);
-        } else {
-          sub_iter_p_.reset();
-          sub_end_p_.reset();
-        }
+        next_sub_iterable();
       }
       return *this;
     }
