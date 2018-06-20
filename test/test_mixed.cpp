@@ -143,3 +143,16 @@ TEST_CASE("filter into enumerate with pipe", "[filter][enumerate]") {
   const Vec vc = {{0, 42}, {1, 44}};
   REQUIRE(v == vc);
 }
+
+TEST_CASE("chain.from_iterable: accept imap result that yields rvalues",
+          "[chain.from_iterable][imap]") {
+  using iter::chain;
+  using iter::imap;
+  const std::vector<std::vector<char>> ns = {{'a'}, {'q'}, {'x', 'z'}};
+  auto ch = iter::chain.from_iterable(iter::imap([](auto v) { return v; }, ns));
+  const std::vector<char> v(std::begin(ch), std::end(ch));
+
+  const std::vector<char> vc = {'a', 'q', 'x', 'z'};
+
+  REQUIRE(v == vc);
+}
