@@ -80,11 +80,11 @@ namespace iter {
         return ret;
       }
 
-      auto operator*() -> decltype(**sub_iter) {
+      auto operator*() const -> decltype(**sub_iter) {
         return **this->sub_iter;
       }
 
-      auto operator-> () -> decltype(*sub_iter) {
+      auto operator-> () const -> decltype(*sub_iter) {
         return *this->sub_iter;
       }
 
