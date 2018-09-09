@@ -68,12 +68,12 @@ char inc_vowels(char c) {
 }
 
 TEST_CASE("sorted: Works with different begin and end types", "[sorted]") {
-  using Vec = std::vector<char>;
+  using VecC = std::vector<char>;
   CharRange cr{'g'};
   auto s =
       sorted(cr, [](char x, char y) { return inc_vowels(x) < inc_vowels(y); });
-  Vec v(s.begin(), s.end());
-  Vec vc{'b', 'c', 'd', 'f', 'a', 'e'};
+  VecC v(s.begin(), s.end());
+  VecC vc{'b', 'c', 'd', 'f', 'a', 'e'};
   REQUIRE(v == vc);
 }
 

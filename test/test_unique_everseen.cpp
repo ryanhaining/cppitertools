@@ -65,10 +65,10 @@ TEST_CASE(
 TEST_CASE("unique everseen: Works with different begin and end types",
     "[unique_everseen]") {
   CharRange cr{'d'};
-  using Vec = std::vector<char>;
+  using VecC = std::vector<char>;
   auto ue = unique_everseen(cr);
-  Vec v(ue.begin(), ue.end());
-  Vec vc{'a', 'b', 'c'};
+  VecC v(ue.begin(), ue.end());
+  VecC vc{'a', 'b', 'c'};
   REQUIRE(v == vc);
 }
 

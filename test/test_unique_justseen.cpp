@@ -54,10 +54,10 @@ TEST_CASE("unique justseen: some repeating values", "[unique_justseen]") {
 TEST_CASE("unique justseen: Works with different begin and end types",
     "[unique_justseen]") {
   CharRange cr{'d'};
-  using Vec = std::vector<char>;
+  using VecC = std::vector<char>;
   auto uj = unique_justseen(cr);
-  Vec v(uj.begin(), uj.end());
-  Vec vc{'a', 'b', 'c'};
+  VecC v(uj.begin(), uj.end());
+  VecC vc{'a', 'b', 'c'};
   REQUIRE(v == vc);
 }
 
