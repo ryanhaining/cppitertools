@@ -69,12 +69,9 @@ class iter::impl::Zipped {
     template <typename T, template <typename> class IT,
         template <typename> class TD>
     bool operator!=(const Iterator<T, IT, TD>& other) const {
-      if (sizeof...(Is) == 0) return false;
-
-      bool results[] = {
-          true, (std::get<Is>(iters_) != std::get<Is>(other.iters_))...};
-      return std::all_of(
-          get_begin(results), get_end(results), [](bool b) { return b; });
+      if constexpr (sizeof...(Is) == 0) return false;
+      else
+        return (... && (std::get<Is>(iters_) != std::get<Is>(other.iters_)));
     }
 
     template <typename T, template <typename> class IT,

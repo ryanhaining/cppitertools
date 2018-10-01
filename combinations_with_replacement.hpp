@@ -74,9 +74,10 @@ class iter::impl::CombinatorWithReplacement {
         ++(*iter);
         if (!(*iter != get_end(*container_p_))) {
           if ((iter + 1) != indices_.get().rend()) {
-            for (auto down = iter; down != indices_.get().rbegin() - 1;
-                 --down) {
+            for (auto down = iter; ; --down) {
               (*down) = dumb_next(*(iter + 1));
+              if (down == indices_.get().rbegin())
+                break;
             }
           } else {
             steps_ = COMPLETE;

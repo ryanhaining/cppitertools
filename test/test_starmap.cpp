@@ -27,8 +27,8 @@ namespace {
       return a + b + c;
     }
 
-    int operator()(int a, int b) {
-      return a + b;
+    int operator()(double a, int b) {
+      return int(a + b);
     }
 
     int operator()(int a) {
@@ -39,7 +39,7 @@ namespace {
 
 TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
   using Vec = const std::vector<int>;
-  const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
+  const std::vector<std::pair<long, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
   Vec vc = {2l, 33l, 42l};
 
   std::vector<int> v;
@@ -74,7 +74,7 @@ TEST_CASE("starmap: works with pointer to member function", "[starmap]") {
 
 TEST_CASE("starmap: vector of pairs const iteration", "[starmap][const]") {
   using Vec = const std::vector<int>;
-  const std::vector<std::pair<double, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
+  const std::vector<std::pair<double, int>> v1 = {{1.0, 2}, {3.0, 11}, {6.0, 7}};
 
   const auto sm = starmap(Callable{}, v1);
   std::vector<int> v(std::begin(sm), std::end(sm));
@@ -121,7 +121,7 @@ TEST_CASE(
 
 TEST_CASE("starmap: list of tuples", "[starmap]") {
   using Vec = const std::vector<std::string>;
-  using T = std::tuple<std::string, int, double>;
+  using T = std::tuple<std::string, int, char>;
   std::list<T> li = {T{"hey", 42, 'a'}, T{"there", 3, 'b'}, T{"yall", 5, 'c'}};
 
   auto sm = starmap(g, li);
@@ -172,7 +172,7 @@ TEST_CASE("starmap: moves rvalues, binds to lvalues", "[starmap]") {
 TEST_CASE("starmap: iterator meets requirements", "[starmap]") {
   std::string s{};
   const std::vector<std::pair<double, int>> v1;
-  auto sm = starmap([](long a, int b) { return a * b; }, v1);
+  auto sm = starmap([](double a, int b) { return a * b; }, v1);
   REQUIRE(itertest::IsIterator<decltype(std::begin(sm))>::value);
 }
 

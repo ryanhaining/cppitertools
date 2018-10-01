@@ -94,10 +94,11 @@ class iter::impl::Combinator {
         if (!(dumb_next(*iter, dist) != get_end(*container_p_))) {
           if ((iter + 1) != indices_.get().rend()) {
             size_t inc = 1;
-            for (auto down = iter; down != indices_.get().rbegin() - 1;
-                 --down) {
+            for (auto down = iter; ; --down) {
               (*down) = dumb_next(*(iter + 1), 1 + inc);
               ++inc;
+              if (down == indices_.get().rbegin())
+                break;
             }
           } else {
             steps_ = COMPLETE;

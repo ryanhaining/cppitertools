@@ -84,12 +84,7 @@ class iter::impl::ZippedLongest {
     template <typename T, template <typename> class TT,
         template <std::size_t, typename> class TU>
     bool operator!=(const Iterator<T, TT, TU>& other) const {
-      if (sizeof...(Is) == 0) return false;
-
-      bool results[] = {
-          false, (std::get<Is>(iters_) != std::get<Is>(other.iters_))...};
-      return std::any_of(
-          get_begin(results), get_end(results), [](bool b) { return b; });
+      return (... || (std::get<Is>(iters_) != std::get<Is>(other.iters_)));
     }
 
     template <typename T, template <typename> class TT,
