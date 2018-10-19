@@ -46,7 +46,7 @@ class iter::impl::Filtered {
 
   template <typename ContainerT>
   class Iterator {
-   protected:
+   private:
     template <typename>
     friend class Iterator;
     using Holder = DerefHolder<iterator_deref<ContainerT>>;
