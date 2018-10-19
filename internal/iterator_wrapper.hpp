@@ -32,15 +32,15 @@ namespace iter {
 
     template <typename Container>
     using IteratorWrapper = typename IteratorWrapperImplType<Container,
-        std::is_same<impl::iterator_type<Container>,
-            impl::iterator_end_type<Container>>{}>::type;
+        std::is_same_v<impl::iterator_type<Container>,
+            impl::iterator_end_type<Container>>>::type;
   }
 }
 
 template <typename SubIter, typename SubEnd>
 class iter::impl::IteratorWrapperImpl {
  private:
-  static_assert(!std::is_same<SubIter, SubEnd>{});
+  static_assert(!std::is_same_v<SubIter, SubEnd>);
   SubIter& sub_iter() {
     auto* sub = std::get_if<SubIter>(&sub_iter_or_end_);
     assert(sub);

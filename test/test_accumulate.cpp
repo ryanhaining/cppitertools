@@ -93,7 +93,7 @@ TEST_CASE("accumulate: intermidate type need not be default constructible",
     "[accumulate]") {
   std::vector<Integer> v = {{2}, {3}, {10}};
   auto a = accumulate(v, std::plus<Integer>{});
-  std::begin(a);
+  (void)std::begin(a);
 }
 
 TEST_CASE("accumulate: binds reference when it should", "[accumulate]") {

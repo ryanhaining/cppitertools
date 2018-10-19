@@ -80,11 +80,11 @@ namespace iter {
         return ret;
       }
 
-      auto operator*() -> decltype(**sub_iter) {
+      auto operator*() const -> decltype(**sub_iter) {
         return **this->sub_iter;
       }
 
-      auto operator-> () -> decltype(*sub_iter) {
+      auto operator-> () const -> decltype(*sub_iter) {
         return *this->sub_iter;
       }
 
@@ -115,16 +115,11 @@ namespace iter {
         return it;
       }
 
-      friend IteratorIterator operator-(Diff n, IteratorIterator it) {
-        it -= n;
-        return it;
-      }
-
       Diff operator-(const IteratorIterator& rhs) const {
         return this->sub_iter - rhs.sub_iter;
       }
 
-      auto operator[](Diff idx) -> decltype(*sub_iter[idx]) {
+      auto operator[](Diff idx) const -> decltype(*sub_iter[idx]) {
         return *sub_iter[idx];
       }
 

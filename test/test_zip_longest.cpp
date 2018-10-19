@@ -118,8 +118,8 @@ TEST_CASE("zip_longest: const iterators can be compared to non-const iterators",
     "[zip_longest][const]") {
   auto zl = zip_longest(std::vector<int>{});
   const auto& czl = zl;
-  std::begin(zl);
-  std::begin(czl);
+  (void)std::begin(zl);
+  (void)std::begin(czl);
   (void)(std::begin(zl) == std::end(czl));
 }
 

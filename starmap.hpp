@@ -130,7 +130,7 @@ class iter::impl::TupleStarMapper {
   class IteratorData {
    public:
     template <std::size_t Idx>
-    static decltype(auto) get_and_call_with_tuple(Func& f, TupTypeT& t) {
+    static auto get_and_call_with_tuple(Func& f, TupTypeT& t) -> decltype(std::apply(f, std::get<Idx>(t))) { //TODO: Remove duplicated expression in decltype, using decltype(auto) as return type, when all compilers correctly deduce type (i.e. MSVC cl 19.15 does not do it).
       return std::apply(f, std::get<Idx>(t));
     }
 

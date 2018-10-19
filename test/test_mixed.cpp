@@ -21,8 +21,8 @@ class MyUnMovable {
   constexpr int get_val() const {
     return val;
   }
-  void set_val(int val) {
-    this->val = val;
+  void set_val(int new_val) {
+    this->val = new_val;
   }
 
   bool operator==(const MyUnMovable& other) const {

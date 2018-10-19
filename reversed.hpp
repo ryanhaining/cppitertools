@@ -35,9 +35,9 @@ namespace iter {
     template <typename Container>
     using ReverseIteratorWrapper =
         typename ReverseIteratorWrapperImplType<Container,
-            std::is_same<impl::reverse_iterator_type<Container>,
+            std::is_same_v<impl::reverse_iterator_type<Container>,
                                                     impl::
-                                                        reverse_iterator_end_type<Container>>{}>::
+                                                        reverse_iterator_end_type<Container>>>::
             type;
 
     template <typename Container>

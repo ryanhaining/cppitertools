@@ -1,6 +1,7 @@
 #include <filterfalse.hpp>
 
 #include <vector>
+#include <string>
 #include <iostream>
 
 bool greater_than_four(int i) {
