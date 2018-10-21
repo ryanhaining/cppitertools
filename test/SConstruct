@@ -11,6 +11,11 @@ env = Environment(
 # allows highighting to print to terminal from compiler output
 env['ENV']['TERM'] = os.environ['TERM']
 
+try:
+    env.Replace(CXX=os.environ['CXX'])
+except KeyError:
+    pass
+
 progs = Split(
     '''
     accumulate
