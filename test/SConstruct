@@ -16,6 +16,10 @@ try:
 except KeyError:
     pass
 
+if env['CXX'].startswith('clang++'):
+    env['CXXFLAGS'].append('-stdlib=libc++')
+    env['LINKFLAGS'].append('-stdlib=libc++')
+
 progs = Split(
     '''
     accumulate
