@@ -18,7 +18,7 @@ except KeyError:
 
 if env['CXX'].startswith('clang++'):
     env['CXXFLAGS'].append('-stdlib=libc++')
-    env['LINKFLAGS'].extend(['-lc++', '-lc++abi'])
+    env['LINKFLAGS'].append('-stdlib=libc++')
 
 progs = Split(
     '''
