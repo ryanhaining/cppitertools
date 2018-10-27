@@ -15,6 +15,14 @@
 #include <type_traits>
 #include <utility>
 
+// see gcc bug 87651
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=87651
+#ifdef __GNUC__
+#define NO_GCC_FRIEND_ERROR __GNUC__ < 8
+#else
+#define NO_GCC_FRIEND_ERROR 1
+#endif
+
 namespace iter {
   namespace impl {
     namespace get_iters {
@@ -51,8 +59,13 @@ namespace iter {
     using AsConst = decltype(std::as_const(std::declval<T&>()));
 
     // iterator_type<C> is the type of C's iterator
-    template <typename T> //TODO: See bug https://developercommunity.visualstudio.com/content/problem/252157/sfinae-error-depends-on-name-of-template-parameter.html  for why we use T instead of Container.  Should be changed back to Container when that bug is fixed in MSVC.
-    using iterator_type = decltype(get_begin(std::declval<T&>()));
+    template <typename T>  // TODO: See bug
+                           // https://developercommunity.visualstudio.com/content/problem/252157/sfinae-error-depends-on-name-of-template-parameter.html
+                           // for why we use T instead of Container.  Should be
+                           // changed back to Container when that bug is fixed in
+                           // MSVC.
+                           using iterator_type =
+                               decltype(get_begin(std::declval<T&>()));
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
@@ -152,9 +165,9 @@ namespace iter {
 
     template <typename T>
     struct is_random_access_iter<T,
-        std::enable_if_t<std::is_same<
-            typename std::iterator_traits<T>::iterator_category,
-            std::random_access_iterator_tag>::value>> : std::true_type {};
+        std::enable_if_t<
+            std::is_same<typename std::iterator_traits<T>::iterator_category,
+                std::random_access_iterator_tag>::value>> : std::true_type {};
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;

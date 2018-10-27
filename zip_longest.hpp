@@ -49,10 +49,14 @@ class iter::impl::ZippedLongest {
   template <typename TupleTypeT, template <typename> class IterTuple,
       template <std::size_t, typename> class OptTempl>
   class Iterator {
+#if NO_GCC_FRIEND_ERROR
    private:
     template <typename, template <typename> class,
         template <std::size_t, typename> class>
     friend class Iterator;
+#else
+   public:
+#endif
     IterTuple<TupleTypeT> iters_;
     IterTuple<TupleTypeT> ends_;
 

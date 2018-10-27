@@ -80,9 +80,14 @@ class iter::impl::Productor {
   template <typename TupleTypeT, template <typename> class IteratorTuple,
       template <typename> class TupleDeref>
   class IteratorTempl {
+#if NO_GCC_FRIEND_ERROR
    private:
     template <typename, template <typename> class, template <typename> class>
     friend class IteratorTempl;
+#else
+   public:
+#endif
+
     using IterTupType = IteratorTuple<TupleTypeT>;
     IterTupType iters_;
     IterTupType begin_iters_;
@@ -126,7 +131,8 @@ class iter::impl::Productor {
     template <typename T, template <typename> class IT,
         template <typename> class TD>
     bool operator!=(const IteratorTempl<T, IT, TD>& other) const {
-      if constexpr (sizeof...(Is) == 0) return false;
+      if constexpr (sizeof...(Is) == 0)
+        return false;
       else
         return (... && (std::get<Is>(iters_) != std::get<Is>(other.iters_)));
     }
@@ -192,7 +198,6 @@ namespace iter {
   constexpr std::array<std::tuple<>, 1> product() {
     return {{}};
   }
-
 }
 
 namespace iter::impl {
