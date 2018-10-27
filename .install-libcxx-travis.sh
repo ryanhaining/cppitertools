@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 sudo apt-get install -y dpkg
 wget -c http://launchpadlibrarian.net/360656578/libc++-helpers_6.0-2_all.deb
 sudo dpkg -i libc++-helpers_6.0-2_all.deb
