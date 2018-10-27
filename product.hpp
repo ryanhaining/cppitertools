@@ -131,10 +131,11 @@ class iter::impl::Productor {
     template <typename T, template <typename> class IT,
         template <typename> class TD>
     bool operator!=(const IteratorTempl<T, IT, TD>& other) const {
-      if constexpr (sizeof...(Is) == 0)
+      if constexpr (sizeof...(Is) == 0) {
         return false;
-      else
+      } else {
         return (... && (std::get<Is>(iters_) != std::get<Is>(other.iters_)));
+      }
     }
 
     template <typename T, template <typename> class IT,
