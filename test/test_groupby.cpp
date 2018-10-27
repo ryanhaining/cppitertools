@@ -59,24 +59,36 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
     }
   }
 
-  SECTION("pointer to member") {
-    for (auto&& gb : groupby(vec, &std::string::size)) {
-      keys.push_back(gb.first);
-      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
-    }
-  }
-
   const std::vector<int> kc = {2, 3, 5};
   REQUIRE(keys == kc);
 
   const std::vector<std::vector<std::string>> gc = {
-      {"hi", "ab", "ho"}, {"abc", "def"}, {"abcde", "efghi"},
+      {"hi", "ab", "ho"},
+      {"abc", "def"},
+      {"abcde", "efghi"},
   };
 
   REQUIRE(groups == gc);
 }
 
-TEST_CASE("groupby: handles pointer to member", "[groupby]") {
+TEST_CASE("groupby: handles pointer to member function", "[groupby]") {
+  std::vector<itertest::Integer> nums = {
+      10, 20, 30, -5, 40, -6, -7, 50, 60, -8, -9, -10, -11, 70};
+
+  std::vector<std::vector<itertest::Integer>> groups;
+  std::vector<bool> keys;
+  for (auto&& gb : groupby(nums, &itertest::Integer::is_positive)) {
+    keys.push_back(gb.first);
+    groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+  }
+  const std::vector<bool> kc = {true, false, true, false, true, false, true};
+  const std::vector<std::vector<itertest::Integer>> gc = {
+      {10, 20, 30}, {-5}, {40}, {-6, -7}, {50, 60}, {-8, -9, -10, -11}, {70}};
+  REQUIRE(keys == kc);
+  REQUIRE(groups == gc);
+}
+
+TEST_CASE("groupby: handles pointer to data member", "[groupby]") {
   using itertest::Point;
   const std::vector<Point> ps = {
       {0, 2}, {0, 4}, {1, 3}, {1, 7}, {1, 10}, {1, 12}, {3, 5}};
@@ -151,7 +163,9 @@ TEST_CASE("groupby: const iteration", "[groupby][const]") {
   REQUIRE(keys == kc);
 
   const std::vector<std::vector<std::string>> gc = {
-      {"hi", "ab", "ho"}, {"abc", "def"}, {"abcde", "efghi"},
+      {"hi", "ab", "ho"},
+      {"abc", "def"},
+      {"abcde", "efghi"},
   };
 
   REQUIRE(groups == gc);
@@ -203,7 +217,8 @@ TEST_CASE("groupby: groups can be skipped completely", "[groupby]") {
   REQUIRE(keys == kc);
 
   const std::vector<std::vector<std::string>> gc = {
-      {"hi", "ab", "ho"}, {"abcde", "efghi"},
+      {"hi", "ab", "ho"},
+      {"abcde", "efghi"},
   };
 
   REQUIRE(groups == gc);
@@ -226,7 +241,9 @@ TEST_CASE("groupby: groups can be skipped partially", "[groupby]") {
   REQUIRE(keys == kc);
 
   const std::vector<std::vector<std::string>> gc = {
-      {"hi", "ab", "ho"}, {"abc"}, {"abcde", "efghi"},
+      {"hi", "ab", "ho"},
+      {"abc"},
+      {"abcde", "efghi"},
   };
 
   REQUIRE(groups == gc);
@@ -253,7 +270,12 @@ TEST_CASE("groupby: single argument uses elements as keys", "[groupby]") {
   REQUIRE(keys == kc);
 
   std::vector<std::vector<int>> gc = {
-      {5, 5}, {6, 6}, {19, 19, 19, 19}, {69}, {0}, {10, 10},
+      {5, 5},
+      {6, 6},
+      {19, 19, 19, 19},
+      {69},
+      {0},
+      {10, 10},
   };
 
   REQUIRE(groups == gc);

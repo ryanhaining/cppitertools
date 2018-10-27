@@ -31,6 +31,27 @@ namespace itertest {
     SolidInt(SolidInt&&) = delete;
   };
 
+  class Integer {
+   private:
+    int i_{};
+
+   public:
+    constexpr Integer(int i) : i_{i} {}
+    constexpr bool is_zero() const {
+      return i_ == 0;
+    }
+    constexpr bool operator==(const Integer& other) const {
+      return i_ == other.i_;
+    }
+    constexpr bool operator!=(const Integer& other) const {
+      return i_ != other.i_;
+    }
+
+    constexpr bool is_positive() const {
+      return i_ > 0;
+    }
+  };
+
   namespace {
     struct DoubleDereferenceError : std::exception {
       const char* what() const noexcept override {

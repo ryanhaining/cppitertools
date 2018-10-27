@@ -60,11 +60,12 @@ TEST_CASE("dropwhile: handles pointer to member", "[dropwhile]") {
   REQUIRE(v == vc);
 }
 
-TEST_CASE("dropwhile: drop empty strings at front", "[dropwhile]") {
-  const std::vector<std::string> words = {"", "", "check", "", "test"};
-  auto dw = dropwhile(&std::string::empty, words);
-  const std::vector<std::string> v(std::begin(dw), std::end(dw));
-  const std::vector<std::string> vc = {"check", "", "test"};
+TEST_CASE("dropwhile: drop zeros from front", "[dropwhile]") {
+  using itertest::Integer;
+  const std::vector<Integer> nums = {0, 0, 3, 4, 0, 5, 0};
+  auto dw = dropwhile(&Integer::is_zero, nums);
+  const std::vector<Integer> v(std::begin(dw), std::end(dw));
+  const std::vector<Integer> vc = {3, 4, 0, 5, 0};
   REQUIRE(v == vc);
 }
 
