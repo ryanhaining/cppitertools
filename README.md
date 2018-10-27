@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools)
+
 CPPItertools
 ============
 Range-based for loop add-ons inspired by the Python builtins and itertools
