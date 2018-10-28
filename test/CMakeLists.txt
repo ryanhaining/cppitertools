@@ -9,9 +9,12 @@ cmake_minimum_required(VERSION 3.8)
 project(cppitertools_tests CXX)
 set (CMAKE_CXX_STANDARD 17)
 
+find_package(Boost 1.60.0 REQUIRED)
 include_directories(
 	..
+        ${Boost_INCLUDE_DIRS}
 )
+
 
 include(CheckIncludeFileCXX)
 set(CMAKE_REQUIRED_INCLUDES ${PROJECT_SOURCE_DIR})
@@ -22,7 +25,6 @@ endif()
 
 file(GLOB test_sources RELATIVE ${PROJECT_SOURCE_DIR} "test_*.cpp")
 list(REMOVE_ITEM test_sources test_main.cpp)
-list(REMOVE_ITEM test_sources test_zip_longest.cpp) # until I get boost figured out with appveyor
 add_library(test_main OBJECT test_main.cpp)
 
 foreach(_source_cpp ${test_sources})
