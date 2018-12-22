@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools)
+
 
 CPPItertools
 ============
@@ -9,6 +9,12 @@ evaluation wherever possible.
 *Note*: Everthing is inside the `iter` namespace.
 
 Follow [@cppitertools](https://twitter.com/cppitertools) for updates.
+
+#### Build and Test Status
+Status | Compilers
+---- | ---- 
+[![Travis Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools) | gcc-7  gcc-8 clang-5.0 clang-6.0
+[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/ryanhaining/cppitertools?svg=true)](https://ci.appveyor.com/project/ryanhaining/cppitertools) | MSVC 2017
 
 #### Table of Contents
 [range](#range)<br />
