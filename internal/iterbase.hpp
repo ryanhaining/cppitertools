@@ -26,25 +26,50 @@
 namespace iter {
   namespace impl {
     namespace get_iters {
-      // This has to be set up in a really weird way.
-      // This looks at first as if it could be
-      // decltype(auto) get_begin(T& t) {
-      //     using std::begin;
-      //     return begin(t);
-      // }
-      // However, without return types in the declaration, SFINAE gets
-      // messed up everywhere.
-      using std::begin;
-      // TODO add constexpr for c++17
-      template <typename T>
-      auto get_begin(T& t) -> decltype(begin(t)) {
-        return begin(t);
+      // begin() for C arrays
+      template <typename T, std::size_t N>
+      T* get_begin_impl(T (&array)[N], int) {
+        return array;
       }
-      using std::end;
-      // TODO add constexpr for c++17
+
+      // Prefer member begin().
+      template <typename T, typename I = decltype(std::declval<T&>().begin())>
+      I get_begin_impl(T& r, int) {
+        return r.begin();
+      }
+
+      // Use ADL otherwises.
+      template <typename T, typename I = decltype(begin(std::declval<T&>()))>
+      I get_begin_impl(T& r, long) {
+        return begin(r);
+      }
+
       template <typename T>
-      auto get_end(T& t) -> decltype(end(t)) {
-        return end(t);
+      auto get_begin(T& t) -> decltype(get_begin_impl(std::declval<T&>(), 42)) {
+        return get_begin_impl(t, 42);
+      }
+
+      // end() for C arrays
+      template <typename T, std::size_t N>
+      T* get_end_impl(T (&array)[N], int) {
+        return array + N;
+      }
+
+      // Prefer member end().
+      template <typename T, typename I = decltype(std::declval<T&>().end())>
+      I get_end_impl(T& r, int) {
+        return r.end();
+      }
+
+      // Use ADL otherwise.
+      template <typename T, typename I = decltype(end(std::declval<T&>()))>
+      I get_end_impl(T& r, long) {
+        return end(r);
+      }
+
+      template <typename T>
+      auto get_end(T& t) -> decltype(get_end_impl(std::declval<T&>(), 42)) {
+        return get_end_impl(t, 42);
       }
     }
     using get_iters::get_begin;

@@ -94,3 +94,31 @@ TEST_CASE("get_begin returns correct type", "[iterbase]") {
   std::vector<int> v;
   REQUIRE((std::is_same<decltype(it::get_begin(v)), decltype(v.begin())>{}));
 }
+
+namespace NS1 {
+
+  struct Dummy {
+    auto begin() {
+      return 0;
+    }
+    auto end() {
+      return 0;
+    }
+  };
+
+  template <typename T>
+  auto begin(T& t) {
+    return t.begin();
+  }
+
+  template <typename T>
+  auto end(T& t) {
+    return t.end();
+  }
+
+}  // namespace NS1
+
+TEST_CASE("Detects is_iterable with ADL conflicts", "[iterbase]") {
+  REQUIRE(iter::impl::is_iterable<NS1::Dummy>);
+  REQUIRE(iter::impl::is_iterable<std::vector<NS1::Dummy>>);
+}
