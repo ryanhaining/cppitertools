@@ -119,6 +119,10 @@ namespace NS1 {
 }  // namespace NS1
 
 TEST_CASE("Detects is_iterable with ADL conflicts", "[iterbase]") {
+  int a[1]{};
+  const int b[1]{};
   REQUIRE(iter::impl::is_iterable<NS1::Dummy>);
   REQUIRE(iter::impl::is_iterable<std::vector<NS1::Dummy>>);
+  REQUIRE(iter::impl::is_iterable<decltype(a)>);
+  REQUIRE(iter::impl::is_iterable<decltype(b)>);
 }
