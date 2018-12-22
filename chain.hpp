@@ -204,7 +204,14 @@ class iter::impl::ChainedFromIterable {
     std::optional<SubIter> sub_iter_p_;
     std::optional<SubIter> sub_end_p_;
 
-    void next_sub_iterable() {
+    void advance_while_empty_sub_iterable() {
+      while (top_level_iter_ != top_level_end_ && sub_iter_p_ == sub_end_p_) {
+        ++top_level_iter_;
+        update_sub_iterable();
+      }
+    }
+
+    void update_sub_iterable() {
       if (top_level_iter_ != top_level_end_) {
         sub_iterable_.reset(*top_level_iter_);
         sub_iter_p_ =
@@ -214,6 +221,11 @@ class iter::impl::ChainedFromIterable {
         sub_iter_p_.reset();
         sub_end_p_.reset();
       }
+    }
+
+    void next_sub_iterable() {
+      update_sub_iterable();
+      advance_while_empty_sub_iterable();
     }
 
    public:

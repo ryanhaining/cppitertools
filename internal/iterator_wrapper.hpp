@@ -94,6 +94,10 @@ class iter::impl::IteratorWrapperImpl {
     } not_equal;
     return std::visit(not_equal, sub_iter_or_end_, other.sub_iter_or_end_);
   }
+
+  bool operator==(const IteratorWrapperImpl& other) const {
+    return !(*this != other);
+  }
 };
 
 #endif
