@@ -233,6 +233,16 @@ TEST_CASE("chain.fromm_iterable: Works with different begin and end types",
   REQUIRE(v == vc);
 }
 
+TEST_CASE("chain.from_iterable: Works with empty subiterable",
+    "[chain.from_iterable]") {
+  std::vector<std::vector<int>> ivv{
+      {}, {2, 4, 6}, {}, {8, 10, 12}, {14, 16, 18}, {}};
+  auto ch = chain.from_iterable(ivv);
+  const std::vector<int> v(std::begin(ch), std::end(ch));
+  const std::vector<int> vi = {2, 4, 6, 8, 10, 12, 14, 16, 18};
+  REQUIRE(v == vi);
+}
+
 TEST_CASE(
     "chain.from_iterable: iterators cant be copy constructed "
     "and assigned",
