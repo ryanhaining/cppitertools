@@ -6,7 +6,7 @@ Range-based for loop add-ons inspired by the Python builtins and itertools
 library.  Like itertools and the Python3 builtins, this library uses lazy
 evaluation wherever possible.
 
-*Note*: Everthing is inside the `iter` namespace.
+*Note*: Everything is inside the `iter` namespace.
 
 Follow [@cppitertools](https://twitter.com/cppitertools) for updates.
 
@@ -95,7 +95,7 @@ underlying iterables, but if anything noteworthy is needed it is described
 in this document.
 
 #### Guarantees of implementations
-By implementations I mean the objects returned by the API's functions. All of
+By implementations, I mean the objects returned by the API's functions. All of
 the implementation classes are move-constructible, not copy-constructible,
 not assignable. All iterators that work over another iterable are tagged
 as InputIterators and behave as such.
@@ -104,11 +104,11 @@ as InputIterators and behave as such.
 If you find anything not working as you expect, not compiling when you believe
 it should, a divergence from the python itertools behavior, or any sort of
 error, please let me know. The preferable means would be to open an issue on
-github. If you want to talk about an issue that you don't feel would be
-appropriate as a github issue (or you just don't want to open one),
-You can email me directly with whatever code you have that describes the
-problem, I've been pretty responsive in the past. If I believe you are
-"misusing" the library I'll try to put the blame on myself for being unclear
+GitHub. If you want to talk about an issue that you don't feel would be
+appropriate as a GitHub issue (or you just don't want to open one),
+you can email me directly with whatever code you have that describes the
+problem; I've been pretty responsive in the past. If I believe you are
+"misusing" the library, I'll try to put the blame on myself for being unclear
 in this document and take the steps to clarify it.  So please, contact me with
 any concerns, I'm open to feedback.
 
@@ -150,8 +150,8 @@ result, itertools can be mixed and nested.
 
 
 #### Pipe syntax
-Wherever it makes sense I've implemented the "pipe" operator that has become
-common in similar libraries. When the syntax is available it is done by pulling
+Wherever it makes sense, I've implemented the "pipe" operator that has become
+common in similar libraries. When the syntax is available, it is done by pulling
 out the iterable from the call and placing it before the tool. For example:
 
 ```c++
@@ -411,7 +411,7 @@ step of 1.<br />
 `count(i, st)` will start counting from `i` with a step of `st`.
 
 *Technical limitations*: Unlike Python which can use its long integer
-types when needed, count() would eventually exceed the
+types when needed, `count()` would eventually exceed the
 maximum possible value for its type (or minimum with a negative step).
 `count` is actually implemented as a `range` with the stopping point
 being the `std::numeric_limits<T>::max()` for the integral type (`long`
@@ -749,7 +749,7 @@ chunked
 
 chunked will yield subsequent chunkes of an iterable in blocks of a specified
 size. The final chunk may be shorter than the rest if the chunk size given
-does not evenly divide the length of the iterable
+does not evenly divide the length of the iterable.
 
 Example usage:
 ```c++
