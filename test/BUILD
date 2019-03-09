@@ -36,4 +36,10 @@ progs = [
     "helpers",
 ]
 
+cc_library(
+  name = "test_main",
+  srcs = ["test_main.cpp", "catch.hpp"],
+  copts = ["-std=c++17", "-g"]
+)
+
 itertools_tests(progs)
