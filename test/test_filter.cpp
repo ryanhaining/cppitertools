@@ -192,6 +192,28 @@ TEST_CASE("filter: iterator meets requirements", "[filter]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
 }
 
+TEST_CASE("filter: iterator is input if base is input", "[filter]") {
+  using namespace itertest::archetypes;
+  using C = Container<std::string, InputIterator>;
+  C c(std::string{"abcdef"});
+  auto f = filter([](char c) { return c != 'a' && c != 'e'; }, c);
+  using IterT = decltype(std::begin(f));
+  REQUIRE(std::is_same<typename std::iterator_traits<IterT>::iterator_category,
+      std::input_iterator_tag>::value);
+  REQUIRE(!itertest::IsForwardIterator<IterT>::value);
+}
+
+TEST_CASE("filter: iterator is forward if base is forward", "[filter]") {
+  using namespace itertest::archetypes;
+  using C = Container<std::string, ForwardIterator>;
+  C c(std::string{"abcdef"});
+  auto f = filter([](char c) { return c != 'a' && c != 'e'; }, c);
+  using IterT = decltype(std::begin(f));
+  REQUIRE(std::is_same<typename std::iterator_traits<IterT>::iterator_category,
+      std::forward_iterator_tag>::value);
+  REQUIRE(itertest::IsForwardIterator<IterT>::value);
+}
+
 template <typename T, typename U>
 using ImpT = decltype(filter(std::declval<T>(), std::declval<U>()));
 TEST_CASE("filter: has correct ctor and assign ops", "[filter]") {

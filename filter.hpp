@@ -72,11 +72,15 @@ class iter::impl::Filtered {
     }
 
    public:
-    using iterator_category = std::input_iterator_tag;
+    using iterator_category = select_input_or_forward_iter<ContainerT>;
     using value_type = iterator_traits_deref<ContainerT>;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
     using reference = value_type&;
+
+    template <bool Dummy = true, typename = enable_if_has_forward_iter_t<
+                                     DependentType<Dummy, ContainerT>>>
+    Iterator() : filter_func_(nullptr) {}
 
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)

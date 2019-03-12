@@ -75,6 +75,14 @@ namespace iter {
     using get_iters::get_begin;
     using get_iters::get_end;
 
+    template <bool, typename T>
+    struct DependentTypeImpl {
+      using type = T;
+    };
+
+    template <bool Dummy, typename T>
+    using DependentType = typename DependentTypeImpl<Dummy, T>::type;
+
     template <typename T>
     struct type_is {
       using type = T;
@@ -196,6 +204,27 @@ namespace iter {
 
     template <typename T>
     using has_random_access_iter = is_random_access_iter<iterator_type<T>>;
+
+    template <typename Iter>
+    using is_forward_iter = std::integral_constant<bool,
+        std::is_convertible<
+            typename std::iterator_traits<Iter>::iterator_category,
+            std::forward_iterator_tag>::value
+            && std::is_default_constructible<Iter>::value>;
+
+    template <typename Container>
+    using has_forward_iter = is_forward_iter<iterator_type<Container>>;
+
+    template <typename ContainerT>
+    using select_input_or_forward_iter =
+        typename std::conditional<has_forward_iter<ContainerT>::value,
+            std::forward_iterator_tag, std::input_iterator_tag>::type;
+
+    template <typename ContainerT, typename ResultT = void>
+    using enable_if_has_forward_iter_t =
+        typename std::enable_if<has_forward_iter<ContainerT>::value,
+            ResultT>::type;
+
     // because std::advance assumes a lot and is actually smart, I need a dumb
 
     // version that will work with most things

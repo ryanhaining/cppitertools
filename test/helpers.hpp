@@ -12,6 +12,123 @@
 
 namespace itertest {
 
+  namespace archetypes {
+    template <typename Iter>
+    class InputIterator {
+      using Traits = std::iterator_traits<Iter>;
+      Iter it_;
+
+     public:
+      using iterator_category = std::input_iterator_tag;
+      using value_type = typename Traits::value_type;
+      using difference_type = typename Traits::difference_type;
+      using pointer = Iter;
+      using reference = typename Traits::reference;
+
+      Iter base() const {
+        return it_;
+      }
+
+      explicit InputIterator(Iter it) : it_(it) {}
+
+      reference operator*() const {
+        return *it_;
+      }
+      pointer operator->() const {
+        return it_;
+      }
+
+      InputIterator& operator++() {
+        ++it_;
+        return *this;
+      }
+      InputIterator operator++(int) {
+        InputIterator tmp(*this);
+        ++(*this);
+        return tmp;
+      }
+
+      friend bool operator==(
+          const InputIterator& LHS, const InputIterator& RHS) {
+        return LHS.it_ == RHS.it_;
+      }
+      friend bool operator!=(
+          const InputIterator& LHS, const InputIterator& RHS) {
+        return LHS.it_ != RHS.it_;
+      }
+    };
+
+    template <typename Iter>
+    class ForwardIterator {
+      using Traits = std::iterator_traits<Iter>;
+      Iter it_;
+
+     public:
+      using iterator_category = std::forward_iterator_tag;
+      using value_type = typename Traits::value_type;
+      using difference_type = typename Traits::difference_type;
+      using pointer = Iter;
+      using reference = typename Traits::reference;
+
+      Iter base() const {
+        return it_;
+      }
+
+      ForwardIterator() : it_() {}
+      explicit ForwardIterator(Iter it) : it_(it) {}
+
+      reference operator*() const {
+        return *it_;
+      }
+      pointer operator->() const {
+        return it_;
+      }
+
+      ForwardIterator& operator++() {
+        ++it_;
+        return *this;
+      }
+      ForwardIterator operator++(int) {
+        ForwardIterator tmp(*this);
+        ++(*this);
+        return tmp;
+      }
+
+      friend bool operator==(
+          const ForwardIterator& LHS, const ForwardIterator& RHS) {
+        return LHS.it_ == RHS.it_;
+      }
+      friend bool operator!=(
+          const ForwardIterator& LHS, const ForwardIterator& RHS) {
+        return LHS.it_ != RHS.it_;
+      }
+    };
+
+    template <typename ContainerT, template <typename Iter> typename IterWrap>
+    class Container {
+      ContainerT container_;
+
+     public:
+      using iterator = IterWrap<typename ContainerT::iterator>;
+      using const_iterator = IterWrap<typename ContainerT::const_iterator>;
+
+      Container(ContainerT const& c) : container_(c) {}
+
+      iterator begin() {
+        return iterator(container_.begin());
+      }
+      iterator end() {
+        return iterator(container_.end());
+      }
+      const_iterator begin() const {
+        return const_iterator(container_.begin());
+      }
+      const_iterator end() const {
+        return const_iterator(container_.end());
+      }
+    };
+  }  // namespace archetypes
+
   // non-copyable. non-movable. non-default-constructible
   class SolidInt {
    private:
@@ -217,8 +334,9 @@ namespace itertest {
           decltype(++std::declval<T&>()),             // prefix ++
           decltype(std::declval<T&>()++),             // postfix ++
           decltype(
-              std::declval<const T&>() != std::declval<const T&>()),      //  !=
-          decltype(std::declval<const T&>() == std::declval<const T&>())  //  ==
+              std::declval<const T&>() != std::declval<const T&>()),  //  !=
+          decltype(
+              std::declval<const T&>() == std::declval<const T&>())  //  ==,
           >> : std::true_type {};
 
   template <typename T>
@@ -297,6 +415,12 @@ class DiffEndRange {
     SubIter end_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+
 #ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
     Iterator() = default;
 #endif
@@ -335,6 +459,12 @@ class DiffEndRange {
     SubIter end_;
 
    public:
+    using iterator_category = std::input_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+
 #ifdef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
     ReverseIterator() = default;
 #endif
