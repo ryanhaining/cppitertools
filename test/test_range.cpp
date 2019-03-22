@@ -10,6 +10,58 @@
 using Vec = const std::vector<int>;
 using iter::range;
 
+TEST_CASE("range: .start(), .stop(), and .step()", "[range]") {
+  SECTION("one arg") {
+    auto r = range(3);
+    REQUIRE(r.start() == 0);
+    REQUIRE(r.stop() == 3);
+    REQUIRE(r.step() == 1);
+
+    // make sure iterators aren't changing the value
+    auto it = r.begin();
+    ++it;
+
+    REQUIRE(r.start() == 0);
+    REQUIRE(r.stop() == 3);
+    REQUIRE(r.step() == 1);
+  }
+
+  SECTION("two args") {
+    auto r = range(2, 10);
+    REQUIRE(r.start() == 2);
+    REQUIRE(r.stop() == 10);
+    REQUIRE(r.step() == 1);
+  }
+
+  SECTION("three args") {
+    auto r = range(-6, 20, 3);
+    REQUIRE(r.start() == -6);
+    REQUIRE(r.stop() == 20);
+    REQUIRE(r.step() == 3);
+  }
+
+  SECTION("one arg (double)") {
+    auto r = range(3.5);
+    REQUIRE(r.start() == 0);
+    REQUIRE(r.stop() == Approx(3.5));
+    REQUIRE(r.step() == Approx(1.0));
+  }
+
+  SECTION("two args (double)") {
+    auto r = range(20.1, 31.7);
+    REQUIRE(r.start() == Approx(20.1));
+    REQUIRE(r.stop() == Approx(31.7));
+    REQUIRE(r.step() == Approx(1.0));
+  }
+
+  SECTION("three args (double)") {
+    auto r = range(-6.3, 5.7, 0.1);
+    REQUIRE(r.start() == Approx(-6.3));
+    REQUIRE(r.stop() == Approx(5.7));
+    REQUIRE(r.step() == Approx(0.1));
+  }
+}
+
 TEST_CASE("range: works with only stop", "[range]") {
   auto r = range(5);
   Vec v(std::begin(r), std::end(r));

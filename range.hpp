@@ -124,6 +124,18 @@ class iter::impl::Range {
       : start_{start}, stop_{stop}, step_{step} {}
 
  public:
+  constexpr T start() const noexcept {
+    return start_;
+  }
+
+  constexpr T stop() const noexcept {
+    return stop_;
+  }
+
+  constexpr T step() const noexcept {
+    return step_;
+  }
+
   // the reference type here is T, which doesn't strictly follow all
   // of the rules, but std::vector<bool>::iterator::reference isn't
   // a reference type either, this isn't any worse
@@ -139,11 +151,9 @@ class iter::impl::Range {
         const Iterator& lhs, const Iterator& rhs) noexcept {
       assert(!lhs.is_end);
       assert(rhs.is_end);
-      if
-        constexpr(std::is_unsigned<T>{}) {
-          return lhs.data.value() < rhs.data.value();
-        }
-      else {
+      if constexpr (std::is_unsigned<T>{}) {
+        return lhs.data.value() < rhs.data.value();
+      } else {
         return !(lhs.data.step() > 0 && lhs.data.value() >= rhs.data.value())
                && !(lhs.data.step() < 0
                       && lhs.data.value() <= rhs.data.value());
@@ -183,7 +193,7 @@ class iter::impl::Range {
       return *this;
     }
 
-    Iterator operator++(int)noexcept {
+    Iterator operator++(int) noexcept {
       auto ret = *this;
       ++*this;
       return ret;
