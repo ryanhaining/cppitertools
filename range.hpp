@@ -123,6 +123,17 @@ class iter::impl::Range {
   constexpr Range(T start, T stop, T step = 1) noexcept
       : start_{start}, stop_{stop}, step_{step} {}
 
+  // if val is "before" the stopping point.
+  static constexpr bool is_within_range(
+      T val, T stop_val, [[maybe_unused]] T step_val) {
+    if constexpr (std::is_unsigned<T>{}) {
+      return val < stop_val;
+    } else {
+      return !(step_val > 0 && val >= stop_val)
+             && !(step_val < 0 && val <= stop_val);
+    }
+  }
+
  public:
   constexpr T start() const noexcept {
     return start_;
@@ -134,6 +145,23 @@ class iter::impl::Range {
 
   constexpr T step() const noexcept {
     return step_;
+  }
+
+  constexpr std::size_t size() const noexcept {
+    static_assert(!std::is_floating_point_v<T>,
+        "range size() not supperted with floating point types");
+    if (!is_within_range(start(), stop(), step())) {
+      return 0;
+    }
+
+    auto diff = stop() - start();
+    auto res = diff / step();
+    assert(res >= 0);
+    auto result = static_cast<std::size_t>(res);
+    if (diff % step()) {
+      ++result;
+    }
+    return result;
   }
 
   // the reference type here is T, which doesn't strictly follow all
@@ -151,13 +179,8 @@ class iter::impl::Range {
         const Iterator& lhs, const Iterator& rhs) noexcept {
       assert(!lhs.is_end);
       assert(rhs.is_end);
-      if constexpr (std::is_unsigned<T>{}) {
-        return lhs.data.value() < rhs.data.value();
-      } else {
-        return !(lhs.data.step() > 0 && lhs.data.value() >= rhs.data.value())
-               && !(lhs.data.step() < 0
-                      && lhs.data.value() <= rhs.data.value());
-      }
+      return is_within_range(
+          lhs.data.value(), rhs.data.value(), lhs.data.step());
     }
 
     static bool not_equal_to_end(

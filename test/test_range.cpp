@@ -312,3 +312,42 @@ TEST_CASE("range: iterator meets forward iterator requirements", "[range]") {
   REQUIRE(itertest::IsForwardIterator<decltype(std::begin(r))>::value);
   REQUIRE(itertest::IsForwardIterator<decltype(std::begin(r2))>::value);
 }
+
+TEMPLATE_TEST_CASE("range: .size() with signed integrals", "[range]",
+    signed char, short, int, long, long long) {
+  constexpr TestType N = 5;
+  constexpr TestType INC = 1;
+  for (TestType start = -N; start < N; start += INC) {
+    for (TestType stop = -N; stop < N; stop += INC) {
+      for (TestType step = -N; step < N; step += INC) {
+        if (step == 0) {
+          continue;
+        }
+        auto r = range(start, stop, step);
+        REQUIRE(r.size()
+                == static_cast<std::size_t>(
+                       std::distance(std::begin(r), std::end(r))));
+      }
+    }
+  }
+}
+
+TEMPLATE_TEST_CASE("range: .size() with unsigned integrals", "[range]",
+    unsigned char, unsigned short, unsigned int, unsigned long,
+    unsigned long long) {
+  constexpr TestType N = 5;
+  constexpr TestType INC = 1;
+  for (TestType start = 0; start < N; start += INC) {
+    for (TestType stop = 0; stop < N; stop += INC) {
+      for (TestType step = 0; step < N; step += INC) {
+        if (step == 0) {
+          continue;
+        }
+        auto r = range(start, stop, step);
+        REQUIRE(r.size()
+                == static_cast<std::size_t>(
+                       std::distance(std::begin(r), std::end(r))));
+      }
+    }
+  }
+}
