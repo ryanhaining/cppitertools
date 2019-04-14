@@ -250,6 +250,12 @@ recomputed at each step to avoid accumulating floating point inaccuracies
 (`value = start + (step * steps_taken`). The result of the latter is a bit
 slower but more accurate.
 
+`range` also supports the following operations:
+  - `.size()` to get the number of elements in the range (not enabled for 
+  floating point ranges). 
+  - Accessors for `.start()`, `.stop()`, and `.step()`.
+  - Indexing. Given a range `r`, `r[n]` is the `n`th element in the range.
+  
 enumerate
 ---------
 
