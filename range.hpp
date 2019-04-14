@@ -147,6 +147,10 @@ class iter::impl::Range {
     return step_;
   }
 
+  constexpr T operator[](std::size_t index) const noexcept {
+    return start() + (step() * index);
+  }
+
   constexpr std::size_t size() const noexcept {
     static_assert(!std::is_floating_point_v<T>,
         "range size() not supperted with floating point types");

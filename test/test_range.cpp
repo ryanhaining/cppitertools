@@ -313,6 +313,38 @@ TEST_CASE("range: iterator meets forward iterator requirements", "[range]") {
   REQUIRE(itertest::IsForwardIterator<decltype(std::begin(r2))>::value);
 }
 
+TEST_CASE("range: operator[] simple tests", "[range]") {
+  SECTION("range(start)") {
+    auto r = range(4);
+    REQUIRE(r[0] == 0);
+    REQUIRE(r[1] == 1);
+    REQUIRE(r[2] == 2);
+    REQUIRE(r[3] == 3);
+  }
+  SECTION("range(start, stop)") {
+    auto r = range(10, 14);
+    REQUIRE(r[0] == 10);
+    REQUIRE(r[1] == 11);
+    REQUIRE(r[2] == 12);
+    REQUIRE(r[3] == 13);
+  }
+  SECTION("range(start, stop, step)") {
+    auto r = range(20, 30, 3);
+    REQUIRE(r[0] == 20);
+    REQUIRE(r[1] == 23);
+    REQUIRE(r[2] == 26);
+    REQUIRE(r[3] == 29);
+  }
+  SECTION("range(start, stop, step) with double") {
+    auto r = range(50.0, 50.99, 0.2);
+    REQUIRE(r[0] == Approx(50.0));
+    REQUIRE(r[1] == Approx(50.2));
+    REQUIRE(r[2] == Approx(50.4));
+    REQUIRE(r[3] == Approx(50.6));
+    REQUIRE(r[4] == Approx(50.8));
+  }
+}
+
 TEMPLATE_TEST_CASE("range: .size() with signed integrals", "[range]",
     signed char, short, int, long, long long) {
   constexpr TestType N = 5;
