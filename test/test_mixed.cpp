@@ -169,6 +169,18 @@ TEST_CASE("zip(filter(chunked()))", "[filter][chunked][zip]") {
   }
 }
 
+TEST_CASE("zip(filter(sliding_window()))", "[filter][sliding_window][zip]") {
+  using iter::filter;
+  using iter::sliding_window;
+  using iter::zip;
+  std::vector<int16_t> v(15);
+  auto windows = sliding_window(v, 10);
+  auto filtered = filter([](auto&) { return true; }, windows);
+  for (auto&& [window] : zip(filtered)) {
+    REQUIRE(window.size() == 10);
+  }
+}
+
 TEST_CASE("chain.from_iterable: accept imap result that yields rvalues",
     "[chain.from_iterable][imap]") {
   using iter::chain;

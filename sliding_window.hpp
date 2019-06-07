@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <iterator>
+#include <memory>
 #include <utility>
 
 namespace iter {
@@ -41,8 +42,9 @@ class iter::impl::WindowSlider {
    private:
     template <typename>
     friend class Iterator;
+    std::shared_ptr<DerefVec<ContainerT>> window_ =
+        std::make_shared<DerefVec<ContainerT>>();
     IteratorWrapper<ContainerT> sub_iter_;
-    DerefVec<ContainerT> window_;
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -56,7 +58,7 @@ class iter::impl::WindowSlider {
         : sub_iter_(std::move(sub_iter)) {
       std::size_t i{0};
       while (i < window_sz && sub_iter_ != sub_end) {
-        window_.get().push_back(sub_iter_);
+        window_->get().push_back(sub_iter_);
         ++i;
         if (i != window_sz) {
           ++sub_iter_;
@@ -75,17 +77,17 @@ class iter::impl::WindowSlider {
     }
 
     DerefVec<ContainerT>& operator*() {
-      return window_;
+      return *window_;
     }
 
     DerefVec<ContainerT>* operator->() {
-      return window_;
+      return window_.get();
     }
 
     Iterator& operator++() {
       ++sub_iter_;
-      window_.get().pop_front();
-      window_.get().push_back(sub_iter_);
+      window_->get().pop_front();
+      window_->get().push_back(sub_iter_);
       return *this;
     }
 
