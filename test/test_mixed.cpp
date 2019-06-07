@@ -75,8 +75,8 @@ TEST_CASE("filtering doesn't dereference multiple times", "[imap][filter]") {
 }
 
 TEST_CASE("dropwhile doesn't dereference multiple times", "[imap][dropwhile]") {
-  using iter::imap;
   using iter::dropwhile;
+  using iter::imap;
 
   std::array<MyUnMovable, 3> arr = {{{41}, {42}, {43}}};
 
@@ -128,9 +128,9 @@ TEST_CASE("sorted(chain.from_iterable)", "[sorted][chain.from_iterable]") {
 }
 
 TEST_CASE("filter into enumerate with pipe", "[filter][enumerate]") {
-  using iter::imap;
-  using iter::filter;
   using iter::enumerate;
+  using iter::filter;
+  using iter::imap;
 
   std::array<MyUnMovable, 4> arr = {{{41}, {42}, {43}, {44}}};
   auto seq =
@@ -144,8 +144,33 @@ TEST_CASE("filter into enumerate with pipe", "[filter][enumerate]") {
   REQUIRE(v == vc);
 }
 
+TEST_CASE("enumerate(filter(chunked()))", "[filter][enumerate][chunked]") {
+  using iter::chunked;
+  using iter::enumerate;
+  using iter::filter;
+  std::vector<int16_t> v(500);
+  auto chunks = chunked(v, 100);
+  auto filtered = filter([](auto&) { return true; }, chunks);
+  for (auto&& [i, chunk] : enumerate(filtered)) {
+    (void)i;
+    REQUIRE(chunk.size() == 100);
+  }
+}
+
+TEST_CASE("zip(filter(chunked()))", "[filter][chunked][zip]") {
+  using iter::chunked;
+  using iter::filter;
+  using iter::zip;
+  std::vector<int16_t> v(500);
+  auto chunks = chunked(v, 100);
+  auto filtered = filter([](auto&) { return true; }, chunks);
+  for (auto&& [chunk] : zip(filtered)) {
+    REQUIRE(chunk.size() == 100);
+  }
+}
+
 TEST_CASE("chain.from_iterable: accept imap result that yields rvalues",
-          "[chain.from_iterable][imap]") {
+    "[chain.from_iterable][imap]") {
   using iter::chain;
   using iter::imap;
   const std::vector<std::vector<char>> ns = {{'a'}, {'q'}, {'x', 'z'}};

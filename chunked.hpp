@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <functional>
 #include <iterator>
+#include <memory>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -45,20 +46,21 @@ class iter::impl::Chunker {
    private:
     template <typename>
     friend class Iterator;
+    std::shared_ptr<DerefVec<ContainerT>> chunk_ =
+        std::make_shared<DerefVec<ContainerT>>();
     IteratorWrapper<ContainerT> sub_iter_;
     IteratorWrapper<ContainerT> sub_end_;
-    DerefVec<ContainerT> chunk_;
     std::size_t chunk_size_ = 0;
 
     bool done() const {
-      return chunk_.empty();
+      return chunk_->empty();
     }
 
     void refill_chunk() {
-      chunk_.get().clear();
+      chunk_->get().clear();
       std::size_t i{0};
       while (i < chunk_size_ && sub_iter_ != sub_end_) {
-        chunk_.get().push_back(sub_iter_);
+        chunk_->get().push_back(sub_iter_);
         ++sub_iter_;
         ++i;
       }
@@ -76,7 +78,7 @@ class iter::impl::Chunker {
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
           chunk_size_{s} {
-      chunk_.get().reserve(chunk_size_);
+      chunk_->get().reserve(chunk_size_);
       refill_chunk();
     }
 
@@ -103,11 +105,11 @@ class iter::impl::Chunker {
     }
 
     DerefVec<ContainerT>& operator*() {
-      return chunk_;
+      return *chunk_;
     }
 
     DerefVec<ContainerT>* operator->() {
-      return &chunk_;
+      return chunk_.get();
     }
   };
 
