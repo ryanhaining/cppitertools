@@ -7,6 +7,7 @@
 // also applies to the name of the file.  No user code should include
 // this file directly.
 
+#include <cassert>
 #include <cstddef>
 #include <functional>
 #include <iterator>
@@ -276,28 +277,32 @@ namespace iter {
       // it could still be an rvalue reference
       using TPlain = std::remove_reference_t<T>;
 
-      std::optional<TPlain> item_p;
+      std::optional<TPlain> item_p_;
 
      public:
       using reference = TPlain&;
       using pointer = TPlain*;
 
+      static constexpr bool stores_value = true;
+
       DerefHolder() = default;
 
       reference get() {
-        return *this->item_p;
+        assert(item_p_.has_value());
+        return *item_p_;
       }
 
       pointer get_ptr() {
-        return this->item_p.get();
+        assert(item_p_.has_value());
+        return &item_p_.value();
       }
 
       void reset(T&& item) {
-        item_p = std::move(item);
+        item_p_ = std::move(item);
       }
 
       explicit operator bool() const {
-        return static_cast<bool>(this->item_p);
+        return static_cast<bool>(item_p_);
       }
     };
 
@@ -309,25 +314,29 @@ namespace iter {
       using pointer = T*;
 
      private:
-      pointer item_p{};
+      pointer item_p_{};
 
      public:
+      static constexpr bool stores_value = false;
+
       DerefHolder() = default;
 
       reference get() {
-        return *this->item_p;
+        assert(item_p_);
+        return *item_p_;
       }
 
       pointer get_ptr() {
-        return this->item_p;
+        assert(item_p_);
+        return item_p_;
       }
 
       void reset(reference item) {
-        this->item_p = &item;
+        item_p_ = &item;
       }
 
       explicit operator bool() const {
-        return this->item_p != nullptr;
+        return item_p_ != nullptr;
       }
     };
 

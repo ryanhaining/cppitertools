@@ -63,6 +63,7 @@ TEST_CASE("are_same", "[iterbase]") {
 }
 
 TEST_CASE("DerefHolder lvalue reference", "[iterbase]") {
+  REQUIRE_FALSE(it::DerefHolder<int&>::stores_value);
   it::DerefHolder<int&> dh;
   int a = 2;
   int b = 5;
@@ -78,6 +79,7 @@ TEST_CASE("DerefHolder lvalue reference", "[iterbase]") {
 }
 
 TEST_CASE("DerefHolder non-reference", "[iterbase]") {
+  REQUIRE(it::DerefHolder<int>::stores_value);
   it::DerefHolder<int> dh;
   int a = 2;
   int b = 5;
@@ -85,6 +87,7 @@ TEST_CASE("DerefHolder non-reference", "[iterbase]") {
   dh.reset(std::move(a));
   REQUIRE(dh.get() == 2);
   REQUIRE(&dh.get() != &a);
+  REQUIRE(dh.get_ptr() != &a);
 
   dh.reset(std::move(b));
   REQUIRE(dh.get() == 5);
