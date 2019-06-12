@@ -181,6 +181,22 @@ TEST_CASE("zip(filter(sliding_window()))", "[filter][sliding_window][zip]") {
   }
 }
 
+TEST_CASE("imap(filter(groupby()))", "[filter][groupby][imap])") {
+  using iter::filter;
+  using iter::groupby;
+  using iter::imap;
+
+  std::vector<int> v{true, true, true, false, false, true, true};
+  auto a = groupby(v, [](bool b) { return b; });
+  auto b = filter([](auto& g) { return g.first; }, a);
+  auto c = imap(
+      [](auto& g) { return std::distance(g.second.begin(), g.second.end()); },
+      b);
+  for (auto x : c) {
+    (void)x;
+  }
+}
+
 TEST_CASE("chain.from_iterable: accept imap result that yields rvalues",
     "[chain.from_iterable][imap]") {
   using iter::chain;
