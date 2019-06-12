@@ -149,7 +149,12 @@ TEST_CASE("filter: all elements fail predicate", "[filter]") {
   Vec ns{10, 20, 30, 40, 50};
   auto f = filter(less_than_five, ns);
 
-  REQUIRE(std::begin(f) == std::end(f));
+  SECTION("normal compare") {
+    REQUIRE(std::begin(f) == std::end(f));
+  }
+  SECTION("reversed compare") {
+    REQUIRE(std::end(f) == std::begin(f));
+  }
 }
 
 TEST_CASE("filter: doesn't move or copy elements of iterable", "[filter]") {
