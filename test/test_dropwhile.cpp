@@ -105,7 +105,12 @@ TEST_CASE("dropwhile: skips all elements when all are true under predicate",
     "[dropwhile]") {
   Vec ns{3, 4, 5, 6};
   auto d = dropwhile([](int i) { return i != 0; }, ns);
-  REQUIRE(std::begin(d) == std::end(d));
+  SECTION("normal compare") {
+    REQUIRE(std::begin(d) == std::end(d));
+  }
+  SECTION("reversed compare") {
+    REQUIRE(std::end(d) == std::begin(d));
+  }
 }
 
 TEST_CASE("dropwhile: identity", "[dropwhile]") {
@@ -119,7 +124,12 @@ TEST_CASE("dropwhile: identity", "[dropwhile]") {
 TEST_CASE("dropwhile: empty case is empty", "[dropwhile]") {
   Vec ns{};
   auto d = dropwhile([](int i) { return i != 0; }, ns);
-  REQUIRE(std::begin(d) == std::end(d));
+  SECTION("normal compare") {
+    REQUIRE(std::begin(d) == std::end(d));
+  }
+  SECTION("reversed compare") {
+    REQUIRE(std::end(d) == std::begin(d));
+  }
 }
 
 TEST_CASE("dropwhile: only drops from beginning", "[dropwhile]") {
