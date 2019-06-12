@@ -50,12 +50,14 @@ class iter::impl::Filtered {
     template <typename>
     friend class Iterator;
     using Holder = DerefHolder<iterator_deref<ContainerT>>;
-    IteratorWrapper<ContainerT> sub_iter_;
+    mutable IteratorWrapper<ContainerT> sub_iter_;
     IteratorWrapper<ContainerT> sub_end_;
-    Holder item_;
+    mutable Holder item_;
     FilterFunc* filter_func_;
 
-    void inc_sub_iter() {
+    // All of these are marked const because the sub_iter_ is lazily
+    // initialized. The morality of this is questionable.
+    void inc_sub_iter() const {
       ++sub_iter_;
       if (sub_iter_ != sub_end_) {
         item_.reset(*sub_iter_);
@@ -64,10 +66,17 @@ class iter::impl::Filtered {
 
     // increment until the iterator points to is true on the
     // predicate.  Called by constructor and operator++
-    void skip_failures() {
+    void skip_failures() const {
       while (
           sub_iter_ != sub_end_ && !std::invoke(*filter_func_, item_.get())) {
         inc_sub_iter();
+      }
+    }
+
+    void init_if_first_use() const {
+      if (!item_ && sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
+        skip_failures();
       }
     }
 
@@ -82,22 +91,20 @@ class iter::impl::Filtered {
         IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
-          filter_func_(&filter_func) {
-      if (sub_iter_ != sub_end_) {
-        item_.reset(*sub_iter_);
-      }
-      skip_failures();
-    }
+          filter_func_(&filter_func) {}
 
     typename Holder::reference operator*() {
+      init_if_first_use();
       return item_.get();
     }
 
     typename Holder::pointer operator->() {
+      init_if_first_use();
       return item_.get_ptr();
     }
 
     Iterator& operator++() {
+      init_if_first_use();
       inc_sub_iter();
       skip_failures();
       return *this;
@@ -111,6 +118,8 @@ class iter::impl::Filtered {
 
     template <typename T>
     bool operator!=(const Iterator<T>& other) const {
+      init_if_first_use();
+      other.init_if_first_use();
       return sub_iter_ != other.sub_iter_;
     }
 
