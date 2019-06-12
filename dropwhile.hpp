@@ -39,12 +39,13 @@ class iter::impl::Dropper {
     template <typename>
     friend class Iterator;
     using Holder = DerefHolder<iterator_deref<ContainerT>>;
-    IteratorWrapper<ContainerT> sub_iter_;
+    mutable IteratorWrapper<ContainerT> sub_iter_;
     IteratorWrapper<ContainerT> sub_end_;
-    Holder item_;
+    mutable Holder item_;
     FilterFunc* filter_func_;
 
-    void inc_sub_iter() {
+    // see comments from filter about mutability
+    void inc_sub_iter() const {
       ++sub_iter_;
       if (sub_iter_ != sub_end_) {
         item_.reset(*sub_iter_);
@@ -52,9 +53,16 @@ class iter::impl::Dropper {
     }
 
     // skip all values for which the predicate is true
-    void skip_passes() {
+    void skip_passes() const {
       while (sub_iter_ != sub_end_ && std::invoke(*filter_func_, item_.get())) {
         inc_sub_iter();
+      }
+    }
+
+    void init_if_first_use() const {
+      if (!item_ && sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
+        skip_passes();
       }
     }
 
@@ -69,22 +77,20 @@ class iter::impl::Dropper {
         IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
-          filter_func_(&filter_func) {
-      if (sub_iter_ != sub_end_) {
-        item_.reset(*sub_iter_);
-      }
-      skip_passes();
-    }
+          filter_func_(&filter_func) {}
 
     typename Holder::reference operator*() {
+      init_if_first_use();
       return item_.get();
     }
 
     typename Holder::pointer operator->() {
+      init_if_first_use();
       return item_.get_ptr();
     }
 
     Iterator& operator++() {
+      init_if_first_use();
       inc_sub_iter();
       return *this;
     }
@@ -97,6 +103,8 @@ class iter::impl::Dropper {
 
     template <typename T>
     bool operator!=(const Iterator<T>& other) const {
+      init_if_first_use();
+      other.init_if_first_use();
       return sub_iter_ != other.sub_iter_;
     }
 
