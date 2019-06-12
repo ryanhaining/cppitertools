@@ -125,7 +125,12 @@ TEST_CASE("takewhile: everything passes predicate", "[takewhile]") {
 TEST_CASE("takewhile: empty iterable is empty", "[takewhile]") {
   Vec ns{};
   auto tw = takewhile(under_ten, ns);
-  REQUIRE(std::begin(tw) == std::end(tw));
+  SECTION("normal compare") {
+    REQUIRE(std::begin(tw) == std::end(tw));
+  }
+  SECTION("reversed compare") {
+    REQUIRE(std::end(tw) == std::begin(tw));
+  }
 }
 
 TEST_CASE(
@@ -134,13 +139,23 @@ TEST_CASE(
   SECTION("First element is only element") {
     Vec ns = {20};
     auto tw = takewhile(under_ten, ns);
-    REQUIRE(std::begin(tw) == std::end(tw));
+    SECTION("normal compare") {
+      REQUIRE(std::begin(tw) == std::end(tw));
+    }
+    SECTION("reversed compare") {
+      REQUIRE(std::end(tw) == std::begin(tw));
+    }
   }
 
   SECTION("First element followed by elements that pass") {
     Vec ns = {20, 1, 1};
     auto tw = takewhile(under_ten, ns);
-    REQUIRE(std::begin(tw) == std::end(tw));
+    SECTION("normal compare") {
+      REQUIRE(std::begin(tw) == std::end(tw));
+    }
+    SECTION("reversed compare") {
+      REQUIRE(std::end(tw) == std::begin(tw));
+    }
   }
 }
 
