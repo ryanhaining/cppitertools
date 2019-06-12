@@ -40,11 +40,14 @@ class iter::impl::Taker {
     template <typename>
     friend class Iterator;
     using Holder = DerefHolder<iterator_deref<ContainerT>>;
-    IteratorWrapper<ContainerT> sub_iter_;
+    // I want this mutable so I can use operator* reliably in the const
+    // context of init_if_first_use
+    mutable IteratorWrapper<ContainerT> sub_iter_;
     IteratorWrapper<ContainerT> sub_end_;
-    Holder item_;
+    mutable Holder item_;
     FilterFunc* filter_func_;
 
+    // see comments from filter about mutability
     void inc_sub_iter() {
       ++sub_iter_;
       if (sub_iter_ != sub_end_) {
@@ -52,9 +55,16 @@ class iter::impl::Taker {
       }
     }
 
-    void check_current() {
+    void check_current() const {
       if (sub_iter_ != sub_end_ && !std::invoke(*filter_func_, item_.get())) {
         sub_iter_ = sub_end_;
+      }
+    }
+
+    void init_if_first_use() const {
+      if (!item_ && sub_iter_ != sub_end_) {
+        item_.reset(*sub_iter_);
+        check_current();
       }
     }
 
@@ -69,22 +79,20 @@ class iter::impl::Taker {
         IteratorWrapper<ContainerT>&& sub_end, FilterFunc& filter_func)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
-          filter_func_(&filter_func) {
-      if (sub_iter_ != sub_end_) {
-        item_.reset(*sub_iter_);
-      }
-      check_current();
-    }
+          filter_func_(&filter_func) {}
 
     typename Holder::reference operator*() {
+      init_if_first_use();
       return item_.get();
     }
 
     typename Holder::pointer operator->() {
+      init_if_first_use();
       return item_.get_ptr();
     }
 
     Iterator& operator++() {
+      init_if_first_use();
       inc_sub_iter();
       check_current();
       return *this;
@@ -98,6 +106,8 @@ class iter::impl::Taker {
 
     template <typename T>
     bool operator!=(const Iterator<T>& other) const {
+      init_if_first_use();
+      other.init_if_first_use();
       return sub_iter_ != other.sub_iter_;
     }
 
