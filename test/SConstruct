@@ -23,6 +23,7 @@ if env['CXX'].startswith('clang++'):
 progs = Split(
     '''
     accumulate
+    batched
     chain
     chunked
     combinations

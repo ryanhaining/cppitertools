@@ -2,6 +2,7 @@
 #define ITERTOOLS_ALL_HPP_
 
 #include "accumulate.hpp"
+#include "batched.hpp"
 #include "chain.hpp"
 #include "chunked.hpp"
 #include "combinations.hpp"

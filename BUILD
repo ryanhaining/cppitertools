@@ -2,6 +2,7 @@ cc_library(
     name = "cppitertools",
     hdrs = [
         "accumulate.hpp",
+        "batched.hpp",
         "chain.hpp",
         "chunked.hpp",
         "combinations.hpp",

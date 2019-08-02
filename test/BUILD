@@ -2,6 +2,7 @@ load(":make_tests.bzl", "itertools_tests")
 
 progs = [
     "accumulate",
+    "batched",
     "chain",
     "chunked",
     "combinations",
