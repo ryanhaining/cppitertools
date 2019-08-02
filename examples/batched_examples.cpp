@@ -14,7 +14,7 @@ int main() {
     }
 
     std::cout << "num batches: 4\n";
-    for (auto&& sec : iter::batched(v,4)) {
+    for (auto&& sec : iter::batched(v, 4)) {
         for (auto&& i : sec) {
             std::cout << i << " ";
         }
