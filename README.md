@@ -42,6 +42,7 @@ Status | Compilers
 [slice](#slice)<br />
 [sliding\_window](#sliding_window)<br />
 [chunked](#chunked)<br />
+[batched](#batched)<br />
 
 ##### Combinatoric fuctions
 [product](#product)<br />
@@ -168,6 +169,7 @@ would expect them to behave:
 - accumulate
 - chain.from\_iterable
 - chunked
+- batched
 - combinations
 - combinations\_with\_replacement
 - cycle
@@ -753,7 +755,7 @@ for (auto&& sec : sliding_window(v,4)) {
 chunked
 ------
 
-chunked will yield subsequent chunkes of an iterable in blocks of a specified
+chunked will yield subsequent chunks of an iterable in blocks of a specified
 size. The final chunk may be shorter than the rest if the chunk size given
 does not evenly divide the length of the iterable.
 
@@ -773,6 +775,32 @@ The above prints:
 1 2 3 4
 5 6 7 8
 9
+```
+batched
+-------
+
+batched will yield a given number N of batches containing subsequent elements from an iterable,
+assuming the iterable contains at least N elements.
+The size of each batch is immaterial, but the implementation guarantees that no two batches will
+differ in size by more than 1. 
+
+Example usage:
+```c++
+vector<int> v {1,2,3,4,5,6,7,8,9};
+for (auto&& sec : batched(v,4)) {
+    for (auto&& i : sec) {
+        cout << i << ' ';
+    }
+    cout << '\n';
+}
+```
+
+The above prints:
+```
+1 2 3
+4 5
+6 7
+8 9
 ```
 
 product
