@@ -81,6 +81,16 @@ TEST_CASE("batched: size 0 is empty", "[batched]") {
   REQUIRE(std::begin(g) == std::end(g));
 }
 
+TEST_CASE("batched: Works with different begin and end types", "[batched]") {
+  CharRange cr{'f'};
+  std::vector<std::vector<char>> results;
+  for (auto&& g : batched(cr, 3)) {
+    results.emplace_back(std::begin(g), std::end(g));
+  }
+  std::vector<std::vector<char>> rc = {{'a', 'b'}, {'c', 'd'}, {'e'}};
+  REQUIRE(results == rc);
+}
+
 TEST_CASE("batched: empty iterable gives empty batched", "[batched]") {
   Vec ns{};
   auto g = batched(ns, 1);

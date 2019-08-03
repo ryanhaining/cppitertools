@@ -78,12 +78,34 @@ class iter::impl::Batcher {
     using pointer = value_type*;
     using reference = value_type&;
 
+    template <typename Iter1, typename Iter2, typename = void>
+    struct distance_helper {
+      static constexpr difference_type distance(Iter1 it1, Iter2 it2) {
+        difference_type dist(0);
+        for (; it1 != it2; ++it1)
+          ++dist;
+        return dist;
+      } 
+    };
+
+    template <typename Iter1, typename Iter2>
+    struct distance_helper<Iter1, Iter2, typename std::enable_if_t<std::is_arithmetic_v<typename Iter1::difference_type> && std::is_arithmetic_v<typename Iter2::difference_type>>> {
+      static constexpr difference_type distance(Iter1 it1, Iter2 it2) {
+        return std::distance(it1, it2);
+      }
+    };
+
+    template <typename Iter1, typename Iter2>
+    difference_type distance(Iter1 it1, Iter2 it2) const {
+      return distance_helper<Iter1, Iter2>::distance(it1, it2);
+    }
+
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, std::size_t num_batches)
         : sub_iter_{std::move(sub_iter)},
           sub_end_{std::move(sub_end)},
           num_batches_{num_batches},
-          size_{static_cast<std::size_t>(std::distance(sub_iter_, sub_end_))},
+          size_{static_cast<std::size_t>(distance(sub_iter_, sub_end_))},
           count_{0} {
       refill_batch();
     }
