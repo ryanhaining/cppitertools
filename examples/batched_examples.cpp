@@ -20,4 +20,12 @@ int main() {
         }
         std::cout << '\n';
     }
+
+    std::cout << "num batches: 6\n";
+    for (auto&& sec : iter::batched(v, 6)) {
+        for (auto&& i : sec) {
+            std::cout << i << " ";
+        }
+        std::cout << '\n';
+    }
 }
