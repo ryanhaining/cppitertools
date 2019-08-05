@@ -31,6 +31,18 @@ TEST_CASE("batched: basic test", "[batched]") {
   REQUIRE(results == rc);
 }
 
+TEST_CASE("batched: uneven batch sizes", "[batched]") {
+  Vec ns = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+  ResVec results;
+  for (auto&& g : batched(ns, 6)) {
+    results.emplace_back(std::begin(g), std::end(g));
+  }
+
+  ResVec rc = {{1, 2}, {3, 4}, {5, 6}, {7}, {8}, {9}};
+
+  REQUIRE(results == rc);
+}
+
 TEST_CASE("batched: const batched", "[batched][const]") {
   Vec ns = {1, 2, 3, 4, 5, 6};
   ResVec results;
