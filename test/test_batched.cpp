@@ -52,7 +52,7 @@ TEST_CASE("batched: const iterators can be compared to non-const iterators",
   (void)(std::begin(c) == std::end(cc));
 }
 
-TEST_CASE("batched: len(iterable) % groupsize != 0", "[batched]") {
+TEST_CASE("batched: len(iterable) % num_batches != 0", "[batched]") {
   Vec ns = {1, 2, 3, 4, 5, 6, 7};
   ResVec results;
   for (auto&& g : batched(ns, 3)) {
@@ -60,6 +60,18 @@ TEST_CASE("batched: len(iterable) % groupsize != 0", "[batched]") {
   }
 
   ResVec rc = {{1, 2, 3}, {4, 5}, {6, 7}};
+
+  REQUIRE(results == rc);
+}
+
+TEST_CASE("batched: num_batches > len(iterable)", "[batched]") {
+  Vec ns = {1, 2, 3, 4, 5, 6, 7};
+  ResVec results;
+  for (auto&& g : batched(ns, 9)) {
+    results.emplace_back(std::begin(g), std::end(g));
+  }
+
+  ResVec rc = {{1}, {2}, {3}, {4}, {5}, {6}, {7}};
 
   REQUIRE(results == rc);
 }
