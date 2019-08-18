@@ -15,6 +15,7 @@ env['ENV']['TERM'] = os.environ['TERM']
 progs = Split(
     '''
     accumulate
+    batched
     chain
     chunked
     combinatoric
