@@ -298,7 +298,7 @@ namespace iter {
       }
 
       void reset(T&& item) {
-        item_p_ = std::move(item);
+        item_p_.emplace(std::move(item));
       }
 
       explicit operator bool() const {

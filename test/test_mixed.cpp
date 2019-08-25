@@ -241,3 +241,18 @@ TEST_CASE("chain.from_iterable: accept imap result that yields rvalues",
 
   REQUIRE(v == vc);
 }
+
+TEST_CASE(
+    "filter(enumerate()), DerefHolder works correctly (see github issue #62",
+    "[filter][enumerate]") {
+  using iter::enumerate;
+  using iter::filter;
+  std::vector<int> ns = {50, 55, 60, 65};
+  auto f =
+      iter::filter([](auto& i) { return std::get<0>(i) > 1; }, enumerate(ns));
+  const std::vector<std::pair<int, int>> v(std::begin(f), std::end(f));
+
+  const std::vector<std::pair<int, int>> vc = {{2, 60}, {3, 65}};
+
+  REQUIRE(v == vc);
+}
