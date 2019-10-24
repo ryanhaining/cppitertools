@@ -130,7 +130,7 @@ TEST_CASE("shuffled: can iterate over unordered container", "[shuffled]") {
   auto s = shuffled(ns);
 
   Vec v(std::begin(s), std::end(s));
-  Vec vc = {0, 3, 2, 1, 4};
+  Vec vc = {1, 2, 3, 0, 4};
   REQUIRE(v == vc);
 }
 
@@ -244,5 +244,8 @@ TEST_CASE("shuffled: correct work with 1 and 0 sized container.", "[shuffled]") 
     REQUIRE(i == 7);
   Vec zerosz;
   for (auto &&i : shuffled(zerosz))
+  {
+    (void)i; // prevent warning
     REQUIRE(false);
+  }
 }
