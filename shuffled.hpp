@@ -144,7 +144,7 @@ class iter::impl::ShuffledView {
 
     auto operator*() -> decltype(*copy) {
       copy = owner->in_begin;
-	  std::advance(copy, static_cast<uint64_t>(state-1));
+      copy = std::next(copy, static_cast<uint64_t>(state-1));
       return *copy;
     }
 
