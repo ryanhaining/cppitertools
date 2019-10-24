@@ -112,6 +112,7 @@ class iter::impl::ShuffledView {
 
   public:
     Iterator() : owner(nullptr), state(0) {}
+    Iterator(const Iterator& other) { operator=(other); }
     Iterator& operator=(const Iterator& other) {
       owner = other.owner;
       state = other.state;
