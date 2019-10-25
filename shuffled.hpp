@@ -31,7 +31,9 @@ namespace iter {
   }
 
   template <typename Container>
-  impl::ShuffledView<Container> shuffled(Container&&, int seed = 1);
+  impl::ShuffledView<Container> shuffled(Container&& container, int seed = 1)  {
+    return {std::forward<Container>(container), seed};
+  }
 }
 
 // power of 2 approximation (val < pow(2, get_approx(val)+1))
@@ -190,12 +192,6 @@ class iter::impl::ShuffledView {
     return rs;
   }
 };
-
-template <typename Container>
-iter::impl::ShuffledView<Container> iter::shuffled(
-    Container&& container, int seed /*= 1*/) {
-  return {std::forward<Container>(container), seed};
-}
 
 #endif
 
