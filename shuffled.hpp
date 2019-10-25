@@ -102,8 +102,7 @@ class iter::impl::ShuffledView {
     }
   }
 
-  class Iterator
-      : public std::iterator<std::input_iterator_tag, IterDeref> {
+  class Iterator {
   private:
     friend class ShuffledView<Container>;
     ShuffledView<Container>* owner;
@@ -111,6 +110,12 @@ class iter::impl::ShuffledView {
     iterator_type<Container> copy; // referenced by operator* value
 
   public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = iterator_traits_deref<Container>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using reference = value_type&;
+
     Iterator() : owner(nullptr), state(0) {}
     Iterator(const Iterator& other) { operator=(other); }
     Iterator& operator=(const Iterator& other) {
@@ -142,13 +147,13 @@ class iter::impl::ShuffledView {
       return !operator==(other);
     }
 
-    auto operator*() -> decltype(*copy) {
+    auto& operator*() {
       copy = owner->in_begin;
       copy = std::next(copy, static_cast<uint64_t>(state-1));
       return *copy;
     }
 
-    ArrowProxy<IterDeref> operator->() {
+    auto operator->() -> ArrowProxy<decltype(**this)>{
       return {**this};
     }
   };
