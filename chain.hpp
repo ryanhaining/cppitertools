@@ -25,6 +25,16 @@ namespace iter {
     // rather than a chain function, use a callable object to support
     // from_iterable
     class ChainMaker;
+
+    template <typename>
+    struct AsTupleOfConstImpl;
+
+    template <typename... Ts>
+    struct AsTupleOfConstImpl<std::tuple<Ts...>>
+        : type_is<std::tuple<AsConst<Ts>...>> {};
+
+    template <typename T>
+    using AsTupleOfConst = typename AsTupleOfConstImpl<T>::type;
   }
 }
 
@@ -169,12 +179,12 @@ class iter::impl::Chained {
         {get_end(std::get<Is>(tup_))...}};
   }
 
-  Iterator<AsConst<TupType>> begin() const {
+  Iterator<AsTupleOfConst<TupType>> begin() const {
     return {0, {get_begin(std::as_const(std::get<Is>(tup_)))...},
         {get_end(std::as_const(std::get<Is>(tup_)))...}};
   }
 
-  Iterator<AsConst<TupType>> end() const {
+  Iterator<AsTupleOfConst<TupType>> end() const {
     return {sizeof...(Is), {get_end(std::as_const(std::get<Is>(tup_)))...},
         {get_end(std::as_const(std::get<Is>(tup_)))...}};
   }

@@ -10,8 +10,8 @@
 #include "catch.hpp"
 
 using iter::chain;
-using itertest::SolidInt;
 using itertest::BasicIterable;
+using itertest::SolidInt;
 using Vec = const std::vector<char>;
 
 TEST_CASE("chain: three strings", "[chain]") {
@@ -28,8 +28,8 @@ TEST_CASE("chain: three strings", "[chain]") {
 
 TEST_CASE("chain: const iteration", "[chain][const]") {
   std::string s1{"abc"};
-  /* const */ std::string s2{"mno"};
-  auto ch = chain(s1, s2, std::string{"xyz"});
+  const std::string s2{"mno"};
+  const auto ch = chain(s1, s2, std::string{"xyz"});
 
   Vec v(std::begin(ch), std::end(ch));
   Vec vc{'a', 'b', 'c', 'm', 'n', 'o', 'x', 'y', 'z'};
@@ -309,8 +309,8 @@ template <typename T>
 using ImpT2 = decltype(chain.from_iterable(std::declval<T>()));
 TEST_CASE("chain.from_iterable: has correct ctor and assign ops",
     "[chain.from_iterable]") {
-  REQUIRE(itertest::IsMoveConstructibleOnly<ImpT2<std::vector<std::string>>>::
-          value);
-  REQUIRE(itertest::IsMoveConstructibleOnly<ImpT2<std::vector<std::string>&>>::
-          value);
+  REQUIRE(itertest::IsMoveConstructibleOnly<
+      ImpT2<std::vector<std::string>>>::value);
+  REQUIRE(itertest::IsMoveConstructibleOnly<
+      ImpT2<std::vector<std::string>&>>::value);
 }
