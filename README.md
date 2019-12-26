@@ -12,7 +12,7 @@ Follow [@cppitertools](https://twitter.com/cppitertools) for updates.
 
 #### Build and Test Status
 Status | Compilers
----- | ---- 
+---- | ----
 [![Travis Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools) | gcc-7  gcc-8 clang-5.0 clang-6.0
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/ryanhaining/cppitertools?svg=true)](https://ci.appveyor.com/project/ryanhaining/cppitertools) | MSVC 2017 MSVC 2019
 
@@ -253,11 +253,11 @@ recomputed at each step to avoid accumulating floating point inaccuracies
 slower but more accurate.
 
 `range` also supports the following operations:
-  - `.size()` to get the number of elements in the range (not enabled for 
-  floating point ranges). 
+  - `.size()` to get the number of elements in the range (not enabled for
+  floating point ranges).
   - Accessors for `.start()`, `.stop()`, and `.step()`.
   - Indexing. Given a range `r`, `r[n]` is the `n`th element in the range.
-  
+
 enumerate
 ---------
 
@@ -782,7 +782,7 @@ batched
 batched will yield a given number N of batches containing subsequent elements from an iterable,
 assuming the iterable contains at least N elements.
 The size of each batch is immaterial, but the implementation guarantees that no two batches will
-differ in size by more than 1. 
+differ in size by more than 1.
 
 Example usage:
 ```c++
