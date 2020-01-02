@@ -13,7 +13,7 @@ Follow [@cppitertools](https://twitter.com/cppitertools) for updates.
 #### Build and Test Status
 Status | Compilers
 ---- | ----
-[![Travis Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools) | gcc-7  gcc-8 clang-5.0 clang-6.0
+[![Travis Build Status](https://travis-ci.com/ryanhaining/cppitertools.svg?branch=master)](https://travis-ci.com/ryanhaining/cppitertools) | gcc-7 gcc-8 gcc-9 clang-5.0 clang-6.0 clang-7 clang-8 clang-9
 [![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/github/ryanhaining/cppitertools?svg=true)](https://ci.appveyor.com/project/ryanhaining/cppitertools) | MSVC 2017 MSVC 2019
 
 #### Table of Contents
