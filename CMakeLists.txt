@@ -41,10 +41,3 @@ install(EXPORT cppitertools-targets
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/cppitertools-config-version.cmake DESTINATION ${cppitertools_INSTALL_CMAKE_DIR})
 install(DIRECTORY include/ DESTINATION ${cppitertools_INSTALL_INCLUDE_DIR})
-
-
-
-
-add_executable(dummyexec main.cpp)
-target_link_libraries(dummyexec  cppitertools::cppitertools
-        )
