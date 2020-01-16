@@ -9,7 +9,7 @@ class Tentris_Parser(ConanFile):
     topics = ("please add topics here")
     settings = "build_type", "compiler", "os", "arch"
     generators = "cmake", "cmake_find_package", "cmake_paths"
-    exports_sources = "include/*", "CMakeLists.txt", "cmake/dummy-config.cmake.in"
+    exports_sources = "include/*", "CMakeLists.txt", "cmake/dummy-config.cmake.in","LICENSE.md"
     no_copy_source = True
 
     def package(self):
