@@ -63,7 +63,7 @@ class iter::impl::Cycler {
     Iterator& operator++() {
       ++sub_iter_;
       // reset to beginning upon reaching the sub_end_
-      if (!(sub_iter_ != sub_end_)) {
+      if ((sub_iter_ == sub_end_)) {
         sub_iter_ = sub_begin_;
       }
       return *this;
