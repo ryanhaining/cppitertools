@@ -61,7 +61,7 @@ class iter::impl::Accumulator {
           sub_end_{std::move(sub_end)},
           accumulate_func_(&accumulate_fun),
           // only get first value if not an end iterator
-          acc_val_{!(sub_iter_ != sub_end_)
+          acc_val_{(sub_iter_ == sub_end_)
                        ? std::nullopt
                        : std::make_optional<AccumVal>(*sub_iter_)} {}
 

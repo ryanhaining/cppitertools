@@ -101,7 +101,7 @@ class iter::impl::Chunker {
     template <typename T>
     bool operator==(const Iterator<T>& other) const {
       return done() == other.done()
-             && (done() || !(sub_iter_ != other.sub_iter_));
+             && (done() || (sub_iter_ == other.sub_iter_));
     }
 
     DerefVec<ContainerT>& operator*() {

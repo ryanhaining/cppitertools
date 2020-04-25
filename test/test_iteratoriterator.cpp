@@ -85,26 +85,25 @@ TEST_CASE("IteratorIterator supports mutable RandomAccessIterator operators",
   REQUIRE(&(*r2++) == &a[1]);
   REQUIRE(r == r2);
   auto test_const_or_not = [&itr](auto& a, auto& b) {
-    REQUIRE(!(b == a));
+    REQUIRE((b != a));
     REQUIRE(b == a + 2);
     REQUIRE(b == 2 + a);
     REQUIRE(b - 2 == a);
     REQUIRE(&a[2] == &b[0]);
     REQUIRE(b - a == 2);
     REQUIRE(a < b);
-    REQUIRE(!(a < a));
+    REQUIRE((a >= a));
     REQUIRE(b > a);
-    REQUIRE(!(a > a));
+    REQUIRE((a = a));
     REQUIRE(a <= b);
-    REQUIRE(!(b <= a));
+    REQUIRE((b > a));
     REQUIRE(a <= a);
     REQUIRE(b >= a);
-    REQUIRE(!(a >= b));
+    REQUIRE((a < b));
     REQUIRE(a >= a);
 
     // InputIterator:
     REQUIRE(b != a);
-    REQUIRE(!(a != a));
     REQUIRE(&(*a) != &(*b));
     REQUIRE(&(a->value) == &(*a).value);
 
