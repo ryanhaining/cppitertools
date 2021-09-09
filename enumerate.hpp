@@ -38,11 +38,11 @@ namespace iter {
 
 namespace std {
   template <typename Index, typename Elem>
-  class tuple_size<iter::impl::EnumIterYield<Index, Elem>>
+  struct tuple_size<iter::impl::EnumIterYield<Index, Elem>>
       : public tuple_size<iter::impl::EnumBasePair<Index, Elem>> {};
 
   template <std::size_t N, typename Index, typename Elem>
-  class tuple_element<N, iter::impl::EnumIterYield<Index, Elem>>
+  struct tuple_element<N, iter::impl::EnumIterYield<Index, Elem>>
       : public tuple_element<N, iter::impl::EnumBasePair<Index, Elem>> {};
 }
 
