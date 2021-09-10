@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 project(cppitertools VERSION 2.0)
 
-if(NOT DEFINED ENV{cppitertools_INSTALL_CMAKE_DIR})
+if(NOT DEFINED CACHE{cppitertools_INSTALL_CMAKE_DIR})
   message(WARNING [[
 The default value of cppitertools_INSTALL_CMAKE_DIR changed recently, from
   "share/cppitertools/cmake"
