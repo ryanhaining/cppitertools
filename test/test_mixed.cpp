@@ -256,3 +256,13 @@ TEST_CASE(
 
   REQUIRE(v == vc);
 }
+
+TEST_CASE("reversed(repeat())", "[repeat][reversed]") {
+  using iter::reversed;
+  using iter::repeat;
+
+  auto rr = reversed(repeat('x', 5));
+  std::string s(rr.begin(), rr.end());
+
+  REQUIRE(s == "xxxxx");
+}

@@ -83,6 +83,14 @@ class iter::impl::RepeaterWithCount {
   constexpr Iterator end() const {
     return {&this->elem_, 0};
   }
+
+  constexpr Iterator rbegin() const {
+    return begin();
+  }
+
+  constexpr Iterator rend() const {
+    return end();
+  }
 };
 
 template <typename T>
