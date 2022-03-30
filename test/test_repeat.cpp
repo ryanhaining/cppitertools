@@ -1,12 +1,10 @@
-#include <repeat.hpp>
-
-#include "helpers.hpp"
-
 #include <iterator>
+#include <repeat.hpp>
 #include <string>
 #include <vector>
 
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::repeat;
 
@@ -56,7 +54,6 @@ TEST_CASE("repeat: iterators compare to const iterators", "[repeat]") {
   (void)(std::begin(r) == std::end(cr));
 }
 
-
 TEST_CASE("repeat: two argument repeats a number of times", "[repeat]") {
   auto r = repeat('a', 3);
   std::string s(std::begin(r), std::end(r));
@@ -87,7 +84,17 @@ TEST_CASE("repeat: iterator meets requirements", "[repeat]") {
   REQUIRE(itertest::IsIterator<decltype(std::begin(r))>::value);
 }
 
-TEST_CASE("repeat: is reversible", "[repeat]") {
+TEST_CASE("repeat: one-argument is reversible", "[repeat]") {
+  auto r = repeat('c');
+  auto it = std::rbegin(r);
+  (void)(it != std::rend(r));
+
+  REQUIRE(*it == 'c');
+  ++it;
+  REQUIRE(*it == 'c');
+}
+
+TEST_CASE("repeat: two-argument is reversible", "[repeat]") {
   auto r = repeat('b', 4);
   std::string s(std::rbegin(r), std::rend(r));
   REQUIRE(s == "bbbb");

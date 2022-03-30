@@ -1,11 +1,10 @@
 // mixing different itertools, there is nothing called iter::mixed()
 
-#include "itertools.hpp"
-
-#include "catch.hpp"
-
 #include <iostream>
 #include <vector>
+
+#include "catch.hpp"
+#include "itertools.hpp"
 
 class MyUnMovable {
   int val;
@@ -257,12 +256,22 @@ TEST_CASE(
   REQUIRE(v == vc);
 }
 
-TEST_CASE("reversed(repeat())", "[repeat][reversed]") {
-  using iter::reversed;
+TEST_CASE("reversed(repeat(v, n))", "[repeat][reversed]") {
   using iter::repeat;
+  using iter::reversed;
 
   auto rr = reversed(repeat('x', 5));
   std::string s(rr.begin(), rr.end());
 
   REQUIRE(s == "xxxxx");
+}
+
+TEST_CASE("reversed(repeat(v))", "[repeat][reversed]") {
+  using iter::repeat;
+  using iter::reversed;
+
+  auto rr = reversed(repeat('x'));
+  auto it = rr.begin();
+
+  REQUIRE(*it == 'x');
 }

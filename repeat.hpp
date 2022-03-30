@@ -139,7 +139,7 @@ class iter::impl::Repeater {
       return *this;
     }
 
-    constexpr Iterator operator++(int)const {
+    constexpr Iterator operator++(int) const {
       return *this;
     }
 
@@ -166,6 +166,14 @@ class iter::impl::Repeater {
 
   constexpr Iterator end() const {
     return {nullptr};
+  }
+
+  constexpr Iterator rbegin() const {
+    return begin();
+  }
+
+  constexpr Iterator rend() const {
+    return end();
   }
 };
 
