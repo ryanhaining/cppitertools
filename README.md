@@ -261,8 +261,8 @@ slower but more accurate.
 enumerate
 ---------
 
-Continually "yields" containers similar to pairs.  They are basic structs with a
-an index in .first, and the element in .second, and also work with structured 
+Continually "yields" containers similar to pairs.  They are structs with
+the index in `.first`, and the element in `.second`, and also work with structured 
 binding declarations.
 Usage appears as:
 
