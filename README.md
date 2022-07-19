@@ -262,7 +262,8 @@ enumerate
 ---------
 
 Continually "yields" containers similar to pairs.  They are basic structs with a
-.index and a .element, and also work with structured binding declarations.
+an index in .first, and the element in .second, and also work with structured 
+binding declarations.
 Usage appears as:
 
 ```c++
