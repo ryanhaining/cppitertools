@@ -1,10 +1,10 @@
 #include <starmap.hpp>
-
 #include "helpers.hpp"
 
 #include <iterator>
 #include <list>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "catch.hpp"
@@ -14,6 +14,18 @@ using iter::starmap;
 namespace {
   long f(long d, int i) {
     return d * i;
+  }
+
+  int& larger_ref(int& a, int& b) {
+    return a > b ? a : b;
+  }
+
+  const int& larger_const_ref(const int& a, const int& b) {
+    return a > b ? a : b;
+  }
+
+  int larger(int a, int b) {
+    return a > b ? a : b;
   }
 
   std::string g(const std::string& s, int i, char c) {
@@ -74,7 +86,8 @@ TEST_CASE("starmap: works with pointer to member function", "[starmap]") {
 
 TEST_CASE("starmap: vector of pairs const iteration", "[starmap][const]") {
   using Vec = const std::vector<int>;
-  const std::vector<std::pair<double, int>> v1 = {{1.0, 2}, {3.0, 11}, {6.0, 7}};
+  const std::vector<std::pair<double, int>> v1 = {
+      {1.0, 2}, {3.0, 11}, {6.0, 7}};
 
   const auto sm = starmap(Callable{}, v1);
   std::vector<int> v(std::begin(sm), std::end(sm));
@@ -181,4 +194,40 @@ TEST_CASE(
   auto tup = std::make_tuple(std::make_tuple(10, 19, 60), std::make_tuple(7));
   auto sm = starmap(Callable{}, tup);
   REQUIRE(itertest::IsIterator<decltype(std::begin(sm))>::value);
+}
+
+TEST_CASE("starmap: iterator dereference type matches 'reference' type alias",
+    "[starmap]") {
+  std::vector<std::pair<int, int>> input;
+  SECTION("with reference return type") {
+    auto sm = iter::starmap(larger_ref, input);
+    REQUIRE(
+        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+  }
+  SECTION("with const reference return type") {
+    auto sm = iter::starmap(larger_const_ref, input);
+    REQUIRE(
+        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+  }
+  SECTION("with value return type") {
+    auto sm = iter::starmap(larger, input);
+    REQUIRE(
+        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+  }
+}
+
+TEST_CASE("starmap: iterator has correct 'value' type alias", "[starmap]") {
+  std::vector<std::pair<int, int>> input;
+  SECTION("with reference return type") {
+    auto sm = iter::starmap(larger_ref, input);
+    REQUIRE(std::is_same_v<int, decltype(sm.begin())::value_type>);
+  }
+  SECTION("with const reference return type") {
+    auto sm = iter::starmap(larger_const_ref, input);
+    REQUIRE(std::is_same_v<int, decltype(sm.begin())::value_type>);
+  }
+  SECTION("with value return type") {
+    auto sm = iter::starmap(larger, input);
+    REQUIRE(std::is_same_v<int, decltype(sm.begin())::value_type>);
+  }
 }

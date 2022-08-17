@@ -34,8 +34,10 @@ class iter::impl::StarMapper {
   mutable Func func_;
   Container container_;
 
-  using StarIterDeref = std::remove_reference_t<decltype(
-      std::apply(func_, std::declval<iterator_deref<Container>>()))>;
+  using StarIterDeref =
+      decltype(std::apply(func_, std::declval<iterator_deref<Container>>()));
+  using StarIterDerefValue =
+      std::remove_cv_t<std::remove_reference_t<StarIterDeref>>;
 
   StarMapper(Func f, Container&& c)
       : func_(std::move(f)), container_(std::forward<Container>(c)) {}
@@ -53,10 +55,10 @@ class iter::impl::StarMapper {
 
    public:
     using iterator_category = std::input_iterator_tag;
-    using value_type = StarIterDeref;
+    using value_type = StarIterDerefValue;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
-    using reference = value_type&;
+    using reference = StarIterDeref;
 
     Iterator(Func& f, IteratorWrapper<ContainerT>&& sub_iter)
         : func_(&f), sub_iter_(std::move(sub_iter)) {}
@@ -86,7 +88,7 @@ class iter::impl::StarMapper {
       return std::apply(*func_, *sub_iter_);
     }
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
+    auto operator->() -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };
@@ -130,7 +132,12 @@ class iter::impl::TupleStarMapper {
   class IteratorData {
    public:
     template <std::size_t Idx>
-    static auto get_and_call_with_tuple(Func& f, TupTypeT& t) -> decltype(std::apply(f, std::get<Idx>(t))) { //TODO: Remove duplicated expression in decltype, using decltype(auto) as return type, when all compilers correctly deduce type (i.e. MSVC cl 19.15 does not do it).
+    static auto get_and_call_with_tuple(Func& f, TupTypeT& t)
+        -> decltype(std::apply(f,
+            std::get<Idx>(t))) {  // TODO: Remove duplicated expression in
+                                  // decltype, using decltype(auto) as return
+                                  // type, when all compilers correctly deduce
+                                  // type (i.e. MSVC cl 19.15 does not do it).
       return std::apply(f, std::get<Idx>(t));
     }
 
@@ -169,7 +176,7 @@ class iter::impl::TupleStarMapper {
       return IteratorData<TupTypeT>::callers[index_](*func_, *tup_);
     }
 
-    auto operator-> () {
+    auto operator->() {
       return ArrowProxy<decltype(**this)>{**this};
     }
 
