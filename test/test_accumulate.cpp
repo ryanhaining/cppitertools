@@ -131,11 +131,24 @@ TEST_CASE("accumulate: operator->", "[accumulate]") {
 }
 
 TEST_CASE("accumulate: iterator meets requirements", "[accumulate]") {
-  Vec ns{};
-  auto a = accumulate(ns, [](int a, int b) { return a + b; });
-  auto it = std::begin(a);
-  it = std::begin(a);
-  REQUIRE(itertest::IsIterator<decltype(std::begin(a))>::value);
+  std::vector<int> ns{};
+  SECTION("with reference return type") {
+    auto acc = accumulate(ns, [](int& a, int&) -> int& { return a; });
+    REQUIRE(itertest::IsIterator<decltype(std::begin(acc))>::value);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(acc))>::value);
+  }
+
+  SECTION("with const reference return type") {
+    auto acc = accumulate(ns, [](int& a, int&) -> const int& { return a; });
+    REQUIRE(itertest::IsIterator<decltype(std::begin(acc))>::value);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(acc))>::value);
+  }
+
+  SECTION("with value return type") {
+    auto acc = accumulate(ns, [](int a, int) -> int { return a; });
+    REQUIRE(itertest::IsIterator<decltype(std::begin(acc))>::value);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(acc))>::value);
+  }
 }
 
 TEST_CASE(

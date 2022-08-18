@@ -28,8 +28,9 @@ class iter::impl::Accumulator {
 
   friend AccumulateFn;
 
-  using AccumVal = std::remove_reference_t<std::invoke_result_t<AccumulateFunc,
-      iterator_deref<Container>, iterator_deref<Container>>>;
+  using AccumVal = std::remove_cv_t<
+      std::remove_reference_t<std::invoke_result_t<AccumulateFunc,
+          iterator_deref<Container>, iterator_deref<Container>>>>;
 
   Accumulator(Container&& container, AccumulateFunc accumulate_func)
       : container_(std::forward<Container>(container)),
@@ -52,8 +53,8 @@ class iter::impl::Accumulator {
     using iterator_category = std::input_iterator_tag;
     using value_type = AccumVal;
     using difference_type = std::ptrdiff_t;
-    using pointer = value_type*;
-    using reference = value_type&;
+    using pointer = const value_type*;
+    using reference = const value_type&;
 
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, AccumulateFunc& accumulate_fun)
@@ -65,11 +66,11 @@ class iter::impl::Accumulator {
                        ? std::nullopt
                        : std::make_optional<AccumVal>(*sub_iter_)} {}
 
-    const AccumVal& operator*() const {
+    reference operator*() const {
       return *acc_val_;
     }
 
-    const AccumVal* operator->() const {
+    pointer operator->() const {
       return &*acc_val_;
     }
 
