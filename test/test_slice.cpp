@@ -148,9 +148,18 @@ TEST_CASE("slice: with iterable doesn't move or copy elems", "[slice]") {
 }
 
 TEST_CASE("slice: iterator meets requirements", "[slice]") {
-  std::string s{"abcdef"};
-  auto c = slice(s, 1, 3);
-  REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
+  SECTION("with iterable yielding references") {
+    std::string s{"abcdef"};
+    auto c = slice(s, 1, 3);
+    REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(c))>::value);
+  }
+  SECTION("with iterable yielding values") {
+    itertest::InputIterable it{};
+    auto c = slice(it, 1, 3);
+    REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(c))>::value);
+  }
 }
 
 template <typename T>

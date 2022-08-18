@@ -51,7 +51,7 @@ class iter::impl::Sliced {
     using value_type = iterator_traits_deref<ContainerT>;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
-    using reference = value_type&;
+    using reference = iterator_deref<ContainerT>;
 
     Iterator(IteratorWrapper<ContainerT>&& sub_iter,
         IteratorWrapper<ContainerT>&& sub_end, DifferenceType start,
@@ -131,10 +131,9 @@ struct iter::impl::SliceFn {
 
    private:
     friend SliceFn;
-    constexpr FnPartial(DifferenceType start, DifferenceType stop,
-        DifferenceType step) noexcept : start_{start},
-                                        stop_{stop},
-                                        step_{step} {}
+    constexpr FnPartial(
+        DifferenceType start, DifferenceType stop, DifferenceType step) noexcept
+        : start_{start}, stop_{stop}, step_{step} {}
     DifferenceType start_;
     DifferenceType stop_;
     DifferenceType step_;
@@ -159,8 +158,8 @@ struct iter::impl::SliceFn {
 
   template <typename DifferenceType,
       typename = std::enable_if_t<!is_iterable<DifferenceType>>>
-  constexpr FnPartial<DifferenceType> operator()(DifferenceType stop) const
-      noexcept {
+  constexpr FnPartial<DifferenceType> operator()(
+      DifferenceType stop) const noexcept {
     return {0, stop, 1};
   }
 
