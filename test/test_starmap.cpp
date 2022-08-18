@@ -201,18 +201,15 @@ TEST_CASE("starmap: iterator dereference type matches 'reference' type alias",
   std::vector<std::pair<int, int>> input;
   SECTION("with reference return type") {
     auto sm = iter::starmap(larger_ref, input);
-    REQUIRE(
-        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(sm))>::value);
   }
   SECTION("with const reference return type") {
     auto sm = iter::starmap(larger_const_ref, input);
-    REQUIRE(
-        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(sm))>::value);
   }
   SECTION("with value return type") {
     auto sm = iter::starmap(larger, input);
-    REQUIRE(
-        std::is_same_v<decltype(*sm.begin()), decltype(sm.begin())::reference>);
+    REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(sm))>::value);
   }
 }
 
