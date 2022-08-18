@@ -221,6 +221,7 @@ TEST_CASE("product: iterator meets requirements", "[product]") {
   std::string s{"abc"};
   auto c = product(s, s);
   REQUIRE(itertest::IsIterator<decltype(std::begin(c))>::value);
+  REQUIRE(itertest::ReferenceMatchesDeref<decltype(std::begin(c))>::value);
 }
 
 template <typename... Ts>
