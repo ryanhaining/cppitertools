@@ -2,7 +2,6 @@
 #define TEST_HELPER_H_
 
 #include <internal/iterbase.hpp>
-
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -209,6 +208,10 @@ namespace itertest {
   struct IsIterator : std::false_type {};
 
   template <typename T>
+  struct ReferenceMatchesDeref
+      : std::is_same<typename T::reference, decltype(*std::declval<T&>())> {};
+
+  template <typename T>
   struct IsIterator<T,
       std::void_t<decltype(T(std::declval<const T&>())),            // copyctor
           decltype(std::declval<T&>() = std::declval<const T&>()),  // copy =
@@ -216,8 +219,8 @@ namespace itertest {
           decltype(std::declval<T&>().operator->()),  // operator->
           decltype(++std::declval<T&>()),             // prefix ++
           decltype(std::declval<T&>()++),             // postfix ++
-          decltype(
-              std::declval<const T&>() != std::declval<const T&>()),      //  !=
+          decltype(std::declval<const T&>()
+                   != std::declval<const T&>()),                          //  !=
           decltype(std::declval<const T&>() == std::declval<const T&>())  //  ==
           >> : std::true_type {};
 
