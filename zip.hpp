@@ -56,7 +56,7 @@ class iter::impl::Zipped {
     using value_type = TupleDeref<TupleTypeT>;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
-    using reference = value_type&;
+    using reference = value_type;
 
     Iterator(IteratorTuple<TupleTypeT>&& iters) : iters_(std::move(iters)) {}
 
@@ -91,7 +91,7 @@ class iter::impl::Zipped {
       return {(*std::get<Is>(iters_))...};
     }
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
+    auto operator->() -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };
