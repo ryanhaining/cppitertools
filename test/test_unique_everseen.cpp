@@ -85,3 +85,33 @@ TEST_CASE(
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string&>>::value);
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string>>::value);
 }
+
+struct IntWrapper {
+  int n;
+};
+
+struct IntWrapperHash {
+  int operator()(const IntWrapper& iw) const {
+    return iw.n % 10;
+  }
+};
+
+struct IntWrapperEq {
+  int operator()(const IntWrapper& lhs, const IntWrapper& rhs) const {
+    return lhs.n == rhs.n;
+  }
+};
+
+TEST_CASE("unique_everseen: works with custom hash and equality functions",
+    "[unique_everseen]") {
+  std::vector<IntWrapper> iwv = {
+      {2}, {3}, {4}, {2}, {10}, {2}, {2}, {12}, {10}};
+  Vec vc{2, 3, 4, 10, 12};
+
+  std::vector<int> v;
+  for (auto&& iw : unique_everseen(iwv, IntWrapperHash{}, IntWrapperEq{})) {
+    v.push_back(iw.n);
+  }
+
+  REQUIRE(v == vc);
+}
