@@ -187,7 +187,7 @@ would expect them to behave:
 - sorted
 - starmap
 - takewhile
-- unique\_everseen
+- unique\_everseen (\*only without custom hash and equality callables)
 - unique\_justseen
 
 I don't personally care for the piping style, but it seemed to be desired by
@@ -323,13 +323,25 @@ unique\_everseen
 *Additional Requirements*: Underlying values must be copy-constructible.
 
 This is a filter adaptor that only generates values that have never been seen
-before. For this to work your object must be specialized for `std::hash`.
+before.
 
 Prints `1 2 3 4 5 6 7 8 9`
 ```c++
 vector<int> v {1,2,3,4,3,2,1,5,6,7,7,8,9,8,9,6};
 for (auto&& i : unique_everseen(v)) {
     cout << i << ' ';
+}
+```
+
+`unique_everseen` uses an `undordered_set` so it needs hashable elements. For
+types that don't work with `std::hash` or `std::equal_to`, `unique_everseen`
+also provides an overload taking a hash callable and an equality callable.
+This **does not** work with the pipe syntax.
+
+```c++
+vector<Widget> v { /* ... */ };
+for (auto&& w : unique_everseen(v, WidgetHash{}, WidgetEq{})) {
+  cout << w.name() << ' ';
 }
 ```
 
