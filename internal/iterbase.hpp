@@ -129,6 +129,13 @@ namespace iter {
     template <typename T>
     constexpr bool is_iterable = IsIterable<T>::value;
 
+    struct Identity {
+      template <typename T>
+      const T& operator()(const T& t) const {
+        return t;
+      }
+    };
+
     namespace detail {
       template <typename T, typename = void>
       struct ArrowHelper {

@@ -18,13 +18,6 @@ namespace iter {
     template <typename Container, typename KeyFunc>
     class GroupProducer;
 
-    struct Identity {
-      template <typename T>
-      const T& operator()(const T& t) const {
-        return t;
-      }
-    };
-
     using GroupByFn = IterToolFnOptionalBindSecond<GroupProducer, Identity>;
   }
   constexpr impl::GroupByFn groupby{};
