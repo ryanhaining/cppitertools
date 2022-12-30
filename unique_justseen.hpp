@@ -9,8 +9,9 @@
 
 namespace iter {
   namespace impl {
-    struct UniqueJustseenFn : Pipeable<UniqueJustseenFn> {
+    struct UniqueJustseenFn : PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity> {
      public:
+      using PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity>::operator();
       template <typename Container, typename KeyFunc>
       auto operator()(Container&& container, KeyFunc key_fn) const {
         // decltype(auto) return type in lambda so reference types are preserved
@@ -19,11 +20,6 @@ namespace iter {
               return *get_begin(group.second);
             },
             groupby(std::forward<Container>(container), key_fn));
-      }
-
-      template <typename Container>
-      auto operator()(Container&& container) const {
-        return (*this)(std::forward<Container>(container), Identity{});
       }
     };
   }

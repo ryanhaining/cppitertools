@@ -109,8 +109,15 @@ TEST_CASE("unique_justseen: works with key function",
   Vec vc{2, 3, 4, 2, 10, 2, 12, 10};
 
   std::vector<int> v;
-  for (auto&& iw : unique_justseen(iwv, IntWrapperKey{})) {
-    v.push_back(iw.n);
+  SECTION("Normal call") {
+    for (auto&& iw : unique_justseen(iwv, IntWrapperKey{})) {
+      v.push_back(iw.n);
+    }
+  }
+  SECTION("Pipe") {
+    for (auto&& iw : iwv | unique_justseen(IntWrapperKey{})) {
+      v.push_back(iw.n);
+    }
   }
 
   REQUIRE(v == vc);
