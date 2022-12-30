@@ -358,6 +358,15 @@ for (auto&& i : unique_justseen(v)) {
 }
 ```
 
+If elements cannot be directly compared with equality, you can pass in a key
+callable.
+```c++
+vector<Person> v { /* ... */ };
+for (auto&& p : unique_justseen(v, [] (const Person& p) { return p.name; }))
+  cout << p.name() << ' ' << p.age() << '\n';
+}
+```
+
 takewhile
 ---------
 Yields elements from an iterable until the first element that is false under
