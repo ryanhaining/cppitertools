@@ -95,8 +95,8 @@ namespace iter {
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
-    using const_iterator_type = decltype(
-        get_begin(std::declval<const std::remove_reference_t<Container>&>()));
+    using const_iterator_type = decltype(get_begin(
+        std::declval<const std::remove_reference_t<Container>&>()));
 
     // iterator_deref<C> is the type obtained by dereferencing an iterator
     // to an object of type C
@@ -388,6 +388,37 @@ namespace iter {
       template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
       FnPartial<std::decay_t<T>> operator()(T&& t) const {
         return {std::forward<T>(t)};
+      }
+    };
+
+    // Pipeable callable which allows binding of the second argument
+    // f(a, b) is the same as a | f(b)
+    // f(a) with an iterable is the same as f(a, DefaultT{})
+    template <typename F, typename DefaultT>
+    struct PipeableAndBindOptionalSecond : Pipeable<F> {
+     protected:
+      template <typename T>
+      struct FnPartial : Pipeable<FnPartial<T>> {
+        mutable T stored_arg;
+        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+
+        template <typename Container>
+        auto operator()(Container&& container) const {
+          return F{}(std::forward<Container>(container), stored_arg);
+        }
+      };
+
+     public:
+      template <typename T, typename = std::enable_if_t<!is_iterable<T>>>
+      FnPartial<std::decay_t<T>> operator()(T&& t) const {
+        return {std::forward<T>(t)};
+      }
+
+      template <typename Container,
+          typename = std::enable_if_t<is_iterable<Container>>>
+      auto operator()(Container&& container) const {
+        return static_cast<const F&>(*this)(
+            std::forward<Container>(container), DefaultT{});
       }
     };
 
