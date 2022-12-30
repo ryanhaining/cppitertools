@@ -91,3 +91,27 @@ TEST_CASE(
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string&>>::value);
   REQUIRE(itertest::IsMoveConstructibleOnly<ImpT<std::string>>::value);
 }
+
+struct IntWrapper {
+  int n;
+};
+
+struct IntWrapperKey {
+  int operator()(const IntWrapper& iw) const {
+    return iw.n;
+  }
+};
+
+TEST_CASE("unique_justseen: works with key function",
+    "[unique_justseen]") {
+  std::vector<IntWrapper> iwv = {
+      {2}, {3}, {4}, {2}, {10}, {2}, {2}, {12}, {10}};
+  Vec vc{2, 3, 4, 2, 10, 2, 12, 10};
+
+  std::vector<int> v;
+  for (auto&& iw : unique_justseen(iwv, IntWrapperKey{})) {
+    v.push_back(iw.n);
+  }
+
+  REQUIRE(v == vc);
+}

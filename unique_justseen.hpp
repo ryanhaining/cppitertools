@@ -10,12 +10,20 @@
 namespace iter {
   namespace impl {
     struct UniqueJustseenFn : Pipeable<UniqueJustseenFn> {
+     public:
+      template <typename Container, typename KeyFunc>
+      auto operator()(Container&& container, KeyFunc key_fn) const {
+        // decltype(auto) return type in lambda so reference types are preserved
+        return imap(
+            [](auto&& group) -> decltype(auto) {
+              return *get_begin(group.second);
+            },
+            groupby(std::forward<Container>(container), key_fn));
+      }
+
       template <typename Container>
       auto operator()(Container&& container) const {
-        // decltype(auto) return type in lambda so reference types are preserved
-        return imap([](auto&& group) -> decltype(
-                        auto) { return *get_begin(group.second); },
-            groupby(std::forward<Container>(container)));
+        return (*this)(std::forward<Container>(container), Identity{});
       }
     };
   }
