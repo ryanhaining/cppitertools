@@ -76,11 +76,11 @@ class iter::impl::WindowSlider {
       return !(*this != other);
     }
 
-    DerefVec<ContainerT>& operator*() {
+    DerefVec<ContainerT>& operator*() const {
       return *window_;
     }
 
-    DerefVec<ContainerT>* operator->() {
+    DerefVec<ContainerT>* operator->() const {
       return window_.get();
     }
 

@@ -61,7 +61,7 @@ class iter::impl::GroupProducer {
     IteratorWrapper<ContainerT> sub_end_;
     Holder<ContainerT> item_;
     KeyFunc* key_func_;
-    std::optional<KeyGroupPair<ContainerT>> current_key_group_pair_;
+    mutable std::optional<KeyGroupPair<ContainerT>> current_key_group_pair_;
 
    public:
     using iterator_category = std::input_iterator_tag;
@@ -77,6 +77,7 @@ class iter::impl::GroupProducer {
           key_func_(&key_func) {
       if (sub_iter_ != sub_end_) {
         item_.reset(*sub_iter_);
+        set_key_group_pair();
       }
     }
 
@@ -84,7 +85,9 @@ class iter::impl::GroupProducer {
         : sub_iter_{other.sub_iter_},
           sub_end_{other.sub_end_},
           item_{other.item_},
-          key_func_{other.key_func_} {}
+          key_func_{other.key_func_} {      
+      set_key_group_pair();
+    }
 
     Iterator& operator=(const Iterator& other) {
       if (this == &other) {
@@ -95,6 +98,7 @@ class iter::impl::GroupProducer {
       item_ = other.item_;
       key_func_ = other.key_func_;
       current_key_group_pair_.reset();
+      set_key_group_pair();
       return *this;
     }
 
@@ -103,13 +107,11 @@ class iter::impl::GroupProducer {
     // NOTE the implicitly generated move constructor would
     // be wrong
 
-    KeyGroupPair<ContainerT>& operator*() {
-      set_key_group_pair();
+    KeyGroupPair<ContainerT>& operator*() const {
       return *current_key_group_pair_;
     }
 
-    KeyGroupPair<ContainerT>* operator->() {
-      set_key_group_pair();
+    KeyGroupPair<ContainerT>* operator->() const {
       return &*current_key_group_pair_;
     }
 
@@ -118,6 +120,7 @@ class iter::impl::GroupProducer {
         set_key_group_pair();
       }
       current_key_group_pair_.reset();
+      set_key_group_pair();
       return *this;
     }
 
@@ -163,7 +166,7 @@ class iter::impl::GroupProducer {
     }
 
     void set_key_group_pair() {
-      if (!current_key_group_pair_) {
+      if (!current_key_group_pair_ && item_) {
         current_key_group_pair_.emplace(std::invoke(*key_func_, item_.get()),
             Group<ContainerT>{*this, next_key()});
       }
@@ -251,11 +254,11 @@ class iter::impl::GroupProducer {
         return ret;
       }
 
-      iterator_deref<ContainerT> operator*() {
+      iterator_deref<ContainerT> operator*() const {
         return group_p_->owner_.get();
       }
 
-      typename Holder<ContainerT>::pointer operator->() {
+      typename Holder<ContainerT>::pointer operator->() const {
         return group_p_->owner_.get_ptr();
       }
     };

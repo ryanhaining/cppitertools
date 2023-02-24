@@ -132,11 +132,11 @@ class iter::impl::Batcher {
              && (done() || !(sub_iter_ != other.sub_iter_));
     }
 
-    DerefVec<ContainerT>& operator*() {
+    DerefVec<ContainerT>& operator*() const {
       return *batch_;
     }
 
-    DerefVec<ContainerT>* operator->() {
+    DerefVec<ContainerT>* operator->() const {
       return batch_.get();
     }
   };

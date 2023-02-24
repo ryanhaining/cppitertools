@@ -1,16 +1,16 @@
 #ifndef ITER_CHAIN_HPP_
 #define ITER_CHAIN_HPP_
 
-#include "internal/iter_tuples.hpp"
-#include "internal/iterator_wrapper.hpp"
-#include "internal/iterbase.hpp"
-
 #include <array>
 #include <iterator>
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include "internal/iter_tuples.hpp"
+#include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
 namespace iter {
   namespace impl {
@@ -62,12 +62,12 @@ class iter::impl::Chained {
     using ArrowType = iterator_arrow<std::tuple_element_t<0, TupTypeT>>;
 
     template <std::size_t Idx>
-    static DerefType get_and_deref(IterTupType& iters) {
+    static DerefType get_and_deref(const IterTupType& iters) {
       return *std::get<Idx>(iters);
     }
 
     template <std::size_t Idx>
-    static ArrowType get_and_arrow(IterTupType& iters) {
+    static ArrowType get_and_arrow(const IterTupType& iters) {
       return apply_arrow(std::get<Idx>(iters));
     }
 
@@ -82,8 +82,8 @@ class iter::impl::Chained {
       return std::get<Idx>(lhs) != std::get<Idx>(rhs);
     }
 
-    using DerefFunc = DerefType (*)(IterTupType&);
-    using ArrowFunc = ArrowType (*)(IterTupType&);
+    using DerefFunc = DerefType (*)(const IterTupType&);
+    using ArrowFunc = ArrowType (*)(const IterTupType&);
     using IncFunc = void (*)(IterTupType&);
     using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
 
@@ -137,11 +137,11 @@ class iter::impl::Chained {
       check_for_end_and_adjust();
     }
 
-    decltype(auto) operator*() {
+    decltype(auto) operator*() const {
       return IterData::derefers[index_](iters_);
     }
 
-    decltype(auto) operator-> () {
+    decltype(auto) operator->() const {
       return IterData::arrowers[index_](iters_);
     }
 
@@ -161,7 +161,7 @@ class iter::impl::Chained {
     bool operator!=(const Iterator& other) const {
       return index_ != other.index_
              || (index_ != sizeof...(Is)
-                    && IterData::neq_comparers[index_](iters_, other.iters_));
+                 && IterData::neq_comparers[index_](iters_, other.iters_));
     }
 
     bool operator==(const Iterator& other) const {
@@ -278,11 +278,11 @@ class iter::impl::ChainedFromIterable {
       return !(*this != other);
     }
 
-    iterator_deref<iterator_deref<ContainerT>> operator*() {
+    iterator_deref<iterator_deref<ContainerT>> operator*() const {
       return **sub_iter_p_;
     }
 
-    iterator_arrow<iterator_deref<ContainerT>> operator->() {
+    iterator_arrow<iterator_deref<ContainerT>> operator->() const {
       return apply_arrow(*sub_iter_p_);
     }
   };
