@@ -1,23 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(cppitertools VERSION 2.0)
 
-if(NOT DEFINED CACHE{cppitertools_INSTALL_CMAKE_DIR})
-  message(WARNING [[
-The default value of cppitertools_INSTALL_CMAKE_DIR changed recently, from
-  "share/cppitertools/cmake"
-to
-  "share"
-in order to behave better with existing CMake practice.
-
-In order to get the previous behavior, pass
-  -Dcppitertools_INSTALL_CMAKE_DIR=share/cppitertools/cmake
-to the CMake invocation; in order to get the new behavior without the warning,
-pass
-  -Dcppitertools_INSTALL_CMAKE_DIR=share
-explicitly.
-]])
-endif()
-
 # installation directories
 set(cppitertools_INSTALL_INCLUDE_DIR "include" CACHE STRING "The installation include directory")
 set(cppitertools_INSTALL_CMAKE_DIR "share" CACHE STRING "The installation cmake directory")
