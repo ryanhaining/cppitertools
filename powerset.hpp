@@ -82,11 +82,11 @@ class iter::impl::Powersetter {
       return ret;
     }
 
-    iterator_deref<CombinatorType<ContainerT>> operator*() {
+    iterator_deref<CombinatorType<ContainerT>> operator*() const {
       return *comb_iter_;
     }
 
-    iterator_arrow<CombinatorType<ContainerT>> operator->() {
+    iterator_arrow<CombinatorType<ContainerT>> operator->() const {
       apply_arrow(comb_iter_);
     }
 

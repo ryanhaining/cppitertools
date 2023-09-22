@@ -43,7 +43,7 @@ class iter::impl::Combinator {
     friend class Iterator;
     constexpr static const int COMPLETE = -1;
     std::remove_reference_t<ContainerT>* container_p_;
-    CombIteratorDeref<ContainerT> indices_;
+    mutable CombIteratorDeref<ContainerT> indices_;
     int steps_{};
 
    public:
@@ -73,11 +73,11 @@ class iter::impl::Combinator {
       }
     }
 
-    CombIteratorDeref<ContainerT>& operator*() {
+    CombIteratorDeref<ContainerT>& operator*() const {
       return indices_;
     }
 
-    CombIteratorDeref<ContainerT>* operator->() {
+    CombIteratorDeref<ContainerT>* operator->() const {
       return &indices_;
     }
 

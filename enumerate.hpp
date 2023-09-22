@@ -85,11 +85,11 @@ class iter::impl::Enumerable {
     Iterator(IteratorWrapper<ContainerT>&& sub_iter, Index start)
         : sub_iter_{std::move(sub_iter)}, index_{start} {}
 
-    IterYield<ContainerT> operator*() {
+    IterYield<ContainerT> operator*() const {
       return {index_, *sub_iter_};
     }
 
-    ArrowProxy<IterYield<ContainerT>> operator->() {
+    ArrowProxy<IterYield<ContainerT>> operator->() const {
       return {**this};
     }
 

@@ -87,11 +87,11 @@ class iter::impl::Reverser {
     Iterator(ReverseIteratorWrapper<ContainerT>&& sub_iter)
         : sub_iter_{std::move(sub_iter)} {}
 
-    reverse_iterator_deref<ContainerT> operator*() {
+    reverse_iterator_deref<ContainerT> operator*() const {
       return *sub_iter_;
     }
 
-    reverse_iterator_arrow<ContainerT> operator->() {
+    reverse_iterator_arrow<ContainerT> operator->() const {
       return apply_arrow(sub_iter_);
     }
 

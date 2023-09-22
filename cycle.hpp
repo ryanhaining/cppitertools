@@ -52,11 +52,11 @@ class iter::impl::Cycler {
           sub_begin_{sub_iter},
           sub_end_{std::move(sub_end)} {}
 
-    iterator_deref<ContainerT> operator*() {
+    iterator_deref<ContainerT> operator*() const {
       return *sub_iter_;
     }
 
-    iterator_arrow<ContainerT> operator->() {
+    iterator_arrow<ContainerT> operator->() const {
       return apply_arrow(sub_iter_);
     }
 

@@ -48,7 +48,7 @@ class iter::impl::Permuter {
       return *lhs < *rhs;
     }
 
-    Permutable<ContainerT> working_set_;
+    mutable Permutable<ContainerT> working_set_;
     int steps_{};
 
    public:
@@ -72,11 +72,11 @@ class iter::impl::Permuter {
           cmp_iters);
     }
 
-    Permutable<ContainerT>& operator*() {
+    Permutable<ContainerT>& operator*() const {
       return working_set_;
     }
 
-    Permutable<ContainerT>* operator->() {
+    Permutable<ContainerT>* operator->() const {
       return &working_set_;
     }
 

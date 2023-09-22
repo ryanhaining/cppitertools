@@ -93,12 +93,12 @@ class iter::impl::Filtered {
           sub_end_{std::move(sub_end)},
           filter_func_(&filter_func) {}
 
-    typename Holder::reference operator*() {
+    typename Holder::reference operator*() const {
       init_if_first_use();
       return item_.get();
     }
 
-    typename Holder::pointer operator->() {
+    typename Holder::pointer operator->() const {
       init_if_first_use();
       return item_.get_ptr();
     }

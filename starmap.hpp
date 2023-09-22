@@ -84,11 +84,11 @@ class iter::impl::StarMapper {
       return ret;
     }
 
-    decltype(auto) operator*() {
+    decltype(auto) operator*() const {
       return std::apply(*func_, *sub_iter_);
     }
 
-    auto operator->() -> ArrowProxy<decltype(**this)> {
+    auto operator->() const -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };
@@ -172,11 +172,11 @@ class iter::impl::TupleStarMapper {
     Iterator(Func& f, TupTypeT& t, std::size_t i)
         : func_{&f}, tup_{&t}, index_{i} {}
 
-    decltype(auto) operator*() {
+    decltype(auto) operator*() const {
       return IteratorData<TupTypeT>::callers[index_](*func_, *tup_);
     }
 
-    auto operator->() {
+    auto operator->() const {
       return ArrowProxy<decltype(**this)>{**this};
     }
 

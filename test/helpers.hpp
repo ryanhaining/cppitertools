@@ -65,7 +65,7 @@ namespace itertest {
       class Iterator {
        private:
         int i;
-        bool was_incremented = true;
+        mutable bool was_incremented = true;
 
        public:
         Iterator(int n) : i{n} {}
@@ -76,7 +76,7 @@ namespace itertest {
           return *this;
         }
 
-        int operator*() {
+        int operator*() const {
           if (!this->was_incremented) {
             throw DoubleDereferenceError{};
           }
@@ -175,7 +175,7 @@ namespace itertest {
         return *this;
       }
 
-      U& operator*() {
+      U& operator*() const {
         return *this->p;
       }
     };

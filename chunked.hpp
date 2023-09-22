@@ -104,11 +104,11 @@ class iter::impl::Chunker {
              && (done() || !(sub_iter_ != other.sub_iter_));
     }
 
-    DerefVec<ContainerT>& operator*() {
+    DerefVec<ContainerT>& operator*() const {
       return *chunk_;
     }
 
-    DerefVec<ContainerT>* operator->() {
+    DerefVec<ContainerT>* operator->() const {
       return chunk_.get();
     }
   };

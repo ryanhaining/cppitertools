@@ -144,11 +144,11 @@ class iter::impl::Productor {
       return !(*this != other);
     }
 
-    TupleDeref<TupleTypeT> operator*() {
+    TupleDeref<TupleTypeT> operator*() const {
       return {(*std::get<Is>(iters_))...};
     }
 
-    auto operator->() -> ArrowProxy<decltype(**this)> {
+    auto operator->() const -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };

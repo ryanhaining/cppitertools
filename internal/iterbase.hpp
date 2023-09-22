@@ -144,9 +144,9 @@ namespace iter {
       };
 
       template <typename T>
-      struct ArrowHelper<T*, void> {
-        using type = T*;
-        constexpr type operator()(T* t) const noexcept {
+      struct ArrowHelper<T, std::enable_if_t<std::is_pointer_v<T>>> {
+        using type = T;
+        constexpr type operator()(T t) const noexcept {
           return t;
         }
       };

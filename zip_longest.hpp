@@ -97,13 +97,13 @@ class iter::impl::ZippedLongest {
       return !(*this != other);
     }
 
-    ZipIterDeref<TupleTypeT, OptTempl> operator*() {
+    ZipIterDeref<TupleTypeT, OptTempl> operator*() const {
       return {((std::get<Is>(iters_) != std::get<Is>(ends_))
                    ? OptTempl<Is, TupleTypeT>{*std::get<Is>(iters_)}
                    : OptTempl<Is, TupleTypeT>{})...};
     }
 
-    auto operator-> () -> ArrowProxy<decltype(**this)> {
+    auto operator-> () const -> ArrowProxy<decltype(**this)> {
       return {**this};
     }
   };

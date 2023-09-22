@@ -62,11 +62,11 @@ class iter::impl::Sliced {
           stop_{stop},
           step_{step} {}
 
-    iterator_deref<ContainerT> operator*() {
+    iterator_deref<ContainerT> operator*() const {
       return *sub_iter_;
     }
 
-    iterator_arrow<ContainerT> operator->() {
+    iterator_arrow<ContainerT> operator->() const {
       return apply_arrow(sub_iter_);
     }
 
