@@ -60,6 +60,12 @@ class iter::impl::CombinatorWithReplacement {
                      ? 0
                      : COMPLETE} {}
 
+    static Iterator zero_length_end(ContainerT& container) {
+      Iterator it{container, 0};
+      it.steps_ = 0;
+      return it;
+    }
+
     CombIteratorDeref<ContainerT>& operator*() {
       return indices_;
     }
@@ -69,15 +75,19 @@ class iter::impl::CombinatorWithReplacement {
     }
 
     Iterator& operator++() {
+      if (indices_.get().empty()) {
+        // zero-length case.
+        ++steps_;
+        return *this;
+      }
       for (auto iter = indices_.get().rbegin(); iter != indices_.get().rend();
            ++iter) {
         ++(*iter);
         if (!(*iter != get_end(*container_p_))) {
           if ((iter + 1) != indices_.get().rend()) {
-            for (auto down = iter; ; --down) {
+            for (auto down = iter;; --down) {
               (*down) = dumb_next(*(iter + 1));
-              if (down == indices_.get().rbegin())
-                break;
+              if (down == indices_.get().rbegin()) break;
             }
           } else {
             steps_ = COMPLETE;
@@ -117,6 +127,9 @@ class iter::impl::CombinatorWithReplacement {
   }
 
   Iterator<Container> end() {
+    if (length_ == 0) {
+      return Iterator<Container>::zero_length_end(container_);
+    }
     return {container_, 0};
   }
 
@@ -125,6 +138,9 @@ class iter::impl::CombinatorWithReplacement {
   }
 
   Iterator<AsConst<Container>> end() const {
+    if (length_ == 0) {
+      return Iterator<AsConst<Container>>::zero_length_end(container_);
+    }
     return {std::as_const(container_), 0};
   }
 };

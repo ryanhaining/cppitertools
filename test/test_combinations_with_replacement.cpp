@@ -1,5 +1,4 @@
 #include <combinations_with_replacement.hpp>
-
 #include <iterator>
 #include <set>
 #include <string>
@@ -96,8 +95,23 @@ TEST_CASE("combinations_with_replacement: big size is no problem",
 TEST_CASE("combinations_with_replacement: 0 size is empty",
     "[combinations_with_replacement]") {
   std::string s{"A"};
-  auto cwr = combinations_with_replacement(s, 0);
-  REQUIRE(std::begin(cwr) == std::end(cwr));
+  CharCombSet sc;
+  for (auto v : combinations_with_replacement(s, 0)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+  CharCombSet ans = {{}};
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE("combinations_with_replacement: 0 size is empty with empty container",
+    "[combinations_with_replacement]") {
+  std::string s{};
+  CharCombSet sc;
+  for (auto v : combinations_with_replacement(s, 0)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+  CharCombSet ans = {{}};
+  REQUIRE(ans == sc);
 }
 
 TEST_CASE("combinations_with_replacement: operator->",
