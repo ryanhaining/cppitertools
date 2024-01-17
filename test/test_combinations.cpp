@@ -5,7 +5,6 @@
 #undef DEFINE_DEFAULT_ITERATOR_CTOR
 
 #include <combinations.hpp>
-
 #include <iterator>
 #include <set>
 #include <string>
@@ -95,10 +94,31 @@ TEST_CASE("combinations: size too large gives no results", "[combinations]") {
   REQUIRE(std::begin(c) == std::end(c));
 }
 
-TEST_CASE("combinations: size 0 gives nothing", "[combinations]") {
+TEST_CASE("combinations: size 0 gives one empty result", "[combinations]") {
   std::string s{"ABCD"};
-  auto c = combinations(s, 0);
-  REQUIRE(std::begin(c) == std::end(c));
+
+  CharCombSet ans = {{}};
+
+  CharCombSet sc;
+  for (auto&& v : combinations(s, 0)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+
+  REQUIRE(ans == sc);
+}
+
+TEST_CASE("combinations: size 0 gives one empty result for empty input",
+    "[combinations]") {
+  std::string s{};
+
+  CharCombSet ans = {{}};
+
+  CharCombSet sc;
+  for (auto&& v : combinations(s, 0)) {
+    sc.emplace_back(std::begin(v), std::end(v));
+  }
+
+  REQUIRE(ans == sc);
 }
 
 TEST_CASE(
