@@ -85,13 +85,8 @@ namespace iter {
     using AsConst = decltype(std::as_const(std::declval<T&>()));
 
     // iterator_type<C> is the type of C's iterator
-    // TODO: See bug
-    // https://developercommunity.visualstudio.com/content/problem/252157/sfinae-error-depends-on-name-of-template-parameter.html
-    // for why we use T instead of Container.  Should be
-    // changed back to Container when that bug is fixed in
-    // MSVC.
-    template <typename T>
-    using iterator_type = decltype(get_begin(std::declval<T&>()));
+    template <typename Container>
+    using iterator_type = decltype(get_begin(std::declval<Container&>()));
 
     // iterator_type<C> is the type of C's iterator
     template <typename Container>
