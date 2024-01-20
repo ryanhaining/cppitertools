@@ -147,7 +147,7 @@ class iter::impl::GroupProducer {
     }
 
     bool exhausted() const {
-      return !(sub_iter_ != sub_end_);
+      return (sub_iter_ == sub_end_);
     }
 
     typename Holder<ContainerT>::reference get() {
