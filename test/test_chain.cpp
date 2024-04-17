@@ -1,6 +1,4 @@
 #include <chain.hpp>
-#include "helpers.hpp"
-
 #include <iterator>
 #include <list>
 #include <string>
@@ -8,6 +6,7 @@
 #include <vector>
 
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::chain;
 using itertest::BasicIterable;
@@ -37,14 +36,12 @@ TEST_CASE("chain: const iteration", "[chain][const]") {
   REQUIRE(v == vc);
 }
 
-// TODO make this work
-#if 0
-TEST_CASE("chain: const iterators can be compared to non-const itertors", "[chain][const]") {
+TEST_CASE("chain: const iterators can be compared to non-const itertors",
+    "[chain][const]") {
   auto ch = chain(std::string{}, std::string{});
   const auto& cch = ch;
   (void)(std::begin(ch) == std::end(cch));
 }
-#endif
 
 TEST_CASE("chain: with different container types", "[chain]") {
   std::string s1{"abc"};
