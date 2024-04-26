@@ -1,5 +1,5 @@
-#include <itertools.hpp>
-#include <zip_longest.hpp>
+#include <cppitertools/itertools.hpp>
+#include <cppitertools/zip_longest.hpp>
 
 #include <vector>
 #include <tuple>

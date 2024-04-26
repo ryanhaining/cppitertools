@@ -11,7 +11,7 @@ add_library(cppitertools::cppitertools ALIAS cppitertools)
 
 target_include_directories(cppitertools INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-  $<INSTALL_INTERFACE:${cppitertools_INSTALL_INCLUDE_DIR}/cppitertools>)
+  $<INSTALL_INTERFACE:${cppitertools_INSTALL_INCLUDE_DIR}>)
 
 # require C++17
 target_compile_features(cppitertools INTERFACE cxx_std_17)
@@ -29,8 +29,8 @@ install(
   EXPORT cppitertools-targets)
 
 install(
-  DIRECTORY .
-  DESTINATION ${cppitertools_INSTALL_INCLUDE_DIR}/cppitertools)
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cppitertools
+  DESTINATION ${cppitertools_INSTALL_INCLUDE_DIR})
 
 install(
   EXPORT cppitertools-targets
