@@ -2,8 +2,8 @@
 // on any of this.  Users of the library must consider all of this undocumented
 //
 
-#include <enumerate.hpp>
-#include <internal/iterbase.hpp>
+#include <cppitertools/enumerate.hpp>
+#include <cppitertools/internal/iterbase.hpp>
 #include <iterator>
 #include <list>
 #include <string>

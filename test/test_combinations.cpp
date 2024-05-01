@@ -4,7 +4,7 @@
 #undef CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #undef DEFINE_DEFAULT_ITERATOR_CTOR
 
-#include <combinations.hpp>
+#include <cppitertools/combinations.hpp>
 #include <iterator>
 #include <set>
 #include <string>

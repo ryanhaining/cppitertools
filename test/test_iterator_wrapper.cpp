@@ -1,7 +1,7 @@
 // NOTE this header tests implementation details
 
 #include "catch.hpp"
-#include "internal/iterator_wrapper.hpp"
+#include "cppitertools/internal/iterator_wrapper.hpp"
 
 // I'm using a std::vector of 1 int instead of just an int in order to give
 // the iterator types non-trivial constructors, destructors, and assignment.

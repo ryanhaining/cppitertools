@@ -1,4 +1,4 @@
-#include <accumulate.hpp>
+#include <cppitertools/accumulate.hpp>
 #include "helpers.hpp"
 
 #include <iterator>

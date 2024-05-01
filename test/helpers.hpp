@@ -1,7 +1,7 @@
 #ifndef TEST_HELPER_H_
 #define TEST_HELPER_H_
 
-#include <internal/iterbase.hpp>
+#include <cppitertools/internal/iterbase.hpp>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
