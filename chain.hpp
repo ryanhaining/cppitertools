@@ -171,7 +171,6 @@ class iter::impl::Chained {
       return ret;
     }
 
-    // TODO make const and non-const iterators comparable
     template <typename T>
     bool operator!=(const Iterator<T>& other) const {
       return index_ != other.index_
