@@ -1,35 +1,44 @@
-from conans import ConanFile, CMake
-
-import os
+from conan import ConanFile
+from conan.tools.cmake import CMakeToolchain, CMake, cmake_layout, CMakeDeps
 
 
 class CppIterTools(ConanFile):
-    name = "cppitertools"
-    version = "2.0"
-    author = "Ryan Haining <haining.cpp@gmail.com>"
-    homepage = "https://github.com/ryanhaining/cppitertools"
+    name = 'cppitertools'
+    version = '3.0'
+    author = 'Ryan Haining <haining.cpp@gmail.com>'
+    homepage = 'https://github.com/ryanhaining/cppitertools'
     url = homepage
-    topics = ("conan", "itertools", "cppitertools")
-    license = 'BSD 2-Clause "Simplified" License'
-    description = "Range-based for loop add-ons inspired by the Python builtins and itertools library. " \
-                  "Like itertools and the Python3 builtins, this library uses lazy evaluation wherever possible."
-    settings = "build_type", "compiler", "os", "arch"
-    generators = "cmake", "cmake_find_package", "cmake_paths"
-    exports = "LICENSE.md"
+    topics = ('itertools', 'cppitertools')
+    license = "BSD 2-Clause 'Simplified' License"
+    description = 'Range-based for loop add-ons inspired by the Python builtins and itertools library. ' \
+                  'Like itertools and the Python3 builtins, this library uses lazy evaluation wherever possible.'
+    settings = 'build_type', 'compiler', 'os', 'arch'
+    exports = 'LICENSE.md'
 
-    exports_sources = list()
-    for file in os.listdir("."):
-        if file.endswith(".hpp"):
-            exports_sources.append(str(file))
-    print("found files: " + str(exports_sources))
-    exports_sources = tuple(exports_sources) + \
-                      ("internal/*", "CMakeLists.txt", "cmake/dummy-config.cmake.in")
-    no_copy_source = True
+    exports_sources = (
+            'cppitertools/*',
+            'cppitertools/internal/*',
+            'CMakeLists.txt',
+            'cmake/dummy-config.cmake.in')
+
+    def layout(self):
+        cmake_layout(self)
+
+    def generate(self):
+        deps = CMakeDeps(self)
+        deps.generate()
+        tc = CMakeToolchain(self)
+        tc.generate()
+
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
 
     def package(self):
         cmake = CMake(self)
-        cmake.configure()
         cmake.install()
 
-    def package_id(self):
-        self.info.header_only()
+    def package_info(self):
+        self.cpp_info.bindirs = []
+        self.cpp_info.libdirs = []
