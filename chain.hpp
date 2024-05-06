@@ -1,16 +1,16 @@
 #ifndef ITER_CHAIN_HPP_
 #define ITER_CHAIN_HPP_
 
-#include "internal/iter_tuples.hpp"
-#include "internal/iterator_wrapper.hpp"
-#include "internal/iterbase.hpp"
-
 #include <array>
 #include <iterator>
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include "internal/iter_tuples.hpp"
+#include "internal/iterator_wrapper.hpp"
+#include "internal/iterbase.hpp"
 
 namespace iter {
   namespace impl {
@@ -42,6 +42,26 @@ template <typename TupType, std::size_t... Is>
 class iter::impl::Chained {
  private:
   friend ChainMaker;
+
+  template <typename TupTypeTA, typename TupTypeTB>
+  class IteratorDataPair {
+    IteratorDataPair() = delete;
+
+   public:
+    using IterTupTypeA = iterator_tuple_type<TupTypeTA>;
+    using IterTupTypeB = iterator_tuple_type<TupTypeTB>;
+
+    template <std::size_t Idx>
+    static bool get_and_check_not_equal(
+        const IterTupTypeA& lhs, const IterTupTypeB& rhs) {
+      return std::get<Idx>(lhs) != std::get<Idx>(rhs);
+    }
+
+    using NeqFunc = bool (*)(const IterTupTypeA&, const IterTupTypeB&);
+
+    constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{
+        {get_and_check_not_equal<Is>...}};
+  };
 
   template <typename TupTypeT>
   class IteratorData {
@@ -76,16 +96,9 @@ class iter::impl::Chained {
       ++std::get<Idx>(iters);
     }
 
-    template <std::size_t Idx>
-    static bool get_and_check_not_equal(
-        const IterTupType& lhs, const IterTupType& rhs) {
-      return std::get<Idx>(lhs) != std::get<Idx>(rhs);
-    }
-
     using DerefFunc = DerefType (*)(IterTupType&);
     using ArrowFunc = ArrowType (*)(IterTupType&);
     using IncFunc = void (*)(IterTupType&);
-    using NeqFunc = bool (*)(const IterTupType&, const IterTupType&);
 
     constexpr static std::array<DerefFunc, sizeof...(Is)> derefers{
         {get_and_deref<Is>...}};
@@ -95,9 +108,6 @@ class iter::impl::Chained {
 
     constexpr static std::array<IncFunc, sizeof...(Is)> incrementers{
         {get_and_increment<Is>...}};
-
-    constexpr static std::array<NeqFunc, sizeof...(Is)> neq_comparers{
-        {get_and_check_not_equal<Is>...}};
 
     using TraitsValue =
         iterator_traits_deref<std::tuple_element_t<0, TupTypeT>>;
@@ -119,12 +129,16 @@ class iter::impl::Chained {
 
     void check_for_end_and_adjust() {
       while (index_ < sizeof...(Is)
-             && !(IterData::neq_comparers[index_](iters_, ends_))) {
+             && !(IteratorDataPair<TupTypeT, TupTypeT>::neq_comparers[index_](
+                 iters_, ends_))) {
         ++index_;
       }
     }
 
    public:
+    template <typename>
+    friend class Iterator;
+
     using iterator_category = std::input_iterator_tag;
     using value_type = typename IteratorData<TupTypeT>::TraitsValue;
     using difference_type = std::ptrdiff_t;
@@ -141,7 +155,7 @@ class iter::impl::Chained {
       return IterData::derefers[index_](iters_);
     }
 
-    decltype(auto) operator-> () {
+    decltype(auto) operator->() {
       return IterData::arrowers[index_](iters_);
     }
 
@@ -157,14 +171,16 @@ class iter::impl::Chained {
       return ret;
     }
 
-    // TODO make const and non-const iterators comparable
-    bool operator!=(const Iterator& other) const {
+    template <typename T>
+    bool operator!=(const Iterator<T>& other) const {
       return index_ != other.index_
              || (index_ != sizeof...(Is)
-                    && IterData::neq_comparers[index_](iters_, other.iters_));
+                 && IteratorDataPair<TupTypeT, T>::neq_comparers[index_](
+                     iters_, other.iters_));
     }
 
-    bool operator==(const Iterator& other) const {
+    template <typename T>
+    bool operator==(const Iterator<T>& other) const {
       return !(*this != other);
     }
   };

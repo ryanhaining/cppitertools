@@ -1,6 +1,4 @@
 #include <chain.hpp>
-#include "helpers.hpp"
-
 #include <iterator>
 #include <list>
 #include <string>
@@ -8,6 +6,7 @@
 #include <vector>
 
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::chain;
 using itertest::BasicIterable;
@@ -37,14 +36,34 @@ TEST_CASE("chain: const iteration", "[chain][const]") {
   REQUIRE(v == vc);
 }
 
-// TODO make this work
-#if 0
-TEST_CASE("chain: const iterators can be compared to non-const itertors", "[chain][const]") {
-  auto ch = chain(std::string{}, std::string{});
-  const auto& cch = ch;
-  (void)(std::begin(ch) == std::end(cch));
+TEST_CASE("chain: const iterators can be compared to non-const itertors",
+    "[chain][const]") {
+  std::string s1{"abc"};
+  std::list<char> li{'m', 'n', 'o'};
+  auto ch = chain(s1, li);
+
+  const auto cch = chain(s1, li);
+  SECTION("begin and const begin compare equal") {
+    REQUIRE(std::begin(ch) == std::begin(cch));
+  }
+  SECTION("begin and const end compare not-equal") {
+    REQUIRE_FALSE(std::begin(ch) == std::end(cch));
+  }
+  SECTION("end and const end compare equal") {
+    REQUIRE(std::end(ch) == std::end(cch));
+  }
+  SECTION(
+      "const and non-const iterator compare equal/not-equal at appropriate "
+      "pos.") {
+    auto iter = ch.begin();
+    iter++;
+    auto citer = cch.begin();
+    citer++;
+    REQUIRE(iter == citer);
+    citer++;
+    REQUIRE_FALSE(iter == citer);
+  }
 }
-#endif
 
 TEST_CASE("chain: with different container types", "[chain]") {
   std::string s1{"abc"};
@@ -218,10 +237,32 @@ TEST_CASE(
     "chain.from_iterable: const iterators can be compared to non-const "
     "iterators",
     "[chain.from_iterable][const]") {
-  std::vector<std::vector<int>> v{};
+  std::vector<std::vector<int>> v{{1, 2}, {4, 6}};
   auto ch = chain.from_iterable(v);
   const auto& cch = ch;
-  (void)(std::begin(ch) == std::end(cch));
+
+  SECTION("begin and const end compare not-equal") {
+    REQUIRE_FALSE(std::begin(ch) == std::end(cch));
+  }
+  SECTION("begin and const begin compare equal") {
+    REQUIRE(std::begin(ch) == std::begin(cch));
+  }
+  SECTION("end and const end compare not-equal") {
+    REQUIRE(std::end(ch) == std::end(cch));
+  }
+  SECTION(
+      "const and non-const iterator compare equal/not-equal at appropriate "
+      "pos.") {
+    auto iter = ch.begin();
+    iter++;
+    auto citer = cch.begin();
+    citer++;
+    REQUIRE(iter == citer);
+    citer++;
+    REQUIRE_FALSE(iter == citer);
+    iter++;
+    REQUIRE(iter == citer);
+  }
 }
 
 TEST_CASE("chain.fromm_iterable: Works with different begin and end types",
