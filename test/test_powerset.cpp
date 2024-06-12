@@ -1,4 +1,4 @@
-#include <powerset.hpp>
+#include <cppitertools/powerset.hpp>
 
 #define CHAR_RANGE_DEFAULT_CONSTRUCTIBLE
 #include "helpers.hpp"

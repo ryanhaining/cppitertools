@@ -1,4 +1,4 @@
-#include <permutations.hpp>
+#include <cppitertools/permutations.hpp>
 
 #include "helpers.hpp"
 

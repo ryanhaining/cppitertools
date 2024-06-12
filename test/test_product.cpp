@@ -1,4 +1,4 @@
-#include <product.hpp>
+#include <cppitertools/product.hpp>
 
 #define DEFINE_BASIC_ITERABLE_COPY_CTOR
 #define DEFINE_BASIC_ITERABLE_CONST_BEGIN_AND_END

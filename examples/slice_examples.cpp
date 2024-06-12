@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include <slice.hpp>
-#include <range.hpp>
+#include <cppitertools/slice.hpp>
+#include <cppitertools/range.hpp>
 
 #include <vector>
 #include <array>

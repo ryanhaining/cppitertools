@@ -1,4 +1,4 @@
-#include <batched.hpp>
+#include <cppitertools/batched.hpp>
 
 #include <iostream>
 #include <vector>

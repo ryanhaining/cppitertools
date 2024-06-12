@@ -1,5 +1,5 @@
-#include <accumulate.hpp>
-#include <range.hpp>
+#include <cppitertools/accumulate.hpp>
+#include <cppitertools/range.hpp>
 
 #include <iostream>
 #include <vector>

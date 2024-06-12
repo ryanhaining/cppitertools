@@ -1,4 +1,6 @@
-#include <chain.hpp>
+#include <cppitertools/chain.hpp>
+#include "helpers.hpp"
+
 #include <iterator>
 #include <list>
 #include <string>
@@ -6,7 +8,6 @@
 #include <vector>
 
 #include "catch.hpp"
-#include "helpers.hpp"
 
 using iter::chain;
 using itertest::BasicIterable;

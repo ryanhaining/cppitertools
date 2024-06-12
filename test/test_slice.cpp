@@ -1,4 +1,4 @@
-#include <slice.hpp>
+#include <cppitertools/slice.hpp>
 
 #include <string>
 #include <utility>

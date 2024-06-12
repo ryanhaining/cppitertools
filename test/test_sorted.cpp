@@ -1,4 +1,4 @@
-#include <sorted.hpp>
+#include <cppitertools/sorted.hpp>
 
 #include <array>
 #include <set>
@@ -46,7 +46,7 @@ TEST_CASE("sorted: const iteration", "[sorted][const]") {
   REQUIRE(v == vc);
 }
 
-//FIXME: This test currently fails (STL assertion fails on MSVC with debug library, simple test failure on gcc).  The problem is 'sorted' will sort twice, once for non-const and once for const container; the resulting iterators are thus not on the same container (violating domain of == as specified in C++17 [forward.iterators]¶2).  Remove [!hide] tag when fixed.
+//FIXME: This test currently fails (STL assertion fails on MSVC with debug library, simple test failure on gcc).  The problem is 'sorted' will sort twice, once for non-const and once for const container; the resulting iterators are thus not on the same container (violating domain of == as specified in C++17 [forward.iterators]ï¿½2).  Remove [!hide] tag when fixed.
 TEST_CASE("sorted: const iterators can be compared to non-const iterators",
     "[sorted][const][!hide]") {
   auto s = sorted(Vec{1});

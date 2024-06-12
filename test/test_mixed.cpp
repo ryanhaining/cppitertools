@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "catch.hpp"
-#include "itertools.hpp"
+#include "cppitertools/itertools.hpp"
 
 class MyUnMovable {
   int val;

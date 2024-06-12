@@ -1,4 +1,4 @@
-#include <internal/iteratoriterator.hpp>
+#include <cppitertools/internal/iteratoriterator.hpp>
 
 #include <string>
 #include <vector>

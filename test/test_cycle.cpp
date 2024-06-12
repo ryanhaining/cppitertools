@@ -1,4 +1,4 @@
-#include <cycle.hpp>
+#include <cppitertools/cycle.hpp>
 
 #include "helpers.hpp"
 

@@ -1,8 +1,8 @@
-#include <combinations.hpp>
-#include <combinations_with_replacement.hpp>
-#include <permutations.hpp>
-#include <product.hpp>
-#include <powerset.hpp>
+#include <cppitertools/combinations.hpp>
+#include <cppitertools/combinations_with_replacement.hpp>
+#include <cppitertools/permutations.hpp>
+#include <cppitertools/product.hpp>
+#include <cppitertools/powerset.hpp>
 
 #include <vector>
 #include <string>
