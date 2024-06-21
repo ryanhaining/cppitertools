@@ -343,9 +343,7 @@ class iter::impl::ChainMaker {
 };
 
 namespace iter {
-  namespace {
-    constexpr auto chain = iter::impl::ChainMaker{};
-  }
+  inline constexpr auto chain = iter::impl::ChainMaker{};
 }
 
 #endif
