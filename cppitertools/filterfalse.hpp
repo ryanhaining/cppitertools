@@ -38,7 +38,7 @@ namespace iter {
 
     using FilterFalseFn = IterToolFnOptionalBindFirst<FilterFalsed, BoolTester>;
   }
-  constexpr impl::FilterFalseFn filterfalse{};
+  inline constexpr impl::FilterFalseFn filterfalse{};
 }
 
 // Delegates to Filtered with PredicateFlipper<FilterFunc>

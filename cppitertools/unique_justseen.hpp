@@ -23,7 +23,7 @@ namespace iter {
       }
     };
   }
-  constexpr impl::UniqueJustseenFn unique_justseen{};
+  inline constexpr impl::UniqueJustseenFn unique_justseen{};
 }
 
 #endif

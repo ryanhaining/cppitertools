@@ -15,7 +15,7 @@ namespace iter {
     using CombinationsWithReplacementFn =
         IterToolFnBindSizeTSecond<CombinatorWithReplacement>;
   }
-  constexpr impl::CombinationsWithReplacementFn combinations_with_replacement{};
+  inline constexpr impl::CombinationsWithReplacementFn combinations_with_replacement{};
 }
 
 template <typename Container>

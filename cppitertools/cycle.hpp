@@ -15,7 +15,7 @@ namespace iter {
 
     using CycleFn = IterToolFn<Cycler>;
   }
-  constexpr impl::CycleFn cycle{};
+  inline constexpr impl::CycleFn cycle{};
 }
 
 template <typename Container>

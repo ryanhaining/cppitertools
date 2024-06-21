@@ -17,7 +17,7 @@ namespace iter {
     class Permuter;
     using PermutationsFn = IterToolFn<Permuter>;
   }
-  constexpr impl::PermutationsFn permutations{};
+  inline constexpr impl::PermutationsFn permutations{};
 }
 
 template <typename Container>

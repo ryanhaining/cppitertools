@@ -45,7 +45,7 @@ namespace iter {
 
     using ReversedFn = IterToolFn<Reverser>;
   }
-  constexpr impl::ReversedFn reversed{};
+  inline constexpr impl::ReversedFn reversed{};
 }
 
 template <typename Container>

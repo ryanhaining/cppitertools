@@ -17,7 +17,7 @@ namespace iter {
 
     using AccumulateFn = IterToolFnOptionalBindSecond<Accumulator, std::plus<>>;
   }
-  constexpr impl::AccumulateFn accumulate{};
+  inline constexpr impl::AccumulateFn accumulate{};
 }
 
 template <typename Container, typename AccumulateFunc>

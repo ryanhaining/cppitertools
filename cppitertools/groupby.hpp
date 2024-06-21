@@ -20,7 +20,7 @@ namespace iter {
 
     using GroupByFn = IterToolFnOptionalBindSecond<GroupProducer, Identity>;
   }
-  constexpr impl::GroupByFn groupby{};
+  inline constexpr impl::GroupByFn groupby{};
 }
 
 template <typename Container, typename KeyFunc>

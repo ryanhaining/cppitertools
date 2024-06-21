@@ -18,7 +18,7 @@ namespace iter {
 
     using PowersetFn = IterToolFn<Powersetter>;
   }
-  constexpr impl::PowersetFn powerset{};
+  inline constexpr impl::PowersetFn powerset{};
 }
 
 template <typename Container>

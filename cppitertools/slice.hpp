@@ -172,7 +172,7 @@ struct iter::impl::SliceFn {
 };
 
 namespace iter {
-  constexpr impl::SliceFn slice{};
+  inline constexpr impl::SliceFn slice{};
 }
 
 #endif

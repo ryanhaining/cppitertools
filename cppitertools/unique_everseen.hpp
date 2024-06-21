@@ -45,7 +45,7 @@ namespace iter {
     };
   }
 
-  constexpr impl::UniqueEverseenFn unique_everseen{};
+  inline constexpr impl::UniqueEverseenFn unique_everseen{};
 }
 
 #endif

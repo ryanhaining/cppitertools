@@ -16,7 +16,7 @@ namespace iter {
     class WindowSlider;
     using SlidingWindowFn = IterToolFnBindSizeTSecond<WindowSlider>;
   }
-  constexpr impl::SlidingWindowFn sliding_window{};
+  inline constexpr impl::SlidingWindowFn sliding_window{};
 }
 
 template <typename Container>

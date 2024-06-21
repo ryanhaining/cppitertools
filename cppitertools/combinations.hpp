@@ -15,7 +15,7 @@ namespace iter {
 
     using CombinationsFn = IterToolFnBindSizeTSecond<Combinator>;
   }
-  constexpr impl::CombinationsFn combinations{};
+  inline constexpr impl::CombinationsFn combinations{};
 }
 
 template <typename Container>

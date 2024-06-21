@@ -33,7 +33,7 @@ namespace iter {
 
     using EnumerateFn = IterToolFnOptionalBindSecond<Enumerable, std::size_t>;
   }
-  constexpr impl::EnumerateFn enumerate{};
+  inline constexpr impl::EnumerateFn enumerate{};
 }
 
 namespace std {

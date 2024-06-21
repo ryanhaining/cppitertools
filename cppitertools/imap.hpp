@@ -21,7 +21,7 @@ namespace iter {
       using PipeableAndBindFirst<IMapFn>::operator();
     };
   }
-  constexpr impl::IMapFn imap{};
+  inline constexpr impl::IMapFn imap{};
 }
 
 #endif

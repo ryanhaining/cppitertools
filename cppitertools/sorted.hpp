@@ -15,7 +15,7 @@ namespace iter {
     class SortedView;
     using SortedFn = IterToolFnOptionalBindSecond<SortedView, std::less<>>;
   }
-  constexpr impl::SortedFn sorted{};
+  inline constexpr impl::SortedFn sorted{};
 }
 
 template <typename Container, typename CompareFunc>

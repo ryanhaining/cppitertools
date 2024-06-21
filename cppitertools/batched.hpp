@@ -20,7 +20,7 @@ namespace iter {
 
     using BatchedFn = IterToolFnBindSizeTSecond<Batcher>;
   }
-  constexpr impl::BatchedFn batched{};
+  inline constexpr impl::BatchedFn batched{};
 }
 
 template <typename Container>

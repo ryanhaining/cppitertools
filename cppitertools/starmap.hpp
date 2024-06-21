@@ -252,7 +252,7 @@ struct iter::impl::StarMapFn : PipeableAndBindFirst<StarMapFn> {
 };
 
 namespace iter {
-  constexpr impl::StarMapFn starmap{};
+  inline constexpr impl::StarMapFn starmap{};
 }
 
 #endif

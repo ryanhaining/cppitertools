@@ -24,7 +24,7 @@ namespace iter {
     using FilterFn = IterToolFnOptionalBindFirst<Filtered, BoolTester>;
   }
 
-  constexpr impl::FilterFn filter{};
+  inline constexpr impl::FilterFn filter{};
 }
 
 template <typename FilterFunc, typename Container>

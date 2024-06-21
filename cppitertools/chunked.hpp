@@ -20,7 +20,7 @@ namespace iter {
 
     using ChunkedFn = IterToolFnBindSizeTSecond<Chunker>;
   }
-  constexpr impl::ChunkedFn chunked{};
+  inline constexpr impl::ChunkedFn chunked{};
 }
 
 template <typename Container>

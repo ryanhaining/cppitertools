@@ -16,7 +16,7 @@ namespace iter {
 
     using TakeWhileFn = IterToolFnOptionalBindFirst<Taker, BoolTester>;
   }
-  constexpr impl::TakeWhileFn takewhile{};
+  inline constexpr impl::TakeWhileFn takewhile{};
 }
 
 template <typename FilterFunc, typename Container>

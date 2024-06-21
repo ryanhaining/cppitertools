@@ -16,7 +16,7 @@ namespace iter {
 
     using DropWhileFn = IterToolFnOptionalBindFirst<Dropper, BoolTester>;
   }
-  constexpr impl::DropWhileFn dropwhile{};
+  inline constexpr impl::DropWhileFn dropwhile{};
 }
 
 template <typename FilterFunc, typename Container>
