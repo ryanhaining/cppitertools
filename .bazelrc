@@ -1,2 +1,0 @@
-# workspace support is deprecated in Bazel 7
-common --enable_bzlmod
