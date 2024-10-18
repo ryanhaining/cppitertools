@@ -579,7 +579,7 @@ Repeatedly yields a tuple of `boost::optional<T>`s where `T` is the type
 yielded by the sequences' respective iterators.  Because of its boost
 dependency, `zip_longest` is not in `itertools.hpp` and must be included
 separately.
-The following loop prints either "Just <item>" or "Nothing" for each
+The following loop prints either "Just \<item\>" or "Nothing" for each
 element in each tuple yielded.
 
 ```c++
