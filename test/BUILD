@@ -37,10 +37,13 @@ progs = [
     "helpers",
 ]
 
+SANITIZE = "-fsanitize=address,undefined"
+
 cc_library(
   name = "test_main",
   srcs = ["test_main.cpp", "catch.hpp"],
-  copts = ["-std=c++17", "-g"]
+  copts = [SANITIZE, "-Wall", "-Wextra", "-std=c++17", "-g"],
+  linkopts = [SANITIZE],
 )
 
 itertools_tests(progs)
