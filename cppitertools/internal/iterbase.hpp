@@ -353,6 +353,9 @@ namespace iter {
     template <typename ItTool>
     struct Pipeable {
       template <typename T>
+#if  defined(__GNUC__) && !defined(__clang__)
+        [[gnu::no_dangling]]
+#endif
       friend decltype(auto) operator|(T&& x, const Pipeable& p) {
         return static_cast<const ItTool&>(p)(std::forward<T>(x));
       }
