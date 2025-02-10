@@ -25,6 +25,12 @@ TEST_CASE("filter: handles different callable types", "[filter]") {
     REQUIRE(v == vc);
   }
 
+  SECTION("with move-only callable object") {
+    auto f = filter(MoveOnlyLessThanValue{5}, ns);
+    Vec v(std::begin(f), std::end(f));
+    REQUIRE(v == vc);
+  }
+
   SECTION("with lambda") {
     auto ltf = [](int i) { return i < 5; };
     auto f = filter(ltf, ns);

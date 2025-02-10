@@ -29,6 +29,8 @@ namespace iter {
 
 template <typename FilterFunc, typename Container>
 class iter::impl::Filtered {
+  static_assert(!std::is_reference_v<FilterFunc>);
+
  private:
   Container container_;
   mutable FilterFunc filter_func_;
@@ -39,7 +41,7 @@ class iter::impl::Filtered {
   // Value constructor for use only in the filter function
   Filtered(FilterFunc filter_func, Container&& container)
       : container_(std::forward<Container>(container)),
-        filter_func_(filter_func) {}
+        filter_func_(std::move(filter_func)) {}
 
  public:
   Filtered(Filtered&&) = default;
