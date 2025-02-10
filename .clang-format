@@ -8,5 +8,6 @@ BreakBeforeBinaryOperators: NonAssignment
 DerivePointerAlignment: false
 NamespaceIndentation: All
 FixNamespaceComments: false
+IncludeBlocks: Preserve
 ...
 
