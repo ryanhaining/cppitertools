@@ -1,6 +1,5 @@
-#include <cppitertools/takewhile.hpp>
-
 #include <array>
+#include <cppitertools/takewhile.hpp>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,48 +10,34 @@
 using iter::takewhile;
 using Vec = const std::vector<int>;
 
-namespace {
-  bool under_ten(int i) {
-    return i < 10;
-  }
-
-  struct UnderTen {
-    bool operator()(int i) {
-      return i < 10;
-    }
-  };
-}
-
 TEST_CASE("takewhile: works with lambda, callable, and function pointer",
     "[takewhile]") {
-  Vec ns = {1, 3, 5, 20, 2, 4, 6, 8};
+  Vec ns = {1, 3, 4, 20, 2, 4, 6, 8};
+  const Vec vc = {1, 3, 4};
   SECTION("function pointer") {
-    auto tw = takewhile(under_ten, ns);
+    auto tw = takewhile(less_than_five, ns);
     Vec v(std::begin(tw), std::end(tw));
-    Vec vc = {1, 3, 5};
     REQUIRE(v == vc);
   }
 
   SECTION("callable object") {
     std::vector<int> v;
     SECTION("Normal call") {
-      auto tw = takewhile(UnderTen{}, ns);
+      auto tw = takewhile(LessThanValue{10}, ns);
       v.assign(std::begin(tw), std::end(tw));
     }
 
     SECTION("Pipe") {
-      auto tw = ns | takewhile(UnderTen{});
+      auto tw = ns | takewhile(LessThanValue{10});
       v.assign(std::begin(tw), std::end(tw));
     }
 
-    Vec vc = {1, 3, 5};
     REQUIRE(v == vc);
   }
 
   SECTION("lambda") {
     auto tw = takewhile([](int i) { return i < 10; }, ns);
     Vec v(std::begin(tw), std::end(tw));
-    Vec vc = {1, 3, 5};
     REQUIRE(v == vc);
   }
 }
@@ -78,7 +63,7 @@ TEST_CASE("takewhile: handles pointer to member", "[takewhile]") {
 
 TEST_CASE("takewhile: supports const iteration", "[takewhile][const]") {
   Vec ns = {1, 3, 5, 20, 2, 4, 6, 8};
-  const auto tw = takewhile(UnderTen{}, ns);
+  const auto tw = takewhile(LessThanValue{10}, ns);
   Vec v(std::begin(tw), std::end(tw));
   Vec vc = {1, 3, 5};
   REQUIRE(v == vc);
@@ -86,7 +71,7 @@ TEST_CASE("takewhile: supports const iteration", "[takewhile][const]") {
 
 TEST_CASE("takewhile: const iterator and non-const iterator are comparable",
     "[takewhile][const]") {
-  auto tw = takewhile(UnderTen{}, Vec{});
+  auto tw = takewhile(LessThanValue{10}, Vec{});
   const auto& ctw = tw;
   (void)(std::begin(tw) == std::end(ctw));
 }
@@ -117,14 +102,14 @@ TEST_CASE("takewhile: identity", "[takewhile]") {
 
 TEST_CASE("takewhile: everything passes predicate", "[takewhile]") {
   Vec ns{1, 2, 3};
-  auto tw = takewhile(under_ten, ns);
+  auto tw = takewhile(less_than_five, ns);
   Vec v(std::begin(tw), std::end(tw));
   Vec vc = {1, 2, 3};
 }
 
 TEST_CASE("takewhile: empty iterable is empty", "[takewhile]") {
   Vec ns{};
-  auto tw = takewhile(under_ten, ns);
+  auto tw = takewhile(less_than_five, ns);
   SECTION("normal compare") {
     REQUIRE(std::begin(tw) == std::end(tw));
   }
@@ -138,7 +123,7 @@ TEST_CASE(
     "[takewhile]") {
   SECTION("First element is only element") {
     Vec ns = {20};
-    auto tw = takewhile(under_ten, ns);
+    auto tw = takewhile(less_than_five, ns);
     SECTION("normal compare") {
       REQUIRE(std::begin(tw) == std::end(tw));
     }
@@ -149,7 +134,7 @@ TEST_CASE(
 
   SECTION("First element followed by elements that pass") {
     Vec ns = {20, 1, 1};
-    auto tw = takewhile(under_ten, ns);
+    auto tw = takewhile(less_than_five, ns);
     SECTION("normal compare") {
       REQUIRE(std::begin(tw) == std::end(tw));
     }
@@ -161,10 +146,10 @@ TEST_CASE(
 
 TEST_CASE("takewhile: moves rvalues, binds to lvalues", "[takewhile]") {
   itertest::BasicIterable<int> bi{1, 2};
-  takewhile(under_ten, bi);
+  takewhile(less_than_five, bi);
   REQUIRE_FALSE(bi.was_moved_from());
 
-  takewhile(under_ten, std::move(bi));
+  takewhile(less_than_five, std::move(bi));
   REQUIRE(bi.was_moved_from());
 }
 

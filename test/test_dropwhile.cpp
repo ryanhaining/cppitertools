@@ -1,30 +1,14 @@
 #include <cppitertools/dropwhile.hpp>
-
-#include "helpers.hpp"
-
 #include <iterator>
 #include <string>
 #include <vector>
 
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::dropwhile;
 
 using Vec = const std::vector<int>;
-
-namespace {
-  class LessThanValue {
-   private:
-    int compare_val;
-
-   public:
-    LessThanValue(int v) : compare_val(v) {}
-
-    bool operator()(int i) {
-      return i < this->compare_val;
-    }
-  };
-}
 
 TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
@@ -145,12 +129,6 @@ TEST_CASE("dropwhile: operator->", "[dropwhile]") {
   auto d = dropwhile([](const std::string& str) { return str.size() < 3; }, vs);
   auto it = std::begin(d);
   REQUIRE(it->size() == 6);
-}
-
-namespace {
-  int less_than_five(int i) {
-    return i < 5;
-  }
 }
 
 TEST_CASE("dropwhile: works with function pointer", "[dropwhile]") {

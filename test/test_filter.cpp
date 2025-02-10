@@ -1,34 +1,14 @@
 #include <cppitertools/filter.hpp>
-
-#include "helpers.hpp"
-
 #include <iterator>
 #include <string>
 #include <vector>
 
 #include "catch.hpp"
+#include "helpers.hpp"
 
 using iter::filter;
 
 using Vec = const std::vector<int>;
-
-namespace {
-  bool less_than_five(int i) {
-    return i < 5;
-  }
-
-  class LessThanValue {
-   private:
-    int compare_val;
-
-   public:
-    LessThanValue(int v) : compare_val(v) {}
-
-    bool operator()(int i) {
-      return i < this->compare_val;
-    }
-  };
-}
 
 TEST_CASE("filter: handles different callable types", "[filter]") {
   Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};

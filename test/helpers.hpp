@@ -414,4 +414,20 @@ class IntCharPairRange
       : DiffEndRange<std::pair<int, char>, IncIntCharPair>({0, 'a'}, stop) {}
 };
 
+inline bool less_than_five(int i) {
+  return i < 5;
+}
+
+class LessThanValue {
+ private:
+  int compare_val;
+
+ public:
+  LessThanValue(int v) : compare_val(v) {}
+
+  bool operator()(int i) {
+    return i < this->compare_val;
+  }
+};
+
 #endif
