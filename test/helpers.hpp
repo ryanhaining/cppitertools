@@ -430,4 +430,22 @@ class LessThanValue {
   }
 };
 
+class MoveOnlyLessThanValue {
+ private:
+  int compare_val;
+
+ public:
+  MoveOnlyLessThanValue(int v) : compare_val(v) {}
+
+  MoveOnlyLessThanValue(const MoveOnlyLessThanValue&) = delete;
+  MoveOnlyLessThanValue& operator=(const MoveOnlyLessThanValue&) = delete;
+
+  MoveOnlyLessThanValue(MoveOnlyLessThanValue&&) = default;
+  MoveOnlyLessThanValue& operator=(MoveOnlyLessThanValue&&) = default;
+
+  bool operator()(int i) {
+    return i < this->compare_val;
+  }
+};
+
 #endif
