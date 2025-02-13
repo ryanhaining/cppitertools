@@ -9,9 +9,11 @@
 
 namespace iter {
   namespace impl {
-    struct UniqueJustseenFn : PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity> {
+    struct UniqueJustseenFn
+        : PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity> {
      public:
-      using PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity>::operator();
+      using PipeableAndBindOptionalSecond<UniqueJustseenFn, Identity>::
+      operator();
       template <typename Container, typename KeyFunc>
       auto operator()(Container&& container, KeyFunc key_fn) const {
         // decltype(auto) return type in lambda so reference types are preserved
@@ -19,7 +21,7 @@ namespace iter {
             [](auto&& group) -> decltype(auto) {
               return *get_begin(group.second);
             },
-            groupby(std::forward<Container>(container), key_fn));
+            groupby(std::forward<Container>(container), std::move(key_fn)));
       }
     };
   }

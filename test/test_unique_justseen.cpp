@@ -102,21 +102,45 @@ struct IntWrapperKey {
   }
 };
 
-TEST_CASE("unique_justseen: works with key function",
-    "[unique_justseen]") {
+struct MoveOnlyIntWrapperKey {
+  MoveOnlyIntWrapperKey(const MoveOnlyIntWrapperKey&) = delete;
+  MoveOnlyIntWrapperKey& operator=(const MoveOnlyIntWrapperKey&) = delete;
+
+  MoveOnlyIntWrapperKey(MoveOnlyIntWrapperKey&&) = default;
+  MoveOnlyIntWrapperKey& operator=(MoveOnlyIntWrapperKey&&) = default;
+  int operator()(const IntWrapper& iw) const {
+    return iw.n;
+  }
+};
+
+TEST_CASE("unique_justseen: works with key function", "[unique_justseen]") {
   std::vector<IntWrapper> iwv = {
       {2}, {3}, {4}, {2}, {10}, {2}, {2}, {12}, {10}};
   Vec vc{2, 3, 4, 2, 10, 2, 12, 10};
 
   std::vector<int> v;
-  SECTION("Normal call") {
-    for (auto&& iw : unique_justseen(iwv, IntWrapperKey{})) {
-      v.push_back(iw.n);
+  SECTION("with callable") {
+    SECTION("Normal call") {
+      for (auto&& iw : unique_justseen(iwv, IntWrapperKey{})) {
+        v.push_back(iw.n);
+      }
+    }
+    SECTION("Pipe") {
+      for (auto&& iw : iwv | unique_justseen(IntWrapperKey{})) {
+        v.push_back(iw.n);
+      }
     }
   }
-  SECTION("Pipe") {
-    for (auto&& iw : iwv | unique_justseen(IntWrapperKey{})) {
-      v.push_back(iw.n);
+  SECTION("with move-only callable") {
+    SECTION("Normal call") {
+      for (auto&& iw : unique_justseen(iwv, MoveOnlyIntWrapperKey{})) {
+        v.push_back(iw.n);
+      }
+    }
+    SECTION("Pipe") {
+      for (auto&& iw : iwv | unique_justseen(MoveOnlyIntWrapperKey{})) {
+        v.push_back(iw.n);
+      }
     }
   }
 
