@@ -10,6 +10,51 @@ using iter::dropwhile;
 
 using Vec = const std::vector<int>;
 
+TEST_CASE("dropwhile: handles different callable types", "[dropwhile]") {
+  Vec ns = {1, 3, 4, 20, 2, 4, 6, 8};
+  Vec vc = {20, 2, 4, 6, 8};
+  std::vector<int> v;
+  SECTION("with function pointer") {
+    auto d = dropwhile(less_than_five, ns);
+    v = Vec(std::begin(d), std::end(d));
+  }
+
+  SECTION("with callable object") {
+    auto d = dropwhile(LessThanValue{5}, ns);
+    v = Vec(std::begin(d), std::end(d));
+  }
+
+  SECTION("with lvalue callable object") {
+    auto lt = LessThanValue{5};
+    SECTION("normal call") {
+      auto d = dropwhile(lt, ns);
+      v = Vec(std::begin(d), std::end(d));
+    }
+    SECTION("pipe") {
+      auto d = ns | dropwhile(lt);
+      v = Vec(std::begin(d), std::end(d));
+    }
+  }
+
+  SECTION("with move-only callable object") {
+    SECTION("normal call") {
+      auto d = dropwhile(MoveOnlyLessThanValue{5}, ns);
+      v = Vec(std::begin(d), std::end(d));
+    }
+    SECTION("pipe") {
+      auto d = ns | dropwhile(MoveOnlyLessThanValue{5});
+      v = Vec(std::begin(d), std::end(d));
+    }
+  }
+
+  SECTION("with lambda") {
+    auto ltf = [](int i) { return i < 5; };
+    auto d = dropwhile(ltf, ns);
+    v = Vec(std::begin(d), std::end(d));
+  }
+  REQUIRE(v == vc);
+}
+
 TEST_CASE("dropwhile: skips initial elements", "[dropwhile]") {
   Vec ns{1, 2, 3, 4, 5, 6, 7, 8};
   std::vector<int> v;

@@ -29,7 +29,7 @@ class iter::impl::Dropper {
 
   Dropper(FilterFunc filter_func, Container&& container)
       : container_(std::forward<Container>(container)),
-        filter_func_(filter_func) {}
+        filter_func_(std::move(filter_func)) {}
 
  public:
   Dropper(Dropper&&) = default;
