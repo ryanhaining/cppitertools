@@ -35,7 +35,8 @@ class iter::impl::GroupProducer {
   using key_func_ret = std::invoke_result_t<KeyFunc, iterator_deref<T>>;
 
   GroupProducer(Container&& container, KeyFunc key_func)
-      : container_(std::forward<Container>(container)), key_func_(key_func) {}
+      : container_(std::forward<Container>(container)),
+        key_func_(std::move(key_func)) {}
 
  public:
   GroupProducer(GroupProducer&&) = default;

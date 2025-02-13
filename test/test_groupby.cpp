@@ -3,6 +3,7 @@
 #include "helpers.hpp"
 
 #include <iterator>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -21,22 +22,38 @@ namespace {
     }
   };
 
+  struct MoveOnlySizer {
+    // here to trigger asan if a dangling reference gets used
+    std::unique_ptr<int> counter_ = std::make_unique<int>();
+
+    MoveOnlySizer(const MoveOnlySizer&) = delete;
+    MoveOnlySizer& operator=(const MoveOnlySizer&) = delete;
+
+    MoveOnlySizer(MoveOnlySizer&&) = default;
+    MoveOnlySizer& operator=(MoveOnlySizer&&) = default;
+
+    int operator()(const std::string& s) {
+      ++*counter_;
+      return s.size();
+    }
+  };
+
   const std::vector<std::string> vec = {
       "hi", "ab", "ho", "abc", "def", "abcde", "efghi"};
 }
 
-TEST_CASE("groupby: works with lambda, callable, and function pointer") {
+TEST_CASE("groupby: handles different callable types", "[groupby]") {
   std::vector<int> keys;
   std::vector<std::vector<std::string>> groups;
 
-  SECTION("Function pointer") {
-    SECTION("Normal call") {
+  SECTION("with function pointer") {
+    SECTION("normal call") {
       for (auto&& gb : groupby(vec, length)) {
         keys.push_back(gb.first);
         groups.emplace_back(std::begin(gb.second), std::end(gb.second));
       }
     }
-    SECTION("Pipe") {
+    SECTION("pipe") {
       for (auto&& gb : vec | groupby(length)) {
         keys.push_back(gb.first);
         groups.emplace_back(std::begin(gb.second), std::end(gb.second));
@@ -44,14 +61,53 @@ TEST_CASE("groupby: works with lambda, callable, and function pointer") {
     }
   }
 
-  SECTION("Callable object") {
-    for (auto&& gb : groupby(vec, Sizer{})) {
-      keys.push_back(gb.first);
-      groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+  SECTION("with callable object") {
+    SECTION("normal call") {
+      for (auto&& gb : groupby(vec, Sizer{})) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("pipe") {
+      for (auto&& gb : vec | groupby(Sizer{})) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
     }
   }
 
-  SECTION("lambda function") {
+  SECTION("with lvalue callable object") {
+    auto sizer = Sizer{};
+    SECTION("normal call") {
+      for (auto&& gb : groupby(vec, sizer)) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("pipe") {
+      for (auto&& gb : vec | groupby(sizer)) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+  }
+
+  SECTION("with move-only callable object") {
+    SECTION("normal call") {
+      for (auto&& gb : groupby(vec, MoveOnlySizer{})) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+    SECTION("pipe") {
+      for (auto&& gb : vec | groupby(MoveOnlySizer{})) {
+        keys.push_back(gb.first);
+        groups.emplace_back(std::begin(gb.second), std::end(gb.second));
+      }
+    }
+  }
+
+  SECTION("with lambda") {
     for (auto&& gb :
         groupby(vec, [](const std::string& s) { return s.size(); })) {
       keys.push_back(gb.first);
