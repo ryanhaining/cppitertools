@@ -3,6 +3,7 @@
 
 #include <cppitertools/internal/iterbase.hpp>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <type_traits>
@@ -432,10 +433,12 @@ class LessThanValue {
 
 class MoveOnlyLessThanValue {
  private:
-  int compare_val;
+  // unique_ptr is better for triggering asan than an int if there's a dangling
+  // reference to the callable
+  std::unique_ptr<int> compare_val;
 
  public:
-  MoveOnlyLessThanValue(int v) : compare_val(v) {}
+  MoveOnlyLessThanValue(int v) : compare_val{std::make_unique<int>(v)} {}
 
   MoveOnlyLessThanValue(const MoveOnlyLessThanValue&) = delete;
   MoveOnlyLessThanValue& operator=(const MoveOnlyLessThanValue&) = delete;
@@ -444,7 +447,7 @@ class MoveOnlyLessThanValue {
   MoveOnlyLessThanValue& operator=(MoveOnlyLessThanValue&&) = default;
 
   bool operator()(int i) {
-    return i < this->compare_val;
+    return i < *compare_val;
   }
 };
 
