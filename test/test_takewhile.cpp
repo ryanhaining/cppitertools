@@ -10,36 +10,49 @@
 using iter::takewhile;
 using Vec = const std::vector<int>;
 
-TEST_CASE("takewhile: works with lambda, callable, and function pointer",
-    "[takewhile]") {
+TEST_CASE("takewhile: handles different callable types", "[takewhile]") {
   Vec ns = {1, 3, 4, 20, 2, 4, 6, 8};
-  const Vec vc = {1, 3, 4};
-  SECTION("function pointer") {
+  Vec vc = {1, 3, 4};
+  std::vector<int> v;
+  SECTION("with function pointer") {
     auto tw = takewhile(less_than_five, ns);
-    Vec v(std::begin(tw), std::end(tw));
-    REQUIRE(v == vc);
+    v = Vec(std::begin(tw), std::end(tw));
   }
 
-  SECTION("callable object") {
-    std::vector<int> v;
-    SECTION("Normal call") {
-      auto tw = takewhile(LessThanValue{10}, ns);
-      v.assign(std::begin(tw), std::end(tw));
+  SECTION("with callable object") {
+    auto tw = takewhile(LessThanValue{5}, ns);
+    v = Vec(std::begin(tw), std::end(tw));
+  }
+
+  SECTION("with lvalue callable object") {
+    auto lt = LessThanValue{5};
+    SECTION("normal call") {
+      auto tw = takewhile(lt, ns);
+      v = Vec(std::begin(tw), std::end(tw));
     }
-
-    SECTION("Pipe") {
-      auto tw = ns | takewhile(LessThanValue{10});
-      v.assign(std::begin(tw), std::end(tw));
+    SECTION("pipe") {
+      auto tw = ns | takewhile(lt);
+      v = Vec(std::begin(tw), std::end(tw));
     }
-
-    REQUIRE(v == vc);
   }
 
-  SECTION("lambda") {
-    auto tw = takewhile([](int i) { return i < 10; }, ns);
-    Vec v(std::begin(tw), std::end(tw));
-    REQUIRE(v == vc);
+  SECTION("with move-only callable object") {
+    SECTION("normal call") {
+      auto tw = takewhile(MoveOnlyLessThanValue{5}, ns);
+      v = Vec(std::begin(tw), std::end(tw));
+    }
+    SECTION("pipe") {
+      auto tw = ns | takewhile(MoveOnlyLessThanValue{5});
+      v = Vec(std::begin(tw), std::end(tw));
+    }
   }
+
+  SECTION("with lambda") {
+    auto ltf = [](int i) { return i < 5; };
+    auto tw = takewhile(ltf, ns);
+    v = Vec(std::begin(tw), std::end(tw));
+  }
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("takewhile: handles pointer to member", "[takewhile]") {
