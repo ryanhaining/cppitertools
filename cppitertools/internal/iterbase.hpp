@@ -353,9 +353,14 @@ namespace iter {
     template <typename ItTool>
     struct Pipeable {
       template <typename T>
-#if  defined(__GNUC__) && !defined(__clang__)
-        [[gnu::no_dangling]]
+#if defined(__GNUC__) && !defined(__clang__)
+      [[gnu::no_dangling]]
 #endif
+      friend decltype(auto) operator|(T&& x, Pipeable&& p) {
+        return static_cast<ItTool&&>(p)(std::forward<T>(x));
+      }
+
+      template <typename T>
       friend decltype(auto) operator|(T&& x, const Pipeable& p) {
         return static_cast<const ItTool&>(p)(std::forward<T>(x));
       }
@@ -378,11 +383,17 @@ namespace iter {
      protected:
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
+        static_assert(!std::is_reference_v<T>);
         mutable T stored_arg;
-        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+        constexpr FnPartial(T in_t) : stored_arg(std::move(in_t)) {}
 
         template <typename Container>
-        auto operator()(Container&& container) const {
+        auto operator()(Container&& container) && {
+          return F{}(std::move(stored_arg), std::forward<Container>(container));
+        }
+
+        template <typename Container>
+        auto operator()(Container&& container) const& {
           return F{}(stored_arg, std::forward<Container>(container));
         }
       };
@@ -403,10 +414,15 @@ namespace iter {
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
         mutable T stored_arg;
-        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+        constexpr FnPartial(T in_t) : stored_arg(std::move(in_t)) {}
 
         template <typename Container>
-        auto operator()(Container&& container) const {
+        auto operator()(Container&& container) && {
+          return F{}(std::forward<Container>(container), std::move(stored_arg));
+        }
+
+        template <typename Container>
+        auto operator()(Container&& container) const& {
           return F{}(std::forward<Container>(container), stored_arg);
         }
       };
@@ -469,10 +485,16 @@ namespace iter {
       template <typename T>
       struct FnPartial : Pipeable<FnPartial<T>> {
         mutable T stored_arg;
-        constexpr FnPartial(T in_t) : stored_arg(in_t) {}
+        constexpr FnPartial(T in_t) : stored_arg(std::move(in_t)) {}
 
         template <typename Container>
-        auto operator()(Container&& container) const {
+        auto operator()(Container&& container) && {
+          return IterToolFnOptionalBindSecond{}(
+              std::forward<Container>(container), std::move(stored_arg));
+        }
+
+        template <typename Container>
+        auto operator()(Container&& container) const& {
           return IterToolFnOptionalBindSecond{}(
               std::forward<Container>(container), stored_arg);
         }
