@@ -48,7 +48,8 @@ class iter::impl::FilterFalsed
   friend FilterFalseFn;
   FilterFalsed(FilterFunc in_filter_func, Container&& in_container)
       : Filtered<PredicateFlipper<FilterFunc>, Container>(
-            {in_filter_func}, std::forward<Container>(in_container)) {}
+            {std::move(in_filter_func)},
+            std::forward<Container>(in_container)) {}
 };
 
 #endif
