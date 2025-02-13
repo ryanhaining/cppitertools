@@ -13,30 +13,46 @@ using Vec = const std::vector<int>;
 TEST_CASE("filter: handles different callable types", "[filter]") {
   Vec ns = {1, 2, 5, 6, 3, 1, 7, -1, 5};
   Vec vc = {1, 2, 3, 1, -1};
+  std::vector<int> v;
   SECTION("with function pointer") {
     auto f = filter(less_than_five, ns);
-    Vec v(std::begin(f), std::end(f));
-    REQUIRE(v == vc);
+    v = Vec(std::begin(f), std::end(f));
   }
 
   SECTION("with callable object") {
     auto f = filter(LessThanValue{5}, ns);
-    Vec v(std::begin(f), std::end(f));
-    REQUIRE(v == vc);
+    v = Vec(std::begin(f), std::end(f));
+  }
+
+  SECTION("with lvalue callable object") {
+    auto lt = LessThanValue{5};
+    SECTION("normal call") {
+      auto f = filter(lt, ns);
+      v = Vec(std::begin(f), std::end(f));
+    }
+    SECTION("pipe") {
+      auto f = ns | filter(lt);
+      v = Vec(std::begin(f), std::end(f));
+    }
   }
 
   SECTION("with move-only callable object") {
-    auto f = filter(MoveOnlyLessThanValue{5}, ns);
-    Vec v(std::begin(f), std::end(f));
-    REQUIRE(v == vc);
+    SECTION("normal call") {
+      auto f = filter(MoveOnlyLessThanValue{5}, ns);
+      v = Vec(std::begin(f), std::end(f));
+    }
+    SECTION("pipe") {
+      auto f = ns | filter(MoveOnlyLessThanValue{5});
+      v = Vec(std::begin(f), std::end(f));
+    }
   }
 
   SECTION("with lambda") {
     auto ltf = [](int i) { return i < 5; };
     auto f = filter(ltf, ns);
-    Vec v(std::begin(f), std::end(f));
-    REQUIRE(v == vc);
+    v = Vec(std::begin(f), std::end(f));
   }
+  REQUIRE(v == vc);
 }
 
 TEST_CASE("filter: handles pointer to member", "[filter]") {
