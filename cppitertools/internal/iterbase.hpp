@@ -214,28 +214,20 @@ namespace iter {
       }
     }
 
-    template <typename Iter, typename EndIter, typename Distance>
-    void dumb_advance_impl(
-        Iter& iter, const EndIter& end, Distance distance, std::false_type) {
-      for (Distance i(0); i < distance && iter != end; ++i) {
-        ++iter;
-      }
-    }
-
-    template <typename Iter, typename EndIter, typename Distance>
-    void dumb_advance_impl(
-        Iter& iter, const EndIter& end, Distance distance, std::true_type) {
-      if (static_cast<Distance>(end - iter) < distance) {
-        iter = end;
-      } else {
-        iter += distance;
-      }
-    }
-
     // iter will not be incremented past end
     template <typename Iter, typename EndIter, typename Distance = std::size_t>
     void dumb_advance(Iter& iter, const EndIter& end, Distance distance) {
-      dumb_advance_impl(iter, end, distance, is_random_access_iter<Iter>{});
+      if constexpr (is_random_access_iter<Iter>{}) {
+        if (static_cast<Distance>(end - iter) < distance) {
+          iter = end;
+        } else {
+          iter += distance;
+        }
+      } else {
+        for (Distance i(0); i < distance && iter != end; ++i) {
+          ++iter;
+        }
+      }
     }
 
     template <typename ForwardIt, typename Distance = std::size_t>
@@ -452,22 +444,14 @@ namespace iter {
       using Base =
           PipeableAndBindFirst<IterToolFnOptionalBindFirst<ItImpl, DefaultT>>;
 
-     protected:
-      template <typename Container>
-      auto operator()(Container&& container, std::false_type) const {
-        return static_cast<const Base&>(*this)(
-            std::forward<Container>(container));
-      }
-
-      template <typename Container>
-      auto operator()(Container&& container, std::true_type) const {
-        return (*this)(DefaultT{}, std::forward<Container>(container));
-      }
-
      public:
       template <typename T>
       auto operator()(T&& t) const {
-        return (*this)(std::forward<T>(t), IsIterable<T>{});
+        if constexpr (IsIterable<T>{}) {
+          return (*this)(DefaultT{}, std::forward<T>(t));
+        } else {
+          return static_cast<const Base&>(*this)(std::forward<T>(t));
+        }
       }
 
       template <typename T, typename Container,
