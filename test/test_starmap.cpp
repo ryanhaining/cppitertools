@@ -47,16 +47,42 @@ namespace {
       return a;
     }
   };
+
+  struct Adder {
+    long operator()(long a, int b) {
+      return a + b;
+    }
+  };
+
+  struct MoveOnlyAddAndPlus {
+   private:
+    // unique_ptr is better for triggering asan than an int if there's a
+    // dangling reference to the callable
+    std::unique_ptr<int> add_amount_;
+
+   public:
+    MoveOnlyAddAndPlus(int v) : add_amount_{std::make_unique<int>(v)} {}
+
+    MoveOnlyAddAndPlus(const MoveOnlyAddAndPlus&) = delete;
+    MoveOnlyAddAndPlus& operator=(const MoveOnlyAddAndPlus&) = delete;
+
+    MoveOnlyAddAndPlus(MoveOnlyAddAndPlus&&) = default;
+    MoveOnlyAddAndPlus& operator=(MoveOnlyAddAndPlus&&) = default;
+
+    int operator()(long a, int b) {
+      return a + b + *add_amount_;
+    }
+  };
 }
 
 TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
-  using Vec = const std::vector<int>;
   const std::vector<std::pair<long, int>> v1 = {{1l, 2}, {3l, 11}, {6l, 7}};
-  Vec vc = {2l, 33l, 42l};
+  const std::vector<int> greater_vc = {2l, 33l, 42l};
+  const std::vector<long> added_vc = {3l, 14l, 13l};
 
-  std::vector<int> v;
-  SECTION("with function") {
-    SECTION("Normal call") {
+  SECTION("with function pointer") {
+    std::vector<int> v;
+    SECTION("normal call") {
       auto sm = starmap(f, v1);
       v.assign(std::begin(sm), std::end(sm));
     }
@@ -64,13 +90,54 @@ TEST_CASE("starmap: works with function pointer and lambda", "[starmap]") {
       auto sm = v1 | starmap(f);
       v.assign(std::begin(sm), std::end(sm));
     }
+    REQUIRE(v == greater_vc);
+  }
+
+  SECTION("with callable object") {
+    std::vector<long> v;
+    SECTION("normal call") {
+      auto sm = starmap(Adder{}, v1);
+      v.assign(std::begin(sm), std::end(sm));
+    }
+    SECTION("pipe") {
+      auto sm = v1 | starmap(Adder{});
+      v.assign(std::begin(sm), std::end(sm));
+    }
+    REQUIRE(v == added_vc);
+  }
+
+  SECTION("with lvalue callable object") {
+    std::vector<long> v;
+    auto adder = Adder{};
+    SECTION("normal call") {
+      auto sm = starmap(adder, v1);
+      v.assign(std::begin(sm), std::end(sm));
+    }
+    SECTION("pipe") {
+      auto sm = v1 | starmap(adder);
+      v.assign(std::begin(sm), std::end(sm));
+    }
+    REQUIRE(v == std::vector{3l, 14l, 13l});
+  }
+
+  SECTION("with move-only callable object") {
+    const std::vector<long> sum_plus_one_vc = {4l, 14l, 13l};
+    std::vector<long> v;
+    SECTION("normal call") {
+      auto m = starmap(MoveOnlyAddAndPlus{1}, v1);
+      v.assign(std::begin(m), std::end(m));
+    }
+    SECTION("pipe") {
+      auto m = v1 | starmap(MoveOnlyAddAndPlus{1});
+      v.assign(std::begin(m), std::end(m));
+    }
   }
 
   SECTION("with lambda") {
     auto sm = starmap([](long a, int b) { return a * b; }, v1);
-    v.assign(std::begin(sm), std::end(sm));
+    std::vector<int> v(std::begin(sm), std::end(sm));
+    REQUIRE(v == greater_vc);
   }
-  REQUIRE(v == vc);
 }
 
 TEST_CASE("starmap: works with pointer to member function", "[starmap]") {
