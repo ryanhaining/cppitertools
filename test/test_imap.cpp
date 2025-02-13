@@ -17,10 +17,29 @@ namespace {
     return i + 1;
   }
 
-  class PlusOner {
-   public:
-    int operator()(int i) {
+  struct PlusOner {
+    int operator()(int i) const {
       return i + 1;
+    }
+  };
+
+  class MoveOnlyAdder {
+   private:
+    // unique_ptr is better for triggering asan than an int if there's a
+    // dangling reference to the callable
+    std::unique_ptr<int> add_amount_;
+
+   public:
+    MoveOnlyAdder(int v) : add_amount_{std::make_unique<int>(v)} {}
+
+    MoveOnlyAdder(const MoveOnlyAdder&) = delete;
+    MoveOnlyAdder& operator=(const MoveOnlyAdder&) = delete;
+
+    MoveOnlyAdder(MoveOnlyAdder&&) = default;
+    MoveOnlyAdder& operator=(MoveOnlyAdder&&) = default;
+
+    int operator()(int i) {
+      return i + *add_amount_;
     }
   };
 
@@ -33,31 +52,48 @@ namespace {
   }
 }
 
-TEST_CASE("imap: works with lambda, callable, and function", "[imap]") {
-  Vec ns = {10, 20, 30};
+TEST_CASE("imap: handles different callable types", "[imap]") {
+  Vec ns = {10, 15, 300};
+  Vec vc = {11, 16, 301};
   std::vector<int> v;
+  SECTION("with function pointer") {
+    auto m = imap(plusone, ns);
+    v = Vec(std::begin(m), std::end(m));
+  }
+
+  SECTION("with callable object") {
+    auto m = imap(PlusOner{}, ns);
+    v = Vec(std::begin(m), std::end(m));
+  }
+
+  SECTION("with lvalue callable object") {
+    auto lt = PlusOner{};
+    SECTION("normal call") {
+      auto m = imap(lt, ns);
+      v = Vec(std::begin(m), std::end(m));
+    }
+    SECTION("pipe") {
+      auto m = ns | imap(lt);
+      v = Vec(std::begin(m), std::end(m));
+    }
+  }
+
+  SECTION("with move-only callable object") {
+    SECTION("normal call") {
+      auto m = imap(MoveOnlyAdder{1}, ns);
+      v = Vec(std::begin(m), std::end(m));
+    }
+    SECTION("pipe") {
+      auto m = ns | imap(MoveOnlyAdder{1});
+      v = Vec(std::begin(m), std::end(m));
+    }
+  }
+
   SECTION("with lambda") {
-    auto im = imap([](int i) { return i + 1; }, ns);
-    v.assign(std::begin(im), std::end(im));
+    auto ltf = [](int i) { return i + 1; };
+    auto m = imap(ltf, ns);
+    v = Vec(std::begin(m), std::end(m));
   }
-
-  SECTION("with callable") {
-    SECTION("Normal call") {
-      auto im = imap(PlusOner{}, ns);
-      v.assign(std::begin(im), std::end(im));
-    }
-    SECTION("Pipe") {
-      auto im = ns | imap(PlusOner{});
-      v.assign(std::begin(im), std::end(im));
-    }
-  }
-
-  SECTION("with function") {
-    auto im = imap(PlusOner{}, ns);
-    v.assign(std::begin(im), std::end(im));
-  }
-
-  Vec vc = {11, 21, 31};
   REQUIRE(v == vc);
 }
 
