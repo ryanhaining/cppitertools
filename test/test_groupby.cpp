@@ -40,6 +40,43 @@ namespace {
 
   const std::vector<std::string> vec = {
       "hi", "ab", "ho", "abc", "def", "abcde", "efghi"};
+
+  struct Person {
+    std::string name;
+    int id;
+    bool operator==(const Person& other) const {
+      return id == other.id;
+    }
+  };
+
+  std::string& get_name(Person& p) {
+    return p.name;
+  }
+
+  template <typename G>
+  std::vector<Person> extract_person_group(G g) {
+    return {std::begin(g), std::end(g)};
+  }
+}
+
+TEST_CASE("groupby: handle key function that returns reference", "[groupby]") {
+  std::vector<Person> people = {{"first", 1}, {"first", 2}, {"first", 3}};
+  std::vector<std::string> keys;
+  std::vector<std::vector<Person>> groups;
+
+  for (auto&& gb : groupby(people, get_name)) {
+    groups.push_back(extract_person_group(std::move(gb.second)));
+    keys.push_back(gb.first);
+  }
+
+  const std::vector<std::string> kc = {"first"};
+  const std::vector<std::vector<Person>> gc = {
+      {{"first", 1}, {"first", 2}, {"first", 3}}};
+
+  REQUIRE(people[0].name == "first");
+  REQUIRE(gc[0][0].name == "first");
+  REQUIRE(keys == kc);
+  REQUIRE(groups == gc);
 }
 
 TEST_CASE("groupby: handles different callable types", "[groupby]") {

@@ -178,6 +178,8 @@ class iter::impl::GroupProducer {
     friend class Iterator;
     friend class GroupIterator;
     Iterator<ContainerT>& owner_;
+    // The key function may return a reference, so we need to call forward, not
+    // move, when going for efficiency.
     key_func_ret<ContainerT> key_;
 
     // completed is set if a Group is iterated through
@@ -192,7 +194,7 @@ class iter::impl::GroupProducer {
     bool completed = false;
 
     Group(Iterator<ContainerT>& owner, key_func_ret<ContainerT> key)
-        : owner_(owner), key_(key) {}
+        : owner_(owner), key_(std::forward<key_func_ret<ContainerT>>(key)) {}
 
    public:
     ~Group() {
@@ -204,7 +206,9 @@ class iter::impl::GroupProducer {
 
     // move-constructible, non-copy-constructible, non-assignable
     Group(Group&& other) noexcept
-        : owner_(other.owner_), key_{other.key_}, completed{other.completed} {
+        : owner_(other.owner_),
+          key_{std::forward<key_func_ret<ContainerT>>(other.key_)},
+          completed{other.completed} {
       other.completed = true;
     }
 
