@@ -345,7 +345,7 @@ namespace iter {
     template <typename ItTool>
     struct Pipeable {
       template <typename T>
-#if defined(__GNUC__) && !defined(__clang__)
+#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ >= 14
       [[gnu::no_dangling]]
 #endif
       friend decltype(auto) operator|(T&& x, Pipeable&& p) {
