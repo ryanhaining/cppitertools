@@ -117,7 +117,7 @@ namespace iter {
 
     template <typename Container>
     using iterator_traits_deref =
-        std::remove_reference_t<iterator_deref<Container>>;
+        std::remove_cv_t<std::remove_reference_t<iterator_deref<Container>>>;
 
     template <typename T, typename = void>
     struct IsIterable : std::false_type {};
