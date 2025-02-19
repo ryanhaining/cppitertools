@@ -262,9 +262,8 @@ namespace iter {
               std::is_same<T, U>::value && are_same<T, Ts...>::value> {};
 
     // DerefHolder holds the value gotten from an iterator dereference
-    // if the iterate dereferences to an lvalue references, a pointer to the
-    //     element is stored
-    // if it does not, a value is stored instead
+    // if the iterator dereferences to an lvalue references, a pointer to the
+    // element is stored.  if it does not, a value is stored instead
     // get() returns a reference to the held item
     // get_ptr() returns a pointer to the held item
     // reset() replaces the currently held item
@@ -274,7 +273,7 @@ namespace iter {
       static_assert(!std::is_lvalue_reference<T>::value,
           "Non-lvalue-ref specialization used for lvalue ref type");
       // it could still be an rvalue reference
-      using TPlain = std::remove_reference_t<T>;
+      using TPlain = std::remove_cv_t<std::remove_reference_t<T>>;
 
       std::optional<TPlain> item_p_;
 
