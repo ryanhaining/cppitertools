@@ -142,8 +142,8 @@ class iter::impl::Chained {
     using iterator_category = std::input_iterator_tag;
     using value_type = typename IteratorData<TupTypeT>::TraitsValue;
     using difference_type = std::ptrdiff_t;
-    using pointer = value_type*;
-    using reference = value_type&;
+    using pointer = typename IteratorData<TupTypeT>::ArrowType;
+    using reference = typename IteratorData<TupTypeT>::DerefType;
 
     Iterator(std::size_t i, typename IterData::IterTupType&& iters,
         typename IterData::IterTupType&& ends)
