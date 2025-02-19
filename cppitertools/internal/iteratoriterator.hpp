@@ -24,7 +24,8 @@ namespace iter {
 
     template <typename TopIter>
     class IteratorIterator {
-      template <typename> friend class IteratorIterator;
+      template <typename>
+      friend class IteratorIterator;
       using Diff = std::ptrdiff_t;
       static_assert(
           std::is_same<
@@ -37,10 +38,14 @@ namespace iter {
 
      public:
       using iterator_category = std::random_access_iterator_tag;
-      using value_type = std::remove_reference_t<decltype(**std::declval<TopIter>())>;
+      using value_type = std::remove_cv_t<
+          std::remove_reference_t<decltype(**std::declval<TopIter>())>>;
       using difference_type = std::ptrdiff_t;
-      using pointer = value_type*;
-      using reference = value_type&;
+      using pointer =
+          std::remove_reference_t<decltype(**std::declval<TopIter>())>*;
+      using reference = std::add_lvalue_reference_t<
+          std::remove_reference_t<decltype(**std::declval<TopIter>())>>;
+
       IteratorIterator() = default;
       IteratorIterator(const TopIter& it) : sub_iter{it} {}
 
@@ -84,7 +89,7 @@ namespace iter {
         return **this->sub_iter;
       }
 
-      auto operator-> () const -> decltype(*sub_iter) {
+      auto operator->() const -> decltype(*sub_iter) {
         return *this->sub_iter;
       }
 
